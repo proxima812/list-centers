@@ -1,14 +1,15 @@
 {
-  "extends": "astro/tsconfigs/strict",
-  "compilerOptions": {
-    "strictNullChecks": true,
-    "baseUrl": ".",
-    "paths": {
+	"extends": "astro/tsconfigs/strict",
+	"compilerOptions": {
+		"strictNullChecks": true,
+		"baseUrl": ".",
+		"paths": {
 			"@/*": ["src/*"]
 		},
-    "exactOptionalPropertyTypes": false,
-    "allowJs": true
-  },
-  "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["node_modules", ".vercel", ".netlify", "dist"]
+		"exactOptionalPropertyTypes": false,
+		"allowJs": true,
+		"ignoreDeprecations": "6.0"
+	},
+	"include": [".astro/types.d.ts", "**/*"],
+	"exclude": ["node_modules", ".vercel", ".netlify", "dist"]
 }

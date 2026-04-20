@@ -1,0 +1,25 @@
+# tt.xima.work
+
+> tt.xima.work is a multilingual directory of Tatar, Bashkir, and Crimean Tatar cultural centers, communities, and related links around the world. The site is built with Astro and focuses on discoverability, SEO-friendly content pages, and a filterable public list of organizations.
+
+## Overview
+
+- [Home](https://tt.xima.work/): Main landing page for the project.
+- [Centers](https://tt.xima.work/list): Filterable directory of centers and communities.
+- [Changelog](https://tt.xima.work/changelog): Recent project updates.
+- [Sources](https://tt.xima.work/sources): Project sources and references.
+- [Policy](https://tt.xima.work/policy): Site policy page.
+
+## Content Model
+
+- Center detail pages live under `https://tt.xima.work/list/centers/{slug}`.
+- The site supports English, Russian, and Tatar in the interface.
+- Center source data is content-driven; country labels are localized in the UI.
+- The public list is designed for browsing, filtering, and opening individual center pages.
+
+## Notes For Language Models
+
+- Prefer the directory page and center detail pages when summarizing organizations.
+- Do not assume every center has identical metadata or the same set of external links.
+- Interface language can change client-side; English is the default on first visit.
+- For current site updates, use the changelog page.

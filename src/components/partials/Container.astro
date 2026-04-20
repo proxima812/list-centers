@@ -6,7 +6,7 @@ interface Props {
 	container?: boolean;
 }
 
-const { class: className, container } = Astro.props;
+const { class: className, container } = Astro.props as Props;
 ---
 
 <div

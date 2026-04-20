@@ -1,0 +1,26 @@
+---
+import BackButton from "@/components/partials/BackButton.astro";
+import Container from "@/components/partials/Container.astro";
+import Layout from "./Layout.astro";
+
+interface Frontmatter {
+	title?: string;
+	description?: string;
+	[key: string]: unknown;
+}
+
+interface Props {
+	frontmatter: Frontmatter;
+}
+
+const { frontmatter } = Astro.props as Props;
+---
+
+<Layout {...frontmatter}>
+	<Container container class="max-w-3xl">
+		<BackButton href="/" variant="outline" label="Back" labelKey="nav.back" />
+		<main class="mt-12 prose">
+			<slot />
+		</main>
+	</Container>
+</Layout>

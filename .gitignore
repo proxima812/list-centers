@@ -23,6 +23,6 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
-ВАЖНО!!!.MD
-
-scripts/bump-version.mjs
+.codex/
+.vscode
+CODEX.md

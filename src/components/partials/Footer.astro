@@ -1,0 +1,28 @@
+---
+import Container from "@/components/partials/Container.astro";
+import release from "@/data/release.json";
+
+const updatedAtLabelEn = new Intl.DateTimeFormat("en", {
+	day: "numeric",
+	month: "long",
+	year: "numeric",
+	hour: "2-digit",
+	minute: "2-digit",
+	hour12: false,
+	timeZone: "Asia/Almaty",
+}).format(new Date(release.updatedAt));
+---
+
+<footer class="mt-auto border-t border-border-muted py-6 text-xs text-subtle-foreground">
+	<Container container>
+		<p>
+			v{release.version} · <span
+				data-i18n="footer.updated"
+				data-i18n-date={release.updatedAt}
+				data-i18n-values={JSON.stringify({ date: updatedAtLabelEn })}
+			>
+				Updated {updatedAtLabelEn}
+			</span>
+		</p>
+	</Container>
+</footer>

@@ -1,4 +1,5 @@
 ---
+import type { HTMLAttributes } from "astro/types";
 import { cn } from "@/utils/libs/cn";
 
 type Variant = "solid" | "outline" | "ghost" | "soft";
@@ -151,7 +152,7 @@ const resolveSocialName = (value?: string) => {
 	return socialAliases[value.toLowerCase()] ?? "website";
 };
 
-interface Props {
+interface Props extends HTMLAttributes<"a"> {
 	class?: string;
 	href: string;
 	title?: string;
@@ -175,12 +176,12 @@ interface Props {
 
 const variantClasses: Record<Variant, string> = {
 	solid:
-		"border border-zinc-950 bg-zinc-950 text-white hover:bg-zinc-800 hover:border-zinc-800",
+		"border border-primary bg-primary text-primary-foreground hover:border-primary/80 hover:bg-primary/80",
 	outline:
-		"border border-zinc-300 bg-white text-zinc-950 hover:border-zinc-400 hover:bg-zinc-50",
+		"border border-border bg-surface text-surface-foreground hover:border-ring hover:bg-surface-muted",
 	ghost:
-		"border border-transparent bg-transparent text-zinc-700 hover:bg-zinc-100 hover:text-zinc-950",
-	soft: "border border-zinc-200 bg-zinc-100 text-zinc-950 hover:border-zinc-300 hover:bg-zinc-200/70",
+		"border border-transparent bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground",
+	soft: "border border-border-muted bg-muted text-foreground hover:border-border hover:bg-subtle",
 };
 
 const sizeClasses: Record<Size, string> = {
@@ -222,7 +223,7 @@ const {
 	labelClass = "",
 	iconClass = "",
 	...props
-} = Astro.props;
+} = Astro.props as Props;
 
 const socialName = resolveSocialName(social);
 const icon = socialIcons[socialName];

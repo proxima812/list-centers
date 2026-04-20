@@ -1,5 +1,7 @@
 ---
 import Container from "@/components/partials/Container.astro";
+import Footer from "@/components/partials/Footer.astro";
+import Header from "@/components/partials/Header.astro";
 import SEO from "@/components/partials/SEO.astro";
 
 import "@/styles/tailwind.css";
@@ -15,6 +17,7 @@ interface Props {
 	datePublished?: string | Date;
 	dateModified?: string | Date;
 	centered?: boolean;
+	classContainer?: string;
 }
 
 const {
@@ -27,10 +30,11 @@ const {
 	ogImage,
 	keywords,
 	centered,
+	classContainer,
 } = Astro.props as Props;
 ---
 
-<html lang="ru" class="scroll-smooth subpixel-antialiased">
+<html lang="en" data-language="en" class="scroll-smooth subpixel-antialiased">
 	<head>
 		<SEO
 			title={title}
@@ -42,6 +46,24 @@ const {
 			datePublished={datePublished}
 			dateModified={dateModified}
 		/>
+		<script is:inline>
+			(() => {
+				const theme = localStorage.getItem("theme");
+				const isDark =
+					theme === "dark" ||
+					((!theme || theme === "system") &&
+						window.matchMedia("(prefers-color-scheme: dark)").matches);
+
+				document.documentElement.classList.toggle("dark", isDark);
+				document.documentElement.dataset.theme =
+					theme && ["light", "dark", "system"].includes(theme) ? theme : "system";
+			})();
+		</script>
+		<script>
+			import { initI18nRuntime } from "@/i18n/runtime";
+
+			initI18nRuntime();
+		</script>
 		{
 			import.meta.env.DEV && (
 				<script is:inline>
@@ -59,11 +81,13 @@ const {
 			)
 		}
 	</head>
-	<body class="flex min-h-screen flex-col text-zinc-900 bg-[#fafafa]">
-		<Container container class="py-22">
+	<body class="flex min-h-screen flex-col bg-background text-foreground">
+		<Header />
+		<Container container class={cn("py-22", classContainer)}>
 			<div class={cn("flex flex-col gap-12", centered ? "items-center" : null)}>
 				<slot />
 			</div>
 		</Container>
+		<Footer />
 	</body>
 </html>

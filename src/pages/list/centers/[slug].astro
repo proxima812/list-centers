@@ -1,7 +1,12 @@
 ---
+import ButtonLink from "@/components/ui/ButtonLink.astro";
 import Layout from "@/layouts/Layout.astro";
 import { Icon } from "astro-icon/components";
 import { getCollection, render, type CollectionEntry } from "astro:content";
+
+import CardMistake from "@/components/CardMistake.astro";
+import A from "@/components/markdown/A.astro";
+import CopyPageMenu from "@/components/ui/CopyPageMenu.astro";
 
 export async function getStaticPaths() {
 	const entries = await getCollection("centers");
@@ -15,7 +20,7 @@ interface Props {
 	entry: CollectionEntry<"centers">;
 }
 
-const { entry } = Astro.props;
+const { entry } = Astro.props as Props;
 const data = entry.data;
 const { Content } = await render(entry);
 
@@ -25,7 +30,7 @@ const clean = (value?: string | null) => {
 	return normalized.length ? normalized : null;
 };
 
-const title = clean(data.title) ?? "Центр";
+const title = clean(data.title) ?? "Center";
 const summary = clean(data.summary);
 const country = clean(data.location?.country);
 const city = clean(data.location?.city);
@@ -35,82 +40,146 @@ const rawPubDate = clean(data.pubDate);
 const placeLine = [flag, country].filter(Boolean).join(" ");
 const cityLine = city ?? null;
 const formattedDate = rawPubDate
-	? new Date(rawPubDate).toLocaleDateString("ru-RU", {
+	? new Date(rawPubDate).toLocaleDateString("en-US", {
 			day: "numeric",
 			month: "long",
 			year: "numeric",
+			timeZone: "Asia/Almaty",
 		})
 	: null;
 
 const facts = [
-	placeLine ? { label: "Страна", value: placeLine, icon: "mdi:earth" } : null,
-	cityLine ? { label: "Город", value: cityLine, icon: "mdi:city-variant-outline" } : null,
+	placeLine
+		? { label: "Country", labelKey: "detail.country", value: placeLine, icon: "mdi:earth" }
+		: null,
+	cityLine
+		? {
+				label: "City",
+				labelKey: "detail.city",
+				value: cityLine,
+				icon: "mdi:city-variant-outline",
+			}
+		: null,
 	formattedDate
-		? { label: "Обновление", value: formattedDate, icon: "mdi:calendar-outline" }
+		? {
+				label: "Updated",
+				labelKey: "detail.updated",
+				value: formattedDate,
+				icon: "mdi:calendar-outline",
+			}
 		: null,
 ].filter(Boolean);
 
 const pageDescription = summary ?? undefined;
 ---
 
-<Layout title={``} description={``}>
-	<article class="flex flex-col gap-10">
-		<nav>
-			<a
+<Layout title={`${title}`} description={`${summary}`} type="article">
+	<article class="flex flex-col gap-10 max-w-5xl mx-auto">
+		<nav class="flex justify-between flex-wrap items-center">
+			<ButtonLink
 				href="/list"
-				class="inline-flex items-center gap-2 text-sm text-zinc-500 transition hover:text-zinc-900"
-			>
-				<Icon name="mdi:arrow-left" class="h-4 w-4" />
-				Все центры
-			</a>
+				label="All centers"
+				labelKey="nav.allCenters"
+				variant="outline"
+				icon="tabler:arrow-back-up"
+			/>
+
+			<div class="sm:order-0 order-3 sm:mt-0 mt-3">
+				<ButtonLink
+					href="#errors"
+					label="Find a mistake?"
+					labelKey="nav.mistake"
+					variant="ghost"
+					icon="tabler:face-id-error"
+				/>
+				<ButtonLink
+					target="_blank"
+					href={`https://github.com/proxima812/list-centers/blob/main/src/data/centers/${entry.id}.mdx`}
+					label="Edit on GitHub"
+					labelKey="nav.editOnGithub"
+					variant="ghost"
+					icon="mdi:github"
+				/>
+			</div>
+			<CopyPageMenu />
 		</nav>
 
-		<section class="flex flex-col gap-4">
-			{
-				(placeLine || cityLine) && (
-					<p class="text-sm font-medium text-zinc-500">
-						{placeLine}
-						{placeLine && cityLine ? " · " : ""}
-						{cityLine}
-					</p>
-				)
-			}
+		<div
+			class="h-px w-[calc(100%-320px)] mx-auto bg-linear-to-r from-transparent via-border to-transparent"
+		>
+		</div>
 
-			<h1 class="max-w-4xl text-3xl font-semibold leading-tight text-zinc-950 sm:text-5xl">
-				{title}
-			</h1>
+		<h1
+			class="max-w-4xl mx-auto text-center text-3xl font-semibold leading-tight text-foreground sm:text-5xl"
+		>
+			{title}
+		</h1>
 
-			{summary && <p class=" text-base leading-7 text-zinc-600 sm:text-lg">{summary}</p>}
-		</section>
-
-		<main class="prose prose-zinc">
-			<Content />
-		</main>
-
+		<div
+			class="h-px w-[calc(100%-480px)] mx-auto bg-linear-to-r from-transparent via-border to-transparent"
+		>
+		</div>
 		{
-			facts.length > 0 && (
-				<aside class="lg:sticky lg:top-10">
-					<div class="space-y-8">
-						<section class="py-5">
-							<h2 class="mb-4 flex items-center gap-2 text-sm font-semibold text-zinc-950">
-								<Icon name="mdi:information-outline" class="h-4 w-4 text-zinc-500" />
-								Кратко
-							</h2>
-							<dl class="space-y-4 text-sm text-zinc-600">
-								{facts.map((fact) => (
-									<div>
-										<dt class="mb-1 flex items-center gap-1.5 text-xs uppercase text-zinc-400">
-											<Icon name={fact.icon} class="h-3.5 w-3.5" />
-											{fact.label}
-										</dt>
-										<dd class="text-zinc-700">{fact.value}</dd>
-									</div>
-								))}
-							</dl>
-						</section>
-					</div>
-				</aside>
+			summary && (
+				<p class="text-center max-w-4xl mx-auto text-base leading-7 text-muted-foreground sm:text-lg">
+					{summary}
+				</p>
 			)
 		}
+
+		<main class="relative sm:flex gap-12">
+			<section
+				class="ring w-full ring-depth-100/70 shadow-2xs bg-depth-100/30 rounded-2xl corner-squircle p-6 sm:order-1"
+			>
+				<div class="prose max-w-none">
+					<Content components={{ a: A }} />
+				</div>
+			</section>
+
+			{
+				facts.length > 0 && (
+					<aside class="ring shrink-0 ring-depth-100/70 shadow-2xs  bg-depth-100/30 rounded-2xl corner-squircle p-6  h-fit sm:sticky top-12 -order-1 sm:order-2">
+						<span class="mb-4 flex items-center gap-2 text-sm font-semibold text-foreground">
+							<Icon name="mdi:information-outline" class="h-4 w-4 text-muted-foreground" />
+							<span data-i18n="detail.summary">Summary</span>
+						</span>
+						<dl class="space-y-4 text-sm text-muted-foreground">
+							{facts &&
+								facts.map((fact) => (
+									<div>
+										<dt class="mb-1 flex items-center gap-1.5 text-xs uppercase text-subtle-foreground">
+											<Icon name={fact?.icon} class="h-3.5 w-3.5" />
+											<span data-i18n={fact?.labelKey}>{fact?.label}</span>
+										</dt>
+										<dd
+											class="text-foreground"
+											data-i18n-date-only={
+												fact?.labelKey === "detail.updated" ? rawPubDate : undefined
+											}
+										>
+											{fact?.value}
+										</dd>
+									</div>
+								))}
+						</dl>
+						<hr class="bg-primary/10 my-4" />
+						<span class="mb-1 flex items-center gap-1.5 text-xs uppercase text-subtle-foreground">
+							<Icon name="mdi:link" />
+							Источник
+						</span>
+						<a
+							target="_blank"
+							rel="nofollow noreferrer noopener"
+							href={`https://${entry.data.source}/`}
+							class="underline text-sm"
+						>
+							{entry.data.source}
+						</a>
+					</aside>
+				)
+			}
+		</main>
+
+		<CardMistake />
 	</article>
 </Layout>

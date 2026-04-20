@@ -1,0 +1,33 @@
+---
+import ButtonLink from "../ui/ButtonLink.astro";
+import Container from "./Container.astro";
+import LanguageToggle from "./LanguageToggle.astro";
+import Logotype from "./Logotype.astro";
+import ThemeToggle from "./ThemeToggle.astro";
+
+const isListPage = Astro.url.pathname.startsWith("/list");
+---
+
+<header>
+	<div class="py-5">
+		<Container container>
+			<div class="flex flex-wrap items-center justify-between gap-4">
+				<nav class="flex items-center gap-4" aria-label="Primary navigation">
+					<Logotype />
+					<ButtonLink
+						class="p-0 hover:bg-transparent"
+						href="/list"
+						label="Centers"
+						labelKey="nav.centers"
+						variant="ghost"
+						aria-current={isListPage ? "page" : undefined}
+					/>
+				</nav>
+				<div class="ml-auto flex items-center gap-2">
+					<LanguageToggle />
+					<ThemeToggle hidden off />
+				</div>
+			</div>
+		</Container>
+	</div>
+</header>

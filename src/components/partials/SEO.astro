@@ -60,9 +60,7 @@ const pageType = type === "article" ? "article" : "website";
 const schemaType = pageType === "article" ? "BlogPosting" : "WebPage";
 const mainTitle = title || config.site.OG.title;
 
-const mainDescription = description
-	? description
-	: config.site.OG.description;
+const mainDescription = description ? description : config.site.OG.description;
 
 const mainAuthor = author || config.site.OG.author;
 const mainOGImage = socialImageURL || config.site.OG.defaultImage;

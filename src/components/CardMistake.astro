@@ -1,0 +1,25 @@
+---
+import { Icon } from "astro-icon/components";
+---
+
+<section class="flex gap-1.5 flex-wrap">
+	<div
+		id="errors"
+		class="max-w-fit flex gap-1.5 sm:items-center items-start text-sm font-medium bg-destructive/10 text-destructive px-3 py-1.5 rounded-md"
+	>
+		<Icon name="mdi:warning" class="shrink-0 inline" />
+		<span>
+			Нашли ошибку, неточность или хотите исправить, дополнить или улучшить перевод — дайте нам
+			знать.
+		</span>
+	</div>
+	<a
+		href="https://t.me/ulu_er/8"
+		target="_blank"
+		rel="noopener noreferrer"
+		class="max-w-fit ring-1 ring-sky-200 flex gap-1.5 items-center text-sm font-medium bg-sky-50 text-sky-600 px-3 py-1.5 rounded-md"
+	>
+		<Icon name="mdi:telegram" />
+		<span>Перейти в Telegram</span>
+	</a>
+</section>

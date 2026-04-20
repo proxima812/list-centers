@@ -1,0 +1,134 @@
+---
+import SocialButton from "@/components/widgets/SocialButton.astro";
+import { cn } from "@/utils/libs/cn";
+import { Icon } from "astro-icon/components";
+
+interface Props {
+	href?: string;
+	children?: string;
+	class?: string;
+}
+
+const { href = "", children, class: className } = Astro.props as Props;
+
+const rawText = typeof children === "string" ? children.trim() : "";
+
+const socialByHost: Record<string, string> = {
+	"t.me": "telegram",
+	"telegram.me": "telegram",
+	"telegram.org": "telegram",
+	"github.com": "github",
+	"instagram.com": "instagram",
+	"www.instagram.com": "instagram",
+	"youtube.com": "youtube",
+	"www.youtube.com": "youtube",
+	"youtu.be": "youtube",
+	"vk.com": "vk",
+	"vkontakte.ru": "vk",
+	"wa.me": "whatsapp",
+	"whatsapp.com": "whatsapp",
+	"chat.whatsapp.com": "whatsapp",
+	"linkedin.com": "linkedin",
+	"www.linkedin.com": "linkedin",
+	"x.com": "x",
+	"www.x.com": "x",
+	"twitter.com": "x",
+	"www.twitter.com": "x",
+	"discord.com": "discord",
+	"discord.gg": "discord",
+	"tiktok.com": "tiktok",
+	"www.tiktok.com": "tiktok",
+	"dribbble.com": "dribbble",
+	"behance.net": "behance",
+	"facebook.com": "facebook",
+	"www.facebook.com": "facebook",
+};
+
+let label = href;
+let ariaLabel = `Open link: ${href}`;
+let ariaKey = "link.open";
+let ariaValue = href;
+let isExternal = false;
+let icon = "mdi:link";
+let social: string | null = null;
+
+if (href.startsWith("mailto:")) {
+	label = rawText || href.replace(/^mailto:/, "");
+	ariaLabel = `Send email: ${label}`;
+	ariaKey = "link.mail";
+	ariaValue = label;
+	icon = "mdi:email-outline";
+} else if (href.startsWith("tel:")) {
+	label = rawText || href.replace(/^tel:/, "");
+	ariaLabel = `Call: ${label}`;
+	ariaKey = "link.phone";
+	ariaValue = label;
+	icon = "mdi:phone-outline";
+} else if (href.startsWith("sms:")) {
+	label = rawText || href.replace(/^sms:/, "");
+	ariaLabel = `Send message: ${label}`;
+	ariaKey = "link.sms";
+	ariaValue = label;
+	icon = "mdi:message-outline";
+} else {
+	try {
+		const url = new URL(href);
+		const hostname = url.hostname.replace(/^www\./, "");
+		label = rawText || hostname;
+		ariaLabel = `Open website: ${hostname}`;
+		ariaKey = "link.site";
+		ariaValue = hostname;
+		isExternal =
+			["http:", "https:"].includes(url.protocol) && url.origin !== Astro.site?.origin;
+		icon = "mdi:open-in-new";
+		social = socialByHost[url.hostname] ?? socialByHost[hostname] ?? null;
+	} catch {
+		const cleaned = href
+			.replace(/^https?:\/\//, "")
+			.replace(/^www\./, "")
+			.replace(/\/$/, "")
+			.split("/")[0];
+
+		label = rawText || cleaned || href;
+	}
+}
+---
+
+{
+	social ? (
+		<SocialButton
+			href={href}
+			social={social}
+			title={label}
+			ariaLabel={ariaLabel}
+			data-i18n-aria-label={ariaKey}
+			data-i18n-title={ariaKey}
+			data-i18n-values={JSON.stringify({ value: ariaValue })}
+			iconStyle="brand"
+			variant="ghost"
+			size="sm"
+			class={cn(
+				"h-auto justify-start gap-1.5 border-0 bg-transparent px-0 py-0 align-baseline  underline decoration-2 decoration-sky-500 text-base hover:bg-transparent",
+				className,
+			)}
+			labelClass="leading-normal"
+			iconClass="text-current"
+			{...(isExternal ? { target: "_blank", rel: "noopener noreferrer nofollow" } : {})}
+		/>
+	) : (
+		<a
+			href={href}
+			class={cn(
+				"flex items-center gap-1.5 underline decoration-2 decoration-sky-500",
+				className,
+			)}
+			aria-label={ariaLabel}
+			data-i18n-aria-label={ariaKey}
+			data-i18n-values={JSON.stringify({ value: ariaValue })}
+			{...(isExternal ? { target: "_blank", rel: "noopener noreferrer nofollow" } : {})}
+		>
+			<Icon name={icon} class="h-4 w-4 text-primary/50" />
+			<span>{label}</span>
+		</a>
+	)
+}

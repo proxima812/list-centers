@@ -1,6 +1,6 @@
 ---
 import GridCards from "@/components/list/GridCards.astro";
-import Toolbar from "@/components/list/Toolbar.astro";
+import Toolbar from "@/components/list/ToolBar.astro";
 import { getCollection } from "astro:content";
 import BackButton from "../partials/BackButton.astro";
 
@@ -28,25 +28,62 @@ for (const card of cards) {
 const countries = [...countryCounts.entries()].sort((a, b) => b[1] - a[1]);
 
 const regionCounts = new Map<string, number>();
+const typeCounts = new Map<string, number>();
+const categoryCounts = new Map<string, number>();
+
 for (const card of cards) {
-	if (card.data.location?.country === "Россия" && card.data.location?.region) {
+	if (card.data.location?.region) {
 		const region = card.data.location.region;
 		regionCounts.set(region, (regionCounts.get(region) ?? 0) + 1);
 	}
+
+	if (card.data.type) {
+		typeCounts.set(card.data.type, (typeCounts.get(card.data.type) ?? 0) + 1);
+	}
+
+	if (card.data.category) {
+		categoryCounts.set(card.data.category, (categoryCounts.get(card.data.category) ?? 0) + 1);
+	}
 }
 
+// Regions are sorted alphabetically because users usually scan them by name, not by frequency.
 const regions = [...regionCounts.entries()].sort((a, b) => a[0].localeCompare(b[0], "ru"));
+// Types are shown in a stable domain order first, then any unknown value is appended.
+const types = [...typeCounts.entries()].sort((a, b) => {
+	const order = ["Регион РФ", "Зарубежный", "Онлайн"];
+	const leftIndex = order.indexOf(a[0]);
+	const rightIndex = order.indexOf(b[0]);
+	const safeLeftIndex = leftIndex === -1 ? Number.MAX_SAFE_INTEGER : leftIndex;
+	const safeRightIndex = rightIndex === -1 ? Number.MAX_SAFE_INTEGER : rightIndex;
+
+	return safeLeftIndex - safeRightIndex || b[1] - a[1] || a[0].localeCompare(b[0], "ru");
+});
+// Categories are sorted by popularity first to keep the densest buckets visible at the start.
+const categories = [...categoryCounts.entries()].sort(
+	(a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "ru"),
+);
 ---
 
-<BackButton href="/" label="Обратно" variant="outline" />
+<BackButton href="/" label="Back" labelKey="nav.back" variant="outline" />
 
 <Toolbar
 	cardsCount={cards.length}
 	countries={countries}
 	countryFlags={countryFlags}
+	types={types}
+	categories={categories}
 	regions={regions}
 />
 
-<p id="no-results" hidden class="py-10 text-center text-sm text-zinc-400">Ничего не найдено</p>
+<p
+	id="no-results"
+	hidden
+	class="py-10 text-center text-sm text-subtle-foreground"
+	data-i18n="list.noResults"
+	role="status"
+	aria-live="polite"
+>
+	No results found
+</p>
 
 <GridCards cards={cards} />

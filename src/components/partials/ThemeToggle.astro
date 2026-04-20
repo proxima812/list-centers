@@ -1,0 +1,119 @@
+---
+import { cn } from "@/utils/libs/cn";
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  hidden?: boolean;
+  off?: boolean;
+  class?: string;
+}
+
+const items = [
+	{ value: "system", label: "System theme", labelKey: "theme.system", icon: "tabler:app-window" },
+	{ value: "light", label: "Light theme", labelKey: "theme.light", icon: "tabler:sun-high" },
+	{ value: "dark", label: "Dark theme", labelKey: "theme.dark", icon: "tabler:moon" },
+];
+
+const buttonClass =
+	"theme-btn inline-flex size-8 items-center justify-center rounded-full text-subtle-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 aria-checked:bg-muted aria-checked:text-foreground";
+
+const { hidden, off, class: className } = Astro.props;
+---
+
+<div
+	class={cn(
+		"inline-flex items-center gap-0.5 rounded-full border border-border-muted p-0.5",
+		className,
+		hidden ? "hidden" : null,
+	)}
+	role="radiogroup"
+	aria-label="Theme switcher"
+	data-i18n-aria-label="theme.switcher"
+	data-theme-switcher
+>
+	{
+		items.map((item, index) => (
+			<button
+				type="button"
+				class={buttonClass}
+				data-theme-option={item.value}
+				role="radio"
+				aria-label={item.label}
+				data-i18n-aria-label={item.labelKey}
+				aria-checked={index === 0 ? "true" : "false"}
+				tabindex={index === 0 ? "0" : "-1"}
+			>
+				<Icon name={item.icon} class="size-4" />
+			</button>
+		))
+	}
+</div>
+{off &&
+<script is:inline>
+	const STORAGE_KEY = "theme";
+	const root = document.documentElement;
+	const switcher = document.querySelector("[data-theme-switcher]");
+	const buttons = Array.from(switcher?.querySelectorAll("[data-theme-option]") ?? []);
+
+	const media = window.matchMedia("(prefers-color-scheme: dark)");
+
+	const getStoredTheme = () => {
+		const value = localStorage.getItem(STORAGE_KEY);
+		return ["light", "dark", "system"].includes(value) ? value : "system";
+	};
+
+	const getResolvedTheme = (theme) => {
+		if (theme === "system") return media.matches ? "dark" : "light";
+		return theme;
+	};
+
+	const applyTheme = (theme) => {
+		const resolved = getResolvedTheme(theme);
+
+		root.dataset.theme = theme;
+		root.classList.toggle("dark", resolved === "dark");
+
+		buttons.forEach((button) => {
+			const isActive = button.dataset.themeOption === theme;
+			button.setAttribute("aria-checked", String(isActive));
+			button.setAttribute("tabindex", isActive ? "0" : "-1");
+		});
+	};
+
+	const setTheme = (theme) => {
+		localStorage.setItem(STORAGE_KEY, theme);
+		applyTheme(theme);
+	};
+
+	applyTheme(getStoredTheme());
+
+	buttons.forEach((button) => {
+		button.addEventListener("click", () => {
+			setTheme(button.dataset.themeOption);
+		});
+
+		button.addEventListener("keydown", (event) => {
+			const currentIndex = buttons.indexOf(button);
+			let nextIndex = currentIndex;
+
+			if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+				nextIndex = (currentIndex + 1) % buttons.length;
+			}
+
+			if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+				nextIndex = (currentIndex - 1 + buttons.length) % buttons.length;
+			}
+
+			if (nextIndex !== currentIndex) {
+				event.preventDefault();
+				const nextButton = buttons[nextIndex];
+				nextButton.focus();
+				setTheme(nextButton.dataset.themeOption);
+			}
+		});
+	});
+
+	media.addEventListener("change", () => {
+		if (getStoredTheme() === "system") applyTheme("system");
+	});
+</script>}

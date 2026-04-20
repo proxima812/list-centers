@@ -5,7 +5,7 @@ export const config = {
 			title: "",
 			description: "",
 			author: "",
-			locale: "ru",
+			locale: "en",
 			site_name: "",
 			defaultImage: "default-ogImage.jpg",
 			keywords: "",

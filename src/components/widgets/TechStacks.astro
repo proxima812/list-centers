@@ -215,7 +215,7 @@ const {
 	iconOnly = false,
 	wrap = true,
 	gap = "0.75rem",
-} = Astro.props;
+} = Astro.props as Props;
 
 const items = stacks.map((value) => ({
 	value,
@@ -239,10 +239,10 @@ const items = stacks.map((value) => ({
 					target="_blank"
 					rel="noreferrer noopener"
 					class={cn(
-						"inline-flex shrink-0 items-center font-medium text-zinc-700 transition-opacity hover:opacity-80",
+						"inline-flex shrink-0 items-center font-medium text-muted-foreground transition-opacity hover:opacity-80",
 						iconOnly
 							? iconOnlySizeClasses[size]
-							: "rounded-full border border-zinc-200 bg-white",
+							: "rounded-full border border-border-muted bg-surface",
 						iconOnly ? "justify-center" : sizeClasses[size],
 						itemClass,
 					)}
@@ -265,10 +265,10 @@ const items = stacks.map((value) => ({
 			) : (
 				<div
 					class={cn(
-						"inline-flex shrink-0 items-center font-medium text-zinc-700",
+						"inline-flex shrink-0 items-center font-medium text-muted-foreground",
 						iconOnly
 							? iconOnlySizeClasses[size]
-							: "rounded-full border border-zinc-200 bg-white",
+							: "rounded-full border border-border-muted bg-surface",
 						iconOnly ? "justify-center" : sizeClasses[size],
 						itemClass,
 					)}

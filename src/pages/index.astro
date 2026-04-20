@@ -12,15 +12,19 @@ const centers = (await getCollection("centers")).length;
 		<MainText />
 		<LinksNav />
 		<p class="text-primary/50 text-xs">
-			Представляем
+			<span data-i18n="home.intro.prefix">Introducing</span>
 			<a
 				href="/list"
-				class="font-medium text-zinc-900 underline decoration-zinc-300 underline-offset-4 transition hover:decoration-zinc-900 dark:text-zinc-100 dark:decoration-zinc-600 dark:hover:decoration-zinc-300"
+				class="font-medium text-link underline decoration-link-decoration underline-offset-4 transition hover:decoration-link"
+				data-i18n="home.intro.link"
+				data-i18n-values={JSON.stringify({ count: centers })}
 			>
-				список из {centers} центров
+				a list of {centers} centers
 			</a>
-			где можно будет узнать больше о культуре и языках. Найти друзей и родственников в других городах
-			и странах.
+			<span data-i18n="home.intro.suffix">
+				where you can learn more about culture and languages, and find friends and relatives in
+				other cities and countries.
+			</span>
 		</p>
 		<AllLang />
 	</main>

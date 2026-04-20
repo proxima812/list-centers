@@ -1,12 +1,18 @@
 ---
-import Layout from "@/layouts/Layout.astro"
+import Layout from "@/layouts/Layout.astro";
 
-const title = "Ошибка 404 - такой страницы не существует"
+const title = "404 - page not found";
 ---
 
 <Layout
 	title={title}
-	description="Страница не найдена. Возможно, она была удалена или перемещена."
+	classContainer="grid place-content-center"
+	description="Page not found. It may have been removed or moved."
 >
-	<h1 class="text-4xl text-center font-bold">{title}</h1>
+	<h1
+		class="text-5xl tracking-tight text-center self-center font-bold"
+		data-i18n="notFound.title"
+	>
+		{title}
+	</h1>
 </Layout>

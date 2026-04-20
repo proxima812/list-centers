@@ -1,16 +1,27 @@
 ---
+import type { HTMLAttributes } from "astro/types";
 import { cn } from "@/utils/libs/cn";
 import { Icon } from "astro-icon/components";
+
+interface Props extends HTMLAttributes<"a"> {
+	variant?: "default" | "outline" | "ghost" | "disabled";
+	size?: "default" | "xs";
+	label?: string;
+	labelKey?: string;
+	href?: string;
+	icon?: string;
+}
 
 const {
 	class: className,
 	variant = "default",
 	size = "default",
 	label = "label",
+	labelKey,
 	href = "#",
 	icon,
 	...props
-} = Astro.props;
+} = Astro.props as Props;
 
 const baseClass =
 	"inline-flex shrink-0 max-w-fit items-center gap-1.5 rounded-2xl corner-squircle font-medium transition";
@@ -19,7 +30,7 @@ const variants = {
 	default: "bg-primary text-primary-foreground hover:bg-primary/80",
 	outline: "bg-transparent text-primary/80 ring ring-primary/10 ring-inset hover:bg-primary/5",
 	ghost: "bg-transparent text-primary hover:bg-primary/5",
-	disabled: "bg-zinc-100 text-zinc-600",
+	disabled: "bg-muted text-muted-foreground",
 };
 
 const sizes = {
@@ -44,6 +55,14 @@ const classes = cn(
 	class={classes}
 	{...props}
 >
-	{icon ? <Icon name={icon} class="w-4 h-4" /> : null}
-	<span>{label} {variant === "disabled" && <i class="text-xs opacity-40">cкоро...</i>}</span>
+	{icon ? <Icon name={icon} class="w-4 h-4" aria-hidden="true" /> : null}
+	<span data-i18n={labelKey}>{label}</span>
+	{
+		variant === "disabled" && (
+			<>
+				{" "}
+				<i class="text-xs opacity-40" data-i18n="nav.soon">soon...</i>
+			</>
+		)
+	}
 </a>

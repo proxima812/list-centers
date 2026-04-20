@@ -1,7 +1,8 @@
 ---
+import { worldCountriesEn, worldCountriesRu, worldCountriesTt } from "@/data/worldCountries";
 import { Icon } from "astro-icon/components";
 
-interface Link {
+interface CardLink {
 	type: string;
 	url: string;
 	label?: string;
@@ -18,14 +19,16 @@ interface Props {
 	id: string;
 	title?: string;
 	summary?: string;
+	type?: string;
+	category?: string;
 	location?: Location;
-	links?: Link[];
+	links?: CardLink[];
 	pubDate?: string | Date;
 	region?: string;
 }
 
-const { id, title, summary, location, links = [], pubDate, region } = Astro.props;
-
+const { id, title, summary, type, category, location, links = [], pubDate, region } =
+	Astro.props as Props;
 const NINETY_DAYS = 90 * 24 * 60 * 60 * 1000;
 const isNew = pubDate ? Date.now() - new Date(pubDate).getTime() < NINETY_DAYS : false;
 
@@ -34,9 +37,27 @@ const cleanFlag = location?.flag && location.flag !== NO_DATA ? location.flag : 
 const cleanCity = location?.city && location.city !== NO_DATA ? location.city : undefined;
 const cleanCountry =
 	location?.country && location.country !== NO_DATA ? location.country : undefined;
-const locationParts = [cleanCity, cleanCountry].filter(Boolean);
-const locationLine = locationParts.join(", ");
+const countryLabelsByLanguage = Object.fromEntries(
+	worldCountriesRu.map((country, index) => [
+		country,
+		{
+			en: worldCountriesEn[index] ?? country,
+			ru: country,
+			tt: worldCountriesTt[index] ?? country,
+		},
+	]),
+) as Record<string, { en: string; ru: string; tt: string }>;
+const displayCountry = cleanCountry
+	? (countryLabelsByLanguage[cleanCountry]?.en ?? cleanCountry)
+	: undefined;
 const countryKey = cleanCountry ?? "Прочее";
+const countryLabels = cleanCountry
+	? (countryLabelsByLanguage[cleanCountry] ?? {
+			en: cleanCountry,
+			ru: cleanCountry,
+			tt: cleanCountry,
+		})
+	: undefined;
 
 const isDump =
 	summary &&
@@ -64,10 +85,18 @@ const iconMap: Record<string, string> = {
 function getIcon(type: string): string {
 	return iconMap[type.toLowerCase()] ?? "mdi:web";
 }
+
+function getLinkLabel(link: CardLink) {
+	const kind = link.label?.trim() || link.type.trim();
+	return `Open ${kind}`;
+}
 ---
 
 <a
 	href={`/list/centers/${id}`}
+	// These attributes are the filtering contract used by the list toolbar on the client.
+	data-type={type ?? ""}
+	data-category={category ?? ""}
 	data-country={countryKey}
 	data-region={region ?? ""}
 	data-title={title ?? ""}
@@ -77,26 +106,37 @@ function getIcon(type: string): string {
 	class="block h-full"
 >
 	<article
-		class="group h-full relative flex flex-col gap-3 rounded-2xl corner-squircle bg-white p-5 ring-1 ring-zinc-200/80 transition-all hover:shadow-sm hover:ring-zinc-300"
+		class="group h-full relative flex flex-col gap-3 rounded-2xl corner-squircle bg-surface p-5 ring-1 ring-border-muted transition-all hover:shadow-sm hover:ring-ring"
 	>
 		<div class="flex items-start justify-between gap-2">
 			{
-				(cleanFlag || locationLine) && (
-					<div class="flex items-center gap-1.5 text-xs text-zinc-400">
+				(cleanFlag || cleanCity || displayCountry) && (
+					<div class="flex items-center gap-1.5 text-xs text-subtle-foreground">
 						{cleanFlag && <span class="text-base leading-none">{cleanFlag}</span>}
-						{locationLine && <span>{locationLine}</span>}
+						{cleanCity && <span>{cleanCity}</span>}
+						{cleanCity && countryLabels && <span aria-hidden="true">&#10625;</span>}
+						{countryLabels && (
+							<span
+								data-country-label={cleanCountry}
+								data-country-labels={JSON.stringify(countryLabels)}
+							>
+								{countryLabels.en}
+							</span>
+						)}
 					</div>
 				)
 			}
 		</div>
 
-		<h2 class="line-clamp-2 font-semibold leading-snug text-zinc-900">
+		<h2 class="line-clamp-2 font-semibold leading-snug text-surface-foreground">
 			{title ?? "—"}
 		</h2>
 
 		{
 			displaySummary && (
-				<p class="line-clamp-3 grow text-xs leading-relaxed text-zinc-500">{displaySummary}</p>
+				<p class="line-clamp-3 grow text-xs leading-relaxed text-muted-foreground">
+					{displaySummary}
+				</p>
 			)
 		}
 
@@ -110,9 +150,10 @@ function getIcon(type: string): string {
 								target="_blank"
 								rel="noopener noreferrer"
 								title={link.label ?? link.type}
-								class="flex h-7 w-7 items-center justify-center rounded-lg corner-squircle bg-zinc-100 text-zinc-500 transition hover:bg-zinc-200 hover:text-zinc-800"
+								aria-label={getLinkLabel(link)}
+								class="flex h-7 w-7 items-center justify-center rounded-lg corner-squircle bg-muted text-muted-foreground transition hover:bg-subtle hover:text-foreground"
 							>
-								<Icon name={getIcon(link.type)} class="h-4 w-4" />
+								<Icon name={getIcon(link.type)} class="h-4 w-4" aria-hidden="true" />
 							</a>
 						))}
 					</div>

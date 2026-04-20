@@ -1,7 +1,14 @@
 ---
 import ButtonLink from "../ui/ButtonLink.astro";
 
-const { ...props } = Astro.props; // { href, label, variant } = Astro.props;
+interface Props {
+	href: string;
+	label: string;
+	labelKey?: string;
+	variant?: "default" | "outline" | "ghost" | "disabled";
+}
+
+const { ...props } = Astro.props as Props;
 ---
 
 <ButtonLink {...props} icon="tabler:arrow-back-up" />

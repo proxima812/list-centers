@@ -1,27 +1,52 @@
 ---
-import { worldCountriesRu } from "@/data/worldCountries";
+import { worldCountriesEn, worldCountriesRu, worldCountriesTt } from "@/data/worldCountries";
 
-const words = worldCountriesRu;
+const wordsByLanguage = {
+	en: worldCountriesEn,
+	ru: worldCountriesRu,
+	tt: worldCountriesTt,
+};
 ---
 
 <h1 class="relative select-none overflow-hidden">
-	<div class="absolute bg-linear-to-br z-50 from-white/10 to-transparent w-full h-full"></div>
+	<div
+		class="absolute bg-linear-to-br z-50 from-background/10 to-transparent dark:from-background/10 dark:to-transparent w-full h-full"
+	>
+	</div>
 	<div
 		class="flex flex-col *:tracking-tight *:md:tracking-[-3.8px] *:font-bold *:text-4xl *:sm:text-5xl *:md:text-6xl *:lg:text-7xl *:uppercase"
 	>
-		<div class="text-zinc-600">
-			<span class="blur-[0.5px]">везде <i class="text-3xl sm:text-5xl">&</i> повсюду</span>
+		<div class="text-muted-foreground">
+			<span class="blur-[0.5px]">
+				<span data-i18n="list.hero.start">everywhere</span>
+				<i class="text-3xl sm:text-5xl">&</i>
+				<span data-i18n="list.hero.end">all around</span>
+			</span>
 		</div>
 		<span class="rotating-word-wrapper inline-block overflow-hidden align-bottom">
-			<span id="rotating-word" class="text-black tracking-normal font-black inline-block"
+			<span id="rotating-word" class="text-primary tracking-normal font-black inline-block"
 			></span>
 		</span>
 	</div>
 </h1>
 
-<script define:vars={{ words }} is:inline>
+<script define:vars={{ wordsByLanguage }} is:inline>
+	const STORAGE_KEY = "language";
 	let current = 0;
+	let words = wordsByLanguage.en;
 	const el = document.getElementById("rotating-word");
+	const controller = new AbortController();
+
+	function getLanguage() {
+		const value = localStorage.getItem(STORAGE_KEY);
+		return Object.hasOwn(wordsByLanguage, value) ? value : "en";
+	}
+
+	function setWords(language) {
+		words = wordsByLanguage[language] ?? wordsByLanguage.en;
+		current = 0;
+		showWord(words[current]);
+	}
 
 	function showWord(word) {
 		if (!el) return;
@@ -35,9 +60,27 @@ const words = worldCountriesRu;
 		}, 280);
 	}
 
-	showWord(words[current]);
-	setInterval(() => {
+	setWords(getLanguage());
+	const intervalId = window.setInterval(() => {
 		current = (current + 1) % words.length;
 		showWord(words[current]);
 	}, 2500);
+
+	window.addEventListener(
+		"languagechange",
+		(event) => {
+			const customEvent = event;
+			setWords(customEvent.detail?.language ?? getLanguage());
+		},
+		{ signal: controller.signal },
+	);
+
+	document.addEventListener(
+		"astro:before-swap",
+		() => {
+			window.clearInterval(intervalId);
+			controller.abort();
+		},
+		{ once: true },
+	);
 </script>

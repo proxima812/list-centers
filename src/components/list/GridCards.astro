@@ -6,20 +6,23 @@ interface Props {
 	cards: CollectionEntry<"centers">[];
 }
 
-const { cards } = Astro.props;
+const { cards } = Astro.props as Props;
 ---
 
 <section
 	id="cards-grid"
 	data-view="4"
-	class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+	class="grid scroll-mt-32 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
 >
 	{
 		cards.map((card) => (
 			<CardItem
+				// CardItem receives all filterable fields so the toolbar can work only through DOM data-attributes.
 				id={card.id}
 				title={card.data.title}
 				summary={card.data.summary}
+				type={card.data.type}
+				category={card.data.category}
 				location={card.data.location}
 				pubDate={card.data.pubDate}
 				region={card.data.location?.region}

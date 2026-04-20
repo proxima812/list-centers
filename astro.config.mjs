@@ -7,6 +7,14 @@ import metaTags from "astro-meta-tags";
 import { defineConfig } from "astro/config";
 import { config } from "./src/config";
 
+import remarkGemoji from "remark-gemoji";
+import remarkGfm from "remark-gfm";
+
+import rehypePrism from "rehype-prism-plus";
+
+const remarkPlugins = [remarkGfm, remarkGemoji];
+const rehypePlugins = [rehypePrism];
+
 export default defineConfig({
 	site: config.site.url,
 	integrations: [
@@ -110,31 +118,20 @@ export default defineConfig({
 			},
 		}),
 	],
+	markdown: {
+		syntaxHighlight: false,
+		remarkPlugins,
+		rehypePlugins,
+	},
 	prefetch: {
 		defaultStrategy: "viewport",
 		prefetchAll: true,
 	},
 	vite: {
 		plugins: [tailwindcss()],
-		server: {
-			headers: {
-				"Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
-				Pragma: "no-cache",
-				Expires: "0",
-				"Surrogate-Control": "no-store",
-			},
-		},
-		preview: {
-			headers: {
-				"Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
-				Pragma: "no-cache",
-				Expires: "0",
-				"Surrogate-Control": "no-store",
-			},
-		},
 	},
-	devToolbar: {
-		enabled: false,
-	},
+	// devToolbar: {
+	// 	enabled: false,
+	// },
 	output: "static",
 });

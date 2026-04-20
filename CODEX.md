@@ -2,14 +2,10 @@
 
 ## Purpose
 This file is the local working note for Codex in this project.
-It complements `CLAUDE.md` and does not replace it.
-Both instruction files should be respected together.
 
 ## Collaboration Rules
-- Do not edit `CLAUDE.md` unless the user explicitly asks.
-- Treat `CLAUDE.md` as shared project guidance.
 - Treat this file as Codex-specific execution guidance.
-- If instructions conflict, follow the user's latest direct request first, then the stricter project rule.
+- Follow the user's latest direct request first, then the stricter project rule.
 
 ## Project Approach
 - Keep changes minimal and tightly scoped.
@@ -27,3 +23,8 @@ Both instruction files should be respected together.
 - Keep responses short and practical.
 - State what changed, what was checked, and any real risk.
 - Offer concise next improvements only when they are clearly useful.
+
+bun run release:bump
+bun run release:bump minor
+bun run release:bump major
+bun run release:bump 0.2.0

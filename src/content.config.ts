@@ -1,7 +1,7 @@
 import { glob } from "astro/loaders";
 import { z } from "astro/zod";
 import { defineCollection } from "astro:content";
-import { organizationsByCategory } from "./data/list-data";
+import { organizationsByCategory } from "./data/_list-data";
 
 const centers = defineCollection({
 	loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/data/centers" }),
