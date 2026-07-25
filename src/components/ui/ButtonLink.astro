@@ -1,5 +1,5 @@
 ---
-import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
+import { getLocaleFromUrl, getLocalePathname, localizePath, useTranslations } from "@/i18n";
 import { cn } from "@/utils/libs/cn";
 import { Icon } from "astro-icon/components";
 import type { HTMLAttributes } from "astro/types";
@@ -34,7 +34,7 @@ const baseClass =
 const variants = {
 	default: "bg-primary text-primary-foreground hover:bg-primary/80",
 	outline: "bg-transparent text-primary/80 ring ring-primary/10 ring-inset hover:bg-primary/5",
-	ghost: "bg-transparent text-primary hover:bg-primary/5",
+	ghost: "bg-transparent text-muted-foreground",
 	disabled: "bg-transparent text-muted-foreground",
 };
 
@@ -44,16 +44,21 @@ const sizes = {
 };
 
 const isDisabled = variant === "disabled";
+const locale = getLocaleFromUrl(Astro.url);
+const t = useTranslations(locale);
+const localizedHref = href ? localizePath(locale, href) : href;
+const isActive =
+	variant === "ghost" &&
+	!!localizedHref &&
+	getLocalePathname(Astro.url.pathname) === getLocalePathname(localizedHref);
 const classes = cn(
 	baseClass,
 	variants[variant] ?? variants.default,
+	isActive && "text-foreground",
 	sizes[size] ?? sizes.default,
 	isDisabled && "pointer-events-none cursor-not-allowed opacity-50 hover:bg-transparent",
 	className,
 );
-const locale = getLocaleFromUrl(Astro.url);
-const t = useTranslations(locale);
-const localizedHref = href ? localizePath(locale, href) : href;
 const text = labelKey ? t(labelKey, undefined, label) : label;
 const soonText = t("nav.soon", undefined, "soon...");
 const rel = target === "_blank" && !relProp ? "noopener noreferrer" : relProp;

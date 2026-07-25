@@ -31,7 +31,7 @@ function getUrlLabel(url?: string) {
 
 const projectCards = projects.map((project) => ({
 	entry: project,
-	detailHref: `/support/${project.id}/`,
+	detailHref: `/projects/${project.id}/`,
 	logo: getProjectAsset(project.data.logo),
 	websiteLabel: getUrlLabel(project.data.website),
 }));
@@ -142,10 +142,13 @@ const projectCards = projects.map((project) => ({
 			{
 				projectCards.map(({ entry: project, detailHref, logo, websiteLabel }) => (
 					<article
-						class="project-card corner-squircle flex h-full flex-col gap-4 rounded-4xl bg-surface p-5 text-surface-foreground shadow-2xs ring ring-border-muted sm:p-6"
+						class="project-card corner-squircle relative flex h-full flex-col gap-4 rounded-4xl bg-surface p-5 text-surface-foreground shadow-2xs ring ring-border-muted transition hover:bg-primary/5 hover:ring-primary/30 sm:p-6"
 						data-category={project.data.category}
 					>
-						<div class="flex min-w-0 items-start gap-4">
+						<a href={detailHref} class="absolute inset-0 z-0 rounded-4xl corner-squircle" aria-label={project.data.title}>
+							<span class="sr-only">{project.data.title}</span>
+						</a>
+						<div class="pointer-events-none relative z-10 flex min-w-0 items-start gap-4">
 							{logo ? (
 								<Image
 									src={logo}
@@ -186,7 +189,7 @@ const projectCards = projects.map((project) => ({
 											href={project.data.website}
 											target="_blank"
 											rel="noreferrer noopener"
-											class="mt-1 block truncate text-sm font-medium text-link underline decoration-link-decoration underline-offset-4"
+											class="pointer-events-auto relative mt-1 block truncate text-sm font-medium text-link underline decoration-link-decoration underline-offset-4"
 										>
 											{websiteLabel}
 										</a>
@@ -195,7 +198,7 @@ const projectCards = projects.map((project) => ({
 							</div>
 						</div>
 
-						<div class="mt-auto flex flex-wrap gap-2">
+						<div class="relative z-10 mt-auto flex flex-wrap gap-2">
 							<a
 								href={detailHref}
 								class="inline-flex items-center rounded-2xl corner-squircle bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground no-underline transition hover:bg-primary/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
