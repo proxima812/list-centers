@@ -1,6 +1,5 @@
 ---
 import release from "@/data/release.json";
-import { links } from "@/data/links";
 import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
 import { Icon } from "astro-icon/components";
 import Container from "./Container.astro";
@@ -38,9 +37,6 @@ const externalProps = {
 	rel: "noreferrer noopener",
 };
 
-const navIconByHref = new Map(links.map((link) => [link.href, link.icon]));
-const navIcon = (href: string) => navIconByHref.get(href);
-
 const footerSections: Array<{ id: string; title: string; links: FooterLink[] }> = [
 	{
 		id: "project",
@@ -49,17 +45,14 @@ const footerSections: Array<{ id: string; title: string; links: FooterLink[] }> 
 			{
 				href: localizePath(locale, "/centers"),
 				label: t("nav.centers"),
-				icon: navIcon("/centers"),
 			},
 			{
-				href: localizePath(locale, "/support"),
+				href: localizePath(locale, "/projects"),
 				label: t("nav.support"),
-				icon: navIcon("/support"),
 			},
 			{
 				href: localizePath(locale, "/posts"),
 				label: t("nav.posts"),
-				icon: navIcon("/posts"),
 			},
 		],
 	},
@@ -70,17 +63,18 @@ const footerSections: Array<{ id: string; title: string; links: FooterLink[] }> 
 			{
 				href: localizePath(locale, "/translations"),
 				label: t("nav.translations"),
-				icon: navIcon("/translations"),
 			},
 			{
 				href: localizePath(locale, "/sources"),
 				label: t("nav.sources"),
-				icon: navIcon("/sources"),
 			},
 			{
 				href: localizePath(locale, "/sabantye"),
 				label: t("nav.sabantuy"),
-				icon: navIcon("/sabantye"),
+			},
+			{
+				href: policyHref,
+				label: t("footer.privacy"),
 			},
 		],
 	},
@@ -91,25 +85,21 @@ const footerSections: Array<{ id: string; title: string; links: FooterLink[] }> 
 			{
 				href: repositoryHref,
 				label: t("footer.repository"),
-				icon: "mdi:github",
 				props: externalProps,
 			},
 			{
 				href: suggestChangeHref,
 				label: t("footer.suggestChange"),
-				icon: "mdi:pencil-outline",
 				props: externalProps,
 			},
 			{
 				href: codeLicenseHref,
 				label: t("footer.codeLicense"),
-				icon: "mdi:license",
 				props: externalProps,
 			},
 			{
 				href: contentLicenseHref,
 				label: t("footer.contentLicense"),
-				icon: "mdi:file-document-outline",
 				props: externalProps,
 			},
 		],
@@ -129,11 +119,6 @@ const footerSections: Array<{ id: string; title: string; links: FooterLink[] }> 
 				label: "Telegram @mirikhan1",
 				icon: "mdi:telegram",
 				props: externalProps,
-			},
-			{
-				href: policyHref,
-				label: t("footer.privacy"),
-				icon: "mdi:shield-check-outline",
 			},
 		],
 	},

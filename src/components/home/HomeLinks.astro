@@ -16,6 +16,10 @@ const centersLink = links.find((item) => item.href === "/centers");
 					<ButtonLink {...item} badge={item.href === "/posts" ? postsCount : undefined} />
 				))
 		} -->
-		{centersLink && <ButtonLink {...centersLink} badge={centersCount} />}
+		{
+			centersLink && (
+				<ButtonLink {...centersLink} labelKey="nav.viewCenters" badge={centersCount} />
+			)
+		}
 	</div>
 </section>

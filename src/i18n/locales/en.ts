@@ -3,6 +3,7 @@ import type { Dictionary } from "@/i18n/ui";
 const dict: Dictionary = {
 	"nav.centers": "Centers",
 	"nav.toCenters": "Centers",
+	"nav.viewCenters": "View centers",
 	"nav.changelog": "Changelog",
 	"nav.feedback": "Feedback",
 	"nav.posts": "Posts",
