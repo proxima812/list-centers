@@ -55,6 +55,12 @@ const dict: Dictionary = {
 	"home.stats.title": "Каталог в цифрах",
 	"home.stats.caption":
 		"{centers} центров, сообществ и инициатив в {countries} странах и {regions} регионах — найдите ближайший или тех, кто далеко.",
+	"home.present.imageAlt": "Люди на встрече сообщества",
+	"home.present.title": "Везде. Всегда. Для всех.",
+	"home.present.caption":
+		"<strong>{centers}</strong> центров, сообществ и инициатив в <strong>{countries}</strong> странах и <strong>{regions}</strong> регионах.",
+	"home.present.text1": "Найдите ближайший или тех, кто далеко.",
+	"home.present.text2": "С добротой. С любовью. С принятием.",
 	"home.search.title": "Сообщества на карте мира",
 	"home.search.text1":
 		"Выберите страну, город или регион и найдите ближайшие культурные центры, общественные объединения, молодежные инициативы, языковые клубы и локальные сообщества.",

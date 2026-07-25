@@ -5,7 +5,7 @@ const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
 
 const solidClass = "font-black tracking-tight md:tracking-[-1.4px]";
-const gradientClass = `${solidClass} text-transparent bg-clip-text bg-[linear-gradient(90deg,#4ade80,#16a34a,#86efac,#22c55e,#4ade80)] bg-size-[240%_100%] bg-position-[0%_50%] animate-hero-gradient-flow`;
+const gradientClass = `${solidClass} text-transparent bg-clip-text bg-[linear-gradient(120deg,#16a34a,#4ade80,#22c55e,#16a34a)] motion-safe:animate-hero-pulse`;
 
 const heroLines = [
 	{ key: "home.hero.1", className: `${solidClass} text-zinc-950` },
@@ -13,10 +13,17 @@ const heroLines = [
 	{ key: "home.hero.3", className: `${solidClass} text-zinc-950/90` },
 ] as const;
 
+// Неприметный серо-тёмно-серый дрейф. Узкий диапазон оттенков — движение еле заметно.
+const grayDriftBase =
+	"text-transparent bg-clip-text [background-image:linear-gradient(90deg,#52525b,#27272a,#3f3f46,#18181b,#52525b)] bg-size-[220%_100%] bg-position-[0%_50%] motion-safe:animate-hero-gray-drift";
+const grayDriftDim = `${solidClass} ${grayDriftBase} opacity-55`;
+const grayDriftStrong = `${solidClass} ${grayDriftBase} opacity-95`;
+
+// Небольшой сдвиг фаз, чтобы слова не мерцали синхронно.
 const heroLines2 = [
-	{ key: "home.hero.5", className: `${solidClass} text-zinc-950/50` },
-	{ key: "home.hero.6", className: `${solidClass} text-zinc-950/90` },
-	{ key: "home.hero.7", className: `${solidClass} text-zinc-950/50` },
+	{ key: "home.hero.5", className: `${grayDriftDim} [animation-delay:-2s]` },
+	{ key: "home.hero.6", className: `${grayDriftStrong} [animation-delay:-6s]` },
+	{ key: "home.hero.7", className: `${grayDriftDim} [animation-delay:-10s]` },
 ] as const;
 
 const titleClass = "uppercase inline-block";

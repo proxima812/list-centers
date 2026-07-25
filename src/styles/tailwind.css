@@ -40,9 +40,24 @@
 
   --color-destructive: lab(48.4493% 77.4328 61.5452);
 
-  --animate-hero-gradient-flow: hero-gradient-flow 8s ease-in-out infinite;
+  --animate-hero-pulse: hero-pulse 3s ease-in-out infinite;
+  --animate-hero-gray-drift: hero-gray-drift 14s ease-in-out infinite;
 
-  @keyframes hero-gradient-flow {
+  /* Мягкое неоновое «дыхание»: зелёный ореол вокруг букв плавно ярче/тусклее.
+     drop-shadow (не text-shadow) — работает по форме клипнутого градиентом текста. */
+  @keyframes hero-pulse {
+    0%,
+    100% {
+      filter: drop-shadow(0 0 2px rgba(34, 197, 94, 0.25));
+    }
+
+    50% {
+      filter: drop-shadow(0 0 10px rgba(74, 222, 128, 0.65));
+    }
+  }
+
+  /* Тихий серый дрейф для второй строки: только сдвиг оттенка, без блика. */
+  @keyframes hero-gray-drift {
     0%,
     100% {
       background-position: 0% 50%;

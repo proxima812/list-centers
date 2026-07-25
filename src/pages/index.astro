@@ -1,6 +1,7 @@
 ---
 import searchImageEn from "@/assets/1-en.png";
 import searchImageRu from "@/assets/1-ru.png";
+import present from "@/assets/present.png";
 import { HomeHeroTitle, HomeLinks, LIquidMetal } from "@/components";
 import { getLocaleFromUrl, useTranslations } from "@/i18n";
 import Layout from "@/layouts/Layout.astro";
@@ -44,12 +45,29 @@ const searchImage = locale === "en" ? searchImageEn : searchImageRu;
 			<HomeLinks />
 		</div>
 
-		<div class="md:space-y-16 space-y-8 py-12 md:py-24">
-      <section class="mx-auto flex max-w-3xl flex-col items-center gap-6 px-6 text-center">
-        <p class="max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
-          {t("home.stats.caption", { centers, countries: countriesCount, regions: regionsCount })}
-        </p>
-      </section>
+		<div class="md:space-y-14 space-y-8 py-12 md:py-20">
+			<section
+				class="grid grid-cols-1 items-center overflow-hidden rounded-3xl bg-white shadow-2xl shadow-zinc-200 md:grid-cols-2"
+			>
+				<Image
+					src={present}
+					alt={t("home.present.imageAlt")}
+					class="w-full object-cover h-full"
+				/>
+				<div class="space-y-6 px-6 py-10 sm:px-8 md:px-12 md:py-16">
+					<h2 class="text-4xl font-bold tracking-tight">{t("home.present.title")}</h2>
+					<p
+						class="leading-7 text-muted-foreground"
+						set:html={t("home.present.caption", {
+							centers,
+							countries: countriesCount,
+							regions: regionsCount,
+						})}
+					/>
+					<p class="leading-7 text-muted-foreground">{t("home.present.text1")}</p>
+					<p class="leading-7 text-muted-foreground">{t("home.present.text2")}</p>
+				</div>
+			</section>
 			<section
 				class="grid grid-cols-1 items-center overflow-hidden rounded-3xl bg-white shadow-2xl shadow-zinc-200 md:grid-cols-2"
 			>
