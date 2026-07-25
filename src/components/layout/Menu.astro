@@ -44,7 +44,6 @@ const isActivePath = (href: string) => {
 				label={item.label}
 				labelKey={item.labelKey}
 				aria-current={isActivePath(item.href) ? "page" : undefined}
-				class={isActivePath(item.href) ? activeLinkClass : undefined}
 			/>
 		))
 	}

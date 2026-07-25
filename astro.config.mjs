@@ -93,5 +93,9 @@ export default defineConfig({
     devToolbar: {
         enabled: false,
     },
+    redirects: {
+        "/support": "/projects",
+        "/support/[id]": "/projects/[id]",
+    },
     output: "static",
 });

@@ -68,7 +68,7 @@ export const links: Link[] = [
 		labelKey: "nav.support",
 		icon: "mdi:puzzle-star",
 		class: "sm:px-4 sm:py-2 py-1.5 px-3 text-sm",
-		href: "/support",
+		href: "/projects",
 		size: "default",
 		variant: "ghost",
 	},
