@@ -32,15 +32,15 @@ const {
 
 <article
 	id={id}
-	class="group scroll-mt-24 rounded-4xl corner-squircle bg-surface p-5 text-surface-foreground shadow-2xs ring ring-border-muted transition duration-300 ease-out hover:bg-surface-muted hover:ring-depth-200 sm:p-6"
+	class="group relative scroll-mt-24 overflow-hidden rounded-4xl corner-squircle bg-linear-to-br from-surface via-surface to-surface-muted/70 p-5 text-surface-foreground shadow-2xs ring ring-depth-100/80 transition duration-300 ease-out hover:-translate-y-0.5 hover:ring-depth-200 hover:shadow-sm sm:p-6"
 >
 	<header>
 		<div class="flex flex-wrap items-center gap-2 text-xs leading-5">
-			<span class="rounded-full bg-muted px-2.5 py-1 font-medium text-muted-foreground">
+			<span class="rounded-full bg-background px-2.5 py-1 font-medium text-muted-foreground ring ring-depth-100/70">
 				{author}
 			</span>
 			<time
-				class="rounded-full bg-muted px-2.5 py-1 font-medium tabular-nums text-muted-foreground"
+				class="rounded-full bg-background px-2.5 py-1 font-medium tabular-nums text-muted-foreground ring ring-depth-100/70"
 				datetime={pubDate.toISOString()}
 				title={fullDate}
 			>
@@ -57,7 +57,7 @@ const {
 		<h2 class="mt-4 text-xl font-bold leading-tight tracking-tight text-foreground sm:text-2xl">
 			<a
 				href={`#${id}`}
-				class="wrap-anywhere rounded-lg no-underline outline-none transition hover:text-depth-600 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
+				class="wrap-anywhere rounded-lg no-underline outline-none transition hover:text-depth-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
 			>
 				{title}
 			</a>
@@ -68,7 +68,7 @@ const {
 		</p>
 	</header>
 
-	<div class="mt-5 rounded-3xl corner-squircle bg-background p-4 ring ring-border-muted sm:p-5">
+	<div class="mt-5 rounded-3xl corner-squircle bg-background/85 p-4 ring ring-depth-100/80 transition group-hover:ring-depth-200/80 sm:p-5">
 		<div
 			class:list={[
 				"prose prose-sm max-w-none text-depth-600 sm:prose-base prose-p:my-2 prose-a:font-medium prose-a:text-link prose-a:decoration-link-decoration prose-a:underline-offset-4 prose-blockquote:my-3 first:prose-p:mt-0 last:prose-p:mb-0",
@@ -83,7 +83,7 @@ const {
 			isLong && (
 				<button
 					type="button"
-					class="mt-3 inline-flex cursor-pointer items-center gap-1 rounded-lg text-sm font-medium text-muted-foreground transition hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring [&[aria-expanded='true']_svg]:rotate-180"
+					class="mt-3 inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-muted px-3 py-1.5 text-sm font-medium text-muted-foreground ring ring-depth-100/70 transition hover:bg-primary hover:text-primary-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring [&[aria-expanded='true']_svg]:rotate-180"
 					data-post-toggle
 					aria-expanded="false"
 				>

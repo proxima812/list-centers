@@ -32,18 +32,20 @@ const modifiedLabel = formatContentDateTime(modifiedDate, locale);
 	datePublished={publishedDate}
 	dateModified={modifiedDate}
 >
-	<Container container class="max-w-5xl">
-		<BackButton href="/" variant="outline" label="Назад" labelKey="nav.back" />
-		<div class="my-12 pl-6">
-			<span class="text-xs text-primary/40 mb-4 block">
-				от {frontmatter.updateInfo}
-			</span>
-			<h1 class="text-4xl font-bold tracking-tight">{frontmatter.title}</h1>
-		</div>
+		<Container container class="max-w-5xl">
+			<BackButton href="/" variant="outline" label="Назад" labelKey="nav.back" />
+			<div class="my-12 min-w-0 pl-0 sm:pl-6">
+				<span class="text-xs text-primary/40 mb-4 block">
+					от {frontmatter.updateInfo}
+				</span>
+				<h1 class="text-3xl font-bold tracking-tight wrap-anywhere sm:text-4xl">
+					{frontmatter.title}
+				</h1>
+			</div>
 
-		<main
-			class="prose max-w-none rounded-2xl border border-border-muted bg-surface p-8 shadow-2xs ring ring-depth-100/40"
-		>
+			<main
+				class="prose min-w-0 max-w-none wrap-anywhere rounded-2xl border border-border-muted bg-surface p-5 shadow-2xs ring ring-depth-100/40 sm:p-8"
+			>
 			<slot />
 			{
 				(publishedLabel || modifiedLabel) && (

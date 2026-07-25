@@ -3,13 +3,28 @@ import { ListCards, ListHeroTitle } from "@/components";
 import { getLocaleFromUrl, useTranslations } from "@/i18n";
 import Layout from "@/layouts/Layout.astro";
 import { getCenterKindBreakdown } from "@/utils/centerKinds";
-import { getCollection } from "astro:content";
+import type { GetStaticPathsOptions, Page } from "astro";
+import { getCollection, type CollectionEntry } from "astro:content";
 
+export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
+	const cards = (await getCollection("centers")).sort((a, b) => {
+		return (
+			(b.data.pubDate ? new Date(b.data.pubDate).getTime() : 0) -
+			(a.data.pubDate ? new Date(a.data.pubDate).getTime() : 0)
+		);
+	});
+
+	return paginate(cards, { pageSize: Math.max(cards.length, 1) });
+}
+
+interface Props {
+	page: Page<CollectionEntry<"centers">>;
+}
+
+const { page } = Astro.props as Props;
 const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
-// Stats are catalog facts, so derive them from the Russian source collection —
-// this keeps the counter identical and consistent (buckets sum to the total)
-// on both locales, even while English translations lag behind.
+// Stats are catalog facts, so derive them from the Russian source collection.
 const sourceCenters = await getCollection("centers");
 const countriesCount = new Set(
 	sourceCenters.map((card) => card.data.location?.country).filter(Boolean),
@@ -46,5 +61,5 @@ const seoStats = {
 	]}
 >
 	<ListHeroTitle stats={{ ...seoStats, buckets: kindBreakdown }} />
-	<ListCards />
+	<ListCards cards={page.data} page={page} />
 </Layout>

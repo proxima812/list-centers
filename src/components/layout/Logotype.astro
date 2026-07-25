@@ -1,13 +1,15 @@
 ---
-import { getLocaleFromUrl, useTranslations } from "@/i18n";
+import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
 
 const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
 ---
 
-<div class="sm:block hidden" aria-label={t("nav.home")}>
-	<span class="text-sm">tatarverse</span>
-
+<a
+	href={localizePath(locale, "/")}
+	class="hidden shrink-0 items-center gap-2 rounded-2xl px-2 py-1 text-foreground no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:inline-flex"
+	aria-label={t("nav.home")}
+>
 	<svg
 		width="85"
 		height="94"
@@ -27,4 +29,6 @@ const t = useTranslations(locale);
 			d="M79.9684 13.9504C73.6971 14.5975 67.0939 16.9036 62.0503 20.2052C59.0142 22.1795 55.7624 25.2156 53.6387 28.036C48.8274 34.4235 46.1397 42.4701 45.2604 53.2209C44.9783 56.6055 44.9783 66.9581 45.2604 69.1481C45.5092 71.0561 46.3719 74.4074 47.0356 76.0002C50.2376 83.6983 57.6869 87.3815 65.2689 84.9924C71.2084 83.1342 76.1857 77.7256 78.5084 70.5915C79.7693 66.6927 80.2836 63.0925 80.4164 57.153C80.4993 53.138 80.3168 46.9828 79.9352 42.2212C79.6366 38.2892 79.6864 29.9606 80.0182 27.5383C80.7648 22.1795 82.1086 18.3138 84.3484 15.062C84.7466 14.4647 85.0452 13.9172 84.9954 13.8675C84.8461 13.7347 81.6441 13.7845 79.9684 13.9504Z"
 		></path>
 	</svg>
-</div>
+
+	<span class="text-sm">tatarverse</span>
+</a>

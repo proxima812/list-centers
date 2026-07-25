@@ -51,7 +51,7 @@ const socialByHost: Record<string, string> = {
 };
 
 const baseLinkClass =
-	"inline-flex items-center gap-1.5 align-baseline text-foreground underline decoration-current/40 decoration-2 underline-offset-3 transition-colors hover:text-primary";
+	"inline-flex min-w-0 max-w-full flex-wrap items-center gap-1.5 align-baseline text-foreground underline decoration-current/40 decoration-2 underline-offset-3 transition-colors wrap-anywhere hover:text-primary";
 const iconClass = "h-4 w-4 shrink-0 text-current opacity-70";
 const socialClass =
 	"h-auto justify-start border-0 bg-transparent px-0 py-0 text-base leading-normal";
@@ -148,7 +148,7 @@ const ariaLabel = t(view.ariaKey, { value: view.ariaValue }, view.ariaLabel);
 			{...externalAttrs}
 		>
 			<Icon name={view.icon} class={iconClass} />
-			<span>{view.label}</span>
+			<span class="min-w-0 wrap-anywhere">{view.label}</span>
 		</a>
 	)
 }

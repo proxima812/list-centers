@@ -1,0 +1,82 @@
+---
+import { ListCards, ListHeroTitle } from "@/components";
+import { defaultLocale, getLocaleFromUrl, locales, useTranslations } from "@/i18n";
+import Layout from "@/layouts/Layout.astro";
+import { getCenterKindBreakdown } from "@/utils/centerKinds";
+import type { GetStaticPathsOptions, Page } from "astro";
+import { getCollection, type CollectionEntry } from "astro:content";
+
+export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
+	return (
+		await Promise.all(
+			locales
+				.filter((locale) => locale !== defaultLocale)
+				.map(async (locale) => {
+					const localizedCards =
+						locale === "en" ? await getCollection("centersEn") : await getCollection("centers");
+					const cards = (
+						localizedCards.length > 0 ? localizedCards : await getCollection("centers")
+					) as CollectionEntry<"centers" | "centersEn">[];
+
+					cards.sort((a, b) => {
+						return (
+							(b.data.pubDate ? new Date(b.data.pubDate).getTime() : 0) -
+							(a.data.pubDate ? new Date(a.data.pubDate).getTime() : 0)
+						);
+					});
+
+					return paginate(cards, {
+						pageSize: Math.max(cards.length, 1),
+						params: { locale },
+					});
+				}),
+		)
+	).flat();
+}
+
+interface Props {
+	page: Page<CollectionEntry<"centers" | "centersEn">>;
+}
+
+const { page } = Astro.props as Props;
+const locale = getLocaleFromUrl(Astro.url);
+const t = useTranslations(locale);
+// Stats are catalog facts, so derive them from the Russian source collection.
+const sourceCenters = await getCollection("centers");
+const countriesCount = new Set(
+	sourceCenters.map((card) => card.data.location?.country).filter(Boolean),
+).size;
+const regionsCount = new Set(
+	sourceCenters.map((card) => card.data.location?.region).filter(Boolean),
+).size;
+const kindBreakdown = getCenterKindBreakdown(sourceCenters);
+const seoStats = {
+	count: sourceCenters.length,
+	countries: countriesCount,
+	regions: regionsCount,
+};
+---
+
+<Layout
+	title={t("list.title")}
+	description={t("list.description", seoStats)}
+	keywords={[
+		"ТБК",
+		"татары",
+		"башкиры",
+		"крымские татары",
+		`${sourceCenters.length} карточек ТБК`,
+		`стран: ${countriesCount}`,
+		`регионов: ${regionsCount}`,
+		"все страны",
+		"все регионы",
+		"поиск татарских центров",
+		"фильтр культурных центров",
+		"татарская диаспора",
+		"башкирская диаспора",
+		"крымскотатарская диаспора",
+	]}
+>
+	<ListHeroTitle stats={{ ...seoStats, buckets: kindBreakdown }} />
+	<ListCards cards={page.data} page={page} />
+</Layout>

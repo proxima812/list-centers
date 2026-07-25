@@ -25,7 +25,16 @@ const t = useTranslations(locale);
 type CountryLabels = Record<string, string>;
 
 const chipClass =
-	"group min-w-0 cursor-pointer items-center gap-1.5 rounded-2xl corner-squircle bg-muted px-2.5 py-1.5 text-sm font-medium text-muted-foreground transition hover:bg-subtle data-[active]:bg-primary data-[active]:text-primary-foreground";
+	"group min-w-0 cursor-pointer items-center gap-1.5 rounded-full border border-transparent bg-transparent px-2.5 py-1.5 text-sm font-medium text-muted-foreground transition hover:border-border hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25 data-[active]:border-primary/20 data-[active]:bg-primary/10 data-[active]:text-primary";
+const filterSectionClass =
+	"border-b border-depth-100/70 pb-4 last:border-b-0 last:pb-0";
+const filterHeadingClass =
+	"text-[11px] font-semibold tracking-wide text-subtle-foreground uppercase";
+const filterGroupClass = "flex max-w-72 flex-wrap items-center gap-1.5";
+const countClass =
+	"rounded-full bg-subtle px-1.5 py-0.5 text-[10px] tabular-nums text-subtle-foreground group-data-[active]:bg-primary/10 group-data-[active]:text-primary";
+const moreButtonClass =
+	"mt-0.5 inline-flex max-w-fit cursor-pointer text-xs font-medium text-muted-foreground underline decoration-border underline-offset-4 transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25";
 const countryVisibleLimit = 5;
 const defaultVisibleLimit = 2;
 
@@ -52,16 +61,16 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 
 <aside
 	data-filters-shell
-	class="hidden lg:sticky lg:top-12 lg:block lg:max-h-[calc(100vh-3rem)] lg:overflow-y-auto pb-12"
+	class="hidden w-fit max-w-72 pb-12 lg:sticky lg:top-12 lg:block lg:max-h-[calc(100vh-3rem)] lg:overflow-y-auto"
 >
-	<section class="space-y-4 lg:space-y-5">
-		<div id="filters-panel" data-filters-panel class="hidden space-y-5">
-			<section class="flex flex-col gap-2">
-				<p class="text-xs font-medium tracking-wide text-subtle-foreground uppercase">
+	<section class="w-fit max-w-72">
+		<div id="filters-panel" data-filters-panel class="hidden w-fit max-w-72 space-y-4">
+			<section class={filterSectionClass}>
+				<p class={filterHeadingClass}>
 					{t("list.countries")}
 				</p>
 				<div
-					class="grid grid-cols-2 gap-1"
+					class={`${filterGroupClass} mt-2`}
 					role="group"
 					aria-label={t("list.countries.aria")}
 					data-filter-group="country"
@@ -71,12 +80,12 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 						data-filter-all="country"
 						data-active=""
 						aria-pressed="true"
-						class={`inline-flex ${chipClass}`}
+						class={`inline-flex max-w-fit ${chipClass}`}
 					>
 						<Icon name="mdi:align-horizontal-left" />
 						<span>{t("list.all")}</span>
 						<span
-							class="rounded-lg corner-squircle bg-subtle px-1.5 py-0.5 text-xs tabular-nums text-subtle-foreground group-data-[active]:bg-primary-foreground/15 group-data-[active]:text-primary-foreground"
+							class={countClass}
 						>
 							{cardsCount}
 						</span>
@@ -89,7 +98,7 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 								data-filter-chip="country"
 								data-filter-value={country}
 								aria-pressed="false"
-								class={`inline-flex max-w-full ${chipClass}`}
+								class={`inline-flex max-w-fit ${chipClass}`}
 							>
 								{countryFlags.get(country) && (
 									<span class="text-sm leading-none">{countryFlags.get(country)}</span>
@@ -101,7 +110,7 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 								>
 									{getCountryLabel(country, locale)}
 								</span>
-								<span class="grid h-4 place-content-center rounded-full bg-subtle px-1 text-[10px] tabular-nums text-subtle-foreground group-data-[active]:bg-primary-foreground/15 group-data-[active]:text-primary-foreground">
+								<span class={countClass}>
 									{count}
 								</span>
 							</button>
@@ -115,7 +124,7 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 								data-filter-value={country}
 								data-overflow-chip="true"
 								aria-pressed="false"
-								class={`inline-flex max-w-full ${chipClass}`}
+								class={`inline-flex max-w-fit ${chipClass}`}
 								hidden
 							>
 								{countryFlags.get(country) && (
@@ -128,7 +137,7 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 								>
 									{getCountryLabel(country, locale)}
 								</span>
-								<span class="grid h-4 place-content-center rounded-full bg-subtle px-1 text-[10px] tabular-nums text-subtle-foreground group-data-[active]:bg-primary-foreground/15 group-data-[active]:text-primary-foreground">
+								<span class={countClass}>
 									{count}
 								</span>
 							</button>
@@ -139,7 +148,7 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 					getOverflowOptions(countries, countryVisibleLimit).length > 0 && (
 						<button
 							type="button"
-							class="self-start cursor-pointer text-sm font-medium text-muted-foreground underline decoration-border underline-offset-4 transition hover:text-foreground"
+							class={moreButtonClass}
 							data-filter-more="country"
 							data-expanded="false"
 							data-show-more={t("list.showMore", { count: "__COUNT__" })}
@@ -155,12 +164,12 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 
 			{
 				typeOptions.length > 0 && (
-					<section class="flex flex-col gap-2">
-						<p class="text-xs font-medium tracking-wide text-subtle-foreground uppercase">
+					<section class={filterSectionClass}>
+						<p class={filterHeadingClass}>
 							{t("list.types")}
 						</p>
 						<div
-							class="grid grid-cols-2 gap-1"
+							class={`${filterGroupClass} mt-2`}
 							role="group"
 							aria-label={t("list.types.aria")}
 							data-filter-group="type"
@@ -170,7 +179,7 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 								data-filter-all="type"
 								data-active=""
 								aria-pressed="true"
-								class={`inline-flex ${chipClass}`}
+								class={`inline-flex max-w-fit ${chipClass}`}
 							>
 								<Icon name="mdi:align-horizontal-left" />
 								<span>{t("list.allTypes")}</span>
@@ -182,10 +191,10 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 									data-filter-chip="type"
 									data-filter-value={option.value}
 									aria-pressed="false"
-									class={`inline-flex max-w-full ${chipClass}`}
+									class={`inline-flex max-w-fit ${chipClass}`}
 								>
 									<span class="min-w-0 truncate">{option.value}</span>
-									<span class="rounded-lg corner-squircle bg-subtle px-1.5 py-0.5 text-xs tabular-nums text-subtle-foreground group-data-[active]:bg-primary-foreground/15 group-data-[active]:text-primary-foreground">
+									<span class={countClass}>
 										{option.count}
 									</span>
 								</button>
@@ -197,11 +206,11 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 									data-filter-value={option.value}
 									data-overflow-chip="true"
 									aria-pressed="false"
-									class={`inline-flex max-w-full ${chipClass}`}
+									class={`inline-flex max-w-fit ${chipClass}`}
 									hidden
 								>
 									<span class="min-w-0 truncate">{option.value}</span>
-									<span class="rounded-lg corner-squircle bg-subtle px-1.5 py-0.5 text-xs tabular-nums text-subtle-foreground group-data-[active]:bg-primary-foreground/15 group-data-[active]:text-primary-foreground">
+									<span class={countClass}>
 										{option.count}
 									</span>
 								</button>
@@ -210,7 +219,7 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 						{getOverflowOptions(typeOptions).length > 0 && (
 							<button
 								type="button"
-								class="self-start cursor-pointer text-sm font-medium text-muted-foreground underline decoration-border underline-offset-4 transition hover:text-foreground"
+								class={moreButtonClass}
 								data-filter-more="type"
 								data-expanded="false"
 								data-show-more={t("list.showMore", { count: "__COUNT__" })}
@@ -225,12 +234,12 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 
 			{
 				categoryOptions.length > 0 && (
-					<section class="flex flex-col gap-2">
-						<p class="text-xs font-medium tracking-wide text-subtle-foreground uppercase">
+					<section class={filterSectionClass}>
+						<p class={filterHeadingClass}>
 							{t("list.categories")}
 						</p>
 						<div
-							class="grid grid-cols-2 gap-1"
+							class={`${filterGroupClass} mt-2`}
 							role="group"
 							aria-label={t("list.categories.aria")}
 							data-filter-group="category"
@@ -240,7 +249,7 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 								data-filter-all="category"
 								data-active=""
 								aria-pressed="true"
-								class={`inline-flex ${chipClass}`}
+								class={`inline-flex max-w-fit ${chipClass}`}
 							>
 								<Icon name="mdi:align-horizontal-left" />
 								<span>{t("list.allCategories")}</span>
@@ -252,10 +261,10 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 									data-filter-chip="category"
 									data-filter-value={option.value}
 									aria-pressed="false"
-									class={`inline-flex max-w-full ${chipClass}`}
+									class={`inline-flex max-w-fit ${chipClass}`}
 								>
 									<span class="min-w-0 truncate">{option.value}</span>
-									<span class="rounded-lg corner-squircle bg-subtle px-1.5 py-0.5 text-xs tabular-nums text-subtle-foreground group-data-[active]:bg-primary-foreground/15 group-data-[active]:text-primary-foreground">
+									<span class={countClass}>
 										{option.count}
 									</span>
 								</button>
@@ -267,11 +276,11 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 									data-filter-value={option.value}
 									data-overflow-chip="true"
 									aria-pressed="false"
-									class={`inline-flex max-w-full ${chipClass}`}
+									class={`inline-flex max-w-fit ${chipClass}`}
 									hidden
 								>
 									<span class="min-w-0 truncate">{option.value}</span>
-									<span class="rounded-lg corner-squircle bg-subtle px-1.5 py-0.5 text-xs tabular-nums text-subtle-foreground group-data-[active]:bg-primary-foreground/15 group-data-[active]:text-primary-foreground">
+									<span class={countClass}>
 										{option.count}
 									</span>
 								</button>
@@ -280,7 +289,7 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 						{getOverflowOptions(categoryOptions).length > 0 && (
 							<button
 								type="button"
-								class="self-start cursor-pointer text-sm font-medium text-muted-foreground underline decoration-border underline-offset-4 transition hover:text-foreground"
+								class={moreButtonClass}
 								data-filter-more="category"
 								data-expanded="false"
 								data-show-more={t("list.showMore", { count: "__COUNT__" })}
@@ -295,12 +304,12 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 
 			{
 				regionOptions.length > 0 && (
-					<section class="flex flex-col gap-2">
-						<p class="text-xs font-medium tracking-wide text-subtle-foreground uppercase">
+					<section class={filterSectionClass}>
+						<p class={filterHeadingClass}>
 							{t("list.regions")}
 						</p>
 						<div
-							class="grid grid-cols-2 gap-1"
+							class={`${filterGroupClass} mt-2`}
 							role="group"
 							aria-label={t("list.regions.aria")}
 							data-filter-group="region"
@@ -310,7 +319,7 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 								data-filter-all="region"
 								data-active=""
 								aria-pressed="true"
-								class={`inline-flex ${chipClass}`}
+								class={`inline-flex max-w-fit ${chipClass}`}
 							>
 								<Icon name="mdi:align-horizontal-left" />
 								<span>{t("list.allRegions")}</span>
@@ -322,10 +331,10 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 									data-filter-chip="region"
 									data-filter-value={option.value}
 									aria-pressed="false"
-									class={`inline-flex max-w-full ${chipClass}`}
+									class={`inline-flex max-w-fit ${chipClass}`}
 								>
 									<span class="min-w-0 truncate">{option.value}</span>
-									<span class="rounded-lg corner-squircle bg-subtle px-1.5 py-0.5 text-xs tabular-nums text-subtle-foreground group-data-[active]:bg-primary-foreground/15 group-data-[active]:text-primary-foreground">
+									<span class={countClass}>
 										{option.count}
 									</span>
 								</button>
@@ -337,11 +346,11 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 									data-filter-value={option.value}
 									data-overflow-chip="true"
 									aria-pressed="false"
-									class={`inline-flex max-w-full ${chipClass}`}
+									class={`inline-flex max-w-fit ${chipClass}`}
 									hidden
 								>
 									<span class="min-w-0 truncate">{option.value}</span>
-									<span class="rounded-lg corner-squircle bg-subtle px-1.5 py-0.5 text-xs tabular-nums text-subtle-foreground group-data-[active]:bg-primary-foreground/15 group-data-[active]:text-primary-foreground">
+									<span class={countClass}>
 										{option.count}
 									</span>
 								</button>
@@ -350,7 +359,7 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 						{getOverflowOptions(regionOptions).length > 0 && (
 							<button
 								type="button"
-								class="self-start cursor-pointer text-sm font-medium text-muted-foreground underline decoration-border underline-offset-4 transition hover:text-foreground"
+								class={moreButtonClass}
 								data-filter-more="region"
 								data-expanded="false"
 								data-show-more={t("list.showMore", { count: "__COUNT__" })}

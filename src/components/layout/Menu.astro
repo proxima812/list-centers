@@ -6,7 +6,7 @@ import { Icon } from "astro-icon/components";
 
 const currentLocale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(currentLocale);
-const menuLinks = links.slice(2, 5);
+const desktopLinks = links;
 const mainLinks = links.slice(0, 1);
 const materialLinks = links.slice(1, 3).concat(links.slice(4, 5));
 const policyLinks = links.slice(3, 4);
@@ -16,28 +16,40 @@ const contentLicenseHref = "https://github.com/proxima812/tatarverse/blob/main/C
 const developerHref = "https://github.com/proxima812";
 
 const sectionTitleClass =
-	"px-4 mb-4 text-xs font-semibold uppercase tracking-tight text-muted-foreground";
-const mobileLinkClass = "w-full justify-start text-lg text-primary";
+	"mb-4 max-w-full px-4 text-xs font-semibold uppercase tracking-tight text-muted-foreground";
+const mobileLinkClass = "w-full min-w-0 !max-w-full !shrink justify-start text-lg text-primary";
 const mobileTextLinkClass =
-	"w-full font-medium justify-start flex items-center px-4 py-2 text-lg text-primary";
+	"flex w-full min-w-0 max-w-full items-center justify-start px-4 py-2 text-lg font-medium text-primary wrap-anywhere";
+const activeLinkClass = "text-muted-foreground hover:bg-transparent";
+
+const currentPath = Astro.url.pathname.replace(/^\/(?:ru|en)(?=\/|$)/, "") || "/";
+const normalizePath = (path: string) => (path === "/" ? "/" : path.replace(/\/+$/, ""));
+const isActivePath = (href: string) => {
+	const itemPath = normalizePath(href);
+	const pagePath = normalizePath(currentPath);
+
+	return itemPath === "/"
+		? pagePath === "/"
+		: pagePath === itemPath || pagePath.startsWith(`${itemPath}/`);
+};
 ---
 
-<nav class="hidden space-x-3 sm:flex">
+<nav class="hidden space-x-3 lg:flex">
 	{
-		menuLinks.map((item) => (
+		desktopLinks.map((item) => (
 			<ButtonLink
 				variant="ghost"
-				icon={item.icon}
 				href={item.href}
 				target={item.target}
 				label={item.label}
 				labelKey={item.labelKey}
+				aria-current={isActivePath(item.href) ? "page" : undefined}
 			/>
 		))
 	}
 </nav>
 
-<div data-menu class="sm:hidden select-none">
+<div data-menu class="select-none lg:hidden">
 	<button
 		type="button"
 		data-menu-toggle
@@ -78,12 +90,12 @@ const mobileTextLinkClass =
 	<nav
 		id="mobile-menu"
 		data-menu-list
-		class="pointer-events-none fixed inset-0 z-[90] h-dvh overflow-hidden bg-background/95 opacity-0 backdrop-blur-xl transition-opacity duration-300 ease-out"
+		class="pointer-events-none fixed inset-0 z-[90] h-dvh w-screen max-w-[100vw] overflow-hidden bg-background/95 opacity-0 backdrop-blur-xl transition-opacity duration-300 ease-out"
 		aria-label={t("menu.mobile")}
 	>
-		<div class="h-full overflow-y-auto overscroll-contain px-5 pb-12 pt-24">
-			<div class="flex flex-col gap-10">
-				<section class="flex flex-col" aria-labelledby="mobile-menu-main">
+		<div class="h-full w-full max-w-full overflow-x-hidden overflow-y-auto overscroll-contain px-5 pb-12 pt-24">
+			<div class="flex min-w-0 max-w-full flex-col gap-10">
+				<section class="flex min-w-0 max-w-full flex-col" aria-labelledby="mobile-menu-main">
 					<h2 id="mobile-menu-main" class={sectionTitleClass}>
 						{t("menu.main")}
 					</h2>
@@ -91,17 +103,18 @@ const mobileTextLinkClass =
 						mainLinks.map((item) => (
 							<ButtonLink
 								variant="ghost"
-								class={mobileLinkClass}
 								href={item.href}
 								target={item.target}
 								label={item.label}
 								labelKey={item.labelKey}
+								aria-current={isActivePath(item.href) ? "page" : undefined}
+								class={`${mobileLinkClass} ${isActivePath(item.href) ? activeLinkClass : ""}`}
 							/>
 						))
 					}
 				</section>
 
-				<section class="flex flex-col" aria-labelledby="mobile-menu-materials">
+				<section class="flex min-w-0 max-w-full flex-col" aria-labelledby="mobile-menu-materials">
 					<h2 id="mobile-menu-materials" class={sectionTitleClass}>
 						{t("menu.materials")}
 					</h2>
@@ -109,17 +122,18 @@ const mobileTextLinkClass =
 						materialLinks.map((item) => (
 							<ButtonLink
 								variant="ghost"
-								class={mobileLinkClass}
 								href={item.href}
 								target={item.target}
 								label={item.label}
 								labelKey={item.labelKey}
+								aria-current={isActivePath(item.href) ? "page" : undefined}
+								class={`${mobileLinkClass} ${isActivePath(item.href) ? activeLinkClass : ""}`}
 							/>
 						))
 					}
 				</section>
 
-				<section class="flex flex-col" aria-labelledby="mobile-menu-legal">
+				<section class="flex min-w-0 max-w-full flex-col" aria-labelledby="mobile-menu-legal">
 					<h2 id="mobile-menu-legal" class={sectionTitleClass}>
 						{t("menu.legal")}
 					</h2>
@@ -127,17 +141,18 @@ const mobileTextLinkClass =
 						policyLinks.map((item) => (
 							<ButtonLink
 								variant="ghost"
-								class={mobileLinkClass}
 								href={item.href}
 								target={item.target}
 								label={item.label}
 								labelKey={item.labelKey}
+								aria-current={isActivePath(item.href) ? "page" : undefined}
+								class={`${mobileLinkClass} ${isActivePath(item.href) ? activeLinkClass : ""}`}
 							/>
 						))
 					}
 				</section>
 
-				<section class="flex flex-col" aria-labelledby="mobile-menu-licenses">
+				<section class="flex min-w-0 max-w-full flex-col" aria-labelledby="mobile-menu-licenses">
 					<h2 id="mobile-menu-licenses" class={sectionTitleClass}>
 						{t("menu.licenses")}
 					</h2>
@@ -148,7 +163,7 @@ const mobileTextLinkClass =
 						class={`${mobileTextLinkClass} gap-2`}
 					>
 						<Icon name="mdi:code-tags" class="size-5 shrink-0" aria-hidden="true" />
-						<span>{t("menu.codeLicense")}</span>
+						<span class="min-w-0 wrap-anywhere">{t("menu.codeLicense")}</span>
 					</a>
 					<a
 						href={contentLicenseHref}
@@ -157,28 +172,31 @@ const mobileTextLinkClass =
 						class={`${mobileTextLinkClass} gap-2`}
 					>
 						<Icon name="mdi:file-document-outline" class="size-5 shrink-0" aria-hidden="true" />
-						<span>{t("menu.contentLicense")}</span>
+						<span class="min-w-0 wrap-anywhere">{t("menu.contentLicense")}</span>
 					</a>
 				</section>
 
-				<section class="flex flex-col" aria-labelledby="mobile-menu-other">
+				<section class="flex min-w-0 max-w-full flex-col" aria-labelledby="mobile-menu-other">
 					<h2 id="mobile-menu-other" class={sectionTitleClass}>
 						{t("menu.other")}
 					</h2>
 					{
 						otherLinks.map((item) => (
 							<ButtonLink
-								variant="disabled"
-								class={mobileLinkClass}
+								variant="ghost"
+								icon={item.icon}
 								href={item.href}
+								target={item.target}
 								label={item.label}
 								labelKey={item.labelKey}
+								aria-current={isActivePath(item.href) ? "page" : undefined}
+								class={`${mobileLinkClass} ${isActivePath(item.href) ? activeLinkClass : ""}`}
 							/>
 						))
 					}
 				</section>
 
-				<section class="flex flex-col" aria-labelledby="mobile-menu-developer">
+				<section class="flex min-w-0 max-w-full flex-col" aria-labelledby="mobile-menu-developer">
 					<h2 id="mobile-menu-developer" class={sectionTitleClass}>
 						{t("menu.developer")}
 					</h2>
@@ -189,7 +207,7 @@ const mobileTextLinkClass =
 						class={`${mobileTextLinkClass} gap-2`}
 					>
 						<Icon name="mdi:github" class="size-5" aria-hidden="true" />
-						<span>proxima812</span>
+						<span class="min-w-0 wrap-anywhere">proxima812</span>
 					</a>
 				</section>
 			</div>

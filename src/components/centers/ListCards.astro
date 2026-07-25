@@ -1,23 +1,23 @@
 ---
 import { countryFlagsByRu } from "@/data/worldCountries";
-import { getLocaleFromUrl } from "@/i18n";
-import { getCollection } from "astro:content";
+import { getLocaleFromUrl, useTranslations } from "@/i18n";
+import type { Page } from "astro";
+import type { CollectionEntry } from "astro:content";
 import BackButton from "../navigation/BackButton.astro";
 import NoResults from "../ui/NoResults.astro";
 import ActiveFilters from "./ActiveFilters.astro";
 import GridCards from "./GridCards.astro";
 import Search from "./Search.astro";
 import Toolbar from "./Toolbar.astro";
+
+interface Props {
+	cards: CollectionEntry<"centers" | "centersEn">[];
+	page?: Page<CollectionEntry<"centers" | "centersEn">>;
+}
+
 const locale = getLocaleFromUrl(Astro.url);
-const allCards =
-	locale === "en" ? await getCollection("centersEn") : await getCollection("centers");
-const fallbackCards = allCards.length > 0 ? allCards : await getCollection("centers");
-const cards = fallbackCards.sort((a, b) => {
-	return (
-		(b.data.pubDate ? new Date(b.data.pubDate).getTime() : 0) -
-		(a.data.pubDate ? new Date(a.data.pubDate).getTime() : 0)
-	);
-});
+const t = useTranslations(locale);
+const { cards, page } = Astro.props as Props;
 const countryCounts = new Map<string, number>();
 const countryFlags = new Map<string, string>();
 for (const card of cards) {
@@ -75,10 +75,49 @@ const toolbarProps = {
 
 <ActiveFilters />
 
-<div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+<div class="not-container grid grid-cols-1 gap-8 px-5 sm:px-8 lg:grid-cols-[max-content_minmax(0,1fr)] lg:gap-12 lg:px-12">
 	<Toolbar {...toolbarProps} />
 	<div>
 		<NoResults />
 		<GridCards cards={cards} />
+		{
+			page && page.lastPage > 1 && (
+				<nav
+					class="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-depth-100 pt-5 text-sm"
+					aria-label={t("list.pagination")}
+				>
+					<a
+						href={page.url.prev ?? undefined}
+						aria-disabled={!page.url.prev}
+						class:list={[
+							"inline-flex items-center rounded-2xl px-4 py-2 font-medium ring ring-primary/10 transition",
+							page.url.prev
+								? "text-primary hover:bg-primary/5"
+								: "pointer-events-none text-muted-foreground/50",
+						]}
+					>
+						{t("list.previousPage")}
+					</a>
+					<span class="text-muted-foreground">
+						{t("list.pageStatus", {
+							current: page.currentPage,
+							total: page.lastPage,
+						})}
+					</span>
+					<a
+						href={page.url.next ?? undefined}
+						aria-disabled={!page.url.next}
+						class:list={[
+							"inline-flex items-center rounded-2xl px-4 py-2 font-medium ring ring-primary/10 transition",
+							page.url.next
+								? "text-primary hover:bg-primary/5"
+								: "pointer-events-none text-muted-foreground/50",
+						]}
+					>
+						{t("list.nextPage")}
+					</a>
+				</nav>
+			)
+		}
 	</div>
 </div>

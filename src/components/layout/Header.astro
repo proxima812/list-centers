@@ -1,14 +1,18 @@
 ---
 import Container from "./Container.astro";
 import LanguageToggle from "./LanguageToggle.astro";
+import Logotype from "./Logotype.astro";
 import Menu from "./Menu.astro";
 ---
 
 <header>
 	<div class="py-5">
-		<Container container>
+		<Container container class="max-w-7xl">
 			<div class="flex flex-wrap items-center justify-between gap-4">
-				<Menu />
+				<div class="flex min-w-0 items-center gap-4">
+					<Logotype />
+					<Menu />
+				</div>
 				<LanguageToggle />
 			</div>
 		</Container>

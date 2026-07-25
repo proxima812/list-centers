@@ -1,13 +1,17 @@
 ---
 import release from "@/data/release.json";
+import { links } from "@/data/links";
 import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
 import { Icon } from "astro-icon/components";
-import TechStacks from "../social/TechStacks.astro";
 import Container from "./Container.astro";
 
 const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
 const policyHref = localizePath(locale, "/policy");
+const repositoryHref = "https://github.com/proxima812/tatarverse";
+const codeLicenseHref = `${repositoryHref}/blob/main/LICENSE`;
+const contentLicenseHref = `${repositoryHref}/blob/main/CONTENT-LICENSE.md`;
+const suggestChangeHref = `${repositoryHref}/issues/new`;
 const updatedAtLabel = new Intl.DateTimeFormat(locale, {
 	day: "numeric",
 	month: "long",
@@ -19,172 +23,189 @@ const updatedAtLabel = new Intl.DateTimeFormat(locale, {
 }).format(new Date(release.updatedAt));
 
 const baseStyle =
-	"text-link underline decoration-link-decoration underline-offset-4 transition hover:decoration-link";
+	"text-link underline decoration-link-decoration underline-offset-4 transition hover:decoration-link focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
 
-const links = [
-	{
-		href: policyHref,
-		label: t("footer.privacy"),
-		class: baseStyle,
-		icon: null,
-		props: {
-			target: "_blank",
-			rel: "noreferrer noopener",
-		},
-	},
-	{
-		href: "https://github.com/proxima812/tatarverse/blob/main/LICENSE",
-		label: "MIT Code",
-		class: baseStyle,
-		icon: null,
-		props: {
-			target: "_blank",
-			rel: "noreferrer noopener",
-		},
-	},
-	{
-		href: "https://github.com/proxima812/tatarverse/blob/main/CONTENT-LICENSE.md",
-		label: "CC BY 4.0 Content",
-		class: baseStyle,
-		icon: null,
-		props: {
-			target: "_blank",
-			rel: "noreferrer noopener",
-		},
-	},
-	{
-		href: "https://github.com/proxima812",
-		label: "proxima812",
-		class: `inline-flex items-center gap-1.5 ${baseStyle}`,
-		icon: "mdi:github",
-		props: {
-			target: "_blank",
-			rel: "noreferrer noopener",
-		},
-	},
-	{
-		href: "https://github.com/proxima812/tatarverse",
-		label: "Open Source",
-		class: `inline-flex items-center gap-1.5 ${baseStyle}`,
-		icon: "mdi:github",
-		props: {
-			target: "_blank",
-			rel: "noreferrer noopener",
-		},
-	},
-];
+type FooterLink = {
+	href: string;
+	label: string;
+	icon?: string;
+	nowrap?: boolean;
+	props?: Record<string, string>;
+};
 
-const collaborationLinks = [
+const externalProps = {
+	target: "_blank",
+	rel: "noreferrer noopener",
+};
+
+const navIconByHref = new Map(links.map((link) => [link.href, link.icon]));
+const navIcon = (href: string) => navIconByHref.get(href);
+
+const footerSections: Array<{ id: string; title: string; links: FooterLink[] }> = [
 	{
-		href: "mailto:kamil.mirikhan@gmail.com",
-		label: "kamil.mirikhan@gmail.com",
-		prefix: t("footer.collaboration.email"),
-		icon: "mdi:email-outline",
-		props: {},
+		id: "project",
+		title: t("footer.project.title"),
+		links: [
+			{
+				href: localizePath(locale, "/centers"),
+				label: t("nav.centers"),
+				icon: navIcon("/centers"),
+			},
+			{
+				href: localizePath(locale, "/support"),
+				label: t("nav.support"),
+				icon: navIcon("/support"),
+			},
+			{
+				href: localizePath(locale, "/posts"),
+				label: t("nav.posts"),
+				icon: navIcon("/posts"),
+			},
+		],
 	},
 	{
-		href: "https://t.me/mirikhan1",
-		label: "@mirikhan1",
-		prefix: "Telegram",
-		icon: "mdi:telegram",
-		props: {
-			target: "_blank",
-			rel: "noreferrer noopener",
-		},
+		id: "materials",
+		title: t("footer.materials.title"),
+		links: [
+			{
+				href: localizePath(locale, "/translations"),
+				label: t("nav.translations"),
+				icon: navIcon("/translations"),
+			},
+			{
+				href: localizePath(locale, "/sources"),
+				label: t("nav.sources"),
+				icon: navIcon("/sources"),
+			},
+			{
+				href: localizePath(locale, "/sabantye"),
+				label: t("nav.sabantuy"),
+				icon: navIcon("/sabantye"),
+			},
+		],
+	},
+	{
+		id: "open-source",
+		title: t("footer.openSource.title"),
+		links: [
+			{
+				href: repositoryHref,
+				label: t("footer.repository"),
+				icon: "mdi:github",
+				props: externalProps,
+			},
+			{
+				href: suggestChangeHref,
+				label: t("footer.suggestChange"),
+				icon: "mdi:pencil-outline",
+				props: externalProps,
+			},
+			{
+				href: codeLicenseHref,
+				label: t("footer.codeLicense"),
+				icon: "mdi:license",
+				props: externalProps,
+			},
+			{
+				href: contentLicenseHref,
+				label: t("footer.contentLicense"),
+				icon: "mdi:file-document-outline",
+				props: externalProps,
+			},
+		],
+	},
+	{
+		id: "contacts",
+		title: t("footer.contacts.title"),
+		links: [
+			{
+				href: "mailto:kamil.mirikhan@gmail.com",
+				label: "kamil.mirikhan@gmail.com",
+				icon: "mdi:email-outline",
+				nowrap: true,
+			},
+			{
+				href: "https://t.me/mirikhan1",
+				label: "Telegram @mirikhan1",
+				icon: "mdi:telegram",
+				props: externalProps,
+			},
+			{
+				href: policyHref,
+				label: t("footer.privacy"),
+				icon: "mdi:shield-check-outline",
+			},
+		],
 	},
 ];
 ---
 
-<footer class="mt-auto py-6 text-sm sm:text-xs text-subtle-foreground">
-	<Container container>
-		<div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-			<div class="space-y-1 text-center sm:text-left">
-				<p class="font-bold">&copy; tatarverse.cc {new Date().getFullYear()}</p>
-				<p>v{release.version} · {t("footer.updated", { date: updatedAtLabel })}</p>
-			</div>
-
-			<div
-				class="h-px md:hidden block my-8 w-[calc(100%-180px)] mx-auto bg-linear-to-r from-transparent via-border to-transparent"
-			>
-			</div>
-
-			<section
-				aria-labelledby="footer-collaboration"
-				class="space-y-1 text-center sm:text-left"
-			>
-				<p id="footer-collaboration" class="font-bold text-subtle-foreground">
-					{t("footer.collaboration.title")}
-				</p>
-				<div
-					class="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 sm:justify-start"
-				>
-					{
-						collaborationLinks.map((link, index) => (
-							<>
-								{index > 0 && (
-									<span class="text-subtle-foreground" aria-hidden="true">
-										·
-									</span>
-								)}
-								<a
-									href={link.href}
-									class={`inline-flex items-center gap-1.5 text-zinc-700 ${baseStyle}`}
-									{...link.props}
-								>
-									<Icon name={link.icon} class="size-4" aria-hidden="true" />
-									<span>
-										{link.prefix}: {link.label}
-									</span>
-								</a>
-							</>
-						))
-					}
+<footer
+	class="mt-auto border-t border-border-muted py-10 text-sm text-subtle-foreground sm:text-xs"
+>
+	<Container container class="max-w-7xl">
+		<div class="grid gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,2.5fr)]">
+			<div class="space-y-3">
+				<div class="space-y-1">
+					<p class="font-bold text-subtle-foreground">
+						&copy; tatarverse.cc {new Date().getFullYear()}
+					</p>
+					<p>v{release.version} · {t("footer.updated", { date: updatedAtLabel })}</p>
 				</div>
-			</section>
-
-			<div
-				class="h-px md:hidden block my-8 w-[calc(100%-180px)] mx-auto bg-linear-to-r from-transparent via-border to-transparent"
-			>
+				<p class="max-w-md leading-6">{t("footer.description")}</p>
+				<p class="max-w-md leading-6">{t("footer.openSource.text")}</p>
 			</div>
 
 			<nav
 				aria-label={t("footer.links")}
-				class="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 sm:justify-end"
+				class="grid gap-6 sm:grid-cols-2 lg:grid-cols-[minmax(8.5rem,1fr)_minmax(8.5rem,1fr)_minmax(8.5rem,1fr)_minmax(15rem,1.35fr)]"
 			>
 				{
-					links.map((link, index) => (
-						<>
-							{index > 0 && (
-								<span class="text-subtle-foreground" aria-hidden="true">
-									·
-								</span>
-							)}
-							<a href={link.href} class={link.class} {...link.props}>
-								{link.icon ? (
-									<>
-										<Icon name={link.icon} class="size-4" aria-hidden="true" />
-										<span>{link.label}</span>
-									</>
-								) : (
-									link.label
-								)}
-							</a>
-						</>
+					footerSections.map((section) => (
+						<section aria-labelledby={`footer-${section.id}`}>
+							<p id={`footer-${section.id}`} class="mb-3 font-bold text-subtle-foreground">
+								{section.title}
+							</p>
+							<ul class="space-y-2">
+								{section.links.map((link) => (
+									<li>
+										<a
+											href={link.href}
+											class={`inline-flex min-h-6 min-w-0 max-w-full items-center gap-1.5 ${baseStyle}`}
+											{...link.props}
+										>
+											{link.icon && (
+												<Icon name={link.icon} class="size-4 shrink-0" aria-hidden="true" />
+											)}
+											<span
+												class:list={[
+													"min-w-0",
+													link.nowrap ? "whitespace-nowrap" : "wrap-anywhere",
+												]}
+											>
+												{link.label}
+											</span>
+										</a>
+									</li>
+								))}
+							</ul>
+						</section>
 					))
 				}
 			</nav>
 		</div>
 		<div
-			class="h-px my-8 w-[calc(100%-180px)] mx-auto bg-linear-to-r from-transparent via-border to-transparent"
+			class="mt-8 flex flex-col gap-2 border-t border-border-muted pt-4 sm:flex-row sm:items-center sm:justify-between"
 		>
+			<p>{t("footer.legalNote")}</p>
+			<a
+				href={repositoryHref}
+				class={`inline-flex min-w-0 max-w-full items-center gap-1.5 ${baseStyle}`}
+				{...externalProps}
+			>
+				<Icon name="mdi:github" class="size-4" aria-hidden="true" />
+				<span class="min-w-0 wrap-anywhere">{t("footer.openSource.short")}</span>
+			</a>
 		</div>
-
-		<TechStacks
-			gap="5px"
-			class="justify-center"
-			stacks={["astro", "tailwind", "typescript", "javascript", "vite", "bun", "cloudflare"]}
-			size="xs"
-			wrap
-		/>
 	</Container>
 </footer>

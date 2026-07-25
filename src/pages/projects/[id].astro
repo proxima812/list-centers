@@ -1,13 +1,10 @@
 ---
 import BackButton from "@/components/navigation/BackButton.astro";
 import Layout from "@/layouts/Layout.astro";
-import {
-	getProjectAsset,
-	getProjectGradient,
-	getProjectInitial,
-} from "@/utils/projects";
+import { getProjectAsset, getProjectGradient } from "@/utils/projects";
 import { Image } from "astro:assets";
 import { getCollection, render, type CollectionEntry } from "astro:content";
+import { Icon } from "astro-icon/components";
 
 export async function getStaticPaths() {
 	const projects = await getCollection("projects");
@@ -42,7 +39,7 @@ const websiteLabel = getUrlLabel(data.website);
 ---
 
 <Layout
-	title={`${data.title} | #поддержка`}
+	title={`${data.title} | Поддержим своих`}
 	description={data.description}
 	keywords={["tatarverse", "поддержка", data.title, data.category, ...data.tags]}
 >
@@ -52,7 +49,7 @@ const websiteLabel = getUrlLabel(data.website);
 			class="corner-squircle rounded-4xl bg-surface p-5 shadow-2xs ring ring-border-muted sm:p-6"
 		>
 			<div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-				<div class="flex min-w-0 items-center gap-4">
+					<div class="flex min-w-0 max-w-full items-center gap-4">
 					{logo ? (
 						<Image
 							src={logo}
@@ -63,14 +60,12 @@ const websiteLabel = getUrlLabel(data.website);
 						/>
 					) : (
 						<div
-							class="flex size-20 shrink-0 items-center justify-center rounded-3xl text-3xl font-bold text-white ring ring-inset ring-white/15"
+							class="size-20 shrink-0 rounded-3xl ring ring-inset ring-white/15"
 							style={`background:${getProjectGradient(data.title)}`}
 							aria-hidden="true"
-						>
-							{getProjectInitial(data.title)}
-						</div>
+						/>
 					)}
-					<div class="min-w-0">
+						<div class="min-w-0 max-w-full">
 						<div class="flex flex-wrap items-center gap-2">
 							<span class="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary ring ring-inset ring-primary/10">
 								{data.category}
@@ -81,16 +76,16 @@ const websiteLabel = getUrlLabel(data.website);
 								) : null
 							}
 						</div>
-						<h1 class="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-							{data.title}
-						</h1>
+							<h1 class="mt-2 text-3xl font-bold tracking-tight text-foreground wrap-anywhere sm:text-4xl">
+								{data.title}
+							</h1>
 						{
 							data.website && websiteLabel ? (
 								<a
 									href={data.website}
 									target="_blank"
 									rel="noreferrer noopener"
-									class="mt-1 block truncate text-sm font-medium text-link underline decoration-link-decoration underline-offset-4"
+										class="mt-1 block max-w-full truncate text-sm font-medium text-link underline decoration-link-decoration underline-offset-4"
 								>
 									{websiteLabel}
 								</a>
@@ -118,8 +113,9 @@ const websiteLabel = getUrlLabel(data.website);
 								href={data.instagram}
 								target="_blank"
 								rel="noreferrer noopener"
-								class="inline-flex items-center rounded-2xl corner-squircle bg-transparent px-4 py-2 text-sm font-semibold text-primary/80 no-underline ring ring-inset ring-primary/10 transition hover:bg-primary/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+								class="inline-flex items-center gap-2 rounded-2xl corner-squircle bg-transparent px-4 py-2 text-sm font-semibold text-primary/80 no-underline ring ring-inset ring-primary/10 transition hover:bg-primary/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
 							>
+								<Icon name="mdi:instagram" class="size-4" aria-hidden="true" />
 								Instagram
 							</a>
 						) : null
@@ -136,17 +132,7 @@ const websiteLabel = getUrlLabel(data.website);
 				widths={[640, 960, 1280]}
 				sizes="(min-width: 1024px) 56rem, 100vw"
 			/>
-		) : (
-			<div
-				class="corner-squircle relative flex h-64 w-full items-center justify-center overflow-hidden rounded-4xl shadow-2xs ring ring-inset ring-white/10 sm:h-80"
-				style={`background:${getProjectGradient(data.title)}`}
-				aria-hidden="true"
-			>
-				<span class="text-6xl font-bold text-white/90 drop-shadow sm:text-7xl">
-					{getProjectInitial(data.title)}
-				</span>
-			</div>
-		)}
+		) : null}
 
 		<section class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_16rem]" aria-label="Описание проекта">
 			<article
@@ -157,7 +143,7 @@ const websiteLabel = getUrlLabel(data.website);
 					{data.description}
 				</p>
 				<div
-					class="prose prose-sm mt-5 max-w-none text-depth-600 sm:prose-base prose-p:my-2 prose-a:font-medium prose-a:text-link prose-a:decoration-link-decoration prose-a:underline-offset-4 first:prose-p:mt-0 last:prose-p:mb-0"
+					class="prose prose-sm mt-5 min-w-0 max-w-none wrap-anywhere text-depth-600 sm:prose-base prose-p:my-2 prose-a:font-medium prose-a:text-link prose-a:decoration-link-decoration prose-a:underline-offset-4 first:prose-p:mt-0 last:prose-p:mb-0"
 				>
 					<Content />
 				</div>
