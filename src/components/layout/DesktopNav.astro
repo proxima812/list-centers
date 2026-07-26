@@ -1,8 +1,14 @@
 ---
 import ButtonLink from "../ui/ButtonLink.astro";
 import { links } from "@/data/links";
+import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
 
-const desktopLinks = links;
+const currentLocale = getLocaleFromUrl(Astro.url);
+const t = useTranslations(currentLocale);
+
+const dropdownHrefs = new Set(["/translations", "/sources", "/policy"]);
+const topLevelLinks = links.filter((item) => !dropdownHrefs.has(item.href));
+const materialLinks = links.filter((item) => dropdownHrefs.has(item.href));
 
 const currentPath = Astro.url.pathname.replace(/^\/(?:ru|en)(?=\/|$)/, "") || "/";
 const normalizePath = (path: string) => (path === "/" ? "/" : path.replace(/\/+$/, ""));
@@ -14,11 +20,19 @@ const isActivePath = (href: string) => {
 		? pagePath === "/"
 		: pagePath === itemPath || pagePath.startsWith(`${itemPath}/`);
 };
+
+const isMaterialsActive = materialLinks.some((item) => isActivePath(item.href));
+
+const triggerClass =
+	"inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-md px-3 text-sm font-medium transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40";
+
+const itemClass =
+	"flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-subtle-foreground no-underline transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 aria-[current]:bg-muted aria-[current]:text-foreground";
 ---
 
-<nav class="hidden space-x-3 lg:flex">
+<nav class="hidden items-center gap-1 lg:flex" aria-label={t("nav.primary")}>
 	{
-		desktopLinks.map((item) => (
+		topLevelLinks.map((item) => (
 			<ButtonLink
 				variant="ghost"
 				href={item.href}
@@ -29,4 +43,81 @@ const isActivePath = (href: string) => {
 			/>
 		))
 	}
+
+	<div class="relative" data-materials-menu>
+		<button
+			type="button"
+			data-materials-trigger
+			class={`${triggerClass} ${isMaterialsActive ? "bg-muted text-foreground" : "text-foreground"}`}
+			aria-haspopup="true"
+			aria-expanded="false"
+			aria-controls="materials-dropdown"
+		>
+			<span>{t("menu.materials")}</span>
+			<svg
+				aria-hidden="true"
+				viewBox="0 0 16 16"
+				class="size-3.5 shrink-0 transition-transform duration-200"
+				data-materials-chevron
+				fill="none"
+				stroke="currentColor"
+				stroke-width="1.5"
+			>
+				<path d="M4 6l4 4 4-4" stroke-linecap="round" stroke-linejoin="round"></path>
+			</svg>
+		</button>
+
+		<div
+			id="materials-dropdown"
+			data-materials-panel
+			class="absolute left-0 top-full z-[90] mt-2 min-w-48 rounded-2xl border border-border-muted bg-background p-1 shadow-sm"
+			hidden
+		>
+			{
+				materialLinks.map((item) => (
+					<a
+						href={localizePath(currentLocale, item.href)}
+						target={item.target}
+						class={itemClass}
+						aria-current={isActivePath(item.href) ? "page" : undefined}
+					>
+						{t(item.labelKey, undefined, item.label)}
+					</a>
+				))
+			}
+		</div>
+	</div>
 </nav>
+
+<script>
+	document.querySelectorAll<HTMLElement>("[data-materials-menu]").forEach((root) => {
+		const trigger = root.querySelector<HTMLButtonElement>("[data-materials-trigger]");
+		const panel = root.querySelector<HTMLElement>("[data-materials-panel]");
+		const chevron = root.querySelector<HTMLElement>("[data-materials-chevron]");
+
+		if (!trigger || !panel) return;
+
+		const setOpen = (isOpen: boolean) => {
+			panel.hidden = !isOpen;
+			trigger.setAttribute("aria-expanded", String(isOpen));
+			chevron?.classList.toggle("rotate-180", isOpen);
+		};
+
+		trigger.addEventListener("click", () => {
+			setOpen(panel.hidden);
+		});
+
+		document.addEventListener("click", (event) => {
+			if (event.target instanceof Node && !root.contains(event.target)) {
+				setOpen(false);
+			}
+		});
+
+		document.addEventListener("keydown", (event) => {
+			if (event.key !== "Escape" || panel.hidden) return;
+
+			setOpen(false);
+			trigger.focus();
+		});
+	});
+</script>
