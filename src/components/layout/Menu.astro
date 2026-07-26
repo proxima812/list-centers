@@ -18,7 +18,6 @@ const languageItems = locales.map((locale) => ({
 	short: localeLabels[locale].short,
 	href: getSwitcherHref(locale, Astro.url),
 }));
-const desktopLinks = links;
 const mainLinks = links.slice(0, 1);
 const materialLinks = links.slice(1, 3).concat(links.slice(4, 5));
 const policyLinks = links.slice(3, 4);
@@ -46,30 +45,16 @@ const isActivePath = (href: string) => {
 };
 ---
 
-<nav class="hidden space-x-3 lg:flex">
-	{
-		desktopLinks.map((item) => (
-			<ButtonLink
-				variant="ghost"
-				href={item.href}
-				target={item.target}
-				label={item.label}
-				labelKey={item.labelKey}
-				aria-current={isActivePath(item.href) ? "page" : undefined}
-			/>
-		))
-	}
-</nav>
-
 <div data-menu class="select-none lg:hidden">
 	<button
 		type="button"
 		data-menu-toggle
-		class="fixed top-6 right-6 z-[100] inline-flex cursor-pointer items-center gap-1.5 rounded-md px-2 py-1.5 text-sm font-medium text-foreground transition-colors duration-100 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+		class="relative z-[100] inline-flex cursor-pointer items-center gap-1.5 rounded-md px-2 py-1.5 text-sm font-medium text-foreground transition-colors duration-100 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
 		aria-label={t("menu.open")}
 		aria-controls="mobile-menu"
 		aria-expanded="false"
 	>
+		<span>{t("menu.label")}</span>
 		<svg
 			width="18"
 			height="18"
@@ -84,7 +69,6 @@ const isActivePath = (href: string) => {
 			<rect x="3" y="3" width="18" height="18" rx="2"></rect>
 			<path d="M15 3v18"></path>
 		</svg>
-		<span>{t("menu.label")}</span>
 	</button>
 
 	<div
