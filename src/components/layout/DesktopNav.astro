@@ -6,9 +6,13 @@ import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
 const currentLocale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(currentLocale);
 
-const dropdownHrefs = new Set(["/translations", "/sources", "/policy"]);
-const topLevelLinks = links.filter((item) => !dropdownHrefs.has(item.href));
-const materialLinks = links.filter((item) => dropdownHrefs.has(item.href));
+const materialHrefs = new Set(["/translations", "/sources", "/policy"]);
+const otherHrefs = new Set(["/thanks"]);
+const topLevelLinks = links.filter(
+	(item) => !materialHrefs.has(item.href) && !otherHrefs.has(item.href),
+);
+const materialLinks = links.filter((item) => materialHrefs.has(item.href));
+const otherLinks = links.filter((item) => otherHrefs.has(item.href));
 
 const currentPath = Astro.url.pathname.replace(/^\/(?:ru|en)(?=\/|$)/, "") || "/";
 const normalizePath = (path: string) => (path === "/" ? "/" : path.replace(/\/+$/, ""));
@@ -21,7 +25,10 @@ const isActivePath = (href: string) => {
 		: pagePath === itemPath || pagePath.startsWith(`${itemPath}/`);
 };
 
-const isMaterialsActive = materialLinks.some((item) => isActivePath(item.href));
+const dropdowns = [
+	{ id: "materials", labelKey: "menu.materials", items: materialLinks },
+	{ id: "other", labelKey: "menu.other", items: otherLinks },
+].filter((dropdown) => dropdown.items.length > 0);
 
 const triggerClass =
 	"inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-md px-3 text-sm font-medium transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40";
@@ -44,56 +51,62 @@ const itemClass =
 		))
 	}
 
-	<div class="relative" data-materials-menu>
-		<button
-			type="button"
-			data-materials-trigger
-			class={`${triggerClass} ${isMaterialsActive ? "bg-muted text-foreground" : "text-foreground"}`}
-			aria-haspopup="true"
-			aria-expanded="false"
-			aria-controls="materials-dropdown"
-		>
-			<span>{t("menu.materials")}</span>
-			<svg
-				aria-hidden="true"
-				viewBox="0 0 16 16"
-				class="size-3.5 shrink-0 transition-transform duration-200"
-				data-materials-chevron
-				fill="none"
-				stroke="currentColor"
-				stroke-width="1.5"
-			>
-				<path d="M4 6l4 4 4-4" stroke-linecap="round" stroke-linejoin="round"></path>
-			</svg>
-		</button>
+	{
+		dropdowns.map((dropdown) => {
+			const isActive = dropdown.items.some((item) => isActivePath(item.href));
 
-		<div
-			id="materials-dropdown"
-			data-materials-panel
-			class="absolute left-0 top-full z-[90] mt-2 min-w-48 rounded-2xl border border-border-muted bg-background p-1 shadow-sm"
-			hidden
-		>
-			{
-				materialLinks.map((item) => (
-					<a
-						href={localizePath(currentLocale, item.href)}
-						target={item.target}
-						class={itemClass}
-						aria-current={isActivePath(item.href) ? "page" : undefined}
+			return (
+				<div class="relative" data-dropdown-menu>
+					<button
+						type="button"
+						data-dropdown-trigger
+						class={`${triggerClass} ${isActive ? "bg-muted text-foreground" : "text-foreground"}`}
+						aria-haspopup="true"
+						aria-expanded="false"
+						aria-controls={`${dropdown.id}-dropdown`}
 					>
-						{t(item.labelKey, undefined, item.label)}
-					</a>
-				))
-			}
-		</div>
-	</div>
+						<span>{t(dropdown.labelKey)}</span>
+						<svg
+							aria-hidden="true"
+							viewBox="0 0 16 16"
+							class="size-3.5 shrink-0 transition-transform duration-200"
+							data-dropdown-chevron
+							fill="none"
+							stroke="currentColor"
+							stroke-width="1.5"
+						>
+							<path d="M4 6l4 4 4-4" stroke-linecap="round" stroke-linejoin="round" />
+						</svg>
+					</button>
+
+					<div
+						id={`${dropdown.id}-dropdown`}
+						data-dropdown-panel
+						class="absolute left-0 top-full z-[90] mt-2 min-w-48 rounded-2xl border border-border-muted bg-background p-1 shadow-sm"
+						hidden
+					>
+						{dropdown.items.map((item) => (
+							<a
+								href={localizePath(currentLocale, item.href)}
+								target={item.target}
+								class={itemClass}
+								aria-current={isActivePath(item.href) ? "page" : undefined}
+							>
+								{t(item.labelKey, undefined, item.label)}
+							</a>
+						))}
+					</div>
+				</div>
+			);
+		})
+	}
 </nav>
 
 <script>
-	document.querySelectorAll<HTMLElement>("[data-materials-menu]").forEach((root) => {
-		const trigger = root.querySelector<HTMLButtonElement>("[data-materials-trigger]");
-		const panel = root.querySelector<HTMLElement>("[data-materials-panel]");
-		const chevron = root.querySelector<HTMLElement>("[data-materials-chevron]");
+	document.querySelectorAll<HTMLElement>("[data-dropdown-menu]").forEach((root) => {
+		const trigger = root.querySelector<HTMLButtonElement>("[data-dropdown-trigger]");
+		const panel = root.querySelector<HTMLElement>("[data-dropdown-panel]");
+		const chevron = root.querySelector<HTMLElement>("[data-dropdown-chevron]");
 
 		if (!trigger || !panel) return;
 

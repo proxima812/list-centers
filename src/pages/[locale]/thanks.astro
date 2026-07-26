@@ -1,0 +1,12 @@
+---
+import ThanksPage from "../thanks.astro";
+import { defaultLocale, locales } from "@/i18n";
+
+export function getStaticPaths() {
+	return locales
+		.filter((locale) => locale !== defaultLocale)
+		.map((locale) => ({ params: { locale } }));
+}
+---
+
+<ThanksPage />

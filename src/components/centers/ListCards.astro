@@ -69,16 +69,16 @@ const toolbarProps = {
 };
 ---
 
-<BackButton href="/" label="Назад" labelKey="nav.back" variant="outline" />
+<!-- <BackButton href="/" label="Назад" labelKey="nav.back" variant="outline" /> -->
 
-<Search />
-
-<ActiveFilters />
-
-<div class="not-container grid grid-cols-1 gap-8 px-5 sm:px-8 lg:grid-cols-[max-content_minmax(0,1fr)] lg:gap-12 lg:px-12">
+<div
+	class="not-container grid grid-cols-1 gap-8 px-5 sm:px-8 lg:grid-cols-[20rem_minmax(0,1fr)] lg:gap-12 lg:px-12 bg-zinc-00 py-12 bg-zinc-100"
+>
 	<Toolbar {...toolbarProps} />
 	<div>
 		<NoResults />
+		<Search />
+		<ActiveFilters />
 		<GridCards cards={cards} />
 		{
 			page && page.lastPage > 1 && (

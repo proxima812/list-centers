@@ -17,6 +17,7 @@ const dict: Dictionary = {
 	"nav.translations": "Translations",
 	"nav.sources": "Sources",
 	"nav.policy": "Policy",
+	"nav.thanks": "Thanks",
 	"nav.primary": "Primary navigation",
 	"nav.home": "Home page",
 	"nav.backToTop": "Back to top",

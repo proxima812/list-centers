@@ -1,0 +1,13 @@
+---
+import ThanksFeed from "@/components/thanks/ThanksFeed.astro";
+import { getLocaleFromUrl, useTranslations } from "@/i18n";
+import Layout from "@/layouts/Layout.astro";
+
+const locale = getLocaleFromUrl(Astro.url);
+const t = useTranslations(locale);
+---
+
+<Layout title={t("nav.thanks")}>
+	<h1 class="text-3xl font-bold tracking-tight sm:text-4xl text-center">Благодарности людям</h1>
+	<ThanksFeed />
+</Layout>

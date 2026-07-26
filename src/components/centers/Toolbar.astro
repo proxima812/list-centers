@@ -25,12 +25,12 @@ const t = useTranslations(locale);
 type CountryLabels = Record<string, string>;
 
 const chipClass =
-	"group min-w-0 cursor-pointer items-center gap-1.5 rounded-full border border-transparent bg-transparent px-2.5 py-1.5 text-sm font-medium text-muted-foreground transition hover:border-border hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25 data-[active]:border-primary/20 data-[active]:bg-primary/10 data-[active]:text-primary";
+	"group min-w-0 cursor-pointer items-center gap-1.5 rounded-full border border-transparent bg-transparent px-2.5 py-1.5 text-sm font-medium text-muted-foreground transition hover:border-border hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25 data-[active]:bg-white data-[active]:text-foreground";
 const filterSectionClass =
 	"border-b border-depth-100/70 pb-4 last:border-b-0 last:pb-0";
 const filterHeadingClass =
 	"text-[11px] font-semibold tracking-wide text-subtle-foreground uppercase";
-const filterGroupClass = "flex max-w-72 flex-wrap items-center gap-1.5";
+const filterGroupClass = "flex max-w-80 flex-wrap items-center gap-1.5";
 const countClass =
 	"rounded-full bg-subtle px-1.5 py-0.5 text-[10px] tabular-nums text-subtle-foreground group-data-[active]:bg-primary/10 group-data-[active]:text-primary";
 const moreButtonClass =
@@ -61,10 +61,10 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 
 <aside
 	data-filters-shell
-	class="hidden w-fit max-w-72 pb-12 lg:sticky lg:top-12 lg:block lg:max-h-[calc(100vh-3rem)] lg:overflow-y-auto"
+	class="hidden w-full max-w-80 pb-12 lg:sticky lg:top-12 lg:block lg:max-h-[calc(100vh-3rem)] lg:overflow-y-auto"
 >
-	<section class="w-fit max-w-72">
-		<div id="filters-panel" data-filters-panel class="hidden w-fit max-w-72 space-y-4">
+	<section class="w-full max-w-80">
+		<div id="filters-panel" data-filters-panel class="hidden w-full max-w-80 space-y-4">
 			<section class={filterSectionClass}>
 				<p class={filterHeadingClass}>
 					{t("list.countries")}

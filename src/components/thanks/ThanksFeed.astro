@@ -1,0 +1,104 @@
+---
+import { Icon } from "astro-icon/components";
+import { getCollection, render } from "astro:content";
+
+const MAX_LABEL_LENGTH = 22;
+
+const entries = (await getCollection("thanks")).sort(
+	(a, b) => a.data.sortOrder - b.data.sortOrder,
+);
+
+const getHandleFromUrl = (url?: string) => {
+	if (!url) return undefined;
+
+	try {
+		const { pathname } = new URL(url);
+		const segment = pathname.replace(/\/+$/, "").split("/").pop();
+
+		return segment || undefined;
+	} catch {
+		return undefined;
+	}
+};
+
+const truncateLabel = (label: string) => {
+	if (label.length <= MAX_LABEL_LENGTH) return label;
+
+	return `${label.slice(0, MAX_LABEL_LENGTH - 1)}…`;
+};
+
+const items = await Promise.all(
+	entries.map(async (entry) => {
+		const { Content } = await render(entry);
+
+		const primaryUrl = entry.data.instagram ?? entry.data.telegram ?? entry.data.social;
+
+		const handle = getHandleFromUrl(primaryUrl);
+
+		const label = entry.data.name ?? (handle ? `@${handle}` : "Пользователь");
+
+		return {
+			Content,
+			instagram: entry.data.instagram,
+			telegram: entry.data.telegram,
+			social: entry.data.social,
+			label,
+			displayLabel: truncateLabel(label),
+		};
+	}),
+);
+---
+
+{
+	items.length > 0 && (
+		<section class="mx-auto w-full" aria-label="Благодарности">
+			<ol class="columns-1 gap-8 sm:columns-2 md:columns-3 lg:columns-4">
+				{items.map(({ Content, label, displayLabel, instagram, telegram, social }) => {
+					const href = instagram ?? telegram ?? social;
+
+					const icon = instagram
+						? "mdi:instagram"
+						: telegram
+							? "mdi:telegram"
+							: "mdi:link-variant";
+
+					return (
+						<li class="mb-8 inline-block w-full break-inside-avoid-column align-top">
+							<article class="flex flex-col gap-2">
+								<header class="px-1">
+									{href ? (
+										<a
+											href={href}
+											target="_blank"
+											rel="noreferrer noopener"
+											aria-label={`${label} — открыть социальную сеть`}
+											title={label}
+											class="inline-flex max-w-full min-w-0 items-center gap-1.5 text-sm font-semibold text-foreground no-underline transition-colors hover:text-muted-foreground"
+										>
+											<Icon name={icon} class="size-4 shrink-0" aria-hidden="true" />
+
+											<span class="truncate">{displayLabel}</span>
+										</a>
+									) : (
+										<span
+											title={label}
+											class="block max-w-full truncate text-sm font-semibold text-foreground"
+										>
+											{displayLabel}
+										</span>
+									)}
+								</header>
+
+								<div class="w-full rounded-2xl rounded-tl-sm bg-muted px-4 py-3 text-sm leading-6 text-foreground">
+									<div class="prose prose-sm max-w-none text-inherit">
+										<Content />
+									</div>
+								</div>
+							</article>
+						</li>
+					);
+				})}
+			</ol>
+		</section>
+	)
+}
