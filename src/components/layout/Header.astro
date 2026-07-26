@@ -6,15 +6,15 @@ import Logotype from "./Logotype.astro";
 import Menu from "./Menu.astro";
 ---
 
-<header class="sticky top-0 z-[80] bg-background/70 backdrop-blur-md lg:static lg:bg-transparent lg:backdrop-blur-none">
+<header class="sticky top-0 z-[88] bg-background/70 backdrop-blur-md lg:static lg:bg-transparent lg:backdrop-blur-none">
 	<div class="py-5">
 		<Container container class="max-w-7xl">
-			<div class="flex flex-wrap items-center justify-between gap-4">
-				<div class="flex min-w-0 items-center gap-4">
+			<div class="flex items-center justify-between gap-4">
+				<div class="flex min-w-0 shrink-0 items-center gap-4 lg:flex-1">
 					<Logotype />
-					<DesktopNav />
 				</div>
-				<div class="flex items-center gap-4">
+				<DesktopNav />
+				<div class="flex shrink-0 items-center gap-4 lg:flex-1 lg:justify-end">
 					<div class="hidden lg:inline-flex">
 						<LanguageToggle />
 					</div>
