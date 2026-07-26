@@ -41,7 +41,7 @@ const locale = getLocaleFromUrl(Astro.url);
 <html
 	lang={locale}
 	data-language={locale}
-	class="scroll-smooth subpixel-antialiased transition-all duration-300 ease-linear"
+	class="scroll-smooth subpixel-antialiased transition-colors duration-300 ease-linear"
 >
 	<head>
 		<link
@@ -81,7 +81,7 @@ const locale = getLocaleFromUrl(Astro.url);
 			)
 		}
 	</head>
-	<body class="flex min-h-screen flex-col bg-background font-sans text-foreground transition-all">
+	<body class="flex min-h-screen flex-col bg-background font-sans text-foreground transition-colors">
 		<Header />
 		<Container container class={cn("py-12 md:py-22", classContainer)}>
 			<div class={cn("flex flex-col gap-12", centered ? "items-center" : null)}>
