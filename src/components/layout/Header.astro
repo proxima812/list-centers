@@ -6,18 +6,27 @@ import Logotype from "./Logotype.astro";
 import Menu from "./Menu.astro";
 ---
 
-<header class="sticky top-0 z-[88] bg-background/70 backdrop-blur-md lg:static lg:bg-transparent lg:backdrop-blur-none">
-	<div class="py-5">
+<header class="sticky top-0 z-[88] isolate w-full lg:static">
+	<div
+		aria-hidden="true"
+		class="pointer-events-none absolute inset-0 z-0 bg-background/70 backdrop-blur-md lg:hidden"
+	>
+	</div>
+
+	<div class="relative z-10 py-3.5 md:py-5">
 		<Container container class="max-w-7xl">
 			<div class="flex items-center justify-between gap-4">
 				<div class="flex min-w-0 shrink-0 items-center gap-4 lg:flex-1">
 					<Logotype />
 				</div>
+
 				<DesktopNav />
+
 				<div class="flex shrink-0 items-center gap-4 lg:flex-1 lg:justify-end">
 					<div class="hidden lg:inline-flex">
 						<LanguageToggle />
 					</div>
+
 					<Menu />
 				</div>
 			</div>

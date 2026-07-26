@@ -9,16 +9,14 @@ const centersLink = links.find((item) => item.href === "/centers");
 
 <section>
 	<div class="flex gap-1.5 justify-center flex-wrap items-center">
-		<!-- {
-			links
-				.filter((_, index) => index < 2 || index >= links.length - 2)
-				.map((item) => (
-					<ButtonLink {...item} badge={item.href === "/posts" ? postsCount : undefined} />
-				))
-		} -->
 		{
 			centersLink && (
-				<ButtonLink {...centersLink} labelKey="nav.viewCenters" badge={centersCount} />
+				<ButtonLink
+					{...centersLink}
+					labelKey="nav.viewCenters"
+					badge={centersCount}
+					class="md:px-4 md:py-2 md:text-sm text-base"
+				/>
 			)
 		}
 	</div>

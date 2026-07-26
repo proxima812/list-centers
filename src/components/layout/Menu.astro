@@ -23,12 +23,14 @@ const materialLinks = links.slice(1, 3).concat(links.slice(4, 5));
 const policyLinks = links.slice(3, 4);
 const otherLinks = links.slice(-2);
 const codeLicenseHref = "https://github.com/proxima812/tatarverse/blob/main/LICENSE";
-const contentLicenseHref = "https://github.com/proxima812/tatarverse/blob/main/CONTENT-LICENSE.md";
+const contentLicenseHref =
+	"https://github.com/proxima812/tatarverse/blob/main/CONTENT-LICENSE.md";
 const developerHref = "https://github.com/proxima812";
 
 const sectionTitleClass =
 	"mb-4 max-w-full px-4 text-xs font-semibold uppercase tracking-tight text-muted-foreground";
-const mobileLinkClass = "w-full min-w-0 !max-w-full !shrink justify-start text-lg text-primary";
+const mobileLinkClass =
+	"w-full min-w-0 !max-w-full !shrink justify-start text-lg text-primary";
 const mobileTextLinkClass =
 	"flex w-full min-w-0 max-w-full items-center justify-start px-4 py-2 text-lg font-medium text-primary wrap-anywhere";
 const activeLinkClass = "text-muted-foreground hover:bg-transparent";
@@ -49,7 +51,7 @@ const isActivePath = (href: string) => {
 	<button
 		type="button"
 		data-menu-toggle
-		class="relative z-[100] inline-flex cursor-pointer items-center gap-1.5 rounded-md px-2 py-1.5 text-sm font-medium text-foreground transition-colors duration-100 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+		class="relative inline-flex cursor-pointer items-center gap-1.5 rounded-md px-2 py-1.5 text-sm font-medium text-foreground transition-colors duration-100 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
 		aria-label={t("menu.open")}
 		aria-controls="mobile-menu"
 		aria-expanded="false"
@@ -73,7 +75,7 @@ const isActivePath = (href: string) => {
 
 	<div
 		data-menu-backdrop
-		class="pointer-events-none fixed inset-0 z-[85] bg-background/60 opacity-0 backdrop-blur-sm transition-opacity duration-300 ease-out"
+		class="pointer-events-none fixed inset-0 z-[87] bg-background/60 opacity-0 backdrop-blur-sm transition-opacity duration-300 ease-out"
 		aria-hidden="true"
 	>
 	</div>
@@ -81,10 +83,12 @@ const isActivePath = (href: string) => {
 	<nav
 		id="mobile-menu"
 		data-menu-list
-		class="pointer-events-none fixed inset-y-0 right-0 z-[90] h-dvh w-[min(20rem,85vw)] max-w-[85vw] translate-x-full overflow-hidden border-l border-border-muted bg-background transition-transform duration-300 ease-out"
+		class="pointer-events-none top-[60px] fixed inset-y-0 right-0 z-[90] h-dvh w-[min(20rem,85vw)] max-w-[85vw] translate-x-full overflow-hidden border-l bg-background transition-transform duration-300 ease-out"
 		aria-label={t("menu.mobile")}
 	>
-		<div class="h-full w-full max-w-full overflow-x-hidden overflow-y-auto overscroll-contain px-4 pb-12 pt-20">
+		<div
+			class="h-full w-full max-w-full overflow-x-hidden overflow-y-auto overscroll-contain px-4 pb-12"
+		>
 			<div class="flex min-w-0 max-w-full flex-col gap-10">
 				<section class="flex min-w-0 max-w-full flex-col" aria-labelledby="mobile-menu-main">
 					<h2 id="mobile-menu-main" class={sectionTitleClass}>
@@ -105,7 +109,10 @@ const isActivePath = (href: string) => {
 					}
 				</section>
 
-				<section class="flex min-w-0 max-w-full flex-col" aria-labelledby="mobile-menu-materials">
+				<section
+					class="flex min-w-0 max-w-full flex-col"
+					aria-labelledby="mobile-menu-materials"
+				>
 					<h2 id="mobile-menu-materials" class={sectionTitleClass}>
 						{t("menu.materials")}
 					</h2>
@@ -143,7 +150,10 @@ const isActivePath = (href: string) => {
 					}
 				</section>
 
-				<section class="flex min-w-0 max-w-full flex-col" aria-labelledby="mobile-menu-licenses">
+				<section
+					class="flex min-w-0 max-w-full flex-col"
+					aria-labelledby="mobile-menu-licenses"
+				>
 					<h2 id="mobile-menu-licenses" class={sectionTitleClass}>
 						{t("menu.licenses")}
 					</h2>
@@ -162,7 +172,11 @@ const isActivePath = (href: string) => {
 						rel="noreferrer noopener"
 						class={`${mobileTextLinkClass} gap-2`}
 					>
-						<Icon name="mdi:file-document-outline" class="size-5 shrink-0" aria-hidden="true" />
+						<Icon
+							name="mdi:file-document-outline"
+							class="size-5 shrink-0"
+							aria-hidden="true"
+						/>
 						<span class="min-w-0 wrap-anywhere">{t("menu.contentLicense")}</span>
 					</a>
 				</section>
@@ -187,7 +201,10 @@ const isActivePath = (href: string) => {
 					}
 				</section>
 
-				<section class="flex min-w-0 max-w-full flex-col" aria-labelledby="mobile-menu-developer">
+				<section
+					class="flex min-w-0 max-w-full flex-col"
+					aria-labelledby="mobile-menu-developer"
+				>
 					<h2 id="mobile-menu-developer" class={sectionTitleClass}>
 						{t("menu.developer")}
 					</h2>
@@ -202,7 +219,10 @@ const isActivePath = (href: string) => {
 					</a>
 				</section>
 
-				<section class="flex min-w-0 max-w-full flex-col" aria-labelledby="mobile-menu-language">
+				<section
+					class="flex min-w-0 max-w-full flex-col"
+					aria-labelledby="mobile-menu-language"
+				>
 					<h2 id="mobile-menu-language" class={sectionTitleClass}>
 						{t("language.switcher")}
 					</h2>
@@ -243,52 +263,38 @@ const isActivePath = (href: string) => {
 
 		if (!toggle || !list || !backdrop) return;
 
-		let lockedScrollY = 0;
-
-		const lockBody = () => {
-			lockedScrollY = window.scrollY;
+		const lockBody = (): void => {
 			document.documentElement.classList.add("overflow-hidden");
 			document.body.classList.add("overflow-hidden", "touch-none");
-			document.body.style.position = "fixed";
-			document.body.style.top = `-${lockedScrollY}px`;
-			document.body.style.left = "0";
-			document.body.style.right = "0";
-			document.body.style.width = "100%";
 		};
 
-		const unlockBody = () => {
+		const unlockBody = (): void => {
 			document.documentElement.classList.remove("overflow-hidden");
 			document.body.classList.remove("overflow-hidden", "touch-none");
-			document.body.style.position = "";
-			document.body.style.top = "";
-			document.body.style.left = "";
-			document.body.style.right = "";
-			document.body.style.width = "";
-			window.scrollTo(0, lockedScrollY);
 		};
 
-		const setOpen = (isOpen: boolean) => {
+		const setOpen = (isOpen: boolean): void => {
 			const wasOpen = toggle.getAttribute("aria-expanded") === "true";
+
 			if (isOpen === wasOpen) return;
 
 			toggle.setAttribute("aria-expanded", String(isOpen));
+
 			list.classList.toggle("translate-x-full", !isOpen);
 			list.classList.toggle("pointer-events-auto", isOpen);
 			list.classList.toggle("pointer-events-none", !isOpen);
+
 			backdrop.classList.toggle("opacity-100", isOpen);
 			backdrop.classList.toggle("opacity-0", !isOpen);
 			backdrop.classList.toggle("pointer-events-auto", isOpen);
 			backdrop.classList.toggle("pointer-events-none", !isOpen);
 
-			if (isOpen) {
-				lockBody();
-			} else {
-				unlockBody();
-			}
+			isOpen ? lockBody() : unlockBody();
 		};
 
 		toggle.addEventListener("click", () => {
-			setOpen(toggle.getAttribute("aria-expanded") !== "true");
+			const isOpen = toggle.getAttribute("aria-expanded") === "true";
+			setOpen(!isOpen);
 		});
 
 		list.addEventListener("click", (event) => {
@@ -302,7 +308,9 @@ const isActivePath = (href: string) => {
 		});
 
 		document.addEventListener("keydown", (event) => {
-			if (event.key === "Escape") setOpen(false);
+			if (event.key === "Escape") {
+				setOpen(false);
+			}
 		});
 	});
 </script>
