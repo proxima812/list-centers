@@ -94,7 +94,17 @@
     @apply antialiased md:subpixel-antialiased text-pretty;
   }
 
+  /* Высота залипающего хедера на мобильных: от неё считается верх drawer'а,
+     чтобы меню открывалось под хедером и не закрывало его. */
+  :root {
+    --header-h: 60px;
+  }
 
+  @media (width >= 48rem) {
+    :root {
+      --header-h: 72px;
+    }
+  }
 }
 
 @layer components {
