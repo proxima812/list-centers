@@ -49,7 +49,7 @@ const isActivePath = (href: string) => {
 	<button
 		type="button"
 		data-menu-toggle
-		class="relative inline-flex cursor-pointer items-center gap-1.5 rounded-md px-2 py-1.5 text-sm font-medium text-foreground transition-colors duration-100 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+		class="relative z-[100] inline-flex cursor-pointer items-center gap-1.5 rounded-md px-2 py-1.5 text-sm font-medium text-foreground transition-colors duration-100 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
 		aria-label={t("menu.open")}
 		aria-controls="mobile-menu"
 		aria-expanded="false"
@@ -73,7 +73,7 @@ const isActivePath = (href: string) => {
 
 	<div
 		data-menu-backdrop
-		class="pointer-events-none fixed inset-x-0 top-[var(--header-h)] bottom-0 z-[85] bg-background/60 opacity-0 backdrop-blur-sm transition-opacity duration-300 ease-out"
+		class="pointer-events-none fixed inset-0 z-[95] bg-background/60 opacity-0 backdrop-blur-xs data-[state=closed]:animate-fade-out data-[state=open]:animate-fade-in"
 		aria-hidden="true"
 	>
 	</div>
@@ -81,10 +81,10 @@ const isActivePath = (href: string) => {
 	<nav
 		id="mobile-menu"
 		data-menu-list
-		class="pointer-events-none fixed top-[var(--header-h)] right-0 bottom-0 z-[86] w-[min(20rem,85vw)] max-w-[85vw] translate-x-full overflow-hidden border-l border-border-muted bg-background transition-transform duration-300 ease-out"
+		class="pointer-events-none fixed inset-y-0 right-0 z-[96] flex w-[85%] max-w-[380px] translate-x-full flex-col overflow-hidden border-l border-border-muted bg-background shadow-lg data-[state=closed]:animate-drawer-out data-[state=open]:animate-drawer-in"
 		aria-label={t("menu.mobile")}
 	>
-		<div class="h-full w-full max-w-full overflow-x-hidden overflow-y-auto overscroll-contain px-4 pt-6 pb-12">
+		<div class="h-full w-full max-w-full overflow-x-hidden overflow-y-auto overscroll-contain px-4 pt-20 pb-12">
 			<div class="flex min-w-0 max-w-full flex-col gap-10">
 				<section class="flex min-w-0 max-w-full flex-col" aria-labelledby="mobile-menu-main">
 					<h2 id="mobile-menu-main" class={sectionTitleClass}>
@@ -272,20 +272,38 @@ const isActivePath = (href: string) => {
 			if (isOpen === wasOpen) return;
 
 			toggle.setAttribute("aria-expanded", String(isOpen));
-			list.classList.toggle("translate-x-full", !isOpen);
-			list.classList.toggle("pointer-events-auto", isOpen);
-			list.classList.toggle("pointer-events-none", !isOpen);
-			backdrop.classList.toggle("opacity-100", isOpen);
-			backdrop.classList.toggle("opacity-0", !isOpen);
-			backdrop.classList.toggle("pointer-events-auto", isOpen);
-			backdrop.classList.toggle("pointer-events-none", !isOpen);
 
+			for (const el of [list, backdrop]) {
+				el.dataset.state = isOpen ? "open" : "closed";
+				el.classList.toggle("pointer-events-auto", isOpen);
+				el.classList.toggle("pointer-events-none", !isOpen);
+			}
+
+			// `translate-x-full`/`opacity-0` — состояние покоя закрытого меню:
+			// снимаем на открытии, возвращаем после проигранной анимации выхода.
 			if (isOpen) {
+				list.classList.remove("translate-x-full");
+				backdrop.classList.remove("opacity-0");
 				lockBody();
 			} else {
 				unlockBody();
 			}
 		};
+
+		const onAnimationEnd = (event: AnimationEvent) => {
+			const el = event.currentTarget as HTMLElement;
+
+			if (el.dataset.state !== "closed") return;
+
+			if (el === list) {
+				list.classList.add("translate-x-full");
+			} else {
+				backdrop.classList.add("opacity-0");
+			}
+		};
+
+		list.addEventListener("animationend", onAnimationEnd);
+		backdrop.addEventListener("animationend", onAnimationEnd);
 
 		toggle.addEventListener("click", () => {
 			setOpen(toggle.getAttribute("aria-expanded") !== "true");
