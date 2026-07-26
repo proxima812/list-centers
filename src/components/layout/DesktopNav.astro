@@ -1,0 +1,32 @@
+---
+import ButtonLink from "../ui/ButtonLink.astro";
+import { links } from "@/data/links";
+
+const desktopLinks = links;
+
+const currentPath = Astro.url.pathname.replace(/^\/(?:ru|en)(?=\/|$)/, "") || "/";
+const normalizePath = (path: string) => (path === "/" ? "/" : path.replace(/\/+$/, ""));
+const isActivePath = (href: string) => {
+	const itemPath = normalizePath(href);
+	const pagePath = normalizePath(currentPath);
+
+	return itemPath === "/"
+		? pagePath === "/"
+		: pagePath === itemPath || pagePath.startsWith(`${itemPath}/`);
+};
+---
+
+<nav class="hidden space-x-3 lg:flex">
+	{
+		desktopLinks.map((item) => (
+			<ButtonLink
+				variant="ghost"
+				href={item.href}
+				target={item.target}
+				label={item.label}
+				labelKey={item.labelKey}
+				aria-current={isActivePath(item.href) ? "page" : undefined}
+			/>
+		))
+	}
+</nav>
