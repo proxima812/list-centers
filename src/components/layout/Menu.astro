@@ -23,14 +23,12 @@ const materialLinks = links.slice(1, 3).concat(links.slice(4, 5));
 const policyLinks = links.slice(3, 4);
 const otherLinks = links.slice(-2);
 const codeLicenseHref = "https://github.com/proxima812/tatarverse/blob/main/LICENSE";
-const contentLicenseHref =
-	"https://github.com/proxima812/tatarverse/blob/main/CONTENT-LICENSE.md";
+const contentLicenseHref = "https://github.com/proxima812/tatarverse/blob/main/CONTENT-LICENSE.md";
 const developerHref = "https://github.com/proxima812";
 
 const sectionTitleClass =
 	"mb-4 max-w-full px-4 text-xs font-semibold uppercase tracking-tight text-muted-foreground";
-const mobileLinkClass =
-	"w-full min-w-0 !max-w-full !shrink justify-start text-lg text-primary";
+const mobileLinkClass = "w-full min-w-0 !max-w-full !shrink justify-start text-lg text-primary";
 const mobileTextLinkClass =
 	"flex w-full min-w-0 max-w-full items-center justify-start px-4 py-2 text-lg font-medium text-primary wrap-anywhere";
 const activeLinkClass = "text-muted-foreground hover:bg-transparent";
@@ -51,7 +49,7 @@ const isActivePath = (href: string) => {
 	<button
 		type="button"
 		data-menu-toggle
-		class="relative inline-flex cursor-pointer items-center gap-1.5 rounded-md px-2 py-1.5 text-sm font-medium text-foreground transition-colors duration-100 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+		class="relative z-[100] inline-flex cursor-pointer items-center gap-1.5 rounded-md px-2 py-1.5 text-sm font-medium text-foreground transition-colors duration-100 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
 		aria-label={t("menu.open")}
 		aria-controls="mobile-menu"
 		aria-expanded="false"
@@ -75,7 +73,7 @@ const isActivePath = (href: string) => {
 
 	<div
 		data-menu-backdrop
-		class="pointer-events-none fixed inset-0 z-[87] bg-background/60 opacity-0 backdrop-blur-sm transition-opacity duration-300 ease-out"
+		class="pointer-events-none fixed inset-0 z-[95] bg-background/60 opacity-0 backdrop-blur-xs data-[state=closed]:animate-fade-out data-[state=open]:animate-fade-in"
 		aria-hidden="true"
 	>
 	</div>
@@ -83,12 +81,34 @@ const isActivePath = (href: string) => {
 	<nav
 		id="mobile-menu"
 		data-menu-list
-		class="pointer-events-none top-[60px] fixed inset-y-0 right-0 z-[90] h-dvh w-[min(20rem,85vw)] max-w-[85vw] translate-x-full overflow-hidden border-l bg-background transition-transform duration-300 ease-out"
+		class="pointer-events-none fixed inset-y-0 right-0 z-[96] flex w-[85%] max-w-[380px] translate-x-full flex-col overflow-hidden border-l border-border-muted bg-background shadow-lg data-[state=closed]:animate-drawer-out data-[state=open]:animate-drawer-in"
 		aria-label={t("menu.mobile")}
 	>
-		<div
-			class="h-full w-full max-w-full overflow-x-hidden overflow-y-auto overscroll-contain px-4 pb-12"
-		>
+		<div class="flex shrink-0 justify-end px-4 pt-4">
+			<button
+				type="button"
+				data-menu-close
+				class="inline-flex cursor-pointer items-center justify-center rounded-md p-2 text-foreground transition-colors duration-100 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+				aria-label={t("menu.close")}
+			>
+				<svg
+					width="20"
+					height="20"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					aria-hidden="true"
+				>
+					<path d="M18 6 6 18"></path>
+					<path d="m6 6 12 12"></path>
+				</svg>
+			</button>
+		</div>
+
+		<div class="w-full max-w-full flex-1 overflow-x-hidden overflow-y-auto overscroll-contain px-4 pt-4 pb-12">
 			<div class="flex min-w-0 max-w-full flex-col gap-10">
 				<section class="flex min-w-0 max-w-full flex-col" aria-labelledby="mobile-menu-main">
 					<h2 id="mobile-menu-main" class={sectionTitleClass}>
@@ -109,10 +129,7 @@ const isActivePath = (href: string) => {
 					}
 				</section>
 
-				<section
-					class="flex min-w-0 max-w-full flex-col"
-					aria-labelledby="mobile-menu-materials"
-				>
+				<section class="flex min-w-0 max-w-full flex-col" aria-labelledby="mobile-menu-materials">
 					<h2 id="mobile-menu-materials" class={sectionTitleClass}>
 						{t("menu.materials")}
 					</h2>
@@ -150,10 +167,7 @@ const isActivePath = (href: string) => {
 					}
 				</section>
 
-				<section
-					class="flex min-w-0 max-w-full flex-col"
-					aria-labelledby="mobile-menu-licenses"
-				>
+				<section class="flex min-w-0 max-w-full flex-col" aria-labelledby="mobile-menu-licenses">
 					<h2 id="mobile-menu-licenses" class={sectionTitleClass}>
 						{t("menu.licenses")}
 					</h2>
@@ -172,11 +186,7 @@ const isActivePath = (href: string) => {
 						rel="noreferrer noopener"
 						class={`${mobileTextLinkClass} gap-2`}
 					>
-						<Icon
-							name="mdi:file-document-outline"
-							class="size-5 shrink-0"
-							aria-hidden="true"
-						/>
+						<Icon name="mdi:file-document-outline" class="size-5 shrink-0" aria-hidden="true" />
 						<span class="min-w-0 wrap-anywhere">{t("menu.contentLicense")}</span>
 					</a>
 				</section>
@@ -201,10 +211,7 @@ const isActivePath = (href: string) => {
 					}
 				</section>
 
-				<section
-					class="flex min-w-0 max-w-full flex-col"
-					aria-labelledby="mobile-menu-developer"
-				>
+				<section class="flex min-w-0 max-w-full flex-col" aria-labelledby="mobile-menu-developer">
 					<h2 id="mobile-menu-developer" class={sectionTitleClass}>
 						{t("menu.developer")}
 					</h2>
@@ -219,10 +226,7 @@ const isActivePath = (href: string) => {
 					</a>
 				</section>
 
-				<section
-					class="flex min-w-0 max-w-full flex-col"
-					aria-labelledby="mobile-menu-language"
-				>
+				<section class="flex min-w-0 max-w-full flex-col" aria-labelledby="mobile-menu-language">
 					<h2 id="mobile-menu-language" class={sectionTitleClass}>
 						{t("language.switcher")}
 					</h2>
@@ -260,41 +264,107 @@ const isActivePath = (href: string) => {
 		const toggle = root.querySelector<HTMLButtonElement>("[data-menu-toggle]");
 		const list = root.querySelector<HTMLElement>("[data-menu-list]");
 		const backdrop = root.querySelector<HTMLElement>("[data-menu-backdrop]");
+		const closeButton = root.querySelector<HTMLButtonElement>("[data-menu-close]");
 
 		if (!toggle || !list || !backdrop) return;
 
-		const lockBody = (): void => {
+		// В разметке drawer лежит внутри <header>, поэтому пометить хедер как
+		// inert было бы нельзя, не отключив заодно сам drawer. Переносим оба
+		// оверлея в <body>: они и так `fixed`, от родителя ничего не зависит.
+		document.body.append(backdrop, list);
+
+		let lockedScrollY = 0;
+
+		const lockBody = () => {
+			lockedScrollY = window.scrollY;
 			document.documentElement.classList.add("overflow-hidden");
 			document.body.classList.add("overflow-hidden", "touch-none");
+			document.body.style.position = "fixed";
+			document.body.style.top = `-${lockedScrollY}px`;
+			document.body.style.left = "0";
+			document.body.style.right = "0";
+			document.body.style.width = "100%";
 		};
 
-		const unlockBody = (): void => {
+		const unlockBody = () => {
 			document.documentElement.classList.remove("overflow-hidden");
 			document.body.classList.remove("overflow-hidden", "touch-none");
+			document.body.style.position = "";
+			document.body.style.top = "";
+			document.body.style.left = "";
+			document.body.style.right = "";
+			document.body.style.width = "";
+			window.scrollTo(0, lockedScrollY);
 		};
 
-		const setOpen = (isOpen: boolean): void => {
-			const wasOpen = toggle.getAttribute("aria-expanded") === "true";
+		const FOCUSABLE =
+			'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
+		const getFocusable = (): HTMLElement[] =>
+			// offsetParent отсекает скрытые элементы: пока drawer сдвинут за экран,
+			// он не скрыт, но внутри могут быть `hidden`-блоки.
+			Array.from(list.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
+				(el) => el.offsetParent !== null,
+			);
+
+		// Контент под drawer'ом на время открытия убирается и от скринридеров,
+		// и из таб-порядка. `inert` делает и то, и другое одним атрибутом.
+		const backgroundRegions = (): HTMLElement[] =>
+			Array.from(document.body.children).filter(
+				(el): el is HTMLElement =>
+					el instanceof HTMLElement && el !== list && el !== backdrop,
+			);
+
+		const setOpen = (isOpen: boolean) => {
+			const wasOpen = toggle.getAttribute("aria-expanded") === "true";
 			if (isOpen === wasOpen) return;
 
 			toggle.setAttribute("aria-expanded", String(isOpen));
 
-			list.classList.toggle("translate-x-full", !isOpen);
-			list.classList.toggle("pointer-events-auto", isOpen);
-			list.classList.toggle("pointer-events-none", !isOpen);
+			for (const el of [list, backdrop]) {
+				el.dataset.state = isOpen ? "open" : "closed";
+				el.classList.toggle("pointer-events-auto", isOpen);
+				el.classList.toggle("pointer-events-none", !isOpen);
+			}
 
-			backdrop.classList.toggle("opacity-100", isOpen);
-			backdrop.classList.toggle("opacity-0", !isOpen);
-			backdrop.classList.toggle("pointer-events-auto", isOpen);
-			backdrop.classList.toggle("pointer-events-none", !isOpen);
+			for (const region of backgroundRegions()) {
+				region.inert = isOpen;
+			}
 
-			isOpen ? lockBody() : unlockBody();
+			// `translate-x-full`/`opacity-0` — состояние покоя закрытого меню:
+			// снимаем на открытии, возвращаем после проигранной анимации выхода.
+			if (isOpen) {
+				list.classList.remove("translate-x-full");
+				backdrop.classList.remove("opacity-0");
+				lockBody();
+				getFocusable()[0]?.focus();
+			} else {
+				unlockBody();
+				// Фокус мог остаться на ссылке внутри закрывающегося drawer'а —
+				// возвращаем его на кнопку, иначе он улетает на <body>.
+				if (list.contains(document.activeElement)) {
+					toggle.focus();
+				}
+			}
 		};
 
+		const onAnimationEnd = (event: AnimationEvent) => {
+			const el = event.currentTarget as HTMLElement;
+
+			if (el.dataset.state !== "closed") return;
+
+			if (el === list) {
+				list.classList.add("translate-x-full");
+			} else {
+				backdrop.classList.add("opacity-0");
+			}
+		};
+
+		list.addEventListener("animationend", onAnimationEnd);
+		backdrop.addEventListener("animationend", onAnimationEnd);
+
 		toggle.addEventListener("click", () => {
-			const isOpen = toggle.getAttribute("aria-expanded") === "true";
-			setOpen(!isOpen);
+			setOpen(toggle.getAttribute("aria-expanded") !== "true");
 		});
 
 		list.addEventListener("click", (event) => {
@@ -307,9 +377,38 @@ const isActivePath = (href: string) => {
 			setOpen(false);
 		});
 
-		document.addEventListener("keydown", (event) => {
+		closeButton?.addEventListener("click", () => {
+			setOpen(false);
+			toggle.focus();
+		});
+
+		// Слушатель на самом drawer'е, а не на document: иначе несколько
+		// экземпляров меню навесили бы по хендлеру каждый.
+		list.addEventListener("keydown", (event) => {
 			if (event.key === "Escape") {
 				setOpen(false);
+				toggle.focus();
+
+				return;
+			}
+
+			if (event.key !== "Tab") return;
+
+			// Замыкаем таб-порядок внутри drawer'а: с последнего элемента —
+			// на первый, и наоборот по Shift+Tab.
+			const focusable = getFocusable();
+
+			if (focusable.length === 0) return;
+
+			const first = focusable[0];
+			const last = focusable[focusable.length - 1];
+
+			if (!event.shiftKey && document.activeElement === last) {
+				event.preventDefault();
+				first.focus();
+			} else if (event.shiftKey && document.activeElement === first) {
+				event.preventDefault();
+				last.focus();
 			}
 		});
 	});
