@@ -21,6 +21,7 @@ const dict: Dictionary = {
 	"nav.home": "Главная страница",
 	"nav.backToTop": "Наверх",
 	"menu.open": "Открыть меню",
+	"menu.close": "Закрыть меню",
 	"menu.mobile": "Мобильное меню",
 	"menu.main": "Меню",
 	"menu.materials": "Материалы",

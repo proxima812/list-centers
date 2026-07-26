@@ -21,6 +21,7 @@ const dict: Dictionary = {
 	"nav.home": "Home page",
 	"nav.backToTop": "Back to top",
 	"menu.open": "Open menu",
+	"menu.close": "Close menu",
 	"menu.mobile": "Mobile menu",
 	"menu.main": "Menu",
 	"menu.materials": "Materials",
