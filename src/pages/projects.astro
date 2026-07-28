@@ -6,13 +6,14 @@ import { Image } from "astro:assets";
 import { getCollection } from "astro:content";
 import { Icon } from "astro-icon/components";
 
-const title = "Поддержим своих";
+const title = "Проекты";
 const description =
 	"Поддержка в tatarverse: витрина проектов татар, башкир и крымских татар — малый и средний бизнес, YouTube-каналы, сайты, Telegram-каналы и другие соцсети. Расскажите о своём проекте, чтобы его заметили.";
 
-const feedbackHref = "https://t.me/ulu_er/20";
+const feedbackHref = "https://t.me/the_tatarverse/20";
 const projects = (await getCollection("projects")).sort(
-	(a, b) => a.data.sortOrder - b.data.sortOrder || a.data.title.localeCompare(b.data.title, "ru"),
+	(a, b) =>
+		a.data.sortOrder - b.data.sortOrder || a.data.title.localeCompare(b.data.title, "ru"),
 );
 const categories = Array.from(new Set(projects.map((project) => project.data.category)));
 
@@ -25,6 +26,15 @@ function getUrlLabel(url?: string) {
 		return url;
 	}
 }
+
+// Цветные акценты — только в иконках: палитра сайта монохромная,
+// цвет здесь работает как маркер типа проекта, а не как второй бренд-цвет.
+const pitchItems = [
+	{ icon: "mdi:storefront-outline", title: "Небольшой бизнес", tone: "text-amber-500" },
+	{ icon: "mdi:youtube", title: "YouTube-канал", tone: "text-rose-500" },
+	{ icon: "mdi:web", title: "Сайт", tone: "text-sky-500" },
+	{ icon: "mdi:telegram", title: "Telegram и соцсети", tone: "text-violet-500" },
+] as const;
 
 const projectCards = projects.map((project) => ({
 	entry: project,
@@ -50,63 +60,70 @@ const projectCards = projects.map((project) => ({
 	]}
 >
 	<BackButton href="/" variant="outline" label="Назад" labelKey="nav.back" />
-	<main class="mx-auto w-full max-w-2xl space-y-6">
-		<header class="space-y-3">
-			<h1 class="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+	<main class="flex flex-col items-center">
+		<header class="flex flex-col items-center text-center">
+			<h1 class="text-5xl font-black tracking-tighter text-foreground sm:text-6xl">
 				{title}
 			</h1>
+
+			<p class="mt-3 max-w-prose text-base font-medium text-muted-foreground sm:text-lg">
+				Проекты <span class="font-bold text-foreground">татар</span>, <span
+					class="font-bold text-foreground">башкир</span
+				> и <span class="font-bold text-foreground">крымских татар</span>
+			</p>
 		</header>
 
-		<article
-			class="corner-squircle relative overflow-hidden rounded-4xl bg-neutral-950 p-6 text-white shadow-2xs ring ring-inset ring-white/10 sm:p-8"
-		>
-			<div class="pointer-events-none absolute inset-0" aria-hidden="true">
-				<div class="absolute -top-24 -left-20 size-72 rounded-full bg-amber-400/20 blur-3xl">
-				</div>
-				<div class="absolute top-1/3 -right-24 size-80 rounded-full bg-violet-500/20 blur-3xl">
-				</div>
-				<div class="absolute -bottom-28 left-1/3 size-72 rounded-full bg-cyan-400/15 blur-3xl">
-				</div>
-			</div>
+		<article class="mt-12 w-full max-w-2xl text-center">
+			<h2 class="text-2xl font-extrabold tracking-tight text-balance text-foreground sm:text-3xl">
+				Ведёте своё дело или проект?
+			</h2>
 
-			<div class="relative">
-				<h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Поддержим своих</h2>
-				<p class="mt-2 text-sm font-medium text-white/60 sm:text-base">
-					Проекты татар, башкир и крымских татар
-				</p>
+			<ul class="mt-8 flex flex-wrap justify-center gap-x-7 gap-y-4">
+				{
+					pitchItems.map((item) => (
+						<li class="inline-flex items-center gap-2">
+							<Icon name={item.icon} class:list={["size-5 shrink-0", item.tone]} aria-hidden="true" />
+							<span class="text-sm font-semibold text-foreground sm:text-base">{item.title}</span>
+						</li>
+					))
+				}
+			</ul>
 
-				<p class="mt-7 max-w-prose text-sm leading-6 text-white/80 sm:text-base">
-					Ведёте своё дело или проект? Небольшой бизнес, YouTube-канал, сайт, Telegram-канал
-					или страницу в соцсетях — расскажите о нём. Мы разместим ссылку и описание, чтобы
-					земляки и гости смогли вас найти и поддержать: подписаться, заказать, рассказать
-					друзьям.
-				</p>
+			<p
+				class="mx-auto mt-8 max-w-prose text-sm leading-relaxed font-normal text-muted-foreground sm:text-base"
+			>
+				Мы разместим ссылку и описание, чтобы земляки и гости смогли вас найти и поддержать: <span
+					class="font-semibold text-foreground">подписаться</span
+				>, <span class="font-semibold text-foreground">заказать</span>, <span
+					class="font-semibold text-foreground">рассказать друзьям</span
+				>.
+			</p>
 
-				<a
-					href={feedbackHref}
-					target="_blank"
-					rel="noreferrer noopener"
-					class="group mt-6 inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-neutral-900 no-underline transition hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+			<a
+				href={feedbackHref}
+				target="_blank"
+				rel="noreferrer noopener"
+				class="group corner-squircle mt-8 inline-flex items-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-bold tracking-tight text-background no-underline transition hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+			>
+				Предложить проект
+				<svg
+					class="size-4 transition-transform duration-200 group-hover:translate-x-0.5"
+					viewBox="0 0 16 16"
+					fill="none"
+					aria-hidden="true"
 				>
-					Предложить проект
-					<svg
-						class="size-4 transition-transform duration-200 group-hover:translate-x-0.5"
-						viewBox="0 0 16 16"
-						fill="none"
-						aria-hidden="true"
-					>
-						<path
-							d="M3 8h10m0 0-4-4m4 4-4 4"
-							stroke="currentColor"
-							stroke-width="1.5"
-							stroke-linecap="round"
-							stroke-linejoin="round"></path>
-					</svg>
-				</a>
-			</div>
+					<path
+						d="M3 8h10m0 0-4-4m4 4-4 4"
+						stroke="currentColor"
+						stroke-width="1.5"
+						stroke-linecap="round"
+						stroke-linejoin="round"></path>
+				</svg>
+			</a>
 		</article>
 	</main>
-	<section class="mx-auto w-full max-w-4xl space-y-6" aria-label="Проекты сообщества">
+
+	<section class="mx-auto mt-14 w-full space-y-6" aria-label="Проекты сообщества">
 		<div
 			id="project-filter"
 			class="flex flex-wrap gap-2"
@@ -142,7 +159,11 @@ const projectCards = projects.map((project) => ({
 						class="project-card corner-squircle relative flex h-full flex-col gap-4 rounded-4xl bg-surface p-5 text-surface-foreground shadow-2xs ring ring-border-muted transition hover:bg-primary/5 hover:ring-primary/30 sm:p-6"
 						data-category={project.data.category}
 					>
-						<a href={detailHref} class="absolute inset-0 z-0 rounded-4xl corner-squircle" aria-label={project.data.title}>
+						<a
+							href={detailHref}
+							class="absolute inset-0 z-0 rounded-4xl corner-squircle"
+							aria-label={project.data.title}
+						>
 							<span class="sr-only">{project.data.title}</span>
 						</a>
 						<div class="pointer-events-none relative z-10 flex min-w-0 items-start gap-4">
@@ -164,75 +185,86 @@ const projectCards = projects.map((project) => ({
 							)}
 							<div class="min-w-0 flex-1">
 								<div class="flex flex-wrap items-center gap-2">
-									<span class="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary ring ring-inset ring-primary/10">
+									<span class="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-bold tracking-wide text-primary uppercase ring ring-inset ring-primary/10">
 										{project.data.category}
 									</span>
-									{
-										project.data.location ? (
-											<span class="text-sm font-medium text-muted-foreground">
-												{project.data.location}
-											</span>
-										) : null
-									}
+									{project.data.location ? (
+										<span class="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground">
+											<Icon
+												name="mdi:map-marker-outline"
+												class="size-4 text-sky-500"
+												aria-hidden="true"
+											/>
+											{project.data.location}
+										</span>
+									) : null}
 								</div>
-								<h3 class="mt-2 text-xl font-bold tracking-tight text-balance">
+								<h3 class="mt-2 text-xl font-extrabold tracking-tight text-balance">
 									{project.data.title}
 								</h3>
-								{
-									project.data.website && websiteLabel ? (
-										<a
-											href={project.data.website}
-											target="_blank"
-											rel="noreferrer noopener"
-											class="pointer-events-auto relative mt-1 block truncate text-sm font-medium text-link underline decoration-link-decoration underline-offset-4"
-										>
-											{websiteLabel}
-										</a>
-									) : null
-								}
+								{project.data.website && websiteLabel ? (
+									<a
+										href={project.data.website}
+										target="_blank"
+										rel="noreferrer noopener"
+										class="pointer-events-auto relative mt-1 inline-flex max-w-full items-center gap-1.5 text-sm font-medium text-link underline decoration-link-decoration underline-offset-4"
+									>
+										<Icon
+											name="mdi:link-variant"
+											class="size-4 shrink-0 text-emerald-500 no-underline"
+											aria-hidden="true"
+										/>
+										<span class="truncate">{websiteLabel}</span>
+									</a>
+								) : null}
 							</div>
 						</div>
 
 						<div class="relative z-10 mt-auto flex flex-wrap gap-2">
 							<a
 								href={detailHref}
-								class="inline-flex items-center gap-2 rounded-2xl corner-squircle bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground no-underline transition hover:bg-primary/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+								class="group/btn inline-flex items-center gap-2 rounded-2xl corner-squircle bg-primary px-4 py-2 text-sm font-bold tracking-tight text-primary-foreground no-underline transition hover:bg-primary/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
 							>
-								<Icon name="mdi:arrow-right" class="size-4" aria-hidden="true" />
 								Подробнее
+								<Icon
+									name="mdi:arrow-right"
+									class="size-4 transition-transform duration-200 group-hover/btn:translate-x-0.5"
+									aria-hidden="true"
+								/>
 							</a>
-							{
-								project.data.instagram ? (
-									<a
-										href={project.data.instagram}
-										target="_blank"
-										rel="noreferrer noopener"
-										class="inline-flex items-center gap-2 rounded-2xl corner-squircle bg-transparent px-4 py-2 text-sm font-semibold text-primary/80 no-underline ring ring-inset ring-primary/10 transition hover:bg-primary/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-									>
-										<Icon name="mdi:instagram" class="size-4" aria-hidden="true" />
-										Instagram
-									</a>
-								) : null
-							}
+							{project.data.instagram ? (
+								<a
+									href={project.data.instagram}
+									target="_blank"
+									rel="noreferrer noopener"
+									class="inline-flex items-center gap-2 rounded-2xl corner-squircle bg-transparent px-4 py-2 text-sm font-semibold text-primary/80 no-underline ring ring-inset ring-primary/10 transition hover:bg-rose-500/5 hover:text-rose-600 hover:ring-rose-500/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+								>
+									<Icon name="mdi:instagram" class="size-4 text-rose-500" aria-hidden="true" />
+									Instagram
+								</a>
+							) : null}
 						</div>
 					</article>
 				))
 			}
 		</div>
 
-		<p id="project-empty" class="hidden py-8 text-center text-sm text-muted-foreground">
-			По выбранным категориям проектов пока нет.
-		</p>
+		<div id="project-empty" class="hidden py-12 text-center">
+			<Icon
+				name="mdi:folder-open-outline"
+				class="mx-auto size-8 text-amber-500"
+				aria-hidden="true"
+			/>
+			<p class="mt-3 text-sm font-medium text-muted-foreground">
+				По выбранным категориям проектов пока нет.
+			</p>
+		</div>
 	</section>
 
 	<script>
 		const filter = document.getElementById("project-filter");
-		const buttons = Array.from(
-			document.querySelectorAll<HTMLButtonElement>(".filter-btn"),
-		);
-		const cards = Array.from(
-			document.querySelectorAll<HTMLElement>(".project-card"),
-		);
+		const buttons = Array.from(document.querySelectorAll<HTMLButtonElement>(".filter-btn"));
+		const cards = Array.from(document.querySelectorAll<HTMLElement>(".project-card"));
 		const empty = document.getElementById("project-empty");
 		const selected = new Set<string>();
 
