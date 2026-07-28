@@ -17,16 +17,17 @@ brand
 
 ## Current Scope
 
-- Static Astro 6 site.
-- Public locales: Russian (`ru`) and English (`en`).
-- Russian center entries are the source content in `src/data/centers_formatted`.
-- English center entries live in `src/data/centers_i18n/en`.
+- Static Astro 7 site, deployed to Cloudflare Pages.
+- Public locales: Russian (`ru`, default, unprefixed) and English (`en`, under `/en/`).
+- Russian center entries are the source content in `src/data/centers_formatted` (389 entries).
+- English center entries live in `src/data/centers_i18n/en` (366 entries — translation coverage is partial).
 - UI strings live in `src/i18n/locales/ru.ts` and `src/i18n/locales/en.ts`.
-- Primary public surfaces: homepage, centers index, center detail pages, sources, translations, policy, and posts.
+- Primary public surfaces: homepage, centers index, center detail pages, interactive map, sources, translations, policy, projects, thanks, and posts.
+- Secondary content: 3 posts, 11 projects, 7 thanks entries.
 
 ## Brand Personality
 
-Useful, precise, compact, cultural, modern, and restrained. The current design system is mostly monochrome, but the homepage has a controlled brand layer: a liquid-metal mark, a blue hero accent, compact animated statistics, and a real search screenshot section. The catalog itself remains quiet and factual.
+Useful, precise, compact, cultural, modern, and restrained. The current design system is mostly monochrome, and the homepage carries a single controlled brand layer: a liquid-metal mark above a compact hero title and a short link list. The catalog itself remains quiet and factual.
 
 ## Anti-references
 
@@ -39,7 +40,7 @@ No glossy SaaS styling, marketplace templates, generic startup hero language, de
 3. Preserve factual wording, source links, locale routing, and stable slugs.
 4. Use the monochrome token system for structure and the blue accent only for the homepage brand moment.
 5. Let real interface imagery carry explanation where it is clearer than text.
-6. Use motion sparingly: page identity, stats emphasis, and small control feedback only.
+6. Use motion sparingly: page identity, the homepage brand mark, and small control feedback only.
 7. Keep localization behavior predictable and visible.
 
 ## Accessibility & Inclusion
