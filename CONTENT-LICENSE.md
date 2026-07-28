@@ -53,3 +53,7 @@ without written permission from the project owner:
 You may use the open-source code and open content according to their respective
 licenses, but you may not present a fork, mirror, or derivative project as the
 official `tatarverse.cc` project.
+
+---
+
+[Русская версия](./CONTENT-LICENSE.ru.md)

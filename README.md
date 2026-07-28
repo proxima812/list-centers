@@ -82,7 +82,7 @@ When adding a UI string:
 
 - [Product notes](./PRODUCT.md)
 - [Design system](./DESIGN.md)
-- [Content license](./CONTENT-LICENSE.md)
+- [Content license](./CONTENT-LICENSE.md) ([Русский](./CONTENT-LICENSE.ru.md))
 - [UI/UX review archive](./UI-UX-REVIEW.md)
 - [UI/UX plan archive](./plan-ui-ux.md)
 
