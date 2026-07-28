@@ -30,6 +30,16 @@ const CenterLocationSchema = z
 	})
 	.strict();
 
+const CenterGeoSchema = z
+	.object({
+		lat: z.number(),
+		lng: z.number(),
+		address: z.string().min(1).optional(),
+		mapUrl: z.url().optional(),
+		precision: z.enum(["exact", "city", "region"]).default("exact"),
+	})
+	.strict();
+
 const CenterSchema = z
 	.object({
 		title: z.string().min(1),
@@ -39,6 +49,7 @@ const CenterSchema = z
 		source: z.url().optional(),
 		summary: z.string().optional(),
 		location: CenterLocationSchema.optional(),
+		geo: CenterGeoSchema.optional(),
 	})
 	.strict();
 

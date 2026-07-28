@@ -25,7 +25,7 @@ const ogLocales: Record<AppLocale, string> = {
 	en: "en_US",
 };
 
-const unlocalizedPathnames = new Set(["posts", "sabantye"]);
+const unlocalizedPathnames = new Set(["posts", "sabantye", "map"]);
 
 export function isAppLocale(value: string | null | undefined): value is AppLocale {
 	return Boolean(value && locales.includes(value as AppLocale));

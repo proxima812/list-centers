@@ -18,6 +18,7 @@ const dict: Dictionary = {
 	"nav.sources": "Источники",
 	"nav.policy": "Политика",
 	"nav.thanks": "Благодарности",
+	"nav.map": "Карта",
 	"nav.primary": "Основная навигация",
 	"nav.home": "Главная страница",
 	"nav.backToTop": "Наверх",

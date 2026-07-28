@@ -32,12 +32,15 @@
 		"react": "^19.2.7",
 		"react-dom": "^19.2.7",
 		"tailwind-merge": "^2.6.0",
-		"tailwindcss": "^4.0.9"
+		"tailwindcss": "^4.0.9",
+		"topojson-client": "^3.1.0",
+		"world-atlas": "^2.0.2"
 	},
 	"devDependencies": {
 		"@iconify-json/mdi": "^1.2.3",
 		"@iconify-json/tabler": "^1.2.33",
 		"@tailwindcss/typography": "^0.5.16",
+		"@types/topojson-client": "^3.1.5",
 		"@vite-pwa/astro": "^1.2.0",
 		"typescript": "^6.0.2",
 		"wrangler": "^4.92.0"

@@ -1,0 +1,15 @@
+---
+import MapClient from "@/components/map/MapClient";
+import Layout from "@/layouts/Layout.astro";
+import { getMapCopy } from "@/utils/mapData";
+
+const copy = getMapCopy();
+const centersDataUrl = "/map/centers.json";
+const countriesDataUrl = "/map/countries.json";
+---
+
+<Layout title={copy.title} description={copy.description} classContainer="max-w-none px-0 py-0 md:py-0">
+	<main class="not-container bg-background">
+		<MapClient copy={copy} centersUrl={centersDataUrl} countriesUrl={countriesDataUrl} client:load />
+	</main>
+</Layout>

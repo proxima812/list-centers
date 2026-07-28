@@ -28,8 +28,6 @@ const countdownUnits = [
 	{ key: "minutes", label: "минут", value: initialCountdown.minutes },
 	{ key: "seconds", label: "секунд", value: initialCountdown.seconds },
 ] as const;
-
-const feedbackHref = "https://t.me/ulu_er/19";
 ---
 
 <Layout
@@ -39,34 +37,11 @@ const feedbackHref = "https://t.me/ulu_er/19";
 >
 	<BackButton href="/" variant="outline" label="Назад" labelKey="nav.back" />
 	<main class="mx-auto w-full max-w-2xl space-y-6">
-		<header class="space-y-3">
-			<h1 class="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-				{title}
-			</h1>
-		</header>
-
-		<article
-			class="corner-squircle relative overflow-hidden rounded-4xl bg-neutral-950 p-6 text-white shadow-2xs ring ring-inset ring-white/10 sm:p-8"
-		>
-			<div class="pointer-events-none absolute inset-0" aria-hidden="true">
-				<div
-					class="absolute -top-24 -left-20 size-72 rounded-full bg-emerald-500/25 blur-3xl"
-				>
-				</div>
-				<div
-					class="absolute top-1/3 -right-24 size-80 rounded-full bg-sky-500/20 blur-3xl"
-				>
-				</div>
-				<div
-					class="absolute -bottom-28 left-1/3 size-72 rounded-full bg-red-500/20 blur-3xl"
-				>
-				</div>
-			</div>
-
-			<div class="relative">
-				<h2 class="text-3xl font-bold tracking-tight sm:text-4xl">
+		<article>
+			<div>
+				<h1 class="text-3xl font-bold tracking-tight sm:text-4xl">
 					Сабантуй <span data-sabantuy-year>{sabantuyYear}</span>
-				</h2>
+				</h1>
 
 				<div
 					id="sabantuy-countdown"
@@ -80,17 +55,17 @@ const feedbackHref = "https://t.me/ulu_er/19";
 								<div class="min-w-0 text-center">
 									<span
 										data-countdown={unit.key}
-										class="countdown-value block text-[clamp(2rem,8.5vw,3.75rem)] font-bold tabular-nums leading-none tracking-tight"
+										class="countdown-value block text-[clamp(2rem,8.5vw,3.75rem)] font-bold tabular-nums leading-none tracking-tight text-neutral-950 "
 									>
 										{unit.key === "days" ? unit.value : pad(unit.value)}
 									</span>
-									<span class="mt-2 block text-[0.65rem] font-medium uppercase tracking-wide text-white/50 sm:text-xs">
+									<span class="mt-2 block text-[0.65rem] font-medium uppercase tracking-wide text-muted-foreground sm:text-xs">
 										{unit.label}
 									</span>
 								</div>
 								{index < countdownUnits.length - 1 && (
 									<span
-										class="countdown-colon text-[clamp(2rem,8.5vw,3.75rem)] font-bold leading-none text-white/30"
+										class="countdown-colon text-[clamp(2rem,8.5vw,3.75rem)] font-bold leading-none text-neutral-950/30"
 										aria-hidden="true"
 									>
 										:
@@ -101,25 +76,19 @@ const feedbackHref = "https://t.me/ulu_er/19";
 					}
 				</div>
 
-				<p class="mt-7 max-w-prose text-sm leading-6 text-white/80 sm:text-base">
-					Проводите Сабантуй в своём городе или стране? Оставьте заявку — мы разместим ваш
+				<p class="mt-7 max-w-prose text-sm leading-6 text-muted-foreground sm:text-base">
+					Проводите Сабантуй в своём городе или стране? <br /> Оставьте заявку - мы разместим ваш
 					праздник в ленте, чтобы земляки и гости смогли найти его и присоединиться.
 					Расскажите, где и когда, а мы поможем о нём узнать.
 				</p>
 
-				<a
-					href={feedbackHref}
-					target="_blank"
-					rel="noreferrer noopener"
-					class="group mt-6 inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-neutral-900 no-underline transition hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+				<button
+					type="button"
+					disabled
+					class="mt-6 inline-flex cursor-not-allowed items-center gap-2 rounded-full bg-foreground/10 px-5 py-2.5 text-sm font-semibold text-muted-foreground opacity-60"
 				>
 					Оставить заявку
-					<svg
-						class="size-4 transition-transform duration-200 group-hover:translate-x-0.5"
-						viewBox="0 0 16 16"
-						fill="none"
-						aria-hidden="true"
-					>
+					<svg class="size-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
 						<path
 							d="M3 8h10m0 0-4-4m4 4-4 4"
 							stroke="currentColor"
@@ -127,7 +96,7 @@ const feedbackHref = "https://t.me/ulu_er/19";
 							stroke-linecap="round"
 							stroke-linejoin="round"></path>
 					</svg>
-				</a>
+				</button>
 			</div>
 		</article>
 	</main>
