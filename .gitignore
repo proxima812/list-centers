@@ -31,3 +31,5 @@ bun.lockb*
 .playwright-mcp/
 
 AGENTS.md
+CLAUDE.md
+/docs/
