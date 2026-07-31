@@ -3,10 +3,8 @@ import Layout from "@/layouts/Layout.astro";
 import { getMapCopy } from "@/utils/mapData";
 
 const copy = getMapCopy();
-const centersDataUrl = "/map/centers.json";
-const countriesDataUrl = "/map/countries.json";
 ---
 
-<Layout title={copy.title} description={copy.description}>
+<Layout title={copy.title} description={copy.description} indexRobots={false}>
 	<h1 class="text-2xl italic text-zinc-500 text-center">В разработке...</h1>
 </Layout>

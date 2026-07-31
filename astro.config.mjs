@@ -27,7 +27,9 @@ export default defineConfig({
         },
     },
     integrations: [
-      sitemap(),
+      sitemap({
+          filter: (page) => new URL(page).pathname.replace(/\/$/, "") !== "/map",
+      }),
       mdx(),
       icon({ uis: ["*"] }),
       metaTags(),

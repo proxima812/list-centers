@@ -21,6 +21,10 @@ export interface Props {
 	YM?: boolean;
 	canonicalURL?: string | URL;
 	rssURL?: string | URL;
+	alternates?: Array<{
+		hreflang: string;
+		href: string | URL;
+	}>;
 }
 
 const {
@@ -37,6 +41,7 @@ const {
 	locale,
 	canonicalURL,
 	rssURL,
+	alternates,
 } = Astro.props;
 
 const siteURL = new URL(config.site.url);
@@ -69,6 +74,10 @@ const resolvedCanonicalURL = canonicalURL
 	? new URL(canonicalURL.toString(), siteURL)
 	: new URL(Astro.url.pathname, siteURL);
 const resolvedRssURL = rssURL ? new URL(rssURL.toString(), siteURL) : undefined;
+const resolvedAlternates = alternates?.map(({ hreflang, href }) => ({
+	hreflang,
+	href: formatCanonicalURL(new URL(href.toString(), siteURL)),
+}));
 
 const socialImageURL = new URL(
 	ogImage ? ogImage.toString() : `/${config.site.OG.defaultImage.replace(/^\/+/, "")}`,
@@ -199,6 +208,12 @@ const enabledVerifications = config.site.verifications.filter(
 <meta name="generator" content={Astro.generator} />
 
 {shouldIndex && <link rel="canonical" href={formatCanonicalURL(resolvedCanonicalURL)} />}
+{
+	shouldIndex &&
+		resolvedAlternates?.map(({ hreflang, href }) => (
+			<link rel="alternate" hreflang={hreflang} href={href} />
+		))
+}
 
 <title>{mainTitle}</title>
 

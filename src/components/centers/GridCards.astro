@@ -13,7 +13,7 @@ const routeIds = createCenterRouteIdMap(cards);
 
 <section
 	id="cards-grid"
-	class="grid scroll-mt-28 grid-cols-1 gap-6 md:grid-cols-2"
+	class="grid scroll-mt-28 grid-cols-1 gap-6 md:grid-cols-2 [&>[data-search-id]]:content-auto [&>[data-search-id]]:[contain-intrinsic-size:auto_22rem]"
 >
 	{
 		cards.map((card) => (

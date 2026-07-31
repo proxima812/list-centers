@@ -27,13 +27,15 @@ export async function getStaticPaths() {
 	return locales
 		.filter((locale) => locale !== defaultLocale)
 		.flatMap((locale) =>
-			entries.map((entry) => ({
-				params: { locale, id: routeIds.get(entry.id) ?? entry.id },
-				props: {
-					entry,
-					localizedEntry: translationEntriesByLocale.get(locale)?.get(entry.id),
-				},
-			})),
+			entries.flatMap((entry) => {
+				const localizedEntry = translationEntriesByLocale.get(locale)?.get(entry.id);
+				if (!localizedEntry) return [];
+
+				return [{
+					params: { locale, id: routeIds.get(entry.id) ?? entry.id },
+					props: { entry, localizedEntry },
+				}];
+			}),
 		);
 }
 ---

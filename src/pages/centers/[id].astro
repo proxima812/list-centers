@@ -45,6 +45,8 @@ const centerEntries = (await getCollection("centers")).sort((a, b) => {
 	);
 });
 const routeIds = createCenterRouteIdMap(centerEntries);
+const englishEntries = await getCollection("centersEn");
+const englishEntryById = new Map(englishEntries.map((centerEntry) => [centerEntry.id, centerEntry]));
 
 const clean = (value?: string | null) => {
 	if (!value) return null;
@@ -67,6 +69,14 @@ const { publishedDate, modifiedDate } = getContentDates({
 });
 const routeId = routeIds.get(entry.id) ?? entry.id;
 const canonicalURL = localizePath(locale, getCenterPath(routeId));
+const hasEnglishTranslation = englishEntryById.has(entry.id);
+const alternateLinks = [
+	{ hreflang: "ru", href: getCenterPath(routeId) },
+	...(hasEnglishTranslation
+		? [{ hreflang: "en", href: localizePath("en", getCenterPath(routeId)) }]
+		: []),
+	{ hreflang: "x-default", href: getCenterPath(routeId) },
+];
 const currentIndex = centerEntries.findIndex((centerEntry) => centerEntry.id === entry.id);
 const previousEntry = currentIndex > 0 ? centerEntries[currentIndex - 1] : null;
 const nextEntry =
@@ -128,10 +138,31 @@ const facts = [
 		: null,
 ].filter(Boolean);
 
-const pageDescription = summary ?? undefined;
-
 const headerBadges = [category, type].filter((value): value is string => Boolean(value));
 const localizedCountry = country ? getCountryLabel(country, locale) : null;
+const descriptionDetails = [...new Set((locale === "en"
+	? [city, region, localizedCountry]
+	: [city, region, localizedCountry, category, type]
+).filter((value): value is string => Boolean(value)))];
+const descriptionSuffix = locale === "en"
+	? ". Contacts and verified sources: tatarverse."
+	: ". Контакты и проверенные источники: tatarverse.";
+const maxDescriptionLength = 160;
+const maxContextLength = 32;
+const descriptionContext = descriptionDetails.reduce((context, detail) => {
+	const candidate = `${context ? `${context}, ` : ": "}${detail}`;
+	return candidate.length <= maxContextLength ? candidate : context;
+}, "");
+const maxHeadlineLength = maxDescriptionLength - descriptionContext.length - descriptionSuffix.length;
+const headlineTailLength = Math.min(56, Math.floor(maxHeadlineLength / 2));
+const descriptionHeadline = title.length <= maxHeadlineLength
+	? title
+	: `${title.slice(0, maxHeadlineLength - headlineTailLength - 3).trimEnd()}...${title.slice(-headlineTailLength).trimStart()}`;
+const fallbackDescription = `${descriptionHeadline}${descriptionContext}${descriptionSuffix}`;
+const pageDescription = (() => {
+	if (summary) return summary;
+	return fallbackDescription;
+})();
 
 const ruCountry = clean(entry.data.location?.country);
 const ruCategory = clean(entry.data.category);
@@ -147,7 +178,7 @@ const relatedIds = centerEntries
 	.slice(0, 4)
 	.map((centerEntry) => centerEntry.id);
 
-const localeEntries = locale === "en" ? await getCollection("centersEn") : centerEntries;
+const localeEntries = locale === "en" ? englishEntries : centerEntries;
 const localeEntryById = new Map(
 	localeEntries.map((centerEntry) => [centerEntry.id, centerEntry]),
 );
@@ -184,6 +215,7 @@ const jsonLd = {
 	description={pageDescription}
 	type="article"
 	canonicalURL={canonicalURL}
+	alternates={alternateLinks}
 	datePublished={publishedDate}
 	dateModified={modifiedDate}
 >

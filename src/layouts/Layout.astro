@@ -16,6 +16,10 @@ interface Props {
 	dateModified?: string | Date;
 	canonicalURL?: string | URL;
 	rssURL?: string | URL;
+	alternates?: Array<{
+		hreflang: string;
+		href: string | URL;
+	}>;
 	centered?: boolean;
 	classContainer?: string;
 }
@@ -31,6 +35,7 @@ const {
 	keywords,
 	canonicalURL,
 	rssURL,
+	alternates,
 	centered,
 	classContainer,
 } = Astro.props as Props;
@@ -60,6 +65,7 @@ const locale = getLocaleFromUrl(Astro.url);
 			keywords={keywords}
 			canonicalURL={canonicalURL}
 			rssURL={rssURL}
+			alternates={alternates}
 			datePublished={datePublished}
 			dateModified={dateModified}
 			locale={getOgLocale(locale)}

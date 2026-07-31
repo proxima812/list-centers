@@ -1,9 +1,6 @@
----
-import { LiquidMetal } from "@paper-design/shaders-react";
----
-
 <div
 	aria-hidden="true"
+	data-liquid-metal
 	class="liquid-metal pointer-events-none -mb-0 relative grid h-[140px] w-[140px] place-items-center overflow-hidden mx-auto"
 >
 	<img
@@ -12,25 +9,7 @@ import { LiquidMetal } from "@paper-design/shaders-react";
 		loading="eager"
 		class="flower-fade absolute z-50 h-[84px] w-[84px] object-contain"
 	/>
-	<LiquidMetal
-		client:load
-		width={140}
-		height={140}
-		image="/flower.svg"
-		colorBack="#ffffff"
-		colorTint="#4DDB3E"
-		shape={undefined}
-		repetition={2}
-		softness={0.1}
-		shiftRed={0.3}
-		shiftBlue={0.3}
-		distortion={0.07}
-		contour={0.4}
-		angle={70}
-		speed={0.6}
-		scale={0.6}
-		fit="contain"
-	/>
+	<div data-liquid-metal-root></div>
 </div>
 
 <!-- <div class="flex"> 
@@ -93,9 +72,73 @@ import { LiquidMetal } from "@paper-design/shaders-react";
 	/>
 </div> -->
 
+<script>
+	const motionQuery = window.matchMedia("(prefers-reduced-motion: no-preference)");
+
+	const mountLiquidMetal = async (container: HTMLElement) => {
+		if (container.dataset.liquidMetalMounted || !motionQuery.matches) return;
+		container.dataset.liquidMetalMounted = "true";
+
+		const rootElement = container.querySelector<HTMLElement>("[data-liquid-metal-root]");
+		if (!rootElement) return;
+
+		const [{ createElement }, { createRoot }, { LiquidMetal }] = await Promise.all([
+			import("react"),
+			import("react-dom/client"),
+			import("@paper-design/shaders-react"),
+		]);
+
+		createRoot(rootElement).render(
+			createElement(LiquidMetal, {
+				width: 140,
+				height: 140,
+				image: "/flower.svg",
+				colorBack: "#ffffff",
+				colorTint: "#4DDB3E",
+				repetition: 2,
+				softness: 0.1,
+				shiftRed: 0.3,
+				shiftBlue: 0.3,
+				distortion: 0.07,
+				contour: 0.4,
+				angle: 70,
+				speed: 0.6,
+				scale: 0.6,
+				fit: "contain",
+			}),
+		);
+
+		requestAnimationFrame(() => {
+			requestAnimationFrame(() => container.classList.add("webgl-ready"));
+		});
+	};
+
+	const scheduleLiquidMetal = () => {
+		if (!motionQuery.matches) return;
+
+		const run = () => {
+			document
+				.querySelectorAll<HTMLElement>("[data-liquid-metal]")
+				.forEach((container) => void mountLiquidMetal(container));
+		};
+
+		if ("requestIdleCallback" in window) {
+			window.requestIdleCallback(run, { timeout: 2000 });
+		} else {
+			globalThis.setTimeout(run, 1);
+		}
+	};
+
+	scheduleLiquidMetal();
+</script>
+
 <style>
 	.flower-fade {
-		animation: flower-fade-out 600ms ease-out 1s forwards;
+		opacity: 1;
+	}
+
+	.webgl-ready .flower-fade {
+		animation: flower-fade-out 600ms ease-out forwards;
 	}
 
 	@keyframes flower-fade-out {

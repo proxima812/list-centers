@@ -13,7 +13,7 @@ const t = useTranslations(locale);
 	data-voice-listening={t("list.voiceListening")}
 	data-voice-error={t("list.voiceError")}
 	role="search"
-	class="relative z-40 mb-6 flex items-center gap-1.5 rounded-4xl corner-squircle bg-surface p-2 shadow-2xs lg:mb-10"
+	class="relative z-40 mb-6 flex items-center gap-1 rounded-4xl corner-squircle bg-surface p-1 shadow-2xs lg:mb-10"
 >
 	<label class="relative z-50 min-w-0 flex-1" for="centers-search">
 		<span class="sr-only">{t("list.search.placeholder")}</span>
@@ -29,14 +29,14 @@ const t = useTranslations(locale);
 			aria-haspopup="listbox"
 			aria-owns="search-suggestions"
 			autocomplete="off"
-			class="min-h-8 w-full bg-transparent px-2 pr-9 text-sm text-surface-foreground outline-none placeholder:text-depth-400 [&::-webkit-search-cancel-button]:hidden"
+			class="min-h-11 w-full bg-transparent px-2 pr-11 text-sm text-surface-foreground outline-none placeholder:text-depth-400 [&::-webkit-search-cancel-button]:hidden"
 		/>
 		<button
 			type="button"
 			data-search-clear
 			aria-label={t("list.clearSearch")}
 			hidden
-			class="absolute right-1 top-1/2 grid size-7 -translate-y-1/2 cursor-pointer place-content-center rounded-full text-subtle-foreground transition hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35"
+			class="absolute right-0 top-1/2 grid size-11 -translate-y-1/2 cursor-pointer place-content-center rounded-full text-subtle-foreground transition hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35"
 		>
 			<Icon name="mdi:close" class="size-4" aria-hidden="true" />
 		</button>
@@ -48,7 +48,7 @@ const t = useTranslations(locale);
 		aria-label={t("list.filters")}
 		aria-expanded="false"
 		aria-controls="filters-panel"
-		class="relative grid size-8 shrink-0 place-items-center rounded-full bg-muted text-muted-foreground transition hover:bg-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 lg:hidden"
+		class="relative grid size-11 shrink-0 place-items-center rounded-full bg-muted text-muted-foreground transition hover:bg-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 lg:hidden"
 	>
 		<Icon name="mdi:tune" class="size-4" aria-hidden="true" />
 		<span
@@ -64,7 +64,7 @@ const t = useTranslations(locale);
 		aria-label={t("list.voiceSearch")}
 		aria-pressed="false"
 		hidden
-		class="grid size-8 shrink-0 place-items-center rounded-full text-muted-foreground transition hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 data-[listening=true]:bg-primary data-[listening=true]:text-primary-foreground"
+		class="grid size-11 shrink-0 place-items-center rounded-full text-muted-foreground transition hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 data-[listening=true]:bg-primary data-[listening=true]:text-primary-foreground"
 	>
 		<Icon name="mdi:microphone-outline" class="size-5" aria-hidden="true" />
 	</button>
@@ -74,7 +74,7 @@ const t = useTranslations(locale);
 		data-search-submit
 		aria-label={t("list.submitSearch")}
 		disabled
-		class="grid size-8 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground transition enabled:cursor-pointer enabled:hover:bg-depth-700 enabled:active:scale-95 disabled:cursor-not-allowed disabled:bg-muted disabled:text-depth-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+		class="grid size-11 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground transition enabled:cursor-pointer enabled:hover:bg-depth-700 enabled:active:scale-95 disabled:cursor-not-allowed disabled:bg-muted disabled:text-depth-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
 	>
 		<Icon name="mdi:arrow-up" class="size-5" aria-hidden="true" />
 	</button>
