@@ -24,17 +24,22 @@ const t = useTranslations(locale);
 
 type CountryLabels = Record<string, string>;
 
+// Активный чип раньше был `bg-white` — на белой подложке он ничем не
+// отличался от неактивного. Акцент здесь и есть то самое «сигнальное»
+// применение цвета, ради которого он введён.
 const chipClass =
-	"group min-w-0 cursor-pointer items-center gap-1.5 rounded-full border border-transparent bg-transparent px-2.5 py-1.5 text-sm font-medium text-muted-foreground transition hover:border-border hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25 data-[active]:bg-white data-[active]:text-foreground";
+	"group min-w-0 cursor-pointer items-center gap-1.5 rounded-full border border-transparent bg-transparent px-2.5 py-1.5 text-sm font-medium text-muted-foreground transition hover:border-border hover:bg-muted hover:text-foreground data-[active]:bg-accent data-[active]:text-accent-foreground";
 const filterSectionClass =
 	"border-b border-depth-100/70 pb-4 last:border-b-0 last:pb-0";
 const filterHeadingClass =
-	"text-[11px] font-semibold tracking-wide text-subtle-foreground uppercase";
+	"text-xs font-semibold tracking-wide text-subtle-foreground uppercase";
 const filterGroupClass = "flex max-w-80 flex-wrap items-center gap-1.5";
+// Счётчик внутри активного чипа лежит уже на акценте, поэтому берёт его
+// контрастную пару, а не primary.
 const countClass =
-	"rounded-full bg-subtle px-1.5 py-0.5 text-[10px] tabular-nums text-subtle-foreground group-data-[active]:bg-primary/10 group-data-[active]:text-primary";
+	"rounded-full bg-subtle px-1.5 py-0.5 text-xs tabular-nums text-subtle-foreground group-data-[active]:bg-accent-foreground/15 group-data-[active]:text-accent-foreground";
 const moreButtonClass =
-	"mt-0.5 inline-flex max-w-fit cursor-pointer text-xs font-medium text-muted-foreground underline decoration-border underline-offset-4 transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25";
+	"mt-0.5 inline-flex max-w-fit cursor-pointer text-xs font-medium text-muted-foreground underline decoration-border underline-offset-4 transition hover:text-foreground";
 const countryVisibleLimit = 5;
 const defaultVisibleLimit = 2;
 

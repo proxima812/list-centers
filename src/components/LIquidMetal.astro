@@ -12,72 +12,59 @@
 	<div data-liquid-metal-root></div>
 </div>
 
-<!-- <div class="flex"> 
-	<LiquidMetal
-		client:load
-		width={140}
-		height={140}
-		image="/flower.svg"
-		colorBack="#ffffff"
-		colorTint="#F5D730"
-		shape={undefined}
-		repetition={2}
-		softness={0.1}
-		shiftRed={0.3}
-		shiftBlue={0.3}
-		distortion={0.07}
-		contour={0.4}
-		angle={70}
-		speed={0.6}
-		scale={0.6}
-		fit="contain"
-	/>
-	<LiquidMetal
-		client:load
-		width={140}
-		height={140}
-		image="/flower.svg"
-		colorBack="#ffffff"
-		colorTint="#AE36C4"
-		shape={undefined}
-		repetition={2}
-		softness={0.1}
-		shiftRed={0.3}
-		shiftBlue={0.3}
-		distortion={0.07}
-		contour={0.4}
-		angle={70}
-		speed={0.6}
-		scale={0.6}
-		fit="contain"
-	/>
-	<LiquidMetal
-		client:load
-		width={140}
-		height={140}
-		image="/flower.svg"
-		colorBack="#ffffff"
-		colorTint="#3E48DB"
-		shape={undefined}
-		repetition={2}
-		softness={0.1}
-		shiftRed={0.3}
-		shiftBlue={0.3}
-		distortion={0.07}
-		contour={0.4}
-		angle={70}
-		speed={0.6}
-		scale={0.6}
-		fit="contain"
-	/>
-</div> -->
-
 <script>
+	import type { Root } from "react-dom/client";
+
 	const motionQuery = window.matchMedia("(prefers-reduced-motion: no-preference)");
+	const root = document.documentElement;
+
+	// Шейдер принимает цвет строкой и не понимает CSS-переменные, поэтому
+	// токен нужно разрешить в hex вручную: подставляем значение в пробный
+	// элемент и читаем то, что вернул движок (всегда rgb()).
+	const probe = document.createElement("span");
+	probe.style.display = "none";
+	document.body.append(probe);
+
+	const resolveToken = (token: string, fallback: string) => {
+		const raw = getComputedStyle(root).getPropertyValue(token).trim();
+		if (!raw) return fallback;
+
+		probe.style.color = "";
+		probe.style.color = raw;
+		const rgb = getComputedStyle(probe).color.match(/\d+(\.\d+)?/g);
+		if (!rgb || rgb.length < 3) return fallback;
+
+		return `#${rgb
+			.slice(0, 3)
+			.map((value) => Math.round(Number(value)).toString(16).padStart(2, "0"))
+			.join("")}`;
+	};
+
+	const shaderColors = () => ({
+		colorBack: resolveToken("--color-background", "#ffffff"),
+		colorTint: resolveToken("--color-accent", "#4ddb3e"),
+	});
+
+	const shaderProps = {
+		width: 140,
+		height: 140,
+		image: "/flower.svg",
+		repetition: 2,
+		softness: 0.1,
+		shiftRed: 0.3,
+		shiftBlue: 0.3,
+		distortion: 0.07,
+		contour: 0.4,
+		angle: 70,
+		speed: 0.6,
+		scale: 0.6,
+		fit: "contain",
+	} as const;
+
+	const mounted = new Map<HTMLElement, { root: Root; render: (props: object) => void }>();
 
 	const mountLiquidMetal = async (container: HTMLElement) => {
-		if (container.dataset.liquidMetalMounted || !motionQuery.matches) return;
-		container.dataset.liquidMetalMounted = "true";
+		if (mounted.has(container) || !motionQuery.matches) return;
 
 		const rootElement = container.querySelector<HTMLElement>("[data-liquid-metal-root]");
 		if (!rootElement) return;
@@ -88,25 +75,12 @@
 			import("@paper-design/shaders-react"),
 		]);
 
-		createRoot(rootElement).render(
-			createElement(LiquidMetal, {
-				width: 140,
-				height: 140,
-				image: "/flower.svg",
-				colorBack: "#ffffff",
-				colorTint: "#4DDB3E",
-				repetition: 2,
-				softness: 0.1,
-				shiftRed: 0.3,
-				shiftBlue: 0.3,
-				distortion: 0.07,
-				contour: 0.4,
-				angle: 70,
-				speed: 0.6,
-				scale: 0.6,
-				fit: "contain",
-			}),
-		);
+		const reactRoot = createRoot(rootElement);
+		const render = (colors: object) =>
+			reactRoot.render(createElement(LiquidMetal, { ...shaderProps, ...colors }));
+
+		mounted.set(container, { root: reactRoot, render });
+		render(shaderColors());
 
 		requestAnimationFrame(() => {
 			requestAnimationFrame(() => container.classList.add("webgl-ready"));
@@ -130,6 +104,14 @@
 	};
 
 	scheduleLiquidMetal();
+
+	// Тема и акцент живут в class/data-accent на <html>. Наблюдаем за ними,
+	// а не за событиями переключателей: источник правды один, и марка
+	// перекрашивается даже когда тему поменяли из другой вкладки.
+	new MutationObserver(() => {
+		const colors = shaderColors();
+		for (const instance of mounted.values()) instance.render(colors);
+	}).observe(root, { attributes: true, attributeFilter: ["class", "data-accent"] });
 </script>
 
 <style>

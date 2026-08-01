@@ -3,6 +3,11 @@
 @plugin "@tailwindcss/typography";
 @plugin "@toolwind/corner-shape";
 
+/* Тема переключается классом `.dark` на <html>. Класс ставит инлайн-скрипт
+   в <head> (Layout.astro) до первой отрисовки — иначе будет вспышка светлой
+   темы на каждой навигации. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @font-face {
   font-family: "Tatarverse Sans";
   src: url("/fonts/tatarverse-sans.woff2") format("woff2");
@@ -20,6 +25,9 @@
   font-display: swap;
 }
 
+/* Значения в @theme — это светлая тема и одновременно регистрация утилит
+   (bg-accent, text-surface и т.д.). Тёмные значения и пресеты акцента
+   переопределяют те же переменные ниже, обычным CSS. */
 @theme {
   --font-sans: "Twemoji Country Flags", "Tatarverse Sans", ui-sans-serif, system-ui, sans-serif;
 
@@ -28,7 +36,9 @@
   --color-muted: hsl(0 0% 94%);
   --color-muted-foreground: hsl(0 0% 42%);
   --color-subtle: hsl(0 0% 90%);
-  --color-subtle-foreground: hsl(0 0% 56%);
+  /* 46%, а не 56%: на 56% контраст к белому 3.24:1 — ниже порога WCAG AA
+     для текста, а этим токеном покрашен весь футер и подписи фильтров. */
+  --color-subtle-foreground: hsl(0 0% 46%);
   --color-surface: hsl(0 0% 100%);
   --color-surface-foreground: hsl(0 0% 11.4%);
   --color-surface-muted: hsl(0 0% 96%);
@@ -47,21 +57,27 @@
   --color-depth-600: hsl(0 0% 28%);
   --color-depth-700: hsl(0 0% 20%);
 
-  --color-destructive: lab(48.4493% 77.4328 61.5452);
+  /* Акцент — сигнал, а не декорация: герой, фокус, активное состояние.
+     Пресеты и тёмные пары — в блоке «Темы» ниже. */
+  --color-accent: hsl(142 66% 32%);
+  --color-accent-foreground: hsl(0 0% 100%);
+
+  --color-destructive: hsl(15 74% 45%);
 
   --animate-hero-pulse: hero-pulse 3s ease-in-out infinite;
   --animate-hero-gray-drift: hero-gray-drift 14s ease-in-out infinite;
 
-  /* Мягкое неоновое «дыхание»: зелёный ореол вокруг букв плавно ярче/тусклее.
-     drop-shadow (не text-shadow) — работает по форме клипнутого градиентом текста. */
+  /* Мягкое неоновое «дыхание»: ореол вокруг букв плавно ярче/тусклее.
+     drop-shadow (не text-shadow) — работает по форме клипнутого градиентом
+     текста. Цвет тянется из акцента, иначе ореол не переживёт смену темы. */
   @keyframes hero-pulse {
     0%,
     100% {
-      filter: drop-shadow(0 0 2px rgba(34, 197, 94, 0.25));
+      filter: drop-shadow(0 0 2px color-mix(in oklab, var(--color-accent) 25%, transparent));
     }
 
     50% {
-      filter: drop-shadow(0 0 10px rgba(74, 222, 128, 0.65));
+      filter: drop-shadow(0 0 10px color-mix(in oklab, var(--color-accent) 65%, transparent));
     }
   }
 
@@ -125,6 +141,85 @@
   }
 }
 
+/* ─── Темы ────────────────────────────────────────────────────────────────
+   Переопределяем те же переменные, что объявлены в @theme. Специфичность
+   у `:root` и `.dark` одинаковая — решает порядок, поэтому блок должен
+   оставаться ниже @theme. */
+
+:root {
+  color-scheme: light;
+}
+
+.dark {
+  color-scheme: dark;
+
+  --color-background: hsl(0 0% 8%);
+  --color-foreground: hsl(0 0% 95%);
+  --color-muted: hsl(0 0% 16%);
+  --color-muted-foreground: hsl(0 0% 68%);
+  --color-subtle: hsl(0 0% 20%);
+  --color-subtle-foreground: hsl(0 0% 56%);
+  --color-surface: hsl(0 0% 12%);
+  --color-surface-foreground: hsl(0 0% 95%);
+  --color-surface-muted: hsl(0 0% 16%);
+  --color-border: hsl(0 0% 26%);
+  --color-border-muted: hsl(0 0% 19%);
+  --color-ring: hsl(0 0% 44%);
+  --color-primary: hsl(0 0% 95%);
+  --color-primary-foreground: hsl(0 0% 8%);
+  --color-link: hsl(0 0% 95%);
+  --color-link-decoration: hsl(0 0% 44%);
+
+  /* Ramp разворачивается: в светлой теме depth идёт от светлого к тёмному,
+     в тёмной — наоборот, иначе «глубина» читается вывернутой. */
+  --color-depth-100: hsl(0 0% 18%);
+  --color-depth-200: hsl(0 0% 24%);
+  --color-depth-300: hsl(0 0% 34%);
+  --color-depth-400: hsl(0 0% 48%);
+  --color-depth-500: hsl(0 0% 62%);
+  --color-depth-600: hsl(0 0% 74%);
+  --color-depth-700: hsl(0 0% 84%);
+
+  --color-destructive: hsl(15 80% 65%);
+
+  /* Дефолт на случай, если data-accent ещё не проставлен. */
+  --color-accent: hsl(142 58% 52%);
+  --color-accent-foreground: hsl(0 0% 8%);
+}
+
+/* Пресеты акцента. У светлой и тёмной темы значения разные намеренно: один
+   и тот же тон не может пройти по контрасту на обоих фонах. Каждая пара
+   проверена на >=4.5:1 к своему фону. */
+[data-accent="green"] {
+  --color-accent: hsl(142 66% 32%);
+  --color-accent-foreground: hsl(0 0% 100%);
+}
+
+[data-accent="blue"] {
+  --color-accent: hsl(217 79% 45%);
+  --color-accent-foreground: hsl(0 0% 100%);
+}
+
+[data-accent="violet"] {
+  --color-accent: hsl(263 60% 50%);
+  --color-accent-foreground: hsl(0 0% 100%);
+}
+
+.dark[data-accent="green"] {
+  --color-accent: hsl(142 58% 52%);
+  --color-accent-foreground: hsl(0 0% 8%);
+}
+
+.dark[data-accent="blue"] {
+  --color-accent: hsl(213 90% 66%);
+  --color-accent-foreground: hsl(0 0% 8%);
+}
+
+.dark[data-accent="violet"] {
+  --color-accent: hsl(263 85% 72%);
+  --color-accent-foreground: hsl(0 0% 8%);
+}
+
 @layer base {
   *,
   ::before,
@@ -150,6 +245,16 @@
     @apply antialiased md:subpixel-antialiased text-pretty;
   }
 
+  /* Один рецепт фокуса на весь сайт. Раньше каждый компонент снимал контур
+     через focus-visible:outline-none и рисовал своё кольцо на 25-40%
+     прозрачности — контраст выходил 1.2-2.2:1 при требуемых 3:1, то есть
+     фокус был не виден нигде. Акцент проверен на >=4.5:1 в обеих темах.
+     outline, а не ring: box-shadow подрезается в контейнерах с overflow. */
+  :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
   /* Мобильное меню появляется/исчезает мгновенно, если пользователь просил
      меньше анимаций. Не `animation: none` — иначе не сработает animationend,
      по которому drawer возвращается в состояние покоя. */
@@ -159,8 +264,6 @@
       animation-duration: 1ms !important;
     }
   }
-
-
 }
 
 @layer components {

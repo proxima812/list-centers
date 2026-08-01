@@ -4,9 +4,7 @@ import { cn } from "@/utils/libs/cn";
 import { Icon } from "astro-icon/components";
 
 interface Props {
-  hidden?: boolean;
-  off?: boolean;
-  class?: string;
+	class?: string;
 }
 
 const items = [
@@ -16,9 +14,9 @@ const items = [
 ];
 
 const buttonClass =
-	"theme-btn inline-flex size-8 items-center justify-center rounded-full text-subtle-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 aria-checked:bg-muted aria-checked:text-foreground";
+	"inline-flex size-8 cursor-pointer items-center justify-center rounded-full text-subtle-foreground transition-colors hover:text-foreground aria-checked:bg-muted aria-checked:text-foreground";
 
-const { hidden, off, class: className } = Astro.props;
+const { class: className } = Astro.props;
 const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
 ---
@@ -27,94 +25,91 @@ const t = useTranslations(locale);
 	class={cn(
 		"inline-flex items-center gap-0.5 rounded-full border border-border-muted p-0.5",
 		className,
-		hidden ? "hidden" : null,
 	)}
 	role="radiogroup"
 	aria-label={t("theme.switcher")}
 	data-theme-switcher
 >
 	{
-		items.map((item, index) => (
+		items.map((item) => (
 			<button
 				type="button"
 				class={buttonClass}
 				data-theme-option={item.value}
 				role="radio"
 				aria-label={t(item.labelKey, undefined, item.label)}
-				aria-checked={index === 0 ? "true" : "false"}
-				tabindex={index === 0 ? "0" : "-1"}
+				aria-checked="false"
+				tabindex="-1"
 			>
-				<Icon name={item.icon} class="size-4" />
+				<Icon name={item.icon} class="size-4" aria-hidden="true" />
 			</button>
 		))
 	}
 </div>
-{off &&
-<script is:inline>
+
+<script>
+	// Саму тему уже применил инлайн-скрипт в <head> (Layout.astro) — здесь
+	// только UI: синхронизация состояния кнопок и запись выбора.
 	const STORAGE_KEY = "theme";
 	const root = document.documentElement;
-	const switcher = document.querySelector("[data-theme-switcher]");
-	const buttons = Array.from(switcher?.querySelectorAll("[data-theme-option]") ?? []);
+	const media = matchMedia("(prefers-color-scheme: dark)");
 
-	const media = window.matchMedia("(prefers-color-scheme: dark)");
-
-	const getStoredTheme = () => {
+	const readTheme = () => {
 		const value = localStorage.getItem(STORAGE_KEY);
-		return ["light", "dark", "system"].includes(value) ? value : "system";
+		return value === "light" || value === "dark" || value === "system" ? value : "system";
 	};
 
-	const getResolvedTheme = (theme) => {
-		if (theme === "system") return media.matches ? "dark" : "light";
-		return theme;
-	};
-
-	const applyTheme = (theme) => {
-		const resolved = getResolvedTheme(theme);
+	const applyTheme = (theme: string) => {
+		const dark = theme === "dark" || (theme === "system" && media.matches);
 
 		root.dataset.theme = theme;
-		root.classList.toggle("dark", resolved === "dark");
+		root.classList.toggle("dark", dark);
 
-		buttons.forEach((button) => {
-			const isActive = button.dataset.themeOption === theme;
-			button.setAttribute("aria-checked", String(isActive));
-			button.setAttribute("tabindex", isActive ? "0" : "-1");
-		});
+		for (const switcher of document.querySelectorAll("[data-theme-switcher]")) {
+			for (const button of switcher.querySelectorAll<HTMLElement>("[data-theme-option]")) {
+				const isActive = button.dataset.themeOption === theme;
+				button.setAttribute("aria-checked", String(isActive));
+				button.tabIndex = isActive ? 0 : -1;
+			}
+		}
 	};
 
-	const setTheme = (theme) => {
-		localStorage.setItem(STORAGE_KEY, theme);
-		applyTheme(theme);
-	};
+	applyTheme(readTheme());
 
-	applyTheme(getStoredTheme());
+	for (const switcher of document.querySelectorAll("[data-theme-switcher]")) {
+		const buttons = [...switcher.querySelectorAll<HTMLElement>("[data-theme-option]")];
 
-	buttons.forEach((button) => {
-		button.addEventListener("click", () => {
-			setTheme(button.dataset.themeOption);
-		});
+		for (const button of buttons) {
+			button.addEventListener("click", () => {
+				const theme = button.dataset.themeOption ?? "system";
+				localStorage.setItem(STORAGE_KEY, theme);
+				applyTheme(theme);
+			});
 
-		button.addEventListener("keydown", (event) => {
-			const currentIndex = buttons.indexOf(button);
-			let nextIndex = currentIndex;
+			// Стрелки внутри radiogroup — ожидаемая клавиатурная семантика:
+			// Tab входит в группу, стрелки переключают внутри неё.
+			button.addEventListener("keydown", (event) => {
+				const step =
+					event.key === "ArrowRight" || event.key === "ArrowDown"
+						? 1
+						: event.key === "ArrowLeft" || event.key === "ArrowUp"
+							? -1
+							: 0;
 
-			if (event.key === "ArrowRight" || event.key === "ArrowDown") {
-				nextIndex = (currentIndex + 1) % buttons.length;
-			}
+				if (step === 0) return;
 
-			if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
-				nextIndex = (currentIndex - 1 + buttons.length) % buttons.length;
-			}
-
-			if (nextIndex !== currentIndex) {
 				event.preventDefault();
-				const nextButton = buttons[nextIndex];
-				nextButton.focus();
-				setTheme(nextButton.dataset.themeOption);
-			}
-		});
-	});
+				const next = buttons[(buttons.indexOf(button) + step + buttons.length) % buttons.length];
+				const theme = next.dataset.themeOption ?? "system";
+				localStorage.setItem(STORAGE_KEY, theme);
+				applyTheme(theme);
+				next.focus();
+			});
+		}
+	}
 
+	// В режиме «системная» тема должна следовать за ОС на лету.
 	media.addEventListener("change", () => {
-		if (getStoredTheme() === "system") applyTheme("system");
+		if (readTheme() === "system") applyTheme("system");
 	});
-</script>}
+</script>

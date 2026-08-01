@@ -1,9 +1,11 @@
 ---
+import AccentToggle from "./AccentToggle.astro";
 import Container from "./Container.astro";
 import DesktopNav from "./DesktopNav.astro";
 import LanguageToggle from "./LanguageToggle.astro";
 import Logotype from "./Logotype.astro";
 import Menu from "./Menu.astro";
+import ThemeToggle from "./ThemeToggle.astro";
 ---
 
 <header class="sticky top-0 z-[88] isolate w-full lg:static">
@@ -23,7 +25,9 @@ import Menu from "./Menu.astro";
 				<DesktopNav />
 
 				<div class="flex shrink-0 items-center gap-4 lg:flex-1 lg:justify-end">
-					<div class="hidden lg:inline-flex">
+					<div class="hidden items-center gap-2 lg:inline-flex">
+						<AccentToggle />
+						<ThemeToggle />
 						<LanguageToggle />
 					</div>
 

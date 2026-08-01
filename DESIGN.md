@@ -8,7 +8,7 @@ colors:
   muted: "#f0f0f0"
   muted-foreground: "#6b6b6b"
   subtle: "#e6e6e6"
-  subtle-foreground: "#8f8f8f"
+  subtle-foreground: "#757575"
   surface: "#ffffff"
   surface-foreground: "#1d1d1d"
   surface-muted: "#f5f5f5"
@@ -26,9 +26,8 @@ colors:
   depth-500: "#5c5c5c"
   depth-600: "#474747"
   depth-700: "#333333"
-  brand-sky: "#38bdf8"
-  brand-blue: "#2563eb"
-  brand-azure: "#0ea5e9"
+  accent: "#1c8743"
+  accent-foreground: "#ffffff"
 typography:
   display:
     fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
@@ -61,6 +60,12 @@ typography:
     fontWeight: 500
     lineHeight: 1.25
     letterSpacing: "normal"
+  caption:
+    fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+    fontSize: "0.75rem"
+    fontWeight: 500
+    lineHeight: 1.3333
+    letterSpacing: "normal"
 rounded:
   sm: "8px"
   md: "12px"
@@ -79,7 +84,7 @@ spacing:
 components:
   hero-title:
     color: "{colors.foreground}"
-    accent: "{colors.brand-blue}"
+    accent: "{colors.accent}"
     typography: "{typography.display}"
   button-primary:
     backgroundColor: "{colors.primary}"
@@ -94,8 +99,8 @@ components:
     padding: "8px 16px"
     typography: "{typography.label}"
   chip-active:
-    backgroundColor: "{colors.primary}"
-    textColor: "{colors.primary-foreground}"
+    backgroundColor: "{colors.accent}"
+    textColor: "{colors.accent-foreground}"
     rounded: "{rounded.lg}"
     padding: "6px 10px"
     typography: "{typography.label}"
@@ -118,7 +123,7 @@ components:
 
 **Creative North Star: "A Catalog With A Signal"**
 
-Tatarverse is still a practical catalog, but the current site has a clearer public identity than the older flat system. The homepage introduces the project with a compact brand mark, uppercase hero typography, one controlled blue accent, animated catalog statistics, and a screenshot-led search section. After that first impression, the product returns to a quiet, scannable catalog language.
+Tatarverse is still a practical catalog, but the current site has a clearer public identity than the older flat system. The homepage introduces the project with a compact brand mark, uppercase hero typography, one controlled accent color, animated catalog statistics, and a screenshot-led search section. After that first impression, the product returns to a quiet, scannable catalog language.
 
 The design system has two layers:
 
@@ -129,25 +134,48 @@ The brand layer should make the site memorable. The catalog layer should make th
 
 ## 2. Color
 
-The base palette is monochrome and semantic. It is defined in `src/styles/tailwind.css` through Tailwind v4 tokens: `background`, `foreground`, `muted`, `surface`, `border`, `ring`, `primary`, `link`, and `depth-*`.
+The base palette is monochrome and semantic. It is defined in `src/styles/tailwind.css` through Tailwind v4 tokens: `background`, `foreground`, `muted`, `surface`, `border`, `ring`, `primary`, `link`, `depth-*`, and `accent`.
 
 ### Base Roles
 
-- **Background / Surface:** clean white planes for the page, cards, menus, screenshots, and MDX content.
-- **Foreground / Primary:** the main ink color for text, strong actions, active filters, and focus affordances.
+- **Background / Surface:** the page, cards, menus, screenshots, and MDX content.
+- **Foreground / Primary:** the main ink color for text, strong actions, and active filters.
 - **Muted / Subtle:** low-emphasis surfaces, metadata, labels, chips, and quiet card backgrounds.
 - **Border / Ring / Depth:** separators, inset rings, dividers, and tonal hierarchy.
 - **Primary Foreground:** inverse text for active controls and primary buttons.
+- **Accent / Accent Foreground:** the one signal color and its contrast pair.
+
+### Themes
+
+The site ships **light and dark** themes plus **three accent palettes**. Both are user
+choices, persisted in `localStorage` and applied by an inline script in `<head>` before
+first paint (`src/layouts/Layout.astro`).
+
+- Theme: `.dark` class on `<html>`, chosen via `light` / `dark` / `system`.
+- Accent: `data-accent` on `<html>` — `green` (default), `blue`, `violet`.
+
+Every token is declared once in `@theme` (light values) and overridden in `.dark`.
+Accent presets are `[data-accent="…"]` and `.dark[data-accent="…"]` blocks. **Light and
+dark values of an accent are deliberately different** — a single hue cannot clear the
+contrast threshold on both a white and a near-black background.
+
+All six theme × accent combinations are verified at >=4.5:1 for body text, footer text,
+and the accent itself against its own background.
 
 ### Brand Accent
 
-The homepage uses a blue accent family (`#38bdf8`, `#2563eb`, `#60a5fa`, `#0ea5e9`) inside the hero word treatment. Treat this as a named brand moment, not a general palette. Do not apply it to cards, prose, footer links, filters, or center detail pages unless a specific design pass asks for that expansion.
+The accent is green by default (`#1c8743` light, `#3ecc72` dark) and appears in the hero
+word treatment, the liquid-metal mark, focus indicators, active filter chips, and the
+filter badge. Treat it as a named signal, not a general palette. Do not apply it to cards,
+prose, footer links, or center detail pages unless a specific design pass asks for that.
 
 ### Color Rules
 
 **Monochrome Carries Structure.** Default to the semantic neutral tokens for layout, controls, content, and catalog surfaces.
 
-**Blue Is A Signal.** Blue belongs to the homepage identity accent and selected brand moments only. It should never become a generic decoration.
+**Accent Is A Signal.** The accent belongs to identity moments, focus, and active state only. It should never become a generic decoration.
+
+**Never Hardcode A Color.** Anything written as a literal hex or a Tailwind palette class (`bg-white`, `text-zinc-500`) will not survive a theme switch. The only exceptions are logo plates, which need white regardless of theme, and third-party brand colors.
 
 **No Cultural Color Pastiche.** Do not infer a palette from flags, ethnic motifs, or ornamental references. Cultural meaning comes from the content and source-backed data.
 
@@ -162,6 +190,7 @@ The site uses the system sans stack. The voice is practical and direct, with a s
 - **Title:** center card titles, post titles, compact section headings, and detail-page modules.
 - **Body:** MDX content, summaries, factual descriptions, policy text, and explanatory copy.
 - **Label:** buttons, chips, nav items, stats labels, metadata, and menu controls.
+- **Caption:** filter counts, group headings, and other micro-labels. This is the floor — nothing meaningful goes below 12px.
 
 ### Typography Rules
 
@@ -203,7 +232,7 @@ Avoid pairing a border with a large soft shadow on routine components. Stronger 
 
 Motion is part of the new system, but it is limited.
 
-- **Hero accent:** slow brand accent movement on the highlighted word.
+- **Hero accent:** slow brand accent movement on the highlighted word, driven by `--color-accent`.
 - **Stats:** short count and focus animation that emphasizes catalog scale.
 - **Marquee / word imagery:** optional brand texture, only when it supports the page rhythm.
 - **Controls:** small hover, focus, and active-state transitions.
@@ -218,7 +247,7 @@ The homepage mark is a compact identity object. It should stay centered, decorat
 
 ### Hero Title
 
-The hero title uses heavy uppercase lines with one blue accent phrase and quieter secondary lines. Keep words short enough for mobile. Do not add repeated section eyebrows around it.
+The hero title uses heavy uppercase lines with one accent phrase and quieter secondary lines. Keep words short enough for mobile. Do not add repeated section eyebrows around it.
 
 ### Home Links
 
@@ -234,7 +263,11 @@ The homepage search section combines explanatory copy with localized screenshot 
 
 ### Buttons And Chips
 
-Buttons and chips use compact padding, squircle rounding, semantic tokens, and visible focus states. Active states use `primary` and `primary-foreground`.
+Buttons and chips use compact padding, squircle rounding, and semantic tokens. Active filter chips use `accent` and `accent-foreground`; primary buttons use `primary` and `primary-foreground`.
+
+### Focus
+
+There is exactly one focus recipe, in `@layer base`: a 2px `accent` outline with a 2px offset on every interactive element. Components must not add their own focus ring and must not set `focus-visible:outline-none` — a per-component ring at 25-40% opacity does not clear the 3:1 contrast requirement, and `box-shadow` rings get clipped inside scroll containers.
 
 ### Center Cards
 
@@ -257,7 +290,8 @@ MDX content should use the typography plugin tokens, readable line lengths, rest
 
 ### Do Not
 
-- Do not turn the whole site blue.
+- Do not turn the whole site into the accent color.
+- Do not hardcode hex values or Tailwind palette classes in components.
 - Do not add extra cultural palettes or ornamental motifs.
 - Do not add glossy SaaS gradients, glass panels, side stripes, or generic icon-card grids.
 - Do not reuse homepage display treatment inside dense catalog surfaces.

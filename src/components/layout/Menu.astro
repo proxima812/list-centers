@@ -1,5 +1,7 @@
 ---
 import ButtonLink from "../ui/ButtonLink.astro";
+import AccentToggle from "./AccentToggle.astro";
+import ThemeToggle from "./ThemeToggle.astro";
 import { links } from "@/data/links";
 import {
 	getLocaleFromUrl,
@@ -49,7 +51,7 @@ const isActivePath = (href: string) => {
 	<button
 		type="button"
 		data-menu-toggle
-		class="relative z-[100] inline-flex cursor-pointer items-center gap-1.5 rounded-md px-2 py-1.5 text-sm font-medium text-foreground transition-colors duration-100 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+		class="relative z-[100] inline-flex cursor-pointer items-center gap-1.5 rounded-md px-2 py-1.5 text-sm font-medium text-foreground transition-colors duration-100 hover:bg-muted"
 		aria-label={t("menu.open")}
 		aria-controls="mobile-menu"
 		aria-expanded="false"
@@ -88,7 +90,7 @@ const isActivePath = (href: string) => {
 			<button
 				type="button"
 				data-menu-close
-				class="inline-flex cursor-pointer items-center justify-center rounded-md p-2 text-foreground transition-colors duration-100 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+				class="inline-flex cursor-pointer items-center justify-center rounded-md p-2 text-foreground transition-colors duration-100 hover:bg-muted"
 				aria-label={t("menu.close")}
 			>
 				<svg
@@ -224,6 +226,19 @@ const isActivePath = (href: string) => {
 						<Icon name="mdi:github" class="size-5" aria-hidden="true" />
 						<span class="min-w-0 wrap-anywhere">proxima812</span>
 					</a>
+				</section>
+
+				<section
+					class="flex min-w-0 max-w-full flex-col"
+					aria-labelledby="mobile-menu-appearance"
+				>
+					<h2 id="mobile-menu-appearance" class={sectionTitleClass}>
+						{t("theme.switcher")}
+					</h2>
+					<div class="flex flex-wrap items-center gap-2 px-4">
+						<ThemeToggle />
+						<AccentToggle />
+					</div>
 				</section>
 
 				<section class="flex min-w-0 max-w-full flex-col" aria-labelledby="mobile-menu-language">

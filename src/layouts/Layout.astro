@@ -49,6 +49,30 @@ const locale = getLocaleFromUrl(Astro.url);
 	class="scroll-smooth subpixel-antialiased transition-colors duration-300 ease-linear"
 >
 	<head>
+		{/* Тема применяется до первой отрисовки — иначе на каждой навигации
+		    будет вспышка светлой темы. Скрипт намеренно синхронный и лежит
+		    выше любых стилей и разметки. Переключатель (ThemeToggle) только
+		    пишет в localStorage и повторяет эти же две строки. */}
+		<script is:inline>
+			(() => {
+				const root = document.documentElement;
+				const theme = localStorage.getItem("theme") ?? "system";
+				const accent = localStorage.getItem("accent") ?? "green";
+				const dark =
+					theme === "dark" ||
+					(theme === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+
+				root.dataset.theme = theme;
+				root.dataset.accent = accent;
+				root.classList.toggle("dark", dark);
+			})();
+		</script>
+
+		{/* Два тега вместо одного: браузер выбирает по медиавыражению, поэтому
+		    адресная строка совпадает с фоном страницы в обеих темах. */}
+		<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+		<meta name="theme-color" content="#141414" media="(prefers-color-scheme: dark)" />
+
 		<link
 			rel="preload"
 			href="/fonts/tatarverse-sans.woff2"

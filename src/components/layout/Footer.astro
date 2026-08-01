@@ -22,7 +22,7 @@ const updatedAtLabel = new Intl.DateTimeFormat(locale, {
 }).format(new Date(release.updatedAt));
 
 const baseStyle =
-	"text-link underline decoration-link-decoration underline-offset-4 transition hover:decoration-link focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
+	"text-link underline decoration-link-decoration underline-offset-4 transition hover:decoration-link";
 
 type FooterLink = {
 	href: string;
@@ -116,19 +116,19 @@ const footerSections: Array<{ id: string; title: string; links: FooterLink[] }> 
 			},
 			{
 				href: "https://www.instagram.com/the_tatarverse/",
-				label: "Instagram @the_tatarverse",
+				label: "@the_tatarverse",
 				icon: "mdi:instagram",
 				props: externalProps,
 			},
 			{
 				href: "https://t.me/the_tatarverse",
-				label: "Telegram-канал @the_tatarverse",
+				label: "@the_tatarverse",
 				icon: "mdi:telegram",
 				props: externalProps,
 			},
 			{
 				href: "https://t.me/isembez",
-				label: "Telegram-группа @isembez",
+				label: "@isembez",
 				icon: "mdi:telegram",
 				props: externalProps,
 			},

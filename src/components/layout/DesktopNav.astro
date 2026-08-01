@@ -31,10 +31,10 @@ const dropdowns = [
 ].filter((dropdown) => dropdown.items.length > 0);
 
 const triggerClass =
-	"inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-2xl px-3 text-sm font-medium transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40";
+	"inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-2xl px-3 text-sm font-medium transition-colors hover:bg-muted";
 
 const itemClass =
-	"flex items-center gap-2 rounded-2xl px-3 py-2 text-sm font-medium text-subtle-foreground no-underline transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 aria-[current]:bg-muted aria-[current]:text-foreground ";
+	"flex items-center gap-2 rounded-2xl px-3 py-2 text-sm font-medium text-subtle-foreground no-underline transition-colors hover:bg-muted hover:text-foreground aria-[current]:bg-muted aria-[current]:text-foreground ";
 ---
 
 <nav class="hidden items-center gap-1 lg:flex" aria-label={t("nav.primary")}>

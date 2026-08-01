@@ -55,7 +55,7 @@ const countdownUnits = [
 								<div class="min-w-0 text-center">
 									<span
 										data-countdown={unit.key}
-										class="countdown-value block text-[clamp(2rem,8.5vw,3.75rem)] font-bold tabular-nums leading-none tracking-tight text-neutral-950 "
+										class="countdown-value block text-[clamp(2rem,8.5vw,3.75rem)] font-bold tabular-nums leading-none tracking-tight text-foreground "
 									>
 										{unit.key === "days" ? unit.value : pad(unit.value)}
 									</span>
@@ -65,7 +65,7 @@ const countdownUnits = [
 								</div>
 								{index < countdownUnits.length - 1 && (
 									<span
-										class="countdown-colon text-[clamp(2rem,8.5vw,3.75rem)] font-bold leading-none text-neutral-950/30"
+										class="countdown-colon text-[clamp(2rem,8.5vw,3.75rem)] font-bold leading-none text-foreground/30"
 										aria-hidden="true"
 									>
 										:

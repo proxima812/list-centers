@@ -5,25 +5,21 @@ const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
 
 const solidClass = "font-black tracking-tight md:tracking-[-1.4px]";
-const gradientClass = `${solidClass} text-transparent bg-clip-text bg-[linear-gradient(120deg,#16a34a,#4ade80,#22c55e,#16a34a)] motion-safe:animate-hero-pulse`;
 
+// Градиенты собраны в <style> ниже, а не в arbitrary-классах: они тянутся из
+// токенов темы и в записи Tailwind превратились бы в нечитаемую строку с
+// подчёркиваниями вместо пробелов.
 const heroLines = [
-	{ key: "home.hero.1", className: `${solidClass} text-zinc-950` },
-	{ key: "home.hero.2", className: gradientClass },
-	{ key: "home.hero.3", className: `${solidClass} text-zinc-950/90` },
+	{ key: "home.hero.1", className: `${solidClass} text-foreground` },
+	{ key: "home.hero.2", className: `${solidClass} hero-accent motion-safe:animate-hero-pulse` },
+	{ key: "home.hero.3", className: `${solidClass} text-foreground/90` },
 ] as const;
-
-// Неприметный серо-тёмно-серый дрейф. Узкий диапазон оттенков — движение еле заметно.
-const grayDriftBase =
-	"text-transparent bg-clip-text [background-image:linear-gradient(90deg,#52525b,#27272a,#3f3f46,#18181b,#52525b)] bg-size-[220%_100%] bg-position-[0%_50%] motion-safe:animate-hero-gray-drift";
-const grayDriftDim = `${solidClass} ${grayDriftBase} opacity-55`;
-const grayDriftStrong = `${solidClass} ${grayDriftBase} opacity-95`;
 
 // Небольшой сдвиг фаз, чтобы слова не мерцали синхронно.
 const heroLines2 = [
-	{ key: "home.hero.5", className: `${grayDriftDim} [animation-delay:-2s]` },
-	{ key: "home.hero.6", className: `${grayDriftStrong} [animation-delay:-6s]` },
-	{ key: "home.hero.7", className: `${grayDriftDim} [animation-delay:-10s]` },
+	{ key: "home.hero.5", className: `${solidClass} hero-drift hero-drift--dim` },
+	{ key: "home.hero.6", className: `${solidClass} hero-drift hero-drift--strong` },
+	{ key: "home.hero.7", className: `${solidClass} hero-drift hero-drift--dim` },
 ] as const;
 
 const titleClass = "uppercase inline-block";
@@ -43,9 +39,59 @@ const titleClass = "uppercase inline-block";
 		class="flex flex-wrap items-center justify-center md:gap-0 gap-x-2 md:space-x-3.5 md:space-y-2"
 	>
 		{
-			heroLines2.map(({ key, className }) => (
-				<span class:list={[titleClass, className]}>{t(key)}</span>
+			heroLines2.map(({ key, className }, index) => (
+				<span class:list={[titleClass, className]} style={`--drift-delay: ${-2 - index * 4}s`}>
+					{t(key)}
+				</span>
 			))
 		}
 	</div>
 </h1>
+
+<style>
+	/* Акцентная строка. Оттенки выводятся из --color-accent, поэтому смена
+	   палитры перекрашивает герой целиком, включая ореол hero-pulse. */
+	.hero-accent {
+		color: transparent;
+		background-clip: text;
+		background-image: linear-gradient(
+			120deg,
+			var(--color-accent),
+			color-mix(in oklab, var(--color-accent) 60%, white),
+			color-mix(in oklab, var(--color-accent) 85%, white),
+			var(--color-accent)
+		);
+	}
+
+	/* Тихий дрейф второй строки: узкий диапазон вокруг foreground, движение
+	   еле заметно и не спорит с акцентом. */
+	.hero-drift {
+		color: transparent;
+		background-clip: text;
+		background-image: linear-gradient(
+			90deg,
+			color-mix(in oklab, var(--color-foreground) 60%, var(--color-background)),
+			var(--color-foreground),
+			color-mix(in oklab, var(--color-foreground) 75%, var(--color-background)),
+			var(--color-foreground),
+			color-mix(in oklab, var(--color-foreground) 60%, var(--color-background))
+		);
+		background-size: 220% 100%;
+		background-position: 0% 50%;
+	}
+
+	.hero-drift--dim {
+		opacity: 0.55;
+	}
+
+	.hero-drift--strong {
+		opacity: 0.95;
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		.hero-drift {
+			animation: var(--animate-hero-gray-drift);
+			animation-delay: var(--drift-delay, 0s);
+		}
+	}
+</style>
