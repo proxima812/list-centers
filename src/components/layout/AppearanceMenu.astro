@@ -8,24 +8,28 @@ interface Props {
 }
 
 const themes = [
-	{ value: "system", labelKey: "theme.system", label: "System", icon: "tabler:app-window" },
-	{ value: "light", labelKey: "theme.light", label: "Light", icon: "tabler:sun-high" },
-	{ value: "dark", labelKey: "theme.dark", label: "Dark", icon: "tabler:moon" },
+	{ value: "system", labelKey: "theme.system.short", label: "System", icon: "tabler:app-window" },
+	{ value: "light", labelKey: "theme.light.short", label: "Light", icon: "tabler:sun-high" },
+	{ value: "dark", labelKey: "theme.dark.short", label: "Dark", icon: "tabler:moon" },
 ];
 
 // Образцы палитр — превью выбора, а не раскраска интерфейса, поэтому здесь
 // литералы: кнопка «синей» палитры должна быть синей и в зелёной теме.
 // Пары совпадают с --color-accent-vivid / --color-accent-glow в tailwind.css.
 const accents = [
-	{ value: "green", labelKey: "accent.green", label: "Green", from: "hsl(142 76% 36%)", to: "hsl(142 71% 55%)" },
-	{ value: "blue", labelKey: "accent.blue", label: "Blue", from: "hsl(217 88% 44%)", to: "hsl(213 92% 62%)" },
-	{ value: "violet", labelKey: "accent.violet", label: "Violet", from: "hsl(263 75% 50%)", to: "hsl(263 85% 68%)" },
+	{ value: "green", labelKey: "accent.green.short", label: "Green", from: "hsl(142 76% 36%)", to: "hsl(142 71% 55%)" },
+	{ value: "blue", labelKey: "accent.blue.short", label: "Blue", from: "hsl(217 88% 44%)", to: "hsl(213 92% 62%)" },
+	{ value: "violet", labelKey: "accent.violet.short", label: "Violet", from: "hsl(263 75% 50%)", to: "hsl(263 85% 68%)" },
 ];
 
 const groupLabelClass =
-	"px-2 pb-1.5 text-xs font-semibold uppercase tracking-wide text-subtle-foreground";
+	"px-2 pb-1 text-xs font-medium uppercase tracking-wide text-subtle-foreground";
+
+// Строки, а не сетка: подписи вроде «Фиолетовый» не влезали в треть панели и
+// обрезались. Активное состояние — подложка muted и галочка акцентом, а не
+// заливка акцентом на всю ячейку: она перекрывала образец палитры.
 const optionClass =
-	"flex cursor-pointer flex-col items-center gap-1.5 rounded-xl px-2 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground aria-checked:bg-accent aria-checked:text-accent-foreground";
+	"flex w-full cursor-pointer items-center gap-2.5 rounded-xl px-2 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground aria-checked:bg-muted aria-checked:font-medium aria-checked:text-foreground";
 
 const { class: className } = Astro.props;
 const locale = getLocaleFromUrl(Astro.url);
@@ -36,7 +40,7 @@ const t = useTranslations(locale);
 	<button
 		type="button"
 		data-appearance-trigger
-		class="inline-flex h-9 cursor-pointer items-center gap-2 rounded-full border border-border-muted pl-1.5 pr-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+		class="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-full border border-border-muted pl-1.5 pr-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
 		aria-haspopup="true"
 		aria-expanded="false"
 		aria-controls="appearance-panel"
@@ -59,15 +63,10 @@ const t = useTranslations(locale);
 		id="appearance-panel"
 		data-appearance-panel
 		hidden
-		class="absolute right-0 top-full z-[90] mt-2 w-56 rounded-2xl corner-squircle border border-border-muted bg-background p-2 shadow-lg shadow-shade/10 dark:shadow-shade/60"
+		class="absolute right-0 top-full z-[90] mt-2 w-52 max-w-[calc(100vw-2rem)] rounded-2xl corner-squircle border border-border-muted bg-background p-1.5 shadow-lg shadow-shade/10 dark:shadow-shade/60"
 	>
-		<p class={groupLabelClass}>{t("theme.switcher")}</p>
-		<div
-			class="grid grid-cols-3 gap-1"
-			role="radiogroup"
-			aria-label={t("theme.switcher")}
-			data-theme-switcher
-		>
+		<p class={groupLabelClass} id="appearance-theme-label">{t("appearance.theme")}</p>
+		<div role="radiogroup" aria-labelledby="appearance-theme-label" data-theme-switcher>
 			{
 				themes.map((item) => (
 					<button
@@ -78,20 +77,24 @@ const t = useTranslations(locale);
 						aria-checked="false"
 						tabindex="-1"
 					>
-						<Icon name={item.icon} class="size-4" aria-hidden="true" />
-						<span>{t(item.labelKey, undefined, item.label).split(" ")[0]}</span>
+						<Icon name={item.icon} class="size-4 shrink-0" aria-hidden="true" />
+						<span class="min-w-0 flex-1 truncate text-left">
+							{t(item.labelKey, undefined, item.label)}
+						</span>
+						<Icon
+							name="tabler:check"
+							class="size-4 shrink-0 text-accent opacity-0 aria-checked-visible"
+							aria-hidden="true"
+						/>
 					</button>
 				))
 			}
 		</div>
 
-		<p class={`${groupLabelClass} pt-3`}>{t("accent.switcher")}</p>
-		<div
-			class="grid grid-cols-3 gap-1"
-			role="radiogroup"
-			aria-label={t("accent.switcher")}
-			data-accent-switcher
-		>
+		<p class={`${groupLabelClass} pt-2`} id="appearance-accent-label">
+			{t("appearance.palette")}
+		</p>
+		<div role="radiogroup" aria-labelledby="appearance-accent-label" data-accent-switcher>
 			{
 				accents.map((item) => (
 					<button
@@ -99,16 +102,22 @@ const t = useTranslations(locale);
 						class={optionClass}
 						data-accent-option={item.value}
 						role="radio"
-						aria-label={t(item.labelKey, undefined, item.label)}
 						aria-checked="false"
 						tabindex="-1"
 					>
 						<span
-							class="size-5 rounded-full ring-1 ring-inset ring-shade/20"
+							class="size-4 shrink-0 rounded-full ring-1 ring-inset ring-shade/20"
 							style={`background-image:linear-gradient(135deg, ${item.from}, ${item.to})`}
 							aria-hidden="true"
 						/>
-						<span>{t(item.labelKey, undefined, item.label).split(" ")[0]}</span>
+						<span class="min-w-0 flex-1 truncate text-left">
+							{t(item.labelKey, undefined, item.label)}
+						</span>
+						<Icon
+							name="tabler:check"
+							class="size-4 shrink-0 text-accent opacity-0 aria-checked-visible"
+							aria-hidden="true"
+						/>
 					</button>
 				))
 			}
@@ -130,6 +139,12 @@ const t = useTranslations(locale);
 
 	[data-appearance-trigger][aria-expanded="true"] svg {
 		transform: rotate(180deg);
+	}
+
+	/* Галочка появляется у выбранной строки. Отдельное правило, а не
+	   `aria-checked:` на самой иконке: aria-checked стоит на кнопке. */
+	[aria-checked="true"] .aria-checked-visible {
+		opacity: 1;
 	}
 </style>
 

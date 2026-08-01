@@ -291,26 +291,61 @@
   }
 }
 
-@layer components {
-  .prose {
-    --tw-prose-body: var(--color-muted-foreground);
-    --tw-prose-headings: var(--color-foreground);
-    --tw-prose-lead: var(--color-muted-foreground);
-    --tw-prose-links: var(--color-link);
-    --tw-prose-bold: var(--color-foreground);
-    --tw-prose-counters: var(--color-subtle-foreground);
-    --tw-prose-bullets: var(--color-subtle-foreground);
-    --tw-prose-hr: var(--color-border);
-    --tw-prose-quotes: var(--color-foreground);
-    --tw-prose-quote-borders: var(--color-border);
-    --tw-prose-captions: var(--color-subtle-foreground);
-    --tw-prose-code: var(--color-foreground);
-    --tw-prose-pre-code: var(--color-surface-foreground);
-    --tw-prose-pre-bg: var(--color-surface-muted);
-    --tw-prose-th-borders: var(--color-border);
-    --tw-prose-td-borders: var(--color-border-muted);
-  }
+/* ─── Prose ───────────────────────────────────────────────────────────────
+   Блок намеренно вне @layer: плагин typography объявляет .prose в utilities,
+   а этот слой идёт после components — из-за этого переменные плагина
+   выигрывали, и в тёмной теме текст оставался серым с контрастом 1.97:1.
+   Правило без слоя бьёт любой слой. */
+/* Инверсия prose не через `dark:prose-invert`: у плагина invert-палитра
+   зашита на серые Tailwind и не знает про наши токены, так что акцент и
+   поверхности разъехались бы. Вместо этого каждая переменная плагина
+   указывает на семантический токен — он и так меняется вместе с темой,
+   то есть prose инвертируется сам, включая пресеты акцента. */
+.prose {
+  --tw-prose-body: var(--color-muted-foreground);
+  --tw-prose-headings: var(--color-foreground);
+  --tw-prose-lead: var(--color-muted-foreground);
+  --tw-prose-links: var(--color-link);
+  --tw-prose-bold: var(--color-foreground);
+  --tw-prose-counters: var(--color-subtle-foreground);
+  --tw-prose-bullets: var(--color-subtle-foreground);
+  --tw-prose-hr: var(--color-border);
+  --tw-prose-quotes: var(--color-foreground);
+  --tw-prose-quote-borders: var(--color-border);
+  --tw-prose-captions: var(--color-subtle-foreground);
+  --tw-prose-code: var(--color-foreground);
+  --tw-prose-pre-code: var(--color-surface-foreground);
+  --tw-prose-pre-bg: var(--color-surface-muted);
+  --tw-prose-th-borders: var(--color-border);
+  --tw-prose-td-borders: var(--color-border-muted);
+  /* Единственные две переменные плагина, которые раньше не были
+     переопределены, — в тёмной теме они оставались светлыми. */
+  --tw-prose-kbd: var(--color-foreground);
+  --tw-prose-kbd-shadows: var(--color-shade);
 
+  /* Плагин держит invert-набор отдельными переменными. Заворачиваем их на
+     те же токены, чтобы `prose-invert` где-нибудь в MDX не сломал тему. */
+  --tw-prose-invert-body: var(--tw-prose-body);
+  --tw-prose-invert-headings: var(--tw-prose-headings);
+  --tw-prose-invert-lead: var(--tw-prose-lead);
+  --tw-prose-invert-links: var(--tw-prose-links);
+  --tw-prose-invert-bold: var(--tw-prose-bold);
+  --tw-prose-invert-counters: var(--tw-prose-counters);
+  --tw-prose-invert-bullets: var(--tw-prose-bullets);
+  --tw-prose-invert-hr: var(--tw-prose-hr);
+  --tw-prose-invert-quotes: var(--tw-prose-quotes);
+  --tw-prose-invert-quote-borders: var(--tw-prose-quote-borders);
+  --tw-prose-invert-captions: var(--tw-prose-captions);
+  --tw-prose-invert-kbd: var(--tw-prose-kbd);
+  --tw-prose-invert-kbd-shadows: var(--tw-prose-kbd-shadows);
+  --tw-prose-invert-code: var(--tw-prose-code);
+  --tw-prose-invert-pre-code: var(--tw-prose-pre-code);
+  --tw-prose-invert-pre-bg: var(--tw-prose-pre-bg);
+  --tw-prose-invert-th-borders: var(--tw-prose-th-borders);
+  --tw-prose-invert-td-borders: var(--tw-prose-td-borders);
+}
+
+@layer components {
   :where([data-astro-image]) {
     object-fit: var(--fit);
     object-position: var(--pos);

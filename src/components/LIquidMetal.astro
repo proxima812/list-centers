@@ -1,3 +1,7 @@
+---
+import LiquidMetalMark from "./LiquidMetalMark.tsx";
+---
+
 <div
 	aria-hidden="true"
 	data-liquid-metal
@@ -9,110 +13,18 @@
 		loading="eager"
 		class="flower-fade absolute z-50 h-[84px] w-[84px] object-contain"
 	/>
-	<div data-liquid-metal-root></div>
+	{/*
+		Настоящий остров, а не ручной createRoot в обычном <script>: при
+		динамическом import("react-dom/client") Vite в dev-режиме отдаёт
+		React с обёрткой Fast Refresh, а преамбулу ($RefreshSig$) Astro
+		вставляет только для островов — без неё страница падала с
+		ReferenceError.
+
+		client:media вместо client:idle: под prefers-reduced-motion шейдер не
+		должен ни грузиться, ни запускаться, остаётся статичный цветок выше.
+	*/}
+	<LiquidMetalMark client:media="(prefers-reduced-motion: no-preference)" />
 </div>
-
-<script>
-	import type { Root } from "react-dom/client";
-
-	const motionQuery = window.matchMedia("(prefers-reduced-motion: no-preference)");
-	const root = document.documentElement;
-
-	// Шейдер принимает цвет строкой и не понимает CSS-переменные, поэтому
-	// токен нужно разрешить в hex вручную: подставляем значение в пробный
-	// элемент и читаем то, что вернул движок (всегда rgb()).
-	const probe = document.createElement("span");
-	probe.style.display = "none";
-	document.body.append(probe);
-
-	const resolveToken = (token: string, fallback: string) => {
-		const raw = getComputedStyle(root).getPropertyValue(token).trim();
-		if (!raw) return fallback;
-
-		probe.style.color = "";
-		probe.style.color = raw;
-		const rgb = getComputedStyle(probe).color.match(/\d+(\.\d+)?/g);
-		if (!rgb || rgb.length < 3) return fallback;
-
-		return `#${rgb
-			.slice(0, 3)
-			.map((value) => Math.round(Number(value)).toString(16).padStart(2, "0"))
-			.join("")}`;
-	};
-
-	const shaderColors = () => ({
-		colorBack: resolveToken("--color-background", "#ffffff"),
-		colorTint: resolveToken("--color-accent", "#4ddb3e"),
-	});
-
-	const shaderProps = {
-		width: 140,
-		height: 140,
-		image: "/flower.svg",
-		repetition: 2,
-		softness: 0.1,
-		shiftRed: 0.3,
-		shiftBlue: 0.3,
-		distortion: 0.07,
-		contour: 0.4,
-		angle: 70,
-		speed: 0.6,
-		scale: 0.6,
-		fit: "contain",
-	} as const;
-
-	const mounted = new Map<HTMLElement, { root: Root; render: (props: object) => void }>();
-
-	const mountLiquidMetal = async (container: HTMLElement) => {
-		if (mounted.has(container) || !motionQuery.matches) return;
-
-		const rootElement = container.querySelector<HTMLElement>("[data-liquid-metal-root]");
-		if (!rootElement) return;
-
-		const [{ createElement }, { createRoot }, { LiquidMetal }] = await Promise.all([
-			import("react"),
-			import("react-dom/client"),
-			import("@paper-design/shaders-react"),
-		]);
-
-		const reactRoot = createRoot(rootElement);
-		const render = (colors: object) =>
-			reactRoot.render(createElement(LiquidMetal, { ...shaderProps, ...colors }));
-
-		mounted.set(container, { root: reactRoot, render });
-		render(shaderColors());
-
-		requestAnimationFrame(() => {
-			requestAnimationFrame(() => container.classList.add("webgl-ready"));
-		});
-	};
-
-	const scheduleLiquidMetal = () => {
-		if (!motionQuery.matches) return;
-
-		const run = () => {
-			document
-				.querySelectorAll<HTMLElement>("[data-liquid-metal]")
-				.forEach((container) => void mountLiquidMetal(container));
-		};
-
-		if ("requestIdleCallback" in window) {
-			window.requestIdleCallback(run, { timeout: 2000 });
-		} else {
-			globalThis.setTimeout(run, 1);
-		}
-	};
-
-	scheduleLiquidMetal();
-
-	// Тема и акцент живут в class/data-accent на <html>. Наблюдаем за ними,
-	// а не за событиями переключателей: источник правды один, и марка
-	// перекрашивается даже когда тему поменяли из другой вкладки.
-	new MutationObserver(() => {
-		const colors = shaderColors();
-		for (const instance of mounted.values()) instance.render(colors);
-	}).observe(root, { attributes: true, attributeFilter: ["class", "data-accent"] });
-</script>
 
 <style>
 	.flower-fade {
