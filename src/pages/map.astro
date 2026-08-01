@@ -1,10 +1,17 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import { getMapCopy } from "@/utils/mapData";
 
-const copy = getMapCopy();
+// Заглушка. Реализация карты (глобус на topojson, MapClient и эндпоинты
+// /map/*.json) удалена — от неё оставлен только этот роут, чтобы ссылка в
+// навигации не вела в 404. Метаданные приходили из utils/mapData, который
+// удалён вместе с картой, поэтому лежат здесь.
+//
+// `map` входит в unlocalizedPathnames (src/i18n), то есть страница одна на
+// обе локали и рендерится в дефолтной — отсюда русские строки.
+const title = "Карта центров";
+const description = "Интерактивный глобус центров с проверенными координатами из каталога.";
 ---
 
-<Layout title={copy.title} description={copy.description} indexRobots={false}>
+<Layout title={title} description={description} indexRobots={false}>
 	<h1 class="text-2xl italic text-muted-foreground text-center">В разработке...</h1>
 </Layout>
