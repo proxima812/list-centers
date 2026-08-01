@@ -17,17 +17,17 @@ const themes = [
 // литералы: кнопка «синей» палитры должна быть синей и в зелёной теме.
 // Пары совпадают с --color-accent-vivid / --color-accent-glow в tailwind.css.
 const accents = [
-	{ value: "green", labelKey: "accent.green.short", label: "Green", from: "hsl(142 76% 36%)", to: "hsl(142 71% 55%)" },
-	{ value: "blue", labelKey: "accent.blue.short", label: "Blue", from: "hsl(217 88% 44%)", to: "hsl(213 92% 62%)" },
-	{ value: "violet", labelKey: "accent.violet.short", label: "Violet", from: "hsl(263 75% 50%)", to: "hsl(263 85% 68%)" },
+	{ value: "green", labelKey: "accent.green", label: "Җаным Яшел", from: "hsl(142 76% 36%)", to: "hsl(142 71% 55%)" },
+	{ value: "blue", labelKey: "accent.blue", label: "Кадерле Зәнгәр", from: "hsl(217 88% 44%)", to: "hsl(213 92% 62%)" },
+	{ value: "violet", labelKey: "accent.violet", label: "Яна Шәмәха", from: "hsl(263 75% 50%)", to: "hsl(263 85% 68%)" },
 ];
 
 const groupLabelClass =
 	"px-2 pb-1 text-xs font-medium uppercase tracking-wide text-subtle-foreground";
 
-// Строки, а не сетка: подписи вроде «Фиолетовый» не влезали в треть панели и
-// обрезались. Активное состояние — подложка muted и галочка акцентом, а не
-// заливка акцентом на всю ячейку: она перекрывала образец палитры.
+// Строки, а не сетка: названия палитр («Кадерле Зәнгәр») не влезают в треть
+// панели и обрезаются. Активное состояние — подложка muted и галочка
+// акцентом, а не заливка акцентом на всю ячейку: она перекрывала образец.
 const optionClass =
 	"flex w-full cursor-pointer items-center gap-2.5 rounded-xl px-2 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground aria-checked:bg-muted aria-checked:font-medium aria-checked:text-foreground";
 
