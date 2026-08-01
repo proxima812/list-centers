@@ -13,16 +13,7 @@ import LiquidMetalMark from "./LiquidMetalMark.tsx";
 		loading="eager"
 		class="flower-fade absolute z-50 h-[84px] w-[84px] object-contain"
 	/>
-	{/*
-		Настоящий остров, а не ручной createRoot в обычном <script>: при
-		динамическом import("react-dom/client") Vite в dev-режиме отдаёт
-		React с обёрткой Fast Refresh, а преамбулу ($RefreshSig$) Astro
-		вставляет только для островов — без неё страница падала с
-		ReferenceError.
 
-		client:media вместо client:idle: под prefers-reduced-motion шейдер не
-		должен ни грузиться, ни запускаться, остаётся статичный цветок выше.
-	*/}
 	<LiquidMetalMark client:media="(prefers-reduced-motion: no-preference)" />
 </div>
 
