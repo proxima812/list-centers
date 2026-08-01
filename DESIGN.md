@@ -73,6 +73,7 @@ rounded:
   xl: "24px"
   card: "24px"
   catalog-card: "32px"
+  full: "9999px"
 spacing:
   xs: "4px"
   sm: "8px"

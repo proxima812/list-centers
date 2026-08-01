@@ -56,10 +56,10 @@ const titleClass = "uppercase inline-block";
 		background-clip: text;
 		background-image: linear-gradient(
 			120deg,
-			var(--color-accent),
-			color-mix(in oklab, var(--color-accent) 60%, white),
-			color-mix(in oklab, var(--color-accent) 85%, white),
-			var(--color-accent)
+			var(--color-accent-vivid),
+			var(--color-accent-glow),
+			color-mix(in oklab, var(--color-accent-glow) 70%, var(--color-accent-vivid)),
+			var(--color-accent-vivid)
 		);
 	}
 

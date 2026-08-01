@@ -7,14 +7,16 @@ interface Props {
 	class?: string;
 }
 
+// Инлайновый вариант для мобильного меню: dropdown внутри прокручиваемого
+// drawer'а подрезался бы. В шапке для того же состояния — AppearanceMenu.
 const items = [
-	{ value: "system", label: "System theme", labelKey: "theme.system", icon: "tabler:app-window" },
-	{ value: "light", label: "Light theme", labelKey: "theme.light", icon: "tabler:sun-high" },
-	{ value: "dark", label: "Dark theme", labelKey: "theme.dark", icon: "tabler:moon" },
+	{ value: "system", labelKey: "theme.system", label: "System theme", icon: "tabler:app-window" },
+	{ value: "light", labelKey: "theme.light", label: "Light theme", icon: "tabler:sun-high" },
+	{ value: "dark", labelKey: "theme.dark", label: "Dark theme", icon: "tabler:moon" },
 ];
 
 const buttonClass =
-	"inline-flex size-8 cursor-pointer items-center justify-center rounded-full text-subtle-foreground transition-colors hover:text-foreground aria-checked:bg-muted aria-checked:text-foreground";
+	"inline-flex size-8 cursor-pointer items-center justify-center rounded-full text-subtle-foreground transition-colors hover:text-foreground aria-checked:bg-accent aria-checked:text-accent-foreground";
 
 const { class: className } = Astro.props;
 const locale = getLocaleFromUrl(Astro.url);
@@ -48,68 +50,7 @@ const t = useTranslations(locale);
 </div>
 
 <script>
-	// Саму тему уже применил инлайн-скрипт в <head> (Layout.astro) — здесь
-	// только UI: синхронизация состояния кнопок и запись выбора.
-	const STORAGE_KEY = "theme";
-	const root = document.documentElement;
-	const media = matchMedia("(prefers-color-scheme: dark)");
+	import { initAppearance } from "@/scripts/appearance";
 
-	const readTheme = () => {
-		const value = localStorage.getItem(STORAGE_KEY);
-		return value === "light" || value === "dark" || value === "system" ? value : "system";
-	};
-
-	const applyTheme = (theme: string) => {
-		const dark = theme === "dark" || (theme === "system" && media.matches);
-
-		root.dataset.theme = theme;
-		root.classList.toggle("dark", dark);
-
-		for (const switcher of document.querySelectorAll("[data-theme-switcher]")) {
-			for (const button of switcher.querySelectorAll<HTMLElement>("[data-theme-option]")) {
-				const isActive = button.dataset.themeOption === theme;
-				button.setAttribute("aria-checked", String(isActive));
-				button.tabIndex = isActive ? 0 : -1;
-			}
-		}
-	};
-
-	applyTheme(readTheme());
-
-	for (const switcher of document.querySelectorAll("[data-theme-switcher]")) {
-		const buttons = [...switcher.querySelectorAll<HTMLElement>("[data-theme-option]")];
-
-		for (const button of buttons) {
-			button.addEventListener("click", () => {
-				const theme = button.dataset.themeOption ?? "system";
-				localStorage.setItem(STORAGE_KEY, theme);
-				applyTheme(theme);
-			});
-
-			// Стрелки внутри radiogroup — ожидаемая клавиатурная семантика:
-			// Tab входит в группу, стрелки переключают внутри неё.
-			button.addEventListener("keydown", (event) => {
-				const step =
-					event.key === "ArrowRight" || event.key === "ArrowDown"
-						? 1
-						: event.key === "ArrowLeft" || event.key === "ArrowUp"
-							? -1
-							: 0;
-
-				if (step === 0) return;
-
-				event.preventDefault();
-				const next = buttons[(buttons.indexOf(button) + step + buttons.length) % buttons.length];
-				const theme = next.dataset.themeOption ?? "system";
-				localStorage.setItem(STORAGE_KEY, theme);
-				applyTheme(theme);
-				next.focus();
-			});
-		}
-	}
-
-	// В режиме «системная» тема должна следовать за ОС на лету.
-	media.addEventListener("change", () => {
-		if (readTheme() === "system") applyTheme("system");
-	});
+	initAppearance();
 </script>

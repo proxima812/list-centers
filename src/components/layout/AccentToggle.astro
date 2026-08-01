@@ -6,13 +6,13 @@ interface Props {
 	class?: string;
 }
 
-// Значения живут в src/styles/tailwind.css как [data-accent="…"]. Здесь
-// только образцы для кнопок — они не участвуют в раскраске интерфейса, так
-// что могут быть литералами.
+// Образцы палитр — превью выбора, а не раскраска интерфейса, поэтому здесь
+// литералы: кнопка «синей» палитры должна быть синей и в зелёной теме.
+// Пары совпадают с --color-accent-vivid / --color-accent-glow в tailwind.css.
 const items = [
-	{ value: "green", labelKey: "accent.green", label: "Green", swatch: "hsl(142 66% 32%)" },
-	{ value: "blue", labelKey: "accent.blue", label: "Blue", swatch: "hsl(217 79% 45%)" },
-	{ value: "violet", labelKey: "accent.violet", label: "Violet", swatch: "hsl(263 60% 50%)" },
+	{ value: "green", labelKey: "accent.green", label: "Green", from: "hsl(142 76% 36%)", to: "hsl(142 71% 55%)" },
+	{ value: "blue", labelKey: "accent.blue", label: "Blue", from: "hsl(217 88% 44%)", to: "hsl(213 92% 62%)" },
+	{ value: "violet", labelKey: "accent.violet", label: "Violet", from: "hsl(263 75% 50%)", to: "hsl(263 85% 68%)" },
 ];
 
 const buttonClass =
@@ -44,8 +44,8 @@ const t = useTranslations(locale);
 				tabindex="-1"
 			>
 				<span
-					class="size-3.5 rounded-full ring-1 ring-inset ring-foreground/15"
-					style={`background:${item.swatch}`}
+					class="size-4 rounded-full ring-1 ring-inset ring-shade/20"
+					style={`background-image:linear-gradient(135deg, ${item.from}, ${item.to})`}
 					aria-hidden="true"
 				/>
 			</button>
@@ -54,57 +54,7 @@ const t = useTranslations(locale);
 </div>
 
 <script>
-	// Акцент уже проставлен инлайн-скриптом в <head> (Layout.astro).
-	const STORAGE_KEY = "accent";
-	const ACCENTS = ["green", "blue", "violet"];
-	const root = document.documentElement;
+	import { initAppearance } from "@/scripts/appearance";
 
-	const readAccent = () => {
-		const value = localStorage.getItem(STORAGE_KEY) ?? "";
-		return ACCENTS.includes(value) ? value : "green";
-	};
-
-	const applyAccent = (accent: string) => {
-		root.dataset.accent = accent;
-
-		for (const switcher of document.querySelectorAll("[data-accent-switcher]")) {
-			for (const button of switcher.querySelectorAll<HTMLElement>("[data-accent-option]")) {
-				const isActive = button.dataset.accentOption === accent;
-				button.setAttribute("aria-checked", String(isActive));
-				button.tabIndex = isActive ? 0 : -1;
-			}
-		}
-	};
-
-	applyAccent(readAccent());
-
-	for (const switcher of document.querySelectorAll("[data-accent-switcher]")) {
-		const buttons = [...switcher.querySelectorAll<HTMLElement>("[data-accent-option]")];
-
-		const select = (button: HTMLElement) => {
-			const accent = button.dataset.accentOption ?? "green";
-			localStorage.setItem(STORAGE_KEY, accent);
-			applyAccent(accent);
-		};
-
-		for (const button of buttons) {
-			button.addEventListener("click", () => select(button));
-
-			button.addEventListener("keydown", (event) => {
-				const step =
-					event.key === "ArrowRight" || event.key === "ArrowDown"
-						? 1
-						: event.key === "ArrowLeft" || event.key === "ArrowUp"
-							? -1
-							: 0;
-
-				if (step === 0) return;
-
-				event.preventDefault();
-				const next = buttons[(buttons.indexOf(button) + step + buttons.length) % buttons.length];
-				select(next);
-				next.focus();
-			});
-		}
-	}
+	initAppearance();
 </script>

@@ -34,6 +34,7 @@ const dict: Dictionary = {
 	"menu.codeLicense": "MIT Code",
 	"menu.contentLicense": "CC BY 4.0 Content",
 	"language.switcher": "Language switcher",
+	"appearance.switcher": "Theme and palette",
 	"theme.switcher": "Theme switcher",
 	"theme.system": "System theme",
 	"theme.light": "Light theme",

@@ -13,6 +13,7 @@ export { default as HomeLinks } from "./home/HomeLinks.astro";
 export { default as WordMarquee } from "./home/WordMarquee.astro";
 
 export { default as AccentToggle } from "./layout/AccentToggle.astro";
+export { default as AppearanceMenu } from "./layout/AppearanceMenu.astro";
 export { default as Container } from "./layout/Container.astro";
 export { default as Footer } from "./layout/Footer.astro";
 export { default as Header } from "./layout/Header.astro";

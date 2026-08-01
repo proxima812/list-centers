@@ -62,6 +62,17 @@
   --color-accent: hsl(142 66% 32%);
   --color-accent-foreground: hsl(0 0% 100%);
 
+  /* Отдельная яркая пара только для героя. Дисплейный кегль — это «крупный
+     текст» по WCAG, ему хватает 3:1, поэтому здесь можно взять насыщенный
+     тон, который на мелком UI не прошёл бы. */
+  --color-accent-vivid: hsl(142 76% 36%);
+  --color-accent-glow: hsl(142 71% 55%);
+
+  /* Тень не может быть завязана на foreground: в тёмной теме он почти белый,
+     и «тень» получалась светящейся. Этот тон чёрный в обеих темах, меняется
+     только непрозрачность — на тёмном фоне тень должна быть плотнее. */
+  --color-shade: hsl(0 0% 0%);
+
   --color-destructive: hsl(15 74% 45%);
 
   --animate-hero-pulse: hero-pulse 3s ease-in-out infinite;
@@ -73,11 +84,11 @@
   @keyframes hero-pulse {
     0%,
     100% {
-      filter: drop-shadow(0 0 2px color-mix(in oklab, var(--color-accent) 25%, transparent));
+      filter: drop-shadow(0 0 2px color-mix(in oklab, var(--color-accent-glow) 25%, transparent));
     }
 
     50% {
-      filter: drop-shadow(0 0 10px color-mix(in oklab, var(--color-accent) 65%, transparent));
+      filter: drop-shadow(0 0 10px color-mix(in oklab, var(--color-accent-glow) 65%, transparent));
     }
   }
 
@@ -185,39 +196,53 @@
   /* Дефолт на случай, если data-accent ещё не проставлен. */
   --color-accent: hsl(142 58% 52%);
   --color-accent-foreground: hsl(0 0% 8%);
+  --color-accent-vivid: hsl(142 62% 52%);
+  --color-accent-glow: hsl(142 70% 70%);
 }
 
 /* Пресеты акцента. У светлой и тёмной темы значения разные намеренно: один
-   и тот же тон не может пройти по контрасту на обоих фонах. Каждая пара
-   проверена на >=4.5:1 к своему фону. */
+   и тот же тон не может пройти по контрасту на обоих фонах. `accent` держит
+   >=4.5:1 для мелкого UI, пара vivid/glow — >=3:1 для дисплейного кегля. */
 [data-accent="green"] {
   --color-accent: hsl(142 66% 32%);
   --color-accent-foreground: hsl(0 0% 100%);
+  --color-accent-vivid: hsl(142 76% 36%);
+  --color-accent-glow: hsl(142 71% 55%);
 }
 
 [data-accent="blue"] {
   --color-accent: hsl(217 79% 45%);
   --color-accent-foreground: hsl(0 0% 100%);
+  --color-accent-vivid: hsl(217 88% 44%);
+  --color-accent-glow: hsl(213 92% 62%);
 }
 
 [data-accent="violet"] {
   --color-accent: hsl(263 60% 50%);
   --color-accent-foreground: hsl(0 0% 100%);
+  --color-accent-vivid: hsl(263 75% 50%);
+  --color-accent-glow: hsl(263 85% 68%);
 }
 
 .dark[data-accent="green"] {
   --color-accent: hsl(142 58% 52%);
   --color-accent-foreground: hsl(0 0% 8%);
+  --color-accent-vivid: hsl(142 62% 52%);
+  --color-accent-glow: hsl(142 70% 70%);
 }
 
 .dark[data-accent="blue"] {
   --color-accent: hsl(213 90% 66%);
   --color-accent-foreground: hsl(0 0% 8%);
+  --color-accent-vivid: hsl(213 90% 64%);
+  --color-accent-glow: hsl(213 95% 78%);
 }
 
 .dark[data-accent="violet"] {
   --color-accent: hsl(263 85% 72%);
   --color-accent-foreground: hsl(0 0% 8%);
+  --color-accent-vivid: hsl(263 82% 70%);
+  --color-accent-glow: hsl(263 90% 82%);
 }
 
 @layer base {
