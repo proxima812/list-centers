@@ -33,6 +33,12 @@ const dropdowns = [
 const triggerClass =
 	"inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-2xl px-3 text-sm font-medium transition-colors hover:bg-muted";
 
+// Активная страница помечается чертой снизу в цвете акцента: цвет тянется из
+// --color-accent, поэтому линия сама меняется вместе с пресетом темы
+// (зелёный / синий / фиолетовый).
+const activeUnderlineClass =
+	"relative after:absolute after:-bottom-0.5 after:h-0.5 after:rounded-full after:bg-accent after:content-['']";
+
 const itemClass =
 	"flex items-center gap-2 rounded-2xl px-3 py-2 text-sm font-medium text-subtle-foreground no-underline transition-colors hover:bg-muted hover:text-foreground aria-[current]:bg-muted aria-[current]:text-foreground ";
 ---
@@ -47,6 +53,7 @@ const itemClass =
 				label={item.label}
 				labelKey={item.labelKey}
 				aria-current={isActivePath(item.href) ? "page" : undefined}
+				class={isActivePath(item.href) ? `${activeUnderlineClass} after:inset-x-4` : ""}
 			/>
 		))
 	}
@@ -60,7 +67,7 @@ const itemClass =
 					<button
 						type="button"
 						data-dropdown-trigger
-						class={`${triggerClass} ${isActive ? "bg-muted text-foreground" : "text-foreground"}`}
+						class={`${triggerClass} text-foreground ${isActive ? `${activeUnderlineClass} after:inset-x-3` : ""}`}
 						aria-haspopup="true"
 						aria-expanded="false"
 						aria-controls={`${dropdown.id}-dropdown`}
