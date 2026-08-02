@@ -1,11 +1,7 @@
 ---
-import searchImageEn from "@/assets/1-en.png";
-import searchImageRu from "@/assets/1-ru.png";
-import present from "@/assets/present.png";
 import { HomeHeroTitle, HomeLinks, LIquidMetal } from "@/components";
 import { getLocaleFromUrl, useTranslations } from "@/i18n";
 import Layout from "@/layouts/Layout.astro";
-import { Image } from "astro:assets";
 import { getCollection } from "astro:content";
 
 const allCenters = await getCollection("centers");
@@ -18,7 +14,6 @@ const regionsCount = new Set(
 ).size;
 const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
-const searchImage = locale === "en" ? searchImageEn : searchImageRu;
 ---
 
 <Layout
@@ -45,15 +40,43 @@ const searchImage = locale === "en" ? searchImageEn : searchImageRu;
 			<HomeLinks />
 		</div>
 
-		<div class="md:space-y-14 space-y-8 py-12 md:py-20">
+		<div id="sections" class="md:space-y-14 space-y-8 py-12 md:py-20">
 			<section
 				class="grid grid-cols-1 items-center overflow-hidden rounded-3xl bg-surface shadow-lg shadow-shade/10 ring-1 ring-border-muted dark:shadow-shade/60 md:grid-cols-2"
 			>
-				<Image
-					src={present}
-					alt={t("home.present.imageAlt")}
-					class="w-full object-cover h-full"
-				/>
+				<div
+					class="relative isolate flex h-full min-h-44 flex-col justify-center gap-8 overflow-hidden bg-linear-135 from-accent via-accent-vivid to-depth-700 p-5 before:pointer-events-none before:absolute before:inset-0 before:bg-[radial-gradient(90%_70%_at_15%_0%,color-mix(in_oklab,var(--color-accent-glow)_35%,transparent),transparent_60%)] sm:p-8 md:min-h-[26rem] md:justify-end md:p-12"
+					aria-hidden="true"
+				>
+					<div
+						class="pointer-events-none absolute inset-0 opacity-[0.18] [--weave:26px] [background-image:repeating-linear-gradient(45deg,var(--color-accent-foreground)_0_1px,transparent_1px_var(--weave)),repeating-linear-gradient(-45deg,var(--color-accent-foreground)_0_1px,transparent_1px_var(--weave))] [mask-image:radial-gradient(120%_100%_at_100%_0%,#000_20%,transparent_75%)] md:[--weave:14px]"
+					>
+					</div>
+					<div class="relative grid grid-cols-3 gap-4 text-accent-foreground">
+						<div>
+							<div class="text-3xl font-bold tracking-tight md:text-5xl">{centers}</div>
+							<div class="mt-1 text-xs/4 opacity-80 md:text-sm">
+								{t("list.stat.centers")}
+							</div>
+						</div>
+						<div>
+							<div class="text-3xl font-bold tracking-tight md:text-5xl">
+								{countriesCount}
+							</div>
+							<div class="mt-1 text-xs/4 opacity-80 md:text-sm">
+								{t("list.stat.countries")}
+							</div>
+						</div>
+						<div>
+							<div class="text-3xl font-bold tracking-tight md:text-5xl">
+								{regionsCount}
+							</div>
+							<div class="mt-1 text-xs/4 opacity-80 md:text-sm">
+								{t("list.stat.regions")}
+							</div>
+						</div>
+					</div>
+				</div>
 				<div class="space-y-6 px-6 py-10 sm:px-8 md:px-12 md:py-16">
 					<h2 class="text-4xl font-bold tracking-tight">{t("home.present.title")}</h2>
 					<p
@@ -84,11 +107,47 @@ const searchImage = locale === "en" ? searchImageEn : searchImageRu;
 						{t("home.search.text2")}
 					</p>
 				</div>
-				<Image
-					src={searchImage}
-					alt={t("home.search.imageAlt")}
-					class="order-1 w-full object-cover md:order-2 h-full"
-				/>
+				<div
+					class="relative isolate order-1 flex h-full flex-col justify-center gap-4 overflow-hidden bg-linear-45 from-depth-700 via-accent to-accent-vivid p-5 before:pointer-events-none before:absolute before:inset-0 before:bg-[radial-gradient(90%_70%_at_85%_0%,color-mix(in_oklab,var(--color-accent-glow)_35%,transparent),transparent_60%)] sm:p-8 md:order-2 md:min-h-[26rem] md:p-12"
+					aria-hidden="true"
+				>
+					<div
+						class="pointer-events-none absolute inset-0 opacity-[0.18] [--weave:26px] [background-image:repeating-linear-gradient(45deg,var(--color-accent-foreground)_0_1px,transparent_1px_var(--weave)),repeating-linear-gradient(-45deg,var(--color-accent-foreground)_0_1px,transparent_1px_var(--weave))] [mask-image:radial-gradient(120%_100%_at_0%_0%,#000_20%,transparent_75%)] md:[--weave:14px]"
+					>
+					</div>
+					<div
+						class="relative rounded-full bg-background/95 px-5 py-3 text-sm text-foreground shadow-lg shadow-shade/20 backdrop-blur-sm max-sm:px-4"
+					>
+						{t("list.search.placeholder")}
+					</div>
+					<div class="relative flex flex-wrap gap-2 text-xs text-accent-foreground">
+						<span class="rounded-full bg-surface/20 px-3 py-1.5 ring-1 ring-surface/30">
+							{t("list.countries")}
+						</span>
+						<span class="rounded-full bg-surface/20 px-3 py-1.5 ring-1 ring-surface/30">
+							{t("list.regions")}
+						</span>
+						<span class="rounded-full bg-surface/20 px-3 py-1.5 ring-1 ring-surface/30">
+							{t("list.categories")}
+						</span>
+					</div>
+					<div class="relative mt-2 space-y-2">
+						{
+							[0, 1, 2].map((row) => (
+								<div class="rounded-2xl bg-surface/15 p-3 ring-1 ring-surface/25">
+									<div
+										class="h-2.5 rounded-full bg-surface/70"
+										style={`width: ${[70, 55, 62][row]}%`}
+									/>
+									<div
+										class="mt-2 h-2 rounded-full bg-surface/35"
+										style={`width: ${[40, 48, 33][row]}%`}
+									/>
+								</div>
+							))
+						}
+					</div>
+				</div>
 			</section>
 		</div>
 	</main>
