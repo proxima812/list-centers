@@ -27,7 +27,7 @@ brand
 
 ## Brand Personality
 
-Useful, precise, compact, cultural, modern, and restrained. The current design system is mostly monochrome, and the homepage carries a single controlled brand layer: a liquid-metal mark above a compact hero title and a short link list. The catalog itself remains quiet and factual.
+Useful, precise, compact, cultural, modern, and restrained. The design system is neutral by default with one signal accent, and the homepage carries a single controlled brand layer: a liquid-metal mark above a compact hero title and a short link list. The catalog itself remains quiet and factual. Presentation belongs to the visitor: light/dark/system theme, three accent presets (green default, blue, violet), and a motion on/off toggle, all in the header appearance menu.
 
 ## Anti-references
 
@@ -38,11 +38,11 @@ No glossy SaaS styling, marketplace templates, generic startup hero language, de
 1. Keep the catalog useful first.
 2. Make center information easy to scan, compare, and verify.
 3. Preserve factual wording, source links, locale routing, and stable slugs.
-4. Use the monochrome token system for structure and the blue accent only for the homepage brand moment.
+4. Use the neutral token system for structure and the accent only as a signal — hero phrase, focus, active state. Never hardcode a hue: the accent is the visitor's choice.
 5. Let real interface imagery carry explanation where it is clearer than text.
 6. Use motion sparingly: page identity, the homepage brand mark, and small control feedback only.
 7. Keep localization behavior predictable and visible.
 
 ## Accessibility & Inclusion
 
-Aim for clear readable contrast, keyboard-accessible controls, semantic structure, meaningful alt text, and multilingual consistency. Motion must respect `prefers-reduced-motion`. Placeholder text, muted metadata, and small labels must remain legible against their surfaces.
+Aim for clear readable contrast in both themes and all three accent presets, keyboard-accessible controls, semantic structure, meaningful alt text, and multilingual consistency. Motion must respect both `prefers-reduced-motion` and the in-app motion toggle (`[data-motion="off"]`). Placeholder text, muted metadata, and small labels must remain legible against their surfaces.

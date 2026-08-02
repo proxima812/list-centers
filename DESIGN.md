@@ -30,38 +30,38 @@ colors:
   accent-foreground: "#ffffff"
 typography:
   display:
-    fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+    fontFamily: "'Twemoji Country Flags', 'Tatarverse Sans', ui-sans-serif, system-ui, sans-serif"
     fontSize: "clamp(2.25rem, 7vw, 4.5rem)"
     fontWeight: 900
     lineHeight: 1
     letterSpacing: "-0.04em"
     textTransform: "uppercase"
   headline:
-    fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+    fontFamily: "'Twemoji Country Flags', 'Tatarverse Sans', ui-sans-serif, system-ui, sans-serif"
     fontSize: "clamp(1.875rem, 5vw, 3.75rem)"
     fontWeight: 700
     lineHeight: 1.05
     letterSpacing: "-0.035em"
   title:
-    fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+    fontFamily: "'Twemoji Country Flags', 'Tatarverse Sans', ui-sans-serif, system-ui, sans-serif"
     fontSize: "1rem"
     fontWeight: 700
     lineHeight: 1.375
     letterSpacing: "-0.015em"
   body:
-    fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+    fontFamily: "'Twemoji Country Flags', 'Tatarverse Sans', ui-sans-serif, system-ui, sans-serif"
     fontSize: "1rem"
     fontWeight: 400
     lineHeight: 1.5
     letterSpacing: "normal"
   label:
-    fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+    fontFamily: "'Twemoji Country Flags', 'Tatarverse Sans', ui-sans-serif, system-ui, sans-serif"
     fontSize: "0.875rem"
     fontWeight: 500
     lineHeight: 1.25
     letterSpacing: "normal"
   caption:
-    fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+    fontFamily: "'Twemoji Country Flags', 'Tatarverse Sans', ui-sans-serif, system-ui, sans-serif"
     fontSize: "0.75rem"
     fontWeight: 500
     lineHeight: 1.3333
@@ -135,7 +135,7 @@ The brand layer should make the site memorable. The catalog layer should make th
 
 ## 2. Color
 
-The base palette is monochrome and semantic. It is defined in `src/styles/tailwind.css` through Tailwind v4 tokens: `background`, `foreground`, `muted`, `surface`, `border`, `ring`, `primary`, `link`, `depth-*`, and `accent`.
+The base palette is neutral and semantic. It is defined in `src/styles/tailwind.css` through Tailwind v4 tokens: `background`, `foreground`, `muted`, `surface`, `border`, `ring`, `primary`, `link`, `depth-*`, and `accent`.
 
 ### Base Roles
 
@@ -172,9 +172,9 @@ prose, footer links, or center detail pages unless a specific design pass asks f
 
 ### Color Rules
 
-**Monochrome Carries Structure.** Default to the semantic neutral tokens for layout, controls, content, and catalog surfaces.
+**Neutrals Carry Structure.** Default to the semantic neutral tokens for layout, controls, content, and catalog surfaces.
 
-**Accent Is A Signal.** The accent belongs to identity moments, focus, and active state only. It should never become a generic decoration.
+**The Accent Is A Signal.** The accent belongs to identity moments, focus, and active state only. It should never become a generic decoration.
 
 **Never Hardcode A Color.** Anything written as a literal hex or a Tailwind palette class (`bg-white`, `text-zinc-500`) will not survive a theme switch. The only exceptions are logo plates, which need white regardless of theme, and third-party brand colors.
 
@@ -182,7 +182,7 @@ prose, footer links, or center detail pages unless a specific design pass asks f
 
 ## 3. Typography
 
-The site uses the system sans stack. The voice is practical and direct, with a sharper homepage display treatment.
+The site uses **Tatarverse Sans**, a self-hosted variable font (`/fonts/tatarverse-sans.woff2`, weights 100-900, `font-display: optional`), with the system sans stack as fallback. `Twemoji Country Flags` sits first in the stack but only covers flag glyphs — Windows has no built-in flag emoji, so everything else falls through to Tatarverse Sans. The voice is practical and direct, with a sharper homepage display treatment.
 
 ### Hierarchy
 
@@ -240,6 +240,24 @@ Motion is part of the new system, but it is limited.
 
 Every animation needs a reduced-motion path. Motion must enhance already visible content, not gate content rendering.
 
+### Two Off Switches
+
+Motion has **two independent off switches**, and a component must survive both:
+
+1. **OS preference** — `@media (prefers-reduced-motion: reduce)`.
+2. **User toggle** — the appearance menu in the header writes `data-motion="off"`
+   on `<html>` (localStorage key `motion`, `on` by default). It forces
+   `animation: none` and `transition: none` on every element plus
+   `scroll-behavior: auto`, killing the hero, the mark, marquees, and hovers
+   while leaving colors and gradients intact.
+
+Because the toggle removes animations outright, **any component whose state
+machine waits on `animationend` or `transitionend` will hang**. Such components
+must be carved out and given `animation-duration: 1ms` instead of `none` — the
+mobile drawer (`[data-menu-list]`, `[data-menu-backdrop]`) is the existing
+precedent. Check every animated surface in all three states: motion on, toggle
+off, OS reduced-motion.
+
 ## 7. Components
 
 ### Liquid-Metal Mark
@@ -287,7 +305,7 @@ MDX content should use the typography plugin tokens, readable line lengths, rest
 - Use real product imagery where it clarifies a feature.
 - Preserve source-backed content, locale routes, stable slugs, and metadata behavior.
 - Verify contrast for muted labels, placeholders, metadata, and small controls.
-- Keep reduced-motion behavior in every animated component.
+- Keep both motion escape paths in every animated component: `prefers-reduced-motion` and the `[data-motion="off"]` toggle.
 
 ### Do Not
 

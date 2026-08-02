@@ -1,86 +1,133 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-06-28T14:30:33Z",
+  "generatedAt": "2026-08-02T00:00:00Z",
   "title": "Design System: Tatarverse",
   "register": "brand",
-  "summary": "Bilingual cultural-center catalog with a controlled homepage brand layer and a quiet monochrome catalog layer.",
+  "summary": "Bilingual cultural-center catalog with a controlled homepage brand layer and a quiet neutral catalog layer, themed by a user-chosen accent across light and dark.",
   "extensions": {
     "strategy": {
       "northStar": "A Catalog With A Signal",
       "layers": [
         {
           "name": "Brand layer",
-          "purpose": "Homepage identity moments: liquid-metal mark, heavy uppercase hero title, limited blue accent, compact animated stats, and search screenshot imagery."
+          "purpose": "Homepage identity moments: liquid-metal mark, heavy uppercase hero title, accent-tinted hero word, compact animated stats, and search screenshot imagery."
         },
         {
           "name": "Catalog layer",
           "purpose": "Centers list, detail pages, MDX content, filters, search, navigation, translation surfaces, and source-backed factual content."
+        },
+        {
+          "name": "Appearance layer",
+          "purpose": "User-controlled presentation: theme (system/light/dark), accent preset (green/blue/violet), and a motion on/off toggle. Applied as `.dark`, `[data-accent]`, and `[data-motion]` on <html> by an inline script in Layout.astro <head> before first paint."
         }
       ],
       "rules": [
         "Keep catalog utility first.",
-        "Use the blue accent as a homepage signal, not a general palette.",
+        "Never hardcode a hue. Ship only `--color-*` tokens (`accent`, `accent-vivid`, `accent-glow`, `foreground`, `surface`, `border`, `depth-*`), so a surface survives all three accent presets in both themes.",
+        "The accent is a signal — hero word, focus ring, active state — not a general palette. Neutrals carry the catalog.",
+        "Every new color must be authored twice: a light value in `@theme` and a dark value under `.dark` in src/styles/tailwind.css. Contrast floors: >=4.5:1 for small UI, >=3:1 for display type.",
         "Use real interface imagery when explaining product behavior.",
         "Preserve locale routes, source links, stable slugs, and factual copy.",
-        "Respect reduced motion for every animated component."
+        "Every animated component needs two escape paths, not one: `prefers-reduced-motion` and the user toggle `[data-motion=\"off\"]`. The toggle kills animation and transition globally, so never rely on `transitionend`/`animationend` firing without an explicit 1ms carve-out."
       ]
     },
     "colorMeta": {
+      "source": "src/styles/tailwind.css — light values in `@theme`, dark overrides under `.dark`, accent presets under `[data-accent]` / `.dark[data-accent]`. That file is the single source of truth; `canonical` below is the light value and `dark` the paired one.",
       "background": {
         "role": "neutral",
-        "displayName": "Page White",
+        "displayName": "Page Plane",
         "canonical": "hsl(0 0% 100%)",
+        "dark": "hsl(0 0% 8%)",
         "usage": "Page background and default clean plane."
       },
       "foreground": {
         "role": "neutral",
         "displayName": "Catalog Ink",
         "canonical": "hsl(0 0% 11.4%)",
+        "dark": "hsl(0 0% 95%)",
         "usage": "Primary text, high hierarchy, strong links, and active catalog states."
       },
       "muted": {
         "role": "neutral",
         "displayName": "Quiet Muted",
         "canonical": "hsl(0 0% 94%)",
+        "dark": "hsl(0 0% 16%)",
         "usage": "Low-emphasis surfaces, chips, and catalog cards."
+      },
+      "subtleForeground": {
+        "role": "neutral",
+        "displayName": "Subtle Ink",
+        "canonical": "hsl(0 0% 46%)",
+        "dark": "hsl(0 0% 56%)",
+        "usage": "Footer, filter captions, and quiet metadata. The light value is 46% and not 56% on purpose: 56% lands at 3.24:1 on white, below the AA floor for body text. Do not lighten it."
       },
       "surface": {
         "role": "neutral",
-        "displayName": "Surface White",
+        "displayName": "Surface Plane",
         "canonical": "hsl(0 0% 100%)",
-        "usage": "Cards, menus, MDX surfaces, controls, and screenshot blocks."
+        "dark": "hsl(0 0% 12%)",
+        "usage": "Cards, menus, MDX surfaces, controls, and screenshot blocks. In dark it sits above `background`, not below."
       },
       "border": {
         "role": "neutral",
         "displayName": "Soft Structure",
         "canonical": "hsl(0 0% 86%)",
+        "dark": "hsl(0 0% 26%)",
         "usage": "Borders, separators, and quiet content framing."
       },
       "primary": {
         "role": "primary",
         "displayName": "Catalog Ink",
         "canonical": "hsl(0 0% 11.4%)",
-        "usage": "Primary actions, active filters, focus rings, and strongest text."
+        "dark": "hsl(0 0% 95%)",
+        "usage": "Primary actions, active filters, and strongest text. Inverts with the theme — pair with `primary-foreground`, never with a literal white or black."
       },
-      "brandBlue": {
+      "accent": {
         "role": "accent",
-        "displayName": "Homepage Blue Signal",
-        "canonical": "#2563eb",
-        "tonalRamp": ["#38bdf8", "#60a5fa", "#2563eb", "#0ea5e9"],
-        "usage": "Homepage hero word treatment only unless a later design pass explicitly expands it."
+        "displayName": "User Accent Signal",
+        "canonical": "hsl(142 66% 32%)",
+        "dark": "hsl(142 58% 52%)",
+        "presets": {
+          "green": { "light": "hsl(142 66% 32%)", "dark": "hsl(142 58% 52%)", "default": true },
+          "blue": { "light": "hsl(217 79% 45%)", "dark": "hsl(213 90% 66%)" },
+          "violet": { "light": "hsl(263 60% 50%)", "dark": "hsl(263 85% 72%)" }
+        },
+        "usage": "Focus rings, active states, and the homepage hero word. Green is the default preset. Held at >=4.5:1 on its own background in every preset/theme pair — treat these six values as contrast-audited and do not retune one in isolation."
+      },
+      "accentVivid": {
+        "role": "accent",
+        "displayName": "Display Accent",
+        "canonical": "hsl(142 76% 36%)",
+        "dark": "hsl(142 62% 52%)",
+        "usage": "Display-scale type only (hero lines), where WCAG allows 3:1. Never on small UI."
+      },
+      "accentGlow": {
+        "role": "accent",
+        "displayName": "Hero Glow",
+        "canonical": "hsl(142 71% 55%)",
+        "dark": "hsl(142 70% 70%)",
+        "usage": "Source tone for the hero `drop-shadow` halo (`--animate-hero-pulse`). Decorative only, never load-bearing for text contrast."
+      },
+      "shade": {
+        "role": "neutral",
+        "displayName": "Shadow Tone",
+        "canonical": "hsl(0 0% 0%)",
+        "dark": "hsl(0 0% 0%)",
+        "usage": "Shadows. Black in both themes — vary opacity, not lightness (denser on dark). Never derive a shadow from `foreground`: it goes near-white in dark and the shadow glows."
       },
       "depth": {
         "role": "neutral",
         "displayName": "Depth Ramp",
         "canonical": "hsl(0 0% 20%)",
-        "usage": "Rings, tonal hierarchy, inset lines, metadata, and quiet separation."
+        "dark": "hsl(0 0% 84%)",
+        "usage": "Rings, tonal hierarchy, inset lines, metadata, and quiet separation. The 100→700 ramp runs light→dark in light theme and inverts in dark; always reference the step (`depth-300`), never a raw value."
       }
     },
     "typographyMeta": {
       "display": {
         "displayName": "Homepage Display",
         "purpose": "Heavy uppercase homepage hero lines only.",
-        "fontFamily": "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+        "fontFamily": "'Twemoji Country Flags', 'Tatarverse Sans', ui-sans-serif, system-ui, sans-serif",
         "fontWeight": 900,
         "letterSpacingMaxTight": "-0.04em",
         "textTransform": "uppercase"
@@ -88,19 +135,19 @@
       "headline": {
         "displayName": "Page Headline",
         "purpose": "Major page titles and high-level catalog surfaces.",
-        "fontFamily": "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+        "fontFamily": "'Twemoji Country Flags', 'Tatarverse Sans', ui-sans-serif, system-ui, sans-serif",
         "fontWeight": 700
       },
       "body": {
         "displayName": "Body",
         "purpose": "Readable factual content, MDX prose, center summaries, and supporting copy.",
-        "fontFamily": "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+        "fontFamily": "'Twemoji Country Flags', 'Tatarverse Sans', ui-sans-serif, system-ui, sans-serif",
         "fontWeight": 400
       },
       "label": {
         "displayName": "Label",
         "purpose": "Compact controls, chips, metadata, stats labels, and navigation.",
-        "fontFamily": "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+        "fontFamily": "'Twemoji Country Flags', 'Tatarverse Sans', ui-sans-serif, system-ui, sans-serif",
         "fontWeight": 500
       }
     },
@@ -120,7 +167,7 @@
       },
       {
         "name": "feature-screenshot-lift",
-        "value": "shadow-2xl shadow-zinc-200",
+        "value": "shadow-2xl shadow-shade/10 dark:shadow-shade/40",
         "purpose": "Homepage screenshot-led product imagery only."
       },
       {
@@ -146,9 +193,29 @@
         "purpose": "Small hover, focus, and active-state feedback."
       },
       {
+        "name": "hero-pulse",
+        "value": "3s ease-in-out infinite",
+        "purpose": "Accent-tinted drop-shadow halo breathing around the hero word."
+      },
+      {
+        "name": "hero-gray-drift",
+        "value": "14s ease-in-out infinite",
+        "purpose": "Quiet background-position drift on the hero's second line."
+      },
+      {
+        "name": "drawer-in / drawer-out",
+        "value": "250ms / 200ms cubic-bezier(0.32, 0.72, 0, 1)",
+        "purpose": "Mobile drawer and its backdrop. Asymmetric in/out curves, so these are animations rather than transitions."
+      },
+      {
         "name": "reduced-motion",
         "value": "required",
-        "purpose": "Animated components must provide a reduced-motion path."
+        "purpose": "Animated components must provide a reduced-motion path via `@media (prefers-reduced-motion: reduce)`."
+      },
+      {
+        "name": "motion-toggle",
+        "value": "required",
+        "purpose": "Second, independent off switch: the header appearance menu writes `[data-motion=\"off\"]` on <html> (localStorage key `motion`, values on/off, default on). It forces `animation: none` and `transition: none` on every element and `scroll-behavior: auto`, killing hero, mark, marquee, and hovers while leaving colors and gradients intact. Any component whose state machine waits on `animationend`/`transitionend` must be carved out and given `animation-duration: 1ms` instead of `none` — the drawer (`[data-menu-list]`, `[data-menu-backdrop]`) is the existing precedent. Design and QA every animated surface in all three states: motion on, toggle off, OS reduced-motion."
       }
     ],
     "breakpoints": [
@@ -178,9 +245,9 @@
       "name": "Hero Title",
       "kind": "typography",
       "refersTo": "HomeHeroTitle",
-      "description": "Heavy uppercase localized hero lines with one limited blue accent phrase and quieter secondary lines.",
+      "description": "Heavy uppercase localized hero lines with one accent-tinted phrase and quieter secondary lines. The accent tone follows the user's preset and theme.",
       "html": "<h1 class=\"relative select-none text-center\"><span class=\"tracking-tight font-black uppercase text-4xl sm:text-5xl md:text-6xl lg:text-7xl\">Catalog phrase</span></h1>",
-      "css": ".hero-title { font-weight: 900; text-transform: uppercase; letter-spacing: -0.04em; line-height: 1; text-wrap: balance; } .hero-title__accent { color: #2563eb; }"
+      "css": ".hero-title { font-weight: 900; text-transform: uppercase; letter-spacing: -0.04em; line-height: 1; text-wrap: balance; } .hero-title__accent { color: var(--color-accent-vivid); }"
     },
     {
       "name": "Catalog Stats",
@@ -195,8 +262,8 @@
       "kind": "feature-section",
       "refersTo": "homepage-search-section",
       "description": "Localized product-image section using real search screenshots beside concise explanatory copy.",
-      "html": "<section class=\"grid overflow-hidden rounded-3xl bg-white shadow-2xl shadow-zinc-200 md:grid-cols-2\"><div><h2>Search title</h2><p>Search copy</p></div><img alt=\"Localized search interface\" /></section>",
-      "css": ".search-feature { overflow: hidden; border-radius: 24px; background: var(--color-surface); box-shadow: 0 25px 50px -12px rgb(228 228 231); }"
+      "html": "<section class=\"grid overflow-hidden rounded-3xl bg-surface shadow-2xl shadow-shade/10 dark:shadow-shade/40 md:grid-cols-2\"><div><h2>Search title</h2><p>Search copy</p></div><img alt=\"Localized search interface\" /></section>",
+      "css": ".search-feature { overflow: hidden; border-radius: 24px; background: var(--color-surface); box-shadow: 0 25px 50px -12px color-mix(in oklab, var(--color-shade) 10%, transparent); }"
     },
     {
       "name": "Primary Button",
@@ -204,7 +271,7 @@
       "refersTo": "button-primary",
       "description": "Compact primary action for clear navigation or active commands.",
       "html": "<button class=\"ds-button-primary\">Open catalog</button>",
-      "css": ".ds-button-primary { display: inline-flex; align-items: center; gap: 6px; border: 0; border-radius: 16px; background: var(--color-primary, #1d1d1d); color: var(--color-primary-foreground, #ffffff); padding: 8px 16px; font: 500 14px/1.25 system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; cursor: pointer; transition: background-color 150ms ease, color 150ms ease; } .ds-button-primary:focus-visible { outline: 2px solid var(--color-primary, #1d1d1d); outline-offset: 2px; }"
+      "css": ".ds-button-primary { display: inline-flex; align-items: center; gap: 6px; border: 0; border-radius: 16px; background: var(--color-primary, #1d1d1d); color: var(--color-primary-foreground, #ffffff); padding: 8px 16px; font: 500 14px/1.25 'Twemoji Country Flags', 'Tatarverse Sans', ui-sans-serif, system-ui, sans-serif; cursor: pointer; transition: background-color 150ms ease, color 150ms ease; } .ds-button-primary:focus-visible { outline: 2px solid var(--color-primary, #1d1d1d); outline-offset: 2px; }"
     },
     {
       "name": "Ghost Button",
@@ -212,7 +279,7 @@
       "refersTo": "button-ghost",
       "description": "Quiet navigation action used in header and mobile menu links.",
       "html": "<button class=\"ds-button-ghost\">Sources</button>",
-      "css": ".ds-button-ghost { display: inline-flex; align-items: center; gap: 6px; border: 0; border-radius: 16px; background: transparent; color: var(--color-primary, #1d1d1d); padding: 8px 16px; font: 500 14px/1.25 system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; cursor: pointer; transition: background-color 150ms ease, color 150ms ease; } .ds-button-ghost:hover { background: color-mix(in srgb, var(--color-primary, #1d1d1d) 5%, transparent); } .ds-button-ghost:focus-visible { outline: 2px solid var(--color-primary, #1d1d1d); outline-offset: 2px; }"
+      "css": ".ds-button-ghost { display: inline-flex; align-items: center; gap: 6px; border: 0; border-radius: 16px; background: transparent; color: var(--color-primary, #1d1d1d); padding: 8px 16px; font: 500 14px/1.25 'Twemoji Country Flags', 'Tatarverse Sans', ui-sans-serif, system-ui, sans-serif; cursor: pointer; transition: background-color 150ms ease, color 150ms ease; } .ds-button-ghost:hover { background: color-mix(in srgb, var(--color-primary, #1d1d1d) 5%, transparent); } .ds-button-ghost:focus-visible { outline: 2px solid var(--color-primary, #1d1d1d); outline-offset: 2px; }"
     },
     {
       "name": "Filter Chip",
@@ -220,7 +287,7 @@
       "refersTo": "chip-active",
       "description": "Compact filter control with a clear active state.",
       "html": "<button class=\"ds-filter-chip\" data-active=\"true\"><span>All</span><span class=\"ds-filter-count\">128</span></button>",
-      "css": ".ds-filter-chip { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; border: 0; border-radius: 16px; background: var(--color-muted, #f0f0f0); color: var(--color-muted-foreground, #6b6b6b); padding: 6px 10px; font: 500 14px/1.25 system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; cursor: pointer; transition: background-color 150ms ease, color 150ms ease; } .ds-filter-chip[data-active='true'] { background: var(--color-primary, #1d1d1d); color: var(--color-primary-foreground, #ffffff); }"
+      "css": ".ds-filter-chip { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; border: 0; border-radius: 16px; background: var(--color-muted, #f0f0f0); color: var(--color-muted-foreground, #6b6b6b); padding: 6px 10px; font: 500 14px/1.25 'Twemoji Country Flags', 'Tatarverse Sans', ui-sans-serif, system-ui, sans-serif; cursor: pointer; transition: background-color 150ms ease, color 150ms ease; } .ds-filter-chip[data-active='true'] { background: var(--color-primary, #1d1d1d); color: var(--color-primary-foreground, #ffffff); }"
     },
     {
       "name": "Search Field",
@@ -228,7 +295,7 @@
       "refersTo": "Search",
       "description": "Primary catalog search field with soft ring and visible focus.",
       "html": "<label class=\"ds-search\"><input placeholder=\"Search centers\" /></label>",
-      "css": ".ds-search input { width: 100%; border: 0; border-radius: 16px; background: var(--color-surface, #ffffff); color: var(--color-surface-foreground, #1d1d1d); padding: 12px 16px; font: 400 14px/1.25 system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; box-shadow: inset 0 0 0 1px var(--color-depth-100, #e6e6e6); outline: none; } .ds-search input::placeholder { color: var(--color-subtle-foreground, #8f8f8f); } .ds-search input:focus { box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--color-primary, #1d1d1d) 25%, transparent); }"
+      "css": ".ds-search input { width: 100%; border: 0; border-radius: 16px; background: var(--color-surface, #ffffff); color: var(--color-surface-foreground, #1d1d1d); padding: 12px 16px; font: 400 14px/1.25 'Twemoji Country Flags', 'Tatarverse Sans', ui-sans-serif, system-ui, sans-serif; box-shadow: inset 0 0 0 1px var(--color-depth-100, #e6e6e6); outline: none; } .ds-search input::placeholder { color: var(--color-subtle-foreground, #8f8f8f); } .ds-search input:focus { box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--color-primary, #1d1d1d) 25%, transparent); }"
     },
     {
       "name": "Center Card",
@@ -236,7 +303,7 @@
       "refersTo": "CardItem",
       "description": "Signature catalog list item for center pages. It keeps title, type, category, location, and summary readable in a quiet neutral surface.",
       "html": "<article class=\"ds-center-card\"><p>Location metadata</p><h3>Example Tatar Cultural Center</h3></article>",
-      "css": ".ds-center-card { overflow: hidden; border-radius: 32px; background: var(--color-muted, #f0f0f0); color: var(--color-surface-foreground, #1d1d1d); padding: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.04), inset 0 0 0 1px color-mix(in srgb, var(--color-depth-100, #e6e6e6) 40%, transparent); } .ds-center-card h3 { overflow-wrap: anywhere; color: var(--color-surface-foreground, #1d1d1d); font: 700 16px/1.375 system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; letter-spacing: -0.015em; }"
+      "css": ".ds-center-card { overflow: hidden; border-radius: 32px; background: var(--color-muted, #f0f0f0); color: var(--color-surface-foreground, #1d1d1d); padding: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.04), inset 0 0 0 1px color-mix(in srgb, var(--color-depth-100, #e6e6e6) 40%, transparent); } .ds-center-card h3 { overflow-wrap: anywhere; color: var(--color-surface-foreground, #1d1d1d); font: 700 16px/1.375 'Twemoji Country Flags', 'Tatarverse Sans', ui-sans-serif, system-ui, sans-serif; letter-spacing: -0.015em; }"
     },
     {
       "name": "MDX Surface",
@@ -249,24 +316,24 @@
   ],
   "narrative": {
     "northStar": "A Catalog With A Signal",
-    "overview": "Tatarverse pairs a memorable homepage identity with a quiet, practical catalog. The homepage may use the liquid-metal mark, heavy uppercase hero type, limited blue accent, compact animated stats, and real interface imagery. Catalog surfaces remain monochrome, factual, and easy to scan.",
+    "overview": "Tatarverse pairs a memorable homepage identity with a quiet, practical catalog. The homepage may use the liquid-metal mark, heavy uppercase hero type, an accent-tinted hero phrase, compact animated stats, and real interface imagery. Catalog surfaces remain neutral, factual, and easy to scan. Presentation is the user's: three accent presets, light/dark, and a motion toggle, so no surface may assume one fixed hue or one fixed theme.",
     "keyCharacteristics": [
       "Two-layer system: homepage brand layer plus catalog utility layer.",
-      "Monochrome semantic tokens for most interface structure.",
-      "Blue accent limited to the homepage hero signal.",
+      "Neutral semantic tokens carry most interface structure; both themes are authored, never derived.",
+      "The user-chosen accent stays a signal: hero phrase, focus ring, active state.",
       "Squircle geometry for controls, cards, stats, menus, and catalog primitives.",
       "Real product imagery in the homepage search section.",
       "Motion limited to identity, stats emphasis, and small control feedback."
     ],
     "rules": [
       {
-        "name": "Monochrome Carries Structure",
+        "name": "Neutrals Carry Structure",
         "body": "Default to semantic neutral tokens for layout, controls, content, and catalog surfaces.",
         "section": "colors"
       },
       {
-        "name": "Blue Is A Signal",
-        "body": "Blue belongs to the homepage identity accent and selected brand moments only.",
+        "name": "The Accent Is A Signal",
+        "body": "The accent belongs to the homepage identity moment, focus, and active state only — and it is whichever preset the user picked, so it is only ever referenced as `var(--color-accent)` / `accent-vivid` / `accent-glow`.",
         "section": "colors"
       },
       {
@@ -281,7 +348,7 @@
       },
       {
         "name": "Motion Must Have A Reason",
-        "body": "Motion is allowed for identity, stats emphasis, and small state feedback, with reduced-motion support.",
+        "body": "Motion is allowed for identity, stats emphasis, and small state feedback, and must survive both off switches: OS reduced-motion and the header `[data-motion=\"off\"]` toggle.",
         "section": "motion"
       }
     ],
@@ -290,16 +357,19 @@
       "Keep the homepage brand layer distinct from catalog utility surfaces.",
       "Use real product imagery where it clarifies a feature.",
       "Preserve source-backed content, locale routes, stable slugs, and metadata behavior.",
-      "Verify contrast for muted labels, placeholders, metadata, and small controls.",
-      "Keep reduced-motion behavior in every animated component."
+      "Verify contrast for muted labels, placeholders, metadata, and small controls in both themes.",
+      "Keep both motion escape paths in every animated component: `prefers-reduced-motion` and `[data-motion=\"off\"]`.",
+      "Author every new color twice — light in `@theme`, dark under `.dark` — and check it against all three accent presets."
     ],
     "donts": [
-      "Do not turn the whole site blue.",
+      "Do not turn the whole site into the accent hue, and never hardcode one — the user can switch it to green, blue, or violet at any moment.",
       "Do not add extra cultural palettes or ornamental motifs.",
       "Do not add glossy SaaS gradients, glass panels, side stripes, or generic icon-card grids.",
       "Do not reuse homepage display treatment inside dense catalog surfaces.",
       "Do not add decorative motion to MDX pages, lists, or center detail content.",
-      "Do not rewrite factual copy into slogans."
+      "Do not rewrite factual copy into slogans.",
+      "Do not hardcode a hex, `bg-white`, `text-black`, or a Tailwind palette color (`zinc-*`, `blue-*`) — they break dark theme and the accent presets.",
+      "Do not derive shadows from `foreground`, and do not gate a component's state machine on `transitionend` without a `[data-motion=\"off\"]` carve-out."
     ]
   }
 }
