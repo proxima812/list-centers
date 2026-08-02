@@ -1,6 +1,7 @@
 ---
 import ButtonLink from "../ui/ButtonLink.astro";
 import AccentToggle from "./AccentToggle.astro";
+import MotionToggle from "./MotionToggle.astro";
 import ThemeToggle from "./ThemeToggle.astro";
 import { links } from "@/data/links";
 import {
@@ -238,6 +239,7 @@ const isActivePath = (href: string) => {
 					<div class="flex flex-wrap items-center gap-2 px-4">
 						<ThemeToggle />
 						<AccentToggle />
+						<MotionToggle />
 					</div>
 				</section>
 

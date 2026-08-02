@@ -20,6 +20,7 @@ export { default as Header } from "./layout/Header.astro";
 export { default as LanguageToggle } from "./layout/LanguageToggle.astro";
 export { default as Logotype } from "./layout/Logotype.astro";
 export { default as Menu } from "./layout/Menu.astro";
+export { default as MotionToggle } from "./layout/MotionToggle.astro";
 export { default as SEO } from "./layout/SEO.astro";
 export { default as ThemeToggle } from "./layout/ThemeToggle.astro";
 export { default as WhoDev } from "./layout/WhoDev.astro";

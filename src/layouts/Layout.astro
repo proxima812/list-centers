@@ -58,12 +58,14 @@ const locale = getLocaleFromUrl(Astro.url);
 				const root = document.documentElement;
 				const theme = localStorage.getItem("theme") ?? "system";
 				const accent = localStorage.getItem("accent") ?? "green";
+				const motion = localStorage.getItem("motion") ?? "on";
 				const dark =
 					theme === "dark" ||
 					(theme === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
 
 				root.dataset.theme = theme;
 				root.dataset.accent = accent;
+				root.dataset.motion = motion;
 				root.classList.toggle("dark", dark);
 			})();
 		</script>

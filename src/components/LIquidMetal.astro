@@ -14,6 +14,8 @@ import LiquidMetalMark from "./LiquidMetalMark.tsx";
 		class="flower-fade absolute z-50 h-[84px] w-[84px] object-contain"
 	/>
 
+	<span class="flower-solid absolute z-50 h-[84px] w-[84px]" aria-hidden="true"></span>
+
 	<LiquidMetalMark client:media="(prefers-reduced-motion: no-preference)" />
 </div>
 
@@ -36,5 +38,23 @@ import LiquidMetalMark from "./LiquidMetalMark.tsx";
 		.flower-fade {
 			animation: none;
 		}
+	}
+
+	/* Статичный дубль марки для выключенных анимаций: та же форма, но залитая
+	   акцентом темы, а не шейдером. Маска, а не <img>: цветок в flower.svg со
+	   своей палитрой, а здесь нужен один тон, который следует за палитрой. */
+	.flower-solid {
+		display: none;
+		background-color: var(--color-accent-vivid);
+		mask: url("/flower.svg") center / contain no-repeat;
+		-webkit-mask: url("/flower.svg") center / contain no-repeat;
+	}
+
+	:global([data-motion="off"]) .flower-solid {
+		display: block;
+	}
+
+	:global([data-motion="off"]) .flower-fade {
+		display: none;
 	}
 </style>

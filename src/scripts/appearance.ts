@@ -10,8 +10,10 @@
 
 const THEME_KEY = "theme";
 const ACCENT_KEY = "accent";
+const MOTION_KEY = "motion";
 const THEMES = ["system", "light", "dark"];
 const ACCENTS = ["green", "blue", "violet"];
+const MOTIONS = ["on", "off"];
 
 const root = document.documentElement;
 const media = matchMedia("(prefers-color-scheme: dark)");
@@ -26,6 +28,11 @@ const readTheme = () => {
 const readAccent = () => {
 	const value = localStorage.getItem(ACCENT_KEY) ?? "";
 	return ACCENTS.includes(value) ? value : "green";
+};
+
+const readMotion = () => {
+	const value = localStorage.getItem(MOTION_KEY) ?? "";
+	return MOTIONS.includes(value) ? value : "on";
 };
 
 const syncGroup = (attr: string, value: string) => {
@@ -45,6 +52,19 @@ const applyTheme = (theme: string) => {
 const applyAccent = (accent: string) => {
 	root.dataset.accent = accent;
 	syncGroup("data-accent-option", accent);
+};
+
+// Флаг живёт на <html>, а не на классе конкретных блоков: по нему гасятся все
+// CSS-анимации разом (правило в tailwind.css), а острова вроде LiquidMetalMark
+// читают его через MutationObserver и размонтируют WebGL.
+const applyMotion = (motion: string) => {
+	root.dataset.motion = motion;
+	syncGroup("data-motion-option", motion);
+};
+
+const setMotion = (motion: string) => {
+	localStorage.setItem(MOTION_KEY, motion);
+	applyMotion(motion);
 };
 
 const setTheme = (theme: string) => {
@@ -76,6 +96,7 @@ export function initAppearance() {
 
 	applyTheme(readTheme());
 	applyAccent(readAccent());
+	applyMotion(readMotion());
 
 	document.addEventListener("click", (event) => {
 		const target = event.target;
@@ -90,6 +111,12 @@ export function initAppearance() {
 		const accentOption = target.closest<HTMLElement>("[data-accent-option]");
 		if (accentOption) {
 			setAccent(accentOption.dataset.accentOption ?? "green");
+			return;
+		}
+
+		const motionOption = target.closest<HTMLElement>("[data-motion-option]");
+		if (motionOption) {
+			setMotion(motionOption.dataset.motionOption ?? "on");
 			return;
 		}
 
@@ -141,7 +168,9 @@ export function initAppearance() {
 			? "data-theme-option"
 			: target.dataset.accentOption
 				? "data-accent-option"
-				: null;
+				: target.dataset.motionOption
+					? "data-motion-option"
+					: null;
 
 		if (!group || !attr) return;
 
@@ -152,7 +181,8 @@ export function initAppearance() {
 		event.preventDefault();
 		const value = next.getAttribute(attr) ?? "";
 		if (attr === "data-theme-option") setTheme(value);
-		else setAccent(value);
+		else if (attr === "data-accent-option") setAccent(value);
+		else setMotion(value);
 		next.focus();
 	});
 
@@ -165,5 +195,6 @@ export function initAppearance() {
 	window.addEventListener("storage", (event) => {
 		if (event.key === THEME_KEY) applyTheme(readTheme());
 		if (event.key === ACCENT_KEY) applyAccent(readAccent());
+		if (event.key === MOTION_KEY) applyMotion(readMotion());
 	});
 }

@@ -43,6 +43,24 @@ export default function LiquidMetalMark() {
 	// эффект прочитает акцент. Пока цвет не измерен, шейдера просто нет —
 	// вместо него виден статичный flower.svg из обёртки.
 	const [tint, setTint] = useState<string | null>(null);
+	// Тумблер анимаций из шапки. Шейдер не просто прячется, а размонтируется:
+	// иначе WebGL продолжал бы крутить кадры за скрытым канвасом. На месте
+	// марки в этом режиме — статичная .flower-solid из обёртки.
+	const [motionOff, setMotionOff] = useState(false);
+
+	useEffect(() => {
+		const read = () => setMotionOff(document.documentElement.dataset.motion === "off");
+
+		read();
+
+		const observer = new MutationObserver(read);
+		observer.observe(document.documentElement, {
+			attributes: true,
+			attributeFilter: ["data-motion"],
+		});
+
+		return () => observer.disconnect();
+	}, []);
 
 	useEffect(() => {
 		const probe = document.createElement("span");
@@ -87,7 +105,7 @@ export default function LiquidMetalMark() {
 
 	return (
 		<div ref={hostRef}>
-			{tint && (
+			{tint && !motionOff && (
 				<LiquidMetal
 					width={140}
 					height={140}

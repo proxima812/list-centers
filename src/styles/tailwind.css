@@ -289,6 +289,26 @@
       animation-duration: 1ms !important;
     }
   }
+
+  /* Тумблер «анимации выключены» из шапки. Гасит всю моушен-часть сайта разом
+     — герой, марку, marquee, ховеры — оставляя цвета и градиенты на месте.
+     Drawer исключён: он снимает состояние по animationend, поэтому ему, как и
+     в prefers-reduced-motion, отдаётся 1ms вместо `none`. */
+  [data-motion="off"] *:not([data-menu-list]):not([data-menu-backdrop]),
+  [data-motion="off"] *::before,
+  [data-motion="off"] *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  [data-motion="off"] [data-menu-list],
+  [data-motion="off"] [data-menu-backdrop] {
+    animation-duration: 1ms !important;
+  }
+
+  [data-motion="off"] {
+    scroll-behavior: auto !important;
+  }
 }
 
 /* ─── Prose ───────────────────────────────────────────────────────────────
