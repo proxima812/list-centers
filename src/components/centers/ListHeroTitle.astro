@@ -2,6 +2,7 @@
 import CatalogStats from "./CatalogStats.astro";
 import { getLocaleFromUrl, useTranslations } from "@/i18n";
 import type { CenterKindBucket } from "@/utils/centerKinds";
+import { Icon } from "astro-icon/components";
 
 interface Props {
 	stats?: {
@@ -15,6 +16,9 @@ interface Props {
 const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
 const stats = Astro.props.stats as Props["stats"] | undefined;
+// Печатная версия каталога существует только на русском, поэтому в
+// англоязычной ветке ссылки нет — иначе она уводила бы на другой язык.
+const showPrintLink = locale === "ru";
 ---
 
 <section class="not-container pt-8 pb-10 lg:pt-12">
@@ -35,6 +39,17 @@ const stats = Astro.props.stats as Props["stats"] | undefined;
 						buckets={stats.buckets}
 						class="pt-2"
 					/>
+				)
+			}
+			{
+				showPrintLink && (
+					<a
+						href="/centers/print"
+						class="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm font-medium text-muted-foreground transition hover:bg-muted hover:text-foreground"
+					>
+						<Icon name="mdi:printer-outline" class="size-4 shrink-0" aria-hidden="true" />
+						<span>Список для печати и PDF</span>
+					</a>
 				)
 			}
 		</div>
