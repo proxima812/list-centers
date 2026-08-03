@@ -160,6 +160,16 @@ Accent presets are `[data-accent="…"]` and `.dark[data-accent="…"]` blocks. 
 dark values of an accent are deliberately different** — a single hue cannot clear the
 contrast threshold on both a white and a near-black background.
 
+**In dark theme the accent also swaps the neutrals.** The same grey reads differently
+under green, blue, and violet, so each preset ships its own dark paper. Light theme is
+shared by all three — there the accent changes nothing but the accent tokens.
+
+- `green` — the base `.dark` set: soft charcoal (`8%` page, `12%` surface), no pure black.
+- `violet` — Vercel register: pure black page, surfaces barely lifted off it (`4%`/`10%`),
+  quiet borders (`18%`), ink at `93%` instead of white. Hierarchy comes from type, not rules.
+- `blue` — Uber Base register: the same black page, but visibly lifted surfaces
+  (`8%`/`12%`), denser borders (`20%`), and pure-white ink. Louder and more contrasty.
+
 All six theme × accent combinations are verified at >=4.5:1 for body text, footer text,
 and the accent itself against its own background.
 
@@ -263,6 +273,12 @@ off, OS reduced-motion.
 ### Liquid-Metal Mark
 
 The homepage mark is a compact identity object. It should stay centered, decorative, and non-blocking. It is not a reusable card or icon style for the catalog.
+
+Its shader is tinted by `--color-mark-tint`, not by `--color-accent-vivid`: LiquidMetal
+darkens the input color with its own contours and highlights, so the tint token is a
+lightened sibling of `vivid` in every theme × accent pair. The token must stay a plain
+`hsl()` — the mark script reads it as a string and parses the computed color into hex,
+and a `color-mix()` would compute to `oklab()`, which that parser cannot read.
 
 ### Hero Title
 

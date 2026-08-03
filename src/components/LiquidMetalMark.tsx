@@ -70,7 +70,10 @@ export default function LiquidMetalMark() {
 		// Наблюдатель срабатывает на любое изменение class у <html> — в том
 		// числе на overflow-hidden, которым мобильное меню лочит скролл.
 		// setState с тем же значением React отсекает сам.
-		const read = () => setTint(resolveToken(probe, "--color-accent-vivid"));
+		// mark-tint, а не accent-vivid: шейдер сам приглушает входной цвет, и на
+		// чистом vivid марка выходила почти чёрной. Токен — тот же акцент,
+		// осветлённый ровно под эту поверхность.
+		const read = () => setTint(resolveToken(probe, "--color-mark-tint"));
 
 		read();
 

@@ -68,6 +68,13 @@
   --color-accent-vivid: hsl(142 76% 36%);
   --color-accent-glow: hsl(142 71% 55%);
 
+  /* Тинт для шейдера марки: тот же тон, что vivid, но светлее. LiquidMetal
+     затемняет входной цвет контурами и бликами, и на чистом vivid марка
+     выходила почти чёрной. Значение задано отдельным hsl, а не color-mix:
+     скрипт марки читает токен как строку и разбирает computed color в hex, а
+     color-mix вычисляется в oklab() — такой формат парсер не переживёт. */
+  --color-mark-tint: hsl(142 70% 46%);
+
   /* Тень не может быть завязана на foreground: в тёмной теме он почти белый,
      и «тень» получалась светящейся. Этот тон чёрный в обеих темах, меняется
      только непрозрачность — на тёмном фоне тень должна быть плотнее. */
@@ -198,6 +205,7 @@
   --color-accent-foreground: hsl(0 0% 8%);
   --color-accent-vivid: hsl(142 62% 52%);
   --color-accent-glow: hsl(142 70% 70%);
+  --color-mark-tint: hsl(142 66% 64%);
 }
 
 /* Пресеты акцента. У светлой и тёмной темы значения разные намеренно: один
@@ -208,6 +216,7 @@
   --color-accent-foreground: hsl(0 0% 100%);
   --color-accent-vivid: hsl(142 76% 36%);
   --color-accent-glow: hsl(142 71% 55%);
+  --color-mark-tint: hsl(142 70% 46%);
 }
 
 [data-accent="blue"] {
@@ -215,6 +224,7 @@
   --color-accent-foreground: hsl(0 0% 100%);
   --color-accent-vivid: hsl(217 88% 44%);
   --color-accent-glow: hsl(213 92% 62%);
+  --color-mark-tint: hsl(215 84% 56%);
 }
 
 [data-accent="violet"] {
@@ -222,6 +232,7 @@
   --color-accent-foreground: hsl(0 0% 100%);
   --color-accent-vivid: hsl(263 75% 50%);
   --color-accent-glow: hsl(263 85% 68%);
+  --color-mark-tint: hsl(263 78% 62%);
 }
 
 .dark[data-accent="green"] {
@@ -229,20 +240,90 @@
   --color-accent-foreground: hsl(0 0% 8%);
   --color-accent-vivid: hsl(142 62% 52%);
   --color-accent-glow: hsl(142 70% 70%);
+  --color-mark-tint: hsl(142 66% 64%);
 }
 
 .dark[data-accent="blue"] {
   --color-accent: hsl(213 90% 66%);
-  --color-accent-foreground: hsl(0 0% 8%);
+  --color-accent-foreground: hsl(0 0% 0%);
   --color-accent-vivid: hsl(213 90% 64%);
   --color-accent-glow: hsl(213 95% 78%);
+  --color-mark-tint: hsl(213 92% 74%);
 }
 
 .dark[data-accent="violet"] {
   --color-accent: hsl(263 85% 72%);
-  --color-accent-foreground: hsl(0 0% 8%);
+  --color-accent-foreground: hsl(0 0% 0%);
   --color-accent-vivid: hsl(263 82% 70%);
   --color-accent-glow: hsl(263 90% 82%);
+  --color-mark-tint: hsl(263 88% 80%);
+}
+
+/* ─── Тёмные нейтрали под пресет акцента ──────────────────────────────────
+   Акцент тянет за собой всю тёмную «бумагу»: один и тот же серый под зелёным,
+   синим и фиолетовым читается по-разному. Светлая тема при этом общая для
+   всех трёх — там нейтрали не переопределяются.
+
+   green — базовый набор из `.dark` выше, мягкий уголь без чистого чёрного.
+
+   violet — регистр Vercel: чистый чёрный холст, приподнятые поверхности почти
+   не отличаются от фона, границы тихие, текст не белый (#ededed), контраст
+   держится на типографике, а не на рамках. */
+.dark[data-accent="violet"] {
+  --color-background: hsl(0 0% 0%);
+  --color-foreground: hsl(0 0% 93%);
+  --color-muted: hsl(0 0% 10%);
+  --color-muted-foreground: hsl(0 0% 63%);
+  --color-subtle: hsl(0 0% 16%);
+  --color-subtle-foreground: hsl(0 0% 56%);
+  --color-surface: hsl(0 0% 4%);
+  --color-surface-foreground: hsl(0 0% 93%);
+  --color-surface-muted: hsl(0 0% 10%);
+  --color-border: hsl(0 0% 18%);
+  --color-border-muted: hsl(0 0% 12%);
+  --color-ring: hsl(0 0% 40%);
+  --color-primary: hsl(0 0% 93%);
+  --color-primary-foreground: hsl(0 0% 0%);
+  --color-link: hsl(0 0% 93%);
+  --color-link-decoration: hsl(0 0% 40%);
+
+  --color-depth-100: hsl(0 0% 12%);
+  --color-depth-200: hsl(0 0% 16%);
+  --color-depth-300: hsl(0 0% 20%);
+  --color-depth-400: hsl(0 0% 27%);
+  --color-depth-500: hsl(0 0% 45%);
+  --color-depth-600: hsl(0 0% 63%);
+  --color-depth-700: hsl(0 0% 80%);
+}
+
+/* blue — регистр Uber Base: тот же чёрный холст, но поверхности заметно
+   приподняты (#141414/#1f1f1f), границы плотнее, а текст уходит в чистый
+   белый — палитра громче и контрастнее, чем у Vercel. */
+.dark[data-accent="blue"] {
+  --color-background: hsl(0 0% 0%);
+  --color-foreground: hsl(0 0% 100%);
+  --color-muted: hsl(0 0% 12%);
+  --color-muted-foreground: hsl(0 0% 80%);
+  --color-subtle: hsl(0 0% 16%);
+  --color-subtle-foreground: hsl(0 0% 69%);
+  --color-surface: hsl(0 0% 8%);
+  --color-surface-foreground: hsl(0 0% 100%);
+  --color-surface-muted: hsl(0 0% 12%);
+  --color-border: hsl(0 0% 20%);
+  --color-border-muted: hsl(0 0% 14%);
+  --color-ring: hsl(0 0% 47%);
+  --color-primary: hsl(0 0% 100%);
+  --color-primary-foreground: hsl(0 0% 0%);
+  --color-link: hsl(0 0% 100%);
+  --color-link-decoration: hsl(0 0% 47%);
+
+  --color-depth-100: hsl(0 0% 12%);
+  --color-depth-200: hsl(0 0% 16%);
+  --color-depth-300: hsl(0 0% 20%);
+  --color-depth-400: hsl(0 0% 33%);
+  --color-depth-500: hsl(0 0% 55%);
+  --color-depth-600: hsl(0 0% 69%);
+  --color-depth-700: hsl(0 0% 85%);
 }
 
 @layer base {
