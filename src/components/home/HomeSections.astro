@@ -1,6 +1,9 @@
 ---
+import searchImageEn from "@/assets/1-en.png";
+import searchImageRu from "@/assets/1-ru.png";
+import present from "@/assets/present.png";
 import { getLocaleFromUrl, useTranslations } from "@/i18n";
-import { localizeCountry } from "@/i18n/countries";
+import { Image } from "astro:assets";
 import { getCollection } from "astro:content";
 
 // Коллекция читается тут же, а не приходит пропом: getCollection у Astro
@@ -11,80 +14,26 @@ const centers = allCenters.length;
 const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
 
-// Страны с числом центров — материал обеих панелей. Раньше на их месте были
-// градиент с плетёнкой и макет строк результата; теперь панель показывает сам
-// каталог. Данные настоящие, так что декорация не может разойтись с цифрами в
-// тексте рядом.
-const byCountry = new Map<string, number>();
-for (const center of allCenters) {
-	const country = center.data.location?.country;
-	if (country) byCountry.set(country, (byCountry.get(country) ?? 0) + 1);
-}
-
-const countriesCount = byCountry.size;
+const countriesCount = new Set(
+	allCenters.map((center) => center.data.location?.country).filter(Boolean),
+).size;
 const regionsCount = new Set(
 	allCenters.map((center) => center.data.location?.region).filter(Boolean),
 ).size;
 
-const countries = [...byCountry].map(([name, count]) => ({
-	count,
-	name: localizeCountry(name, locale),
-}));
-
-// Первая панель — про охват: кегль идёт от числа центров, поэтому Россия
-// держит верх композиции, а страны с одним центром образуют мелкий хвост.
-// Ступени, а не плавная шкала: разброс 195→1 при линейном отображении
-// превратил бы хвост в нечитаемую пыль.
-const ranked = [...countries].sort(
-	(a, b) => b.count - a.count || a.name.localeCompare(b.name, locale),
-);
-
-// Вторая панель — про поиск: те же страны, но ровным кеглем и по алфавиту,
-// как указатель в атласе.
-const indexed = [...countries].sort((a, b) => a.name.localeCompare(b.name, locale));
-
-// Иерархию держат только кегль и насыщенность — прозрачность здесь запрещена.
-// В светлой теме `accent-foreground` белый на среднетёмном акценте, и у пары
-// нет запаса: белое на светло-зелёном `accent` даёт ровно 4.51:1, так что
-// любое приглушение уводило текст под порог (замеры: 3.06–4.43 во всех трёх
-// светлых пресетах). В тёмной теме симметрии нет — там текст почти чёрный и
-// прозрачность, наоборот, безопасна. Один режим на обе темы дешевле, чем
-// две шкалы, и совпадает с типографикой: акцент — это вес и размер.
-const SCALE = [
-	{ min: 100, class: "text-5xl md:text-7xl font-semibold tracking-tight" },
-	{ min: 40, class: "text-3xl md:text-5xl font-semibold tracking-tight" },
-	{ min: 10, class: "text-xl md:text-3xl font-medium tracking-tight" },
-	{ min: 4, class: "text-base md:text-xl font-medium" },
-	{ min: 2, class: "text-sm md:text-base" },
-	{ min: 0, class: "text-xs md:text-sm" },
-] as const;
-
-const step = (count: number) => SCALE.findIndex(({ min }) => count >= min);
+// Скриншот каталога локализован: на /en/ подписи внутри картинки английские.
+const searchImage = locale === "en" ? searchImageEn : searchImageRu;
 ---
 
 <div id="sections" class="md:space-y-14 space-y-8 py-12 md:py-20">
 	<section
 		class="grid grid-cols-1 items-center overflow-hidden rounded-3xl bg-surface surface-lift ring-1 ring-border-muted md:grid-cols-2"
 	>
-		{/*
-			Плоскость залита ровным `accent`, без градиента и без плетёнки.
-			`accent`/`accent-foreground` — единственная пара, у которой контраст
-			проверен во всех шести сочетаниях темы и акцента; любой подмес
-			(`vivid` ярче, `shade` темнее) уводил бы её в разные стороны в
-			светлой и тёмной теме. Глубину здесь держит типографика, а не заливка.
-		*/}
-		<div
-			class="pointer-events-none relative flex h-full min-h-44 select-none flex-col justify-end overflow-hidden bg-accent p-5 sm:p-8 md:min-h-[26rem] md:p-12"
-			aria-hidden="true"
-		>
-			<div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-				{
-					ranked.map(({ name, count }) => (
-						<span class:list={["text-accent-foreground", SCALE[step(count)].class]}>{name}</span>
-					))
-				}
-			</div>
-		</div>
+		<Image
+			src={present}
+			alt={t("home.present.imageAlt")}
+			class="h-full w-full object-cover"
+		/>
 		<div class="space-y-6 px-6 py-10 sm:px-8 md:px-12 md:py-16">
 			<h2 class="text-4xl font-bold tracking-tight">{t("home.present.title")}</h2>
 			<p
@@ -115,29 +64,10 @@ const step = (count: number) => SCALE.findIndex(({ min }) => count >= min);
 				{t("home.search.text2")}
 			</p>
 		</div>
-		{/*
-			Указатель, а не макет поиска. Раньше здесь стояли лупа и полоски,
-			изображающие результаты, — их принимали за живой поиск и кликали
-			впустую. Настоящий список стран с числом центров объясняет ту же
-			мысль и ничего не обещает: по нему видно, что каталог разобран по
-			странам, но кликать тут нечего.
-		*/}
-		<div
-			class="pointer-events-none relative order-1 flex h-full select-none flex-col justify-center overflow-hidden bg-accent p-5 sm:p-8 md:order-2 md:min-h-[26rem] md:p-12"
-			aria-hidden="true"
-		>
-			<ul class="columns-2 gap-x-6 sm:columns-3 md:columns-2 lg:columns-3">
-				{
-					indexed.map(({ name, count }) => (
-						<li class="flex break-inside-avoid items-baseline gap-1.5 py-0.5 text-xs text-accent-foreground md:text-sm">
-							<span class="font-medium">{name}</span>
-							{/* Отточие указателя — правило, а не текст: ему хватает приглушения. */}
-							<span class="min-w-3 flex-1 self-center border-b border-dotted border-accent-foreground/50" />
-							<span class="tabular-nums">{count}</span>
-						</li>
-					))
-				}
-			</ul>
-		</div>
+		<Image
+			src={searchImage}
+			alt={t("home.search.imageAlt")}
+			class="order-1 h-full w-full object-cover md:order-2"
+		/>
 	</section>
 </div>
