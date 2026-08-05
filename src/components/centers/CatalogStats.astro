@@ -34,22 +34,24 @@ const items = [
 ];
 
 const gridClass = hasBuckets
-	? "grid w-full max-w-3xl grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-3"
-	: "grid w-full max-w-md grid-cols-3 gap-x-6 gap-y-5";
+	? "grid w-full max-w-3xl grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-3"
+	: "grid w-full max-w-md grid-cols-3 gap-x-6 gap-y-3";
 ---
 
 {/* Цифры каталога — справка, а не управление. Никаких поверхностей, колец и
     ховеров: заливка + ring читались как кнопки, и в них кликали. Крупное
-    число + тихая подпись — это уже статистика. */}
+    число + тихая подпись — это уже статистика. `flex-row-reverse` внутри:
+    в разметке `dt` идёт перед `dd`, как и положено в `dl`, а видеть первым
+    нужно число. */}
 <dl class:list={["stats-focus cursor-default select-text", gridClass, className]}>
 	{
 		items.map((item, index) => (
-			<div class="stats-focus__item flex min-w-0 flex-col-reverse items-center gap-1 text-center" style={`--i: ${index}`}>
-				<dt class="flex min-w-0 items-center justify-center gap-1.5 text-xs font-medium text-balance text-muted-foreground">
+			<div class="stats-focus__item flex min-w-0 flex-row-reverse items-center justify-center gap-1.5" style={`--i: ${index}`}>
+				<dt class="flex min-w-0 items-center gap-1.5 text-xs font-medium text-muted-foreground">
 					<Icon name={item.icon} class="stats-focus__icon size-3.5 shrink-0" aria-hidden="true" />
 					<span class="min-w-0">{item.label}</span>
 				</dt>
-				<dd class="text-xl font-semibold leading-none tracking-tight tabular-nums text-foreground sm:text-2xl">
+				<dd class="shrink-0 text-lg font-semibold leading-none tracking-tight tabular-nums text-foreground sm:text-xl">
 					<span class="stats-focus__number" style={`--target: ${item.value}; --i: ${index}`} aria-hidden="true" />
 					<span class="sr-only">{item.value}</span>
 				</dd>
