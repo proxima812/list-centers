@@ -1,9 +1,8 @@
 ---
-import { HomeHeroTitle, HomeLinks, LIquidMetal } from "@/components";
+import { HomeHeroTitle, HomeLinks, HomeSections } from "@/components";
 import { getLocaleFromUrl, useTranslations } from "@/i18n";
 import Layout from "@/layouts/Layout.astro";
 import { getCollection } from "astro:content";
-import { Icon } from "astro-icon/components";
 
 const allCenters = await getCollection("centers");
 const centers = allCenters.length;
@@ -35,111 +34,11 @@ const t = useTranslations(locale);
 	]}
 >
 	<main class="space-y-12">
-		<LIquidMetal />
 		<HomeHeroTitle />
 		<div>
 			<HomeLinks />
 		</div>
 
-		<div id="sections" class="md:space-y-14 space-y-8 py-12 md:py-20">
-			<section
-				class="grid grid-cols-1 items-center overflow-hidden rounded-3xl bg-surface surface-lift ring-1 ring-border-muted md:grid-cols-2"
-			>
-				<div
-					class="pointer-events-none relative isolate flex h-full min-h-44 select-none flex-col justify-center gap-8 overflow-hidden bg-linear-135 from-accent via-accent-vivid to-depth-700 p-5 before:pointer-events-none before:absolute before:inset-0 before:bg-[radial-gradient(90%_70%_at_15%_0%,color-mix(in_oklab,var(--color-accent-glow)_35%,transparent),transparent_60%)] sm:p-8 md:min-h-[26rem] md:justify-end md:p-12"
-					aria-hidden="true"
-				>
-					<div
-						class="pointer-events-none absolute inset-0 opacity-[0.18] [--weave:26px] [background-image:repeating-linear-gradient(45deg,var(--color-accent-foreground)_0_1px,transparent_1px_var(--weave)),repeating-linear-gradient(-45deg,var(--color-accent-foreground)_0_1px,transparent_1px_var(--weave))] [mask-image:radial-gradient(120%_100%_at_100%_0%,#000_20%,transparent_75%)] md:[--weave:14px]"
-					>
-					</div>
-					<div class="relative grid grid-cols-3 gap-4 text-accent-foreground">
-						<div>
-							<div class="text-3xl font-bold tracking-tight md:text-5xl">{centers}</div>
-							<div class="mt-1 text-xs/4 opacity-80 md:text-sm">
-								{t("list.stat.centers")}
-							</div>
-						</div>
-						<div>
-							<div class="text-3xl font-bold tracking-tight md:text-5xl">
-								{countriesCount}
-							</div>
-							<div class="mt-1 text-xs/4 opacity-80 md:text-sm">
-								{t("list.stat.countries")}
-							</div>
-						</div>
-						<div>
-							<div class="text-3xl font-bold tracking-tight md:text-5xl">
-								{regionsCount}
-							</div>
-							<div class="mt-1 text-xs/4 opacity-80 md:text-sm">
-								{t("list.stat.regions")}
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="space-y-6 px-6 py-10 sm:px-8 md:px-12 md:py-16">
-					<h2 class="text-4xl font-bold tracking-tight">{t("home.present.title")}</h2>
-					<p
-						class="leading-7 text-muted-foreground"
-						set:html={t("home.present.caption", {
-							centers,
-							countries: countriesCount,
-							regions: regionsCount,
-						})}
-					/>
-					<p class="leading-7 text-muted-foreground">{t("home.present.text1")}</p>
-					<p class="leading-7 text-muted-foreground">{t("home.present.text2")}</p>
-				</div>
-			</section>
-			<section
-				class="grid grid-cols-1 items-center overflow-hidden rounded-3xl bg-surface surface-lift ring-1 ring-border-muted md:grid-cols-2"
-			>
-				<div class="order-2 space-y-6 px-6 py-10 sm:px-8 md:order-1 md:px-12 md:py-16">
-					<h2 class="text-4xl font-bold tracking-tight">
-						{t("home.search.title")}
-					</h2>
-
-					<p class="leading-7 text-muted-foreground">
-						{t("home.search.text1")}
-					</p>
-
-					<p class="leading-7 text-muted-foreground">
-						{t("home.search.text2")}
-					</p>
-				</div>
-				<div
-					class="pointer-events-none relative isolate order-1 flex h-full select-none flex-col justify-center gap-8 overflow-hidden bg-linear-45 from-depth-700 via-accent to-accent-vivid p-5 before:pointer-events-none before:absolute before:inset-0 before:bg-[radial-gradient(90%_70%_at_85%_0%,color-mix(in_oklab,var(--color-accent-glow)_35%,transparent),transparent_60%)] sm:p-8 md:order-2 md:min-h-[26rem] md:p-12"
-					aria-hidden="true"
-				>
-					<div
-						class="pointer-events-none absolute inset-0 opacity-[0.18] [--weave:26px] [background-image:repeating-linear-gradient(45deg,var(--color-accent-foreground)_0_1px,transparent_1px_var(--weave)),repeating-linear-gradient(-45deg,var(--color-accent-foreground)_0_1px,transparent_1px_var(--weave))] [mask-image:radial-gradient(120%_100%_at_0%_0%,#000_20%,transparent_75%)] md:[--weave:14px]"
-					>
-					</div>
-					{/*
-						Панель декоративная. Раньше здесь стоял макет поля поиска, чипов
-						фильтров и карточек результатов — его принимали за живой поиск и
-						кликали впустую. Теперь это абстрактная иллюстрация: ничего, что
-						выглядит как элемент управления.
-					*/}
-					<div class="relative flex flex-col items-center gap-8 text-accent-foreground">
-						<Icon name="mdi:magnify" class="size-20 opacity-35 md:size-28" aria-hidden="true" />
-						<div class="w-full max-w-64 space-y-3.5">
-							{
-								[0, 1, 2].map((row) => (
-									<div class="flex items-center gap-3">
-										<span class="size-2 shrink-0 rounded-full bg-surface/45" />
-										<span
-											class="h-1.5 rounded-full bg-surface/45"
-											style={`width: ${[72, 54, 63][row]}%`}
-										/>
-									</div>
-								))
-							}
-						</div>
-					</div>
-				</div>
-			</section>
-		</div>
+		<HomeSections />
 	</main>
 </Layout>

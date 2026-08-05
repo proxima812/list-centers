@@ -36,7 +36,7 @@ const resolveToken = (probe: HTMLElement, token: string) => {
 		.join("")}`;
 };
 
-export default function LiquidMetalMark() {
+export default function LiquidMetalMark({ size = 140 }: { size?: number }) {
 	const hostRef = useRef<HTMLDivElement>(null);
 	// null, а не литеральный фолбэк: остров ещё и SSR-ится, так что любой
 	// стартовый цвет попал бы в HTML и мигнул бы не тем оттенком до того, как
@@ -110,8 +110,8 @@ export default function LiquidMetalMark() {
 		<div ref={hostRef}>
 			{tint && !motionOff && (
 				<LiquidMetal
-					width={140}
-					height={140}
+					width={size}
+					height={size}
 					image="/flower.svg"
 					colorBack={TRANSPARENT}
 					colorTint={tint}
