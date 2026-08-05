@@ -1,58 +1,88 @@
 ---
 import { getLocaleFromUrl, useTranslations } from "@/i18n";
+import { localizeCountry } from "@/i18n/countries";
 import { getCollection } from "astro:content";
-import { Icon } from "astro-icon/components";
 
 // Коллекция читается тут же, а не приходит пропом: getCollection у Astro
 // кеширован, а компонент так остаётся самодостаточным — как HomeLinks.
 const allCenters = await getCollection("centers");
 const centers = allCenters.length;
-const countriesCount = new Set(
-	allCenters.map((center) => center.data.location?.country).filter(Boolean),
-).size;
+
+const locale = getLocaleFromUrl(Astro.url);
+const t = useTranslations(locale);
+
+// Страны с числом центров — материал обеих панелей. Раньше на их месте были
+// градиент с плетёнкой и макет строк результата; теперь панель показывает сам
+// каталог. Данные настоящие, так что декорация не может разойтись с цифрами в
+// тексте рядом.
+const byCountry = new Map<string, number>();
+for (const center of allCenters) {
+	const country = center.data.location?.country;
+	if (country) byCountry.set(country, (byCountry.get(country) ?? 0) + 1);
+}
+
+const countriesCount = byCountry.size;
 const regionsCount = new Set(
 	allCenters.map((center) => center.data.location?.region).filter(Boolean),
 ).size;
 
-const locale = getLocaleFromUrl(Astro.url);
-const t = useTranslations(locale);
+const countries = [...byCountry].map(([name, count]) => ({
+	count,
+	name: localizeCountry(name, locale),
+}));
+
+// Первая панель — про охват: кегль идёт от числа центров, поэтому Россия
+// держит верх композиции, а страны с одним центром образуют мелкий хвост.
+// Ступени, а не плавная шкала: разброс 195→1 при линейном отображении
+// превратил бы хвост в нечитаемую пыль.
+const ranked = [...countries].sort(
+	(a, b) => b.count - a.count || a.name.localeCompare(b.name, locale),
+);
+
+// Вторая панель — про поиск: те же страны, но ровным кеглем и по алфавиту,
+// как указатель в атласе.
+const indexed = [...countries].sort((a, b) => a.name.localeCompare(b.name, locale));
+
+// Иерархию держат только кегль и насыщенность — прозрачность здесь запрещена.
+// В светлой теме `accent-foreground` белый на среднетёмном акценте, и у пары
+// нет запаса: белое на светло-зелёном `accent` даёт ровно 4.51:1, так что
+// любое приглушение уводило текст под порог (замеры: 3.06–4.43 во всех трёх
+// светлых пресетах). В тёмной теме симметрии нет — там текст почти чёрный и
+// прозрачность, наоборот, безопасна. Один режим на обе темы дешевле, чем
+// две шкалы, и совпадает с типографикой: акцент — это вес и размер.
+const SCALE = [
+	{ min: 100, class: "text-5xl md:text-7xl font-semibold tracking-tight" },
+	{ min: 40, class: "text-3xl md:text-5xl font-semibold tracking-tight" },
+	{ min: 10, class: "text-xl md:text-3xl font-medium tracking-tight" },
+	{ min: 4, class: "text-base md:text-xl font-medium" },
+	{ min: 2, class: "text-sm md:text-base" },
+	{ min: 0, class: "text-xs md:text-sm" },
+] as const;
+
+const step = (count: number) => SCALE.findIndex(({ min }) => count >= min);
 ---
 
 <div id="sections" class="md:space-y-14 space-y-8 py-12 md:py-20">
 	<section
 		class="grid grid-cols-1 items-center overflow-hidden rounded-3xl bg-surface surface-lift ring-1 ring-border-muted md:grid-cols-2"
 	>
+		{/*
+			Плоскость залита ровным `accent`, без градиента и без плетёнки.
+			`accent`/`accent-foreground` — единственная пара, у которой контраст
+			проверен во всех шести сочетаниях темы и акцента; любой подмес
+			(`vivid` ярче, `shade` темнее) уводил бы её в разные стороны в
+			светлой и тёмной теме. Глубину здесь держит типографика, а не заливка.
+		*/}
 		<div
-			class="pointer-events-none relative isolate flex h-full min-h-44 select-none flex-col justify-center gap-8 overflow-hidden bg-linear-135 from-accent via-accent-vivid to-depth-700 p-5 before:pointer-events-none before:absolute before:inset-0 before:bg-[radial-gradient(90%_70%_at_15%_0%,color-mix(in_oklab,var(--color-accent-glow)_35%,transparent),transparent_60%)] sm:p-8 md:min-h-[26rem] md:justify-end md:p-12"
+			class="pointer-events-none relative flex h-full min-h-44 select-none flex-col justify-end overflow-hidden bg-accent p-5 sm:p-8 md:min-h-[26rem] md:p-12"
 			aria-hidden="true"
 		>
-			<div
-				class="pointer-events-none absolute inset-0 opacity-[0.18] [--weave:26px] [background-image:repeating-linear-gradient(45deg,var(--color-accent-foreground)_0_1px,transparent_1px_var(--weave)),repeating-linear-gradient(-45deg,var(--color-accent-foreground)_0_1px,transparent_1px_var(--weave))] [mask-image:radial-gradient(120%_100%_at_100%_0%,#000_20%,transparent_75%)] md:[--weave:14px]"
-			>
-			</div>
-			<div class="relative grid grid-cols-3 gap-4 text-accent-foreground">
-				<div>
-					<div class="text-3xl font-bold tracking-tight md:text-5xl">{centers}</div>
-					<div class="mt-1 text-xs/4 opacity-80 md:text-sm">
-						{t("list.stat.centers")}
-					</div>
-				</div>
-				<div>
-					<div class="text-3xl font-bold tracking-tight md:text-5xl">
-						{countriesCount}
-					</div>
-					<div class="mt-1 text-xs/4 opacity-80 md:text-sm">
-						{t("list.stat.countries")}
-					</div>
-				</div>
-				<div>
-					<div class="text-3xl font-bold tracking-tight md:text-5xl">
-						{regionsCount}
-					</div>
-					<div class="mt-1 text-xs/4 opacity-80 md:text-sm">
-						{t("list.stat.regions")}
-					</div>
-				</div>
+			<div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+				{
+					ranked.map(({ name, count }) => (
+						<span class:list={["text-accent-foreground", SCALE[step(count)].class]}>{name}</span>
+					))
+				}
 			</div>
 		</div>
 		<div class="space-y-6 px-6 py-10 sm:px-8 md:px-12 md:py-16">
@@ -85,36 +115,29 @@ const t = useTranslations(locale);
 				{t("home.search.text2")}
 			</p>
 		</div>
+		{/*
+			Указатель, а не макет поиска. Раньше здесь стояли лупа и полоски,
+			изображающие результаты, — их принимали за живой поиск и кликали
+			впустую. Настоящий список стран с числом центров объясняет ту же
+			мысль и ничего не обещает: по нему видно, что каталог разобран по
+			странам, но кликать тут нечего.
+		*/}
 		<div
-			class="pointer-events-none relative isolate order-1 flex h-full select-none flex-col justify-center gap-8 overflow-hidden bg-linear-45 from-depth-700 via-accent to-accent-vivid p-5 before:pointer-events-none before:absolute before:inset-0 before:bg-[radial-gradient(90%_70%_at_85%_0%,color-mix(in_oklab,var(--color-accent-glow)_35%,transparent),transparent_60%)] sm:p-8 md:order-2 md:min-h-[26rem] md:p-12"
+			class="pointer-events-none relative order-1 flex h-full select-none flex-col justify-center overflow-hidden bg-accent p-5 sm:p-8 md:order-2 md:min-h-[26rem] md:p-12"
 			aria-hidden="true"
 		>
-			<div
-				class="pointer-events-none absolute inset-0 opacity-[0.18] [--weave:26px] [background-image:repeating-linear-gradient(45deg,var(--color-accent-foreground)_0_1px,transparent_1px_var(--weave)),repeating-linear-gradient(-45deg,var(--color-accent-foreground)_0_1px,transparent_1px_var(--weave))] [mask-image:radial-gradient(120%_100%_at_0%_0%,#000_20%,transparent_75%)] md:[--weave:14px]"
-			>
-			</div>
-			{/*
-				Панель декоративная. Раньше здесь стоял макет поля поиска, чипов
-				фильтров и карточек результатов — его принимали за живой поиск и
-				кликали впустую. Теперь это абстрактная иллюстрация: ничего, что
-				выглядит как элемент управления.
-			*/}
-			<div class="relative flex flex-col items-center gap-8 text-accent-foreground">
-				<Icon name="mdi:magnify" class="size-20 opacity-35 md:size-28" aria-hidden="true" />
-				<div class="w-full max-w-64 space-y-3.5">
-					{
-						[0, 1, 2].map((row) => (
-							<div class="flex items-center gap-3">
-								<span class="size-2 shrink-0 rounded-full bg-surface/45" />
-								<span
-									class="h-1.5 rounded-full bg-surface/45"
-									style={`width: ${[72, 54, 63][row]}%`}
-								/>
-							</div>
-						))
-					}
-				</div>
-			</div>
+			<ul class="columns-2 gap-x-6 sm:columns-3 md:columns-2 lg:columns-3">
+				{
+					indexed.map(({ name, count }) => (
+						<li class="flex break-inside-avoid items-baseline gap-1.5 py-0.5 text-xs text-accent-foreground md:text-sm">
+							<span class="font-medium">{name}</span>
+							{/* Отточие указателя — правило, а не текст: ему хватает приглушения. */}
+							<span class="min-w-3 flex-1 self-center border-b border-dotted border-accent-foreground/50" />
+							<span class="tabular-nums">{count}</span>
+						</li>
+					))
+				}
+			</ul>
 		</div>
 	</section>
 </div>

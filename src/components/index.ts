@@ -8,6 +8,7 @@ export { default as ListHeroTitle } from "./centers/ListHeroTitle.astro";
 export { default as Search } from "./centers/Search.astro";
 export { default as Toolbar } from "./centers/Toolbar.astro";
 
+export { default as HomeHeroBadge } from "./home/HomeHeroBadge.astro";
 export { default as HomeHeroTitle } from "./home/HomeHeroTitle.astro";
 export { default as HomeLinks } from "./home/HomeLinks.astro";
 export { default as HomeSections } from "./home/HomeSections.astro";

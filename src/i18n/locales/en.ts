@@ -60,6 +60,9 @@ const dict: Dictionary = {
 	"home.hero.5": "Language.",
 	"home.hero.6": "Culture.",
 	"home.hero.7": "People.",
+	"home.badge.post": "New post — {title}",
+	"home.badge.center": "New center — {title}",
+	"home.badge.release": "Site update — v{version}",
 	"home.intro.prefix": "Introducing",
 	"home.intro.link": "a list of {count} centers",
 	"home.intro.suffix":

@@ -1,0 +1,213 @@
+---
+import release from "@/data/release.json";
+import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
+import {
+	createCenterRouteIdMap,
+	getCenterPath,
+	getCenterTranslationCollection,
+} from "@/utils/centers";
+import { Icon } from "astro-icon/components";
+import { getCollection } from "astro:content";
+
+const locale = getLocaleFromUrl(Astro.url);
+const t = useTranslations(locale);
+
+// Бейдж крутит три новости проекта: свежий пост, свежий центр и версию сайта.
+// Все три тянутся из данных, поэтому подпись не нужно вести руками.
+const posts = await getCollection("posts");
+const latestPost = posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())[0];
+
+// У центров нет pubDate ни в одном файле, зато есть сквозной id `tbk-N`:
+// номер и есть порядок добавления, поэтому «последний» — это максимальный N.
+// Если дата когда-нибудь появится, она важнее номера.
+const centers = await getCollection("centers");
+const centerRouteIds = createCenterRouteIdMap(centers);
+const centerNumber = (id: string) => Number(id.match(/^tbk-(\d+)$/)?.[1] ?? -1);
+const latestCenter = [...centers].sort((a, b) => {
+	const byDate =
+		(b.data.pubDate ? new Date(b.data.pubDate).getTime() : 0) -
+		(a.data.pubDate ? new Date(a.data.pubDate).getTime() : 0);
+
+	return byDate !== 0 ? byDate : centerNumber(b.id) - centerNumber(a.id);
+})[0];
+
+// Заголовок центра берём из перевода, если он есть: коллекция `centers` —
+// русская, и на /en иначе всплыло бы русское название.
+const centerTranslations = getCenterTranslationCollection(locale);
+const localizedCenter = centerTranslations
+	? (await getCollection(centerTranslations)).find((entry) => entry.id === latestCenter?.id)
+	: undefined;
+const latestCenterTitle = localizedCenter?.data.title ?? latestCenter?.data.title;
+
+// Лента постов живёт одной страницей с якорями (src/pages/posts/index.astro),
+// поэтому ссылка на пост — это хеш, а не отдельный маршрут.
+const items = [
+	latestPost && {
+		icon: "tabler:news",
+		label: t("home.badge.post", { title: latestPost.data.title }),
+		href: localizePath(locale, `/posts#${latestPost.id.replace(/\/$/, "")}`),
+		external: false,
+	},
+	latestCenter && {
+		icon: "tabler:map-pin",
+		label: t("home.badge.center", { title: latestCenterTitle ?? "" }),
+		href: localizePath(
+			locale,
+			getCenterPath(centerRouteIds.get(latestCenter.id) ?? latestCenter.id),
+		),
+		external: false,
+	},
+	{
+		icon: "tabler:sparkles",
+		label: t("home.badge.release", { version: release.version }),
+		// Своей страницы релизов у сайта нет — версия ведёт туда же, куда ссылка
+		// на репозиторий в футере.
+		href: "https://github.com/proxima812/tatarverse/releases",
+		external: true,
+	},
+].filter(Boolean) as {
+	icon: string;
+	label: string;
+	href: string;
+	external: boolean;
+}[];
+---
+
+<div class="hero-badge flex h-6 items-center justify-center">
+	<div class="relative flex h-6 w-full items-center justify-center" data-hero-badge>
+		{
+			items.map((item, index) => (
+				<a
+					class="hero-badge-item absolute inset-0 mx-auto flex w-fit max-w-full items-center justify-center gap-1.5 rounded-full bg-accent-soft px-2 py-1 text-xs text-accent-soft-foreground transition-[background-color,opacity,transform] duration-300 ease-out hover:bg-accent-soft-hover"
+					href={item.href}
+					target={item.external ? "_blank" : undefined}
+					rel={item.external ? "noopener noreferrer" : undefined}
+					aria-label={item.label}
+					data-hero-badge-item
+					data-state={index === 0 ? "in" : "idle"}
+					inert={index === 0 ? undefined : true}
+				>
+					<Icon name={item.icon} class="size-3 shrink-0" aria-hidden="true" />
+					<span class="max-w-60 truncate sm:max-w-full">{item.label}</span>
+				</a>
+			))
+		}
+	</div>
+</div>
+
+<style>
+	/* Появление — первая из двух моторик бейджа: он выезжает раньше героя и
+	   дальше стоит тихо. Стартовое состояние живёт только внутри keyframes:
+	   при `[data-motion="off"]` анимация снимается целиком, и плашка обязана
+	   остаться видимой, а не залипнуть на opacity: 0. */
+	@media (prefers-reduced-motion: no-preference) {
+		.hero-badge {
+			animation: hero-badge-in 500ms cubic-bezier(0.32, 0.72, 0, 1) both;
+		}
+	}
+
+	@keyframes hero-badge-in {
+		from {
+			opacity: 0;
+			transform: translateY(-4px);
+		}
+
+		to {
+			opacity: 1;
+			transform: none;
+		}
+	}
+
+	/* Смена новостей: следующая приходит снизу, ушедшая уходит вверх — как
+	   на heroui.com. Позиция у всех одна (absolute inset-0), поэтому высота
+	   плашки не скачет от длины подписи.
+
+	   Скрытые карточки помечены `inert`, а не `display: none`: они выпадают
+	   из фокуса и из чтения скринридером, но остаются в потоке для перехода. */
+	.hero-badge-item {
+		will-change: transform, opacity;
+	}
+
+	.hero-badge-item[data-state="in"] {
+		opacity: 1;
+		transform: none;
+	}
+
+	.hero-badge-item[data-state="out"] {
+		opacity: 0;
+		transform: translateY(-8px);
+	}
+
+	.hero-badge-item[data-state="idle"] {
+		opacity: 0;
+		transform: translateY(8px);
+	}
+</style>
+
+<script>
+	const root = document.querySelector<HTMLElement>("[data-hero-badge]");
+	const items = root ? [...root.querySelectorAll<HTMLElement>("[data-hero-badge-item]")] : [];
+
+	if (root && items.length > 1) {
+		const INTERVAL = 4500;
+		const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+		let current = 0;
+		let timer = 0;
+		let hovered = false;
+
+		const show = (next: number) => {
+			items.forEach((item, index) => {
+				const state = index === next ? "in" : index === current ? "out" : "idle";
+				item.dataset.state = state;
+				item.inert = index !== next;
+			});
+
+			current = next;
+		};
+
+		// Ротацию гасят оба тумблера моушена, вкладка в фоне и наведение курсора:
+		// подпись не должна убегать, пока её читают или пытаются кликнуть.
+		const canRotate = () =>
+			!reduceMotion.matches &&
+			document.documentElement.dataset.motion !== "off" &&
+			!document.hidden &&
+			!hovered;
+
+		// Только таймер, без ожидания transitionend: при выключенных анимациях
+		// событие не приходит вовсе, и ротация встала бы на первой же карточке.
+		const stop = () => {
+			if (timer) {
+				window.clearInterval(timer);
+				timer = 0;
+			}
+		};
+
+		const start = () => {
+			stop();
+			if (canRotate()) {
+				timer = window.setInterval(() => show((current + 1) % items.length), INTERVAL);
+			}
+		};
+
+		root.addEventListener("pointerenter", () => {
+			hovered = true;
+			stop();
+		});
+
+		root.addEventListener("pointerleave", () => {
+			hovered = false;
+			start();
+		});
+
+		root.addEventListener("focusin", stop);
+		root.addEventListener("focusout", start);
+		document.addEventListener("visibilitychange", start);
+		reduceMotion.addEventListener("change", start);
+
+		new MutationObserver(start).observe(document.documentElement, {
+			attributeFilter: ["data-motion"],
+		});
+
+		start();
+	}
+</script>

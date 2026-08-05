@@ -68,6 +68,21 @@
   --color-accent-vivid: hsl(142 76% 36%);
   --color-accent-glow: hsl(142 71% 55%);
 
+  /* Тихая заливка акцентом: подложка «плашки» вроде бейджа над героем.
+     Не дублируется по пресетам — это color-mix поверх текущих `accent` и
+     нейтралей, поэтому пара сама следует за темой и палитрой.
+
+     Текст не может быть чистым `accent`: на 12% подложке светло-зелёный даёт
+     3.9:1 — ниже AA для 12px. Подмешанные 25% foreground выводят худшую пару
+     (light green) на 5.6:1, остальные пять комбинаций — выше. */
+  --color-accent-soft: color-mix(in oklab, var(--color-accent) 12%, var(--color-background));
+  --color-accent-soft-hover: color-mix(in oklab, var(--color-accent) 20%, var(--color-background));
+  --color-accent-soft-foreground: color-mix(
+    in oklab,
+    var(--color-accent) 75%,
+    var(--color-foreground)
+  );
+
   /* Тинт для шейдера марки: тот же тон, что vivid, но светлее. LiquidMetal
      затемняет входной цвет контурами и бликами, и на чистом vivid марка
      выходила почти чёрной. Значение задано отдельным hsl, а не color-mix:
@@ -217,6 +232,13 @@
   --color-accent-vivid: hsl(142 62% 52%);
   --color-accent-glow: hsl(142 70% 70%);
   --color-mark-tint: hsl(142 66% 64%);
+
+  /* Тихая заливка та же, но подмешивать акцента приходится больше: на почти
+     чёрном фоне 12% давали подъём 6.7-8.4 по перцептивной светлоте — ровно на
+     границе, за которой ступень читается плоской. 18% выводят все три пресета
+     на 10-12.6, как обычную приподнятую поверхность. */
+  --color-accent-soft: color-mix(in oklab, var(--color-accent) 18%, var(--color-background));
+  --color-accent-soft-hover: color-mix(in oklab, var(--color-accent) 28%, var(--color-background));
 }
 
 /* Пресеты акцента. У светлой и тёмной темы значения разные намеренно: один

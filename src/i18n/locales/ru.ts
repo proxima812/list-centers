@@ -61,6 +61,9 @@ const dict: Dictionary = {
 	"home.hero.5": "Язык.",
 	"home.hero.6": "Культура.",
 	"home.hero.7": "Люди.",
+	"home.badge.post": "Новый пост — {title}",
+	"home.badge.center": "Новый центр — {title}",
+	"home.badge.release": "Обновление сайта — v{version}",
 	"home.intro.prefix": "Представляем",
 	"home.intro.link": "список из {count} центров",
 	"home.intro.suffix":
