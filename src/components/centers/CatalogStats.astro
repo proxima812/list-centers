@@ -34,20 +34,25 @@ const items = [
 ];
 
 const gridClass = hasBuckets
-	? "grid w-full max-w-3xl grid-cols-2 gap-2 sm:grid-cols-3"
-	: "grid w-full max-w-md grid-cols-3 gap-2";
+	? "grid w-full max-w-3xl grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-3"
+	: "grid w-full max-w-md grid-cols-3 gap-x-6 gap-y-5";
 ---
 
-<dl class:list={["stats-focus", gridClass, className]}>
+{/* Цифры каталога — справка, а не управление. Никаких поверхностей, колец и
+    ховеров: заливка + ring читались как кнопки, и в них кликали. Крупное
+    число + тихая подпись — это уже статистика. */}
+<dl class:list={["stats-focus cursor-default select-text", gridClass, className]}>
 	{
 		items.map((item, index) => (
-			<div class:list={["stats-focus__item flex items-center gap-1.5 rounded-2xl corner-squircle bg-surface px-2.5 py-2 ring ring-depth-100/60", hasBuckets ? "justify-start" : "justify-center"]} style={`--i: ${index}`}>
-				<Icon name={item.icon} class="stats-focus__icon size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-				<dd class="text-base font-semibold tracking-tight tabular-nums text-foreground sm:text-lg">
+			<div class="stats-focus__item flex min-w-0 flex-col-reverse items-center gap-1 text-center" style={`--i: ${index}`}>
+				<dt class="flex min-w-0 items-center justify-center gap-1.5 text-xs font-medium text-balance text-muted-foreground">
+					<Icon name={item.icon} class="stats-focus__icon size-3.5 shrink-0" aria-hidden="true" />
+					<span class="min-w-0">{item.label}</span>
+				</dt>
+				<dd class="text-xl font-semibold leading-none tracking-tight tabular-nums text-foreground sm:text-2xl">
 					<span class="stats-focus__number" style={`--target: ${item.value}; --i: ${index}`} aria-hidden="true" />
 					<span class="sr-only">{item.value}</span>
 				</dd>
-				<dt class="truncate text-xs font-medium text-muted-foreground">{item.label}</dt>
 			</div>
 		))
 	}
@@ -65,7 +70,7 @@ const gridClass = hasBuckets
 	}
 
 	.stats-focus__item {
-		animation: stats-soft-focus 912ms var(--ease) both;
+		animation: stats-rise 912ms var(--ease) both;
 		animation-delay: calc(var(--i) * 120ms);
 	}
 
@@ -91,18 +96,14 @@ const gridClass = hasBuckets
 		}
 	}
 
-	@keyframes stats-soft-focus {
+	@keyframes stats-rise {
 		0% {
-			opacity: 0.55;
-			box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-depth-100) 60%, transparent);
-		}
-		45% {
-			opacity: 1;
-			box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-primary) 18%, transparent);
+			opacity: 0;
+			transform: translateY(6px);
 		}
 		100% {
 			opacity: 1;
-			box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-depth-100) 60%, transparent);
+			transform: none;
 		}
 	}
 
@@ -127,5 +128,17 @@ const gridClass = hasBuckets
 			transform: none;
 			filter: none;
 		}
+	}
+
+	/* Тумблер анимаций гасит анимации целиком (`animation: none`), а счётчик
+	   набирал значение именно в кейфрейме — без этой ветки все цифры
+	   оставались нулями. */
+	:global([data-motion="off"]) .stats-focus__number {
+		--stat-value: var(--target);
+	}
+
+	:global([data-motion="off"]) .stats-focus__item {
+		opacity: 1;
+		transform: none;
 	}
 </style>
