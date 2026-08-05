@@ -2,8 +2,8 @@ import type { Dictionary } from "@/i18n/ui";
 
 const dict: Dictionary = {
 	"nav.centers": "Список центров",
-	"nav.toCenters": "Центра",
-	"nav.viewCenters": "Посмотреть центра",
+	"nav.toCenters": "Центры",
+	"nav.viewCenters": "Посмотреть центры",
 	"nav.changelog": "История изменений",
 	"nav.feedback": "Обратная связь",
 	"nav.posts": "Посты",
