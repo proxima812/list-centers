@@ -113,7 +113,14 @@
         "displayName": "Shadow Tone",
         "canonical": "hsl(0 0% 0%)",
         "dark": "hsl(0 0% 0%)",
-        "usage": "Shadows. Black in both themes — vary opacity, not lightness (denser on dark). Never derive a shadow from `foreground`: it goes near-white in dark and the shadow glows."
+        "usage": "Shadows, and effectively light-theme only. Black in both themes — vary opacity, not lightness. Never derive a shadow from `foreground`: it goes near-white in dark and the shadow glows. In dark, depth comes from the lightness step and from `lift`, not from this token — black on near-black draws nothing."
+      },
+      "lift": {
+        "role": "neutral",
+        "displayName": "Highlight Tone",
+        "canonical": "hsl(0 0% 100%)",
+        "dark": "hsl(0 0% 100%)",
+        "usage": "Counterpart to `shade`: the inset top-edge highlight on floating panels. White in both themes, but only load-bearing in dark, where it replaces the shadow. Used by the `overlay-lift` utility."
       },
       "depth": {
         "role": "neutral",
@@ -166,14 +173,14 @@
         "purpose": "Quiet separation for cards, controls, MDX panels, and menu surfaces."
       },
       {
-        "name": "feature-screenshot-lift",
-        "value": "shadow-2xl shadow-shade/10 dark:shadow-shade/40",
-        "purpose": "Homepage screenshot-led product imagery only."
+        "name": "surface-lift",
+        "value": "surface-lift",
+        "purpose": "In-flow raised surfaces: cards and screenshot-led feature sections. Soft shadow in light, no shadow in dark — there the background→surface lightness step and the ring carry the separation."
       },
       {
         "name": "overlay-lift",
-        "value": "shadow-sm or shadow-md",
-        "purpose": "Temporary menus and suggestion overlays."
+        "value": "overlay-lift",
+        "purpose": "Floating panels: menus, popovers, suggestion lists. Soft shadow in light, a 1px inset top highlight in dark. Pair it with `bg-surface`, never `bg-background` — on the page tone the panel has nothing but its border."
       }
     ],
     "motion": [

@@ -164,14 +164,23 @@ contrast threshold on both a white and a near-black background.
 under green, blue, and violet, so each preset ships its own dark paper. Light theme is
 shared by all three — there the accent changes nothing but the accent tokens.
 
-- `green` — the base `.dark` set: soft charcoal (`8%` page, `12%` surface), no pure black.
+- `green` — the base `.dark` set: soft charcoal (`7%` page, `15%` surface), no pure black.
 - `violet` — Vercel register: pure black page, surfaces barely lifted off it (`4%`/`10%`),
   quiet borders (`18%`), ink at `93%` instead of white. Hierarchy comes from type, not rules.
 - `blue` — Uber Base register: the same black page, but visibly lifted surfaces
   (`8%`/`12%`), denser borders (`20%`), and pure-white ink. Louder and more contrasty.
 
+**The page → surface step is the main depth signal in dark, and it is deliberately larger
+than its light counterpart.** Light theme lets a shadow finish the job; dark theme has no
+usable shadow, so the step has to carry it alone. Measured in perceptual lightness
+(oklch `L`), all three dark palettes now clear `+8`, matching HeroUI's `12% → 21%`. Steps
+below that read as flat. Deeper nesting needs far less — `surface → surface-muted` is
+about `+4`.
+
 All six theme × accent combinations are verified at >=4.5:1 for body text, footer text,
-and the accent itself against its own background.
+and the accent itself against its own background. Watch `subtle-foreground` in particular:
+it is the dimmest text token and it lands on `bg-subtle`, the lightest fill, so that pair
+is the binding constraint whenever a dark surface is raised.
 
 ### Brand Accent
 
@@ -234,10 +243,29 @@ The visual language uses squircle geometry through `@toolwind/corner-shape` and 
 
 - Buttons, chips, menus, stats pills: `rounded-2xl` or full-pill where appropriate.
 - Center cards: large squircle identity, currently about `32px`.
-- Marketing or screenshot blocks: `rounded-3xl`, with image clipping and a deliberate shadow.
+- Marketing or screenshot blocks: `rounded-3xl`, with image clipping and `surface-lift`.
 - MDX and utility panels: `rounded-2xl`, thin border or ring, and `shadow-2xs` only when separation is needed.
 
 Avoid pairing a border with a large soft shadow on routine components. Stronger shadow belongs to screenshot-led sections or temporary overlays.
+
+### Lift
+
+Two utilities carry elevation, and both are theme-aware — never hand-write a
+`dark:shadow-*` pair again.
+
+- `surface-lift` — things in the flow (cards, feature sections). Soft shadow in light;
+  **no shadow at all in dark**, where the lightness step and the ring already separate the
+  layers.
+- `overlay-lift` — things floating over the page (menus, popovers). Soft shadow in light;
+  in dark a `1px` inset highlight along the top edge — light from above instead of shadow
+  from below.
+
+A black shadow on a near-black page draws nothing: it costs compositing and returns no
+depth. This is HeroUI's conclusion too — their dark theme sets `--surface-shadow` to
+transparent outright and gives overlays `inset 0 0 1px rgba(255,255,255,.3)`.
+
+A floating panel must also sit on `bg-surface`, not `bg-background`. On `bg-background` it
+is the same tone as the page behind it and survives on its border alone.
 
 ## 6. Motion
 

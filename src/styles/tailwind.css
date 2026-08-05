@@ -77,8 +77,13 @@
 
   /* Тень не может быть завязана на foreground: в тёмной теме он почти белый,
      и «тень» получалась светящейся. Этот тон чёрный в обеих темах, меняется
-     только непрозрачность — на тёмном фоне тень должна быть плотнее. */
+     только непрозрачность. Тёмной теме тень при этом почти не нужна: чёрное
+     на чёрном не читается — там подъём рисует `--color-lift`. */
   --color-shade: hsl(0 0% 0%);
+
+  /* Парный к shade: подсветка верхней грани. Белый в обеих темах, работает
+     в основном в тёмной — «свет сверху» вместо «тени снизу». */
+  --color-lift: hsl(0 0% 100%);
 
   --color-destructive: hsl(15 74% 45%);
 
@@ -171,28 +176,34 @@
 .dark {
   color-scheme: dark;
 
-  --color-background: hsl(0 0% 8%);
+  /* Шаг фон→поверхность — главный носитель глубины в тёмной теме, и он должен
+     быть заметно крупнее, чем в светлой: там карточку добирает тень, здесь её
+     нет. 7%→15% даёт +8.8 перцептивной светлоты (в oklch) — примерно как у
+     HeroUI (12%→21%). Дальше ступени мельче: вложенность требует шёпота. */
+  --color-background: hsl(0 0% 7%);
   --color-foreground: hsl(0 0% 95%);
-  --color-muted: hsl(0 0% 16%);
-  --color-muted-foreground: hsl(0 0% 68%);
-  --color-subtle: hsl(0 0% 20%);
-  --color-subtle-foreground: hsl(0 0% 56%);
-  --color-surface: hsl(0 0% 12%);
+  --color-muted: hsl(0 0% 18%);
+  --color-muted-foreground: hsl(0 0% 72%);
+  --color-subtle: hsl(0 0% 21%);
+  /* 63%, а не 56%: `subtle-foreground` садится в том числе на `bg-subtle`
+     (счётчик в Toolbar), а там 56% давало 3.9:1 — ниже AA. */
+  --color-subtle-foreground: hsl(0 0% 63%);
+  --color-surface: hsl(0 0% 15%);
   --color-surface-foreground: hsl(0 0% 95%);
-  --color-surface-muted: hsl(0 0% 16%);
-  --color-border: hsl(0 0% 26%);
-  --color-border-muted: hsl(0 0% 19%);
-  --color-ring: hsl(0 0% 44%);
+  --color-surface-muted: hsl(0 0% 19%);
+  --color-border: hsl(0 0% 29%);
+  --color-border-muted: hsl(0 0% 22%);
+  --color-ring: hsl(0 0% 47%);
   --color-primary: hsl(0 0% 95%);
-  --color-primary-foreground: hsl(0 0% 8%);
+  --color-primary-foreground: hsl(0 0% 7%);
   --color-link: hsl(0 0% 95%);
-  --color-link-decoration: hsl(0 0% 44%);
+  --color-link-decoration: hsl(0 0% 47%);
 
   /* Ramp разворачивается: в светлой теме depth идёт от светлого к тёмному,
      в тёмной — наоборот, иначе «глубина» читается вывернутой. */
-  --color-depth-100: hsl(0 0% 18%);
-  --color-depth-200: hsl(0 0% 24%);
-  --color-depth-300: hsl(0 0% 34%);
+  --color-depth-100: hsl(0 0% 21%);
+  --color-depth-200: hsl(0 0% 28%);
+  --color-depth-300: hsl(0 0% 36%);
   --color-depth-400: hsl(0 0% 48%);
   --color-depth-500: hsl(0 0% 62%);
   --color-depth-600: hsl(0 0% 74%);
@@ -202,7 +213,7 @@
 
   /* Дефолт на случай, если data-accent ещё не проставлен. */
   --color-accent: hsl(142 58% 52%);
-  --color-accent-foreground: hsl(0 0% 8%);
+  --color-accent-foreground: hsl(0 0% 7%);
   --color-accent-vivid: hsl(142 62% 52%);
   --color-accent-glow: hsl(142 70% 70%);
   --color-mark-tint: hsl(142 66% 64%);
@@ -237,7 +248,7 @@
 
 .dark[data-accent="green"] {
   --color-accent: hsl(142 58% 52%);
-  --color-accent-foreground: hsl(0 0% 8%);
+  --color-accent-foreground: hsl(0 0% 7%);
   --color-accent-vivid: hsl(142 62% 52%);
   --color-accent-glow: hsl(142 70% 70%);
   --color-mark-tint: hsl(142 66% 64%);
@@ -275,7 +286,8 @@
   --color-muted: hsl(0 0% 10%);
   --color-muted-foreground: hsl(0 0% 63%);
   --color-subtle: hsl(0 0% 16%);
-  --color-subtle-foreground: hsl(0 0% 56%);
+  /* 58%, а не 56%: на `bg-subtle` 56% давало ровно 4.50:1 — без запаса. */
+  --color-subtle-foreground: hsl(0 0% 58%);
   --color-surface: hsl(0 0% 4%);
   --color-surface-foreground: hsl(0 0% 93%);
   --color-surface-muted: hsl(0 0% 10%);
@@ -317,9 +329,12 @@
   --color-link: hsl(0 0% 100%);
   --color-link-decoration: hsl(0 0% 47%);
 
-  --color-depth-100: hsl(0 0% 12%);
-  --color-depth-200: hsl(0 0% 16%);
-  --color-depth-300: hsl(0 0% 20%);
+  /* depth-100 здесь ходит поверх surface 8%, и на 12% кольцо `ring-depth-100/70`
+     давало разницу в 3 единицы светлоты — не читалось вообще. 15% выводит его
+     на один уровень с violet, где та же связка работает. */
+  --color-depth-100: hsl(0 0% 15%);
+  --color-depth-200: hsl(0 0% 19%);
+  --color-depth-300: hsl(0 0% 24%);
   --color-depth-400: hsl(0 0% 33%);
   --color-depth-500: hsl(0 0% 55%);
   --color-depth-600: hsl(0 0% 69%);
@@ -534,4 +549,41 @@
 
 @utility content-auto {
   content-visibility: auto;
+}
+
+/* ─── Подъём над плоскостью ───────────────────────────────────────────────
+   В светлой теме глубину рисует тень: фон белый, чёрное на нём читается.
+   В тёмной чёрная тень на почти чёрном фоне не рисует ничего — платим за
+   композитинг и получаем ноль. Поэтому в тёмной подъём держат две другие
+   вещи: ступень светлоты (background → surface) и светлый хайрлайн по
+   верхней грани, то есть «свет сверху» вместо «тени снизу».
+
+   Приём взят у HeroUI: в их тёмной теме `--surface-shadow` буквально
+   выключен, а `--overlay-shadow` — это `inset 0 0 1px rgba(255,255,255,.3)`.
+
+   Два рецепта, потому что задачи разные:
+   surface-lift — то, что лежит в потоке (карточки, секции). В тёмной теме
+     тени нет вообще: ступень светлоты и кольцо уже разводят слои, а inset
+     здесь бесполезен — такие блоки обычно overflow-hidden с полноширинным
+     содержимым, которое перекроет хайрлайн.
+   overlay-lift — то, что висит над страницей (меню, поповеры). Здесь inset
+     нужен: он очерчивает верхнюю грань панели и в тёмной теме заменяет тень. */
+@utility surface-lift {
+  box-shadow:
+    0 1px 2px 0 color-mix(in oklab, var(--color-shade) 6%, transparent),
+    0 8px 24px -8px color-mix(in oklab, var(--color-shade) 12%, transparent);
+
+  @variant dark {
+    box-shadow: none;
+  }
+}
+
+@utility overlay-lift {
+  box-shadow:
+    0 2px 8px 0 color-mix(in oklab, var(--color-shade) 6%, transparent),
+    0 14px 28px -8px color-mix(in oklab, var(--color-shade) 12%, transparent);
+
+  @variant dark {
+    box-shadow: inset 0 1px 0 0 color-mix(in oklab, var(--color-lift) 8%, transparent);
+  }
 }
