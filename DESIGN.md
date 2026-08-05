@@ -189,6 +189,19 @@ word treatment, the liquid-metal mark, focus indicators, active filter chips, an
 filter badge. Treat it as a named signal, not a general palette. Do not apply it to cards,
 prose, footer links, or center detail pages unless a specific design pass asks for that.
 
+### Soft Accent
+
+`accent-soft` / `accent-soft-hover` / `accent-soft-foreground` are the quiet fill of the
+accent — currently only the hero badge. They are not authored per preset: each is a
+`color-mix()` over the current `accent` and neutrals, so all six theme × accent pairs
+follow for free.
+
+Two things are deliberate there. The text is **not** pure `accent` — on a 12% fill light
+green gives 3.9:1, below AA for 12px, so 25% `foreground` is mixed in and the worst pair
+lands at 5.6:1. And the dark fill takes 18% accent instead of 12%: on a near-black page
+12% lifted the pill by only 6.7-8.4 in perceptual lightness, at or under the flatness
+threshold described below.
+
 ### Color Rules
 
 **Neutrals Carry Structure.** Default to the semantic neutral tokens for layout, controls, content, and catalog surfaces.
@@ -311,6 +324,22 @@ and a `color-mix()` would compute to `oklab()`, which that parser cannot read.
 ### Hero Title
 
 The hero title uses heavy uppercase lines with one accent phrase and quieter secondary lines. Keep words short enough for mobile. Do not add repeated section eyebrows around it.
+
+### Hero Badge
+
+One soft-accent pill above the hero title (HeroUI's announcement pattern), rotating
+through three project news items: the latest post, the newest center, and the current site
+version. Every line is derived from data — posts by `pubDate`, centers by their sequential
+`tbk-N` id, the version from `src/data/release.json` — so the badge never needs editing.
+
+It is the only place the badge treatment is allowed: one pill, one fold, never a row of
+them and never inside catalog surfaces. The cards are stacked with `absolute inset-0`,
+so the height does not jump with caption length, and the hidden ones are `inert` rather
+than hidden — out of focus order and out of the accessibility tree while staying in flow.
+
+Rotation stops on hover, on focus, in a background tab, and under either motion escape
+path. It is timer-driven on purpose: `[data-motion="off"]` removes transitions outright,
+so anything waiting on `transitionend` would stall on the first card.
 
 ### Home Links
 

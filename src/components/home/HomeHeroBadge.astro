@@ -73,26 +73,24 @@ const items = [
 }[];
 ---
 
-<div class="hero-badge flex h-6 items-center justify-center">
-	<div class="relative flex h-6 w-full items-center justify-center" data-hero-badge>
-		{
-			items.map((item, index) => (
-				<a
-					class="hero-badge-item absolute inset-0 mx-auto flex w-fit max-w-full items-center justify-center gap-1.5 rounded-full bg-accent-soft px-2 py-1 text-xs text-accent-soft-foreground transition-[background-color,opacity,transform] duration-300 ease-out hover:bg-accent-soft-hover"
-					href={item.href}
-					target={item.external ? "_blank" : undefined}
-					rel={item.external ? "noopener noreferrer" : undefined}
-					aria-label={item.label}
-					data-hero-badge-item
-					data-state={index === 0 ? "in" : "idle"}
-					inert={index === 0 ? undefined : true}
-				>
-					<Icon name={item.icon} class="size-3 shrink-0" aria-hidden="true" />
-					<span class="max-w-60 truncate sm:max-w-full">{item.label}</span>
-				</a>
-			))
-		}
-	</div>
+<div class="hero-badge relative flex h-6 items-center justify-center" data-hero-badge>
+	{
+		items.map((item, index) => (
+			<a
+				class="hero-badge-item absolute inset-0 mx-auto flex w-fit max-w-full items-center justify-center gap-1.5 rounded-full bg-accent-soft px-2 py-1 text-xs text-accent-soft-foreground transition-[background-color,opacity,transform] duration-300 ease-out hover:bg-accent-soft-hover"
+				href={item.href}
+				target={item.external ? "_blank" : undefined}
+				rel={item.external ? "noopener noreferrer" : undefined}
+				aria-label={item.label}
+				data-hero-badge-item
+				data-state={index === 0 ? "in" : "idle"}
+				inert={index === 0 ? undefined : true}
+			>
+				<Icon name={item.icon} class="size-3 shrink-0" aria-hidden="true" />
+				<span class="max-w-60 truncate sm:max-w-full">{item.label}</span>
+			</a>
+		))
+	}
 </div>
 
 <style>
@@ -189,14 +187,18 @@ const items = [
 			}
 		};
 
-		root.addEventListener("pointerenter", () => {
-			hovered = true;
-			stop();
-		});
+		// Слушаем сами плашки, а не контейнер: контейнер тянется на всю ширину
+		// героя, и пауза срабатывала бы от курсора где угодно на этой строке.
+		items.forEach((item) => {
+			item.addEventListener("pointerenter", () => {
+				hovered = true;
+				stop();
+			});
 
-		root.addEventListener("pointerleave", () => {
-			hovered = false;
-			start();
+			item.addEventListener("pointerleave", () => {
+				hovered = false;
+				start();
+			});
 		});
 
 		root.addEventListener("focusin", stop);
