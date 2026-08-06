@@ -3,6 +3,7 @@ import BackButton from "@/components/navigation/BackButton.astro";
 import PostCard from "@/components/posts/PostCard.astro";
 import Layout from "@/layouts/Layout.astro";
 import { formatContentDateTime, getContentDates } from "@/utils/contentDates";
+import { getPostId, getPostPath } from "@/utils/posts";
 import { getCollection, render } from "astro:content";
 
 const posts = await getCollection("posts");
@@ -27,8 +28,6 @@ const stripMarkdown = (value: string) =>
 		.replace(/[#>*_~|-]/g, "")
 		.replace(/\s+/g, " ")
 		.trim();
-
-const getPostAnchor = (id: string) => id.replace(/\/$/, "");
 
 const getRelativeTime = (date: Date) => {
 	const diffMs = Date.now() - date.getTime();
@@ -58,7 +57,8 @@ const postsFeed = await Promise.all(
 
 		return {
 			Content,
-			id: getPostAnchor(post.id),
+			id: getPostId(post.id),
+			href: getPostPath(post.id),
 			title: post.data.title,
 			description: post.data.description,
 			author: post.data.author,
@@ -106,6 +106,7 @@ const latestModifiedDate = postsFeed
 				postsFeed.map((post) => (
 					<PostCard
 						id={post.id}
+						href={post.href}
 						title={post.title}
 						description={post.description}
 						author={post.author}

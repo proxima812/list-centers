@@ -1,6 +1,7 @@
 ---
 interface Props {
 	id: string;
+	href: string;
 	title: string;
 	description: string;
 	author: string;
@@ -16,6 +17,7 @@ interface Props {
 
 const {
 	id,
+	href,
 	title,
 	description,
 	author,
@@ -55,10 +57,7 @@ const {
 		</div>
 
 		<h2 class="mt-4 text-xl font-bold leading-tight tracking-tight text-foreground sm:text-2xl">
-			<a
-				href={`#${id}`}
-				class="wrap-anywhere rounded-lg no-underline outline-none transition hover:text-depth-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
-			>
+			<a href={href} class="wrap-anywhere rounded-lg no-underline transition hover:text-depth-700">
 				{title}
 			</a>
 		</h2>
@@ -74,36 +73,33 @@ const {
 				"prose prose-sm max-w-none text-depth-600 sm:prose-base prose-p:my-2 prose-a:font-medium prose-a:text-link prose-a:decoration-link-decoration prose-a:underline-offset-4 prose-blockquote:my-3 first:prose-p:mt-0 last:prose-p:mb-0",
 				isLong && "line-clamp-5",
 			]}
-			data-post-text
 		>
 			<slot />
 		</div>
 
-		{
-			isLong && (
-				<button
-					type="button"
-					class="mt-3 inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-muted px-3 py-1.5 text-sm font-medium text-muted-foreground ring ring-depth-100/70 transition hover:bg-primary hover:text-primary-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring [&[aria-expanded='true']_svg]:rotate-180"
-					data-post-toggle
-					aria-expanded="false"
-				>
-					<span data-post-toggle-label>Развернуть</span>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						class="size-4 transition-transform"
-						aria-hidden="true"
-					>
-						<path d="m6 9 6 6 6-6" />
-					</svg>
-				</button>
-			)
-		}
+		{/* Разворачивать текст прямо в карточке больше нечего: у поста есть
+		    своя страница, туда и ведёт кнопка. */}
+		<a
+			href={href}
+			class="mt-3 inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1.5 text-sm font-medium text-muted-foreground no-underline ring ring-depth-100/70 transition hover:bg-primary hover:text-primary-foreground"
+		>
+			<span>Читать пост</span>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				class="size-4"
+				aria-hidden="true"
+			>
+				<path d="M5 12h14" />
+				<path d="m12 5 7 7-7 7" />
+			</svg>
+			<span class="sr-only">: {title}</span>
+		</a>
 	</div>
 
 	<footer class="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.72rem] leading-5 text-muted-foreground">
@@ -124,20 +120,3 @@ const {
 		}
 	</footer>
 </article>
-
-<script>
-	document.querySelectorAll<HTMLButtonElement>("[data-post-toggle]").forEach((toggle) => {
-		const text = toggle.closest("article")?.querySelector<HTMLElement>("[data-post-text]");
-		const label = toggle.querySelector<HTMLElement>("[data-post-toggle-label]");
-		if (!text || !label || toggle.dataset.postToggleReady) return;
-
-		toggle.dataset.postToggleReady = "true";
-		toggle.addEventListener("click", () => {
-			const expanded = toggle.getAttribute("aria-expanded") === "true";
-
-			text.classList.toggle("line-clamp-5", expanded);
-			toggle.setAttribute("aria-expanded", String(!expanded));
-			label.textContent = expanded ? "Развернуть" : "Свернуть";
-		});
-	});
-</script>

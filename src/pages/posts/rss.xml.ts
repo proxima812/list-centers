@@ -1,9 +1,8 @@
+import { getPostPath } from "@/utils/posts";
 import rss from "@astrojs/rss";
 import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
 import { config } from "main.config";
-
-const getPostAnchor = (id: string) => id.replace(/\/$/, "");
 
 export const GET: APIRoute = async ({ site: astroSite }) => {
 	const posts = await getCollection("posts");
@@ -21,7 +20,7 @@ export const GET: APIRoute = async ({ site: astroSite }) => {
 				title: post.data.title,
 				description: post.data.description,
 				pubDate: post.data.pubDate,
-				link: `/posts/#${getPostAnchor(post.id)}`,
+				link: getPostPath(post.id),
 				categories: post.data.tags,
 				author: post.data.author,
 			})),

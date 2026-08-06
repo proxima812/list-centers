@@ -1,0 +1,158 @@
+---
+import { markdownComponents } from "@/components";
+import SkipNode from "@/components/markdown/SkipNode.astro";
+import BackButton from "@/components/navigation/BackButton.astro";
+import Layout from "@/layouts/Layout.astro";
+import { formatContentDateTime, getContentDates } from "@/utils/contentDates";
+import { getPostId, getPostPath } from "@/utils/posts";
+import { Icon } from "astro-icon/components";
+import { getCollection, render, type CollectionEntry } from "astro:content";
+
+export async function getStaticPaths() {
+	const posts = (await getCollection("posts")).sort(
+		(a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime(),
+	);
+
+	return posts.map((post, index) => ({
+		params: { id: getPostId(post.id) },
+		props: {
+			post,
+			// Лента отсортирована от новых к старым, поэтому «предыдущий» —
+			// это следующий элемент массива.
+			newerPost: index > 0 ? posts[index - 1] : null,
+			olderPost: index < posts.length - 1 ? posts[index + 1] : null,
+		},
+	}));
+}
+
+interface Props {
+	post: CollectionEntry<"posts">;
+	newerPost: CollectionEntry<"posts"> | null;
+	olderPost: CollectionEntry<"posts"> | null;
+}
+
+const { post, newerPost, olderPost } = Astro.props as Props;
+const { Content } = await render(post);
+const data = post.data;
+
+const { publishedDate, modifiedDate } = getContentDates({
+	pubDate: data.pubDate,
+	filePath: post.filePath,
+});
+
+const fullDate = new Intl.DateTimeFormat("ru-RU", {
+	day: "numeric",
+	month: "long",
+	year: "numeric",
+	timeZone: "Asia/Almaty",
+})
+	.format(data.pubDate)
+	.replace(/\s?г\.$/, "");
+
+const publishedLabel = formatContentDateTime(publishedDate, "ru");
+const modifiedLabel = formatContentDateTime(modifiedDate, "ru");
+
+const badgeClass =
+	"rounded-full bg-surface px-2.5 py-1 font-medium text-muted-foreground ring ring-depth-100/70";
+
+const neighbours = [
+	newerPost ? { post: newerPost, label: "Новее", icon: "tabler:arrow-left" } : null,
+	olderPost ? { post: olderPost, label: "Старее", icon: "tabler:arrow-right" } : null,
+].filter((item): item is NonNullable<typeof item> => Boolean(item));
+---
+
+<Layout
+	title={data.title}
+	description={data.description}
+	type="article"
+	canonicalURL={getPostPath(post.id)}
+	keywords={["tatarverse", "посты", data.category, ...data.tags]}
+	ogImage={data.ogImage}
+	rssURL="/posts/rss.xml"
+	datePublished={publishedDate}
+	dateModified={modifiedDate}
+>
+	<BackButton href="/posts" variant="outline" label="Все посты" labelKey="nav.posts" />
+
+	<main class="mx-auto w-full max-w-3xl min-w-0">
+		<article class="flex w-full min-w-0 flex-col gap-6">
+			<header class="flex min-w-0 flex-col gap-3">
+				<div class="flex flex-wrap items-center gap-2 text-xs leading-5">
+					<span class={badgeClass}>{data.author}</span>
+					<span class={badgeClass}>{data.category}</span>
+					<time class="text-muted-foreground" datetime={data.pubDate.toISOString()}>
+						{fullDate}
+					</time>
+				</div>
+
+				<h1
+					class="text-2xl font-bold leading-tight tracking-tight text-balance wrap-anywhere text-foreground sm:text-3xl"
+				>
+					{data.title}
+				</h1>
+
+				<p class="text-sm leading-6 text-muted-foreground sm:text-base">
+					{data.description}
+				</p>
+			</header>
+
+			<div
+				class="prose prose-sm min-w-0 max-w-none sm:prose-base prose-a:font-medium prose-a:text-link prose-a:decoration-link-decoration prose-a:underline-offset-4"
+			>
+				{/* h1 из MDX пропускается: заголовок первого уровня на странице
+				    уже есть, он собран из frontmatter. */}
+				<Content components={{ ...markdownComponents, h1: SkipNode }} />
+			</div>
+
+			{
+				data.tags.length > 0 && (
+					<ul class="flex list-none flex-wrap gap-2 p-0 text-xs leading-5">
+						{data.tags.map((tag) => (
+							<li class={badgeClass}>#{tag}</li>
+						))}
+					</ul>
+				)
+			}
+
+			{
+				(publishedLabel || modifiedLabel) && (
+					<footer class="border-t border-depth-100 pt-3 text-[0.72rem] leading-5 text-muted-foreground">
+						{publishedLabel && (
+							<time datetime={publishedDate?.toISOString()}>
+								Опубликовано: {publishedLabel}
+							</time>
+						)}
+						{publishedLabel && modifiedLabel && <span aria-hidden="true"> · </span>}
+						{modifiedLabel && (
+							<time datetime={modifiedDate?.toISOString()}>Обновлено: {modifiedLabel}</time>
+						)}
+					</footer>
+				)
+			}
+		</article>
+
+		{
+			neighbours.length > 0 && (
+				<nav
+					class="mt-10 grid gap-3 sm:grid-cols-2"
+					aria-label="Соседние посты"
+				>
+					{neighbours.map((item) => (
+						<a
+							href={getPostPath(item.post.id)}
+							class="group flex min-w-0 flex-col gap-1 rounded-3xl corner-squircle bg-surface p-4 text-left no-underline ring ring-depth-100/80 transition hover:ring-depth-200"
+						>
+							<span class="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+								<Icon name={item.icon} class="size-3.5 shrink-0" aria-hidden="true" />
+								{item.label}
+							</span>
+							<span class="min-w-0 text-sm font-semibold wrap-anywhere text-foreground sm:text-base">
+								{item.post.data.title}
+							</span>
+						</a>
+					))}
+				</nav>
+			)
+		}
+	</main>
+</Layout>

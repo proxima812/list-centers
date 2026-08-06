@@ -6,6 +6,7 @@ import {
 	getCenterPath,
 	getCenterTranslationCollection,
 } from "@/utils/centers";
+import { getPostPath } from "@/utils/posts";
 import { Icon } from "astro-icon/components";
 import { getCollection } from "astro:content";
 
@@ -39,13 +40,13 @@ const localizedCenter = centerTranslations
 	: undefined;
 const latestCenterTitle = localizedCenter?.data.title ?? latestCenter?.data.title;
 
-// Лента постов живёт одной страницей с якорями (src/pages/posts/index.astro),
-// поэтому ссылка на пост — это хеш, а не отдельный маршрут.
+// У каждого поста есть своя страница (src/pages/posts/[id].astro); в ленте
+// она же открывается drawer'ом, но ссылка ведёт на настоящий маршрут.
 const items = [
 	latestPost && {
 		icon: "tabler:news",
 		label: t("home.badge.post", { title: latestPost.data.title }),
-		href: localizePath(locale, `/posts#${latestPost.id.replace(/\/$/, "")}`),
+		href: localizePath(locale, getPostPath(latestPost.id)),
 		external: false,
 	},
 	latestCenter && {
