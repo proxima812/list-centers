@@ -55,6 +55,14 @@ const markSize = Math.round(size * 0.6);
 		animation: flower-fade-out 600ms ease-out forwards;
 	}
 
+	/* Марку в этом сеансе уже показывали (метку ставит остров, когда поднял
+	   сохранённый кадр шейдера) — значит, это навигация, а не первый вход.
+	   Оставляем ровно столько, чтобы перекрыть пересоздание WebGL-контекста:
+	   полное проявление на каждой странице читается как мигание логотипа. */
+	.webgl-ready[data-lm-warm] .flower-fade {
+		animation-duration: 120ms;
+	}
+
 	@keyframes flower-fade-out {
 		to {
 			opacity: 0;

@@ -1,4 +1,4 @@
-import { LiquidMetal } from "@paper-design/shaders-react";
+import { LiquidMetal, type PaperShaderElement } from "@paper-design/shaders-react";
 import { useEffect, useRef, useState } from "react";
 
 /**
@@ -15,6 +15,33 @@ import { useEffect, useRef, useState } from "react";
  * не разъедется, если фон когда-нибудь поменяют.
  */
 const TRANSPARENT = "#00000000";
+
+/**
+ * Между страницами сайт делает полную перезагрузку (клиентского роутера нет),
+ * поэтому WebGL-контекст умирает и время шейдера сбрасывается в ноль — марка
+ * на каждой навигации начинала анимацию с одной и той же позы.
+ *
+ * Сохранить сам контекст без роутера нельзя, но можно сохранить фазу: у
+ * ShaderMount есть публичный getCurrentFrame() и проп frame — это буквально
+ * миллисекунды от старта анимации. Пишем их перед уходом со страницы и
+ * отдаём обратно при монтировании.
+ *
+ * sessionStorage, а не local: фаза имеет смысл только внутри одного сеанса
+ * просмотра, в новой вкладке логично стартовать с нуля.
+ */
+const FRAME_KEY = "tatarverse:mark-frame";
+
+/** Приватный режим Safari бросает на самом доступе к хранилищу, не только на записи. */
+const readFrame = () => {
+	if (typeof window === "undefined") return 0;
+
+	try {
+		const stored = Number(sessionStorage.getItem(FRAME_KEY));
+		return Number.isFinite(stored) && stored > 0 ? stored : 0;
+	} catch {
+		return 0;
+	}
+};
 
 /**
  * Шейдер принимает цвет строкой и не понимает CSS-переменные, поэтому токен
@@ -38,6 +65,11 @@ const resolveToken = (probe: HTMLElement, token: string) => {
 
 export default function LiquidMetalMark({ size = 140 }: { size?: number }) {
 	const hostRef = useRef<HTMLDivElement>(null);
+	const shaderRef = useRef<PaperShaderElement>(null);
+	// Кадр читается ровно один раз, на первом рендере: если держать его в
+	// живом состоянии, каждая перезапись дёргала бы setFrame внутри
+	// ShaderMount и рвала анимацию скачком.
+	const [startFrame] = useState(readFrame);
 	// null, а не литеральный фолбэк: остров ещё и SSR-ится, так что любой
 	// стартовый цвет попал бы в HTML и мигнул бы не тем оттенком до того, как
 	// эффект прочитает акцент. Пока цвет не измерен, шейдера просто нет —
@@ -93,23 +125,55 @@ export default function LiquidMetalMark({ size = 140 }: { size?: number }) {
 	}, []);
 
 	useEffect(() => {
+		const save = () => {
+			const current = shaderRef.current?.paperShaderMount?.getCurrentFrame();
+			if (current === undefined) return;
+
+			try {
+				sessionStorage.setItem(FRAME_KEY, String(Math.round(current)));
+			} catch {
+				// см. readFrame
+			}
+		};
+
+		// Два события, а не одно. pagehide ловит обычный уход со страницы, но на
+		// iOS может не прийти вовсе, если вкладку свернули; visibilitychange
+		// закрывает этот случай. Шейдер сам замирает на скрытом документе
+		// (setCurrentSpeed(0)), так что фаза за время отсутствия не убежит.
+		window.addEventListener("pagehide", save);
+		document.addEventListener("visibilitychange", save);
+
+		return () => {
+			window.removeEventListener("pagehide", save);
+			document.removeEventListener("visibilitychange", save);
+		};
+	}, []);
+
+	useEffect(() => {
 		if (!tint) return;
+
+		const host = hostRef.current?.closest("[data-liquid-metal]");
+
+		// Ненулевой стартовый кадр значит, что шейдер в этом сеансе уже
+		// показывали. Обёртка по этой метке укорачивает проявление: полные
+		// 600 мс уместны один раз, а на каждой навигации читаются как мигание.
+		if (startFrame > 0) host?.setAttribute("data-lm-warm", "");
 
 		// Статичный цветок гаснет только когда шейдер уже смонтирован и успел
 		// нарисовать кадр, иначе между ними будет провал в пустоту.
 		const frame = requestAnimationFrame(() =>
-			requestAnimationFrame(() =>
-				hostRef.current?.closest("[data-liquid-metal]")?.classList.add("webgl-ready"),
-			),
+			requestAnimationFrame(() => host?.classList.add("webgl-ready")),
 		);
 
 		return () => cancelAnimationFrame(frame);
-	}, [tint]);
+	}, [tint, startFrame]);
 
 	return (
 		<div ref={hostRef}>
 			{tint && !motionOff && (
 				<LiquidMetal
+					ref={shaderRef}
+					frame={startFrame}
 					width={size}
 					height={size}
 					image="/flower.svg"
