@@ -67,12 +67,10 @@ typography:
     lineHeight: 1.3333
     letterSpacing: "normal"
 rounded:
-  sm: "8px"
-  md: "12px"
-  lg: "16px"
-  xl: "24px"
+  micro: "8px"
+  control: "16px"
   card: "24px"
-  catalog-card: "32px"
+  catalog: "32px"
   full: "9999px"
 spacing:
   xs: "4px"
@@ -90,31 +88,31 @@ components:
   button-primary:
     backgroundColor: "{colors.primary}"
     textColor: "{colors.primary-foreground}"
-    rounded: "{rounded.lg}"
+    rounded: "{rounded.control}"
     padding: "8px 16px"
     typography: "{typography.label}"
   button-ghost:
     backgroundColor: "transparent"
     textColor: "{colors.primary}"
-    rounded: "{rounded.lg}"
+    rounded: "{rounded.control}"
     padding: "8px 16px"
     typography: "{typography.label}"
   chip-active:
     backgroundColor: "{colors.accent}"
     textColor: "{colors.accent-foreground}"
-    rounded: "{rounded.lg}"
+    rounded: "{rounded.control}"
     padding: "6px 10px"
     typography: "{typography.label}"
   stats-pill:
     backgroundColor: "{colors.surface}"
     textColor: "{colors.foreground}"
-    rounded: "{rounded.lg}"
+    rounded: "{rounded.control}"
     padding: "8px 10px"
     typography: "{typography.label}"
   card-center:
     backgroundColor: "{colors.muted}"
     textColor: "{colors.surface-foreground}"
-    rounded: "{rounded.catalog-card}"
+    rounded: "{rounded.catalog}"
     padding: "20px"
 ---
 
@@ -252,12 +250,41 @@ The site uses centered content, generous vertical rhythm on the homepage, and co
 
 ## 5. Shape And Surface
 
-The visual language uses squircle geometry through `@toolwind/corner-shape` and rounded Tailwind utilities.
+The visual language uses squircle geometry through `@toolwind/corner-shape` and a
+**four-step semantic radius scale**. Never write a raw `rounded-2xl` / `rounded-3xl` /
+`rounded-4xl` again — those numbers are the default preset's values, not the meaning.
 
-- Buttons, chips, menus, stats pills: `rounded-2xl` or full-pill where appropriate.
-- Center cards: large squircle identity, currently about `32px`.
-- Marketing or screenshot blocks: `rounded-3xl`, with image clipping and `surface-lift`.
-- MDX and utility panels: `rounded-2xl`, thin border or ring, and `shadow-2xs` only when separation is needed.
+- `rounded-micro` (`8px`) — badges, chips, inputs, small icon buttons.
+- `rounded-control` (`16px`) — buttons, menu items, toolbars, popovers.
+- `rounded-card` (`24px`) — panels, sections, ordinary cards, marketing and screenshot
+  blocks (with image clipping and `surface-lift`).
+- `rounded-catalog` (`32px`) — center cards and other large catalog surfaces.
+- `rounded-full` stays raw. A pill is not a step on the scale: it must **not** move with
+  the preset, or toggles and avatars would stop being circles.
+
+MDX and utility panels take `rounded-control` plus a thin border or ring, and `shadow-2xs`
+only when separation is needed.
+
+### Radius Follows The Accent
+
+Radius is part of the preset, not a constant. `data-accent` already swaps the entire dark
+neutral palette (the Vercel / Uber Base registers above), and corner shape rides the same
+register — this is how HeroUI themes work, where a theme carries `--heroui-radius-*`
+alongside its colors. The scale is shared by light and dark: contrast depends on the
+background, shape does not.
+
+| preset | micro | control | card | catalog |
+| --- | --- | --- | --- | --- |
+| `green` (default) | 8 | 16 | 24 | 32 |
+| `violet` (medium) | 8 | 12 | 18 | 24 |
+| `blue` (small) | 6 | 8 | 12 | 16 |
+
+The steps compress **non-uniformly** — large radii give up proportionally more. A flat
+multiplier would push `micro` down to `4px`, indistinguishable from a square corner, while
+barely touching `catalog`, which is exactly where the change in shape is legible.
+
+The print stylesheet (`src/pages/centers/print.astro`) keeps raw radii on purpose: paper
+should not shift with a screen preset.
 
 Avoid pairing a border with a large soft shadow on routine components. Stronger shadow belongs to screenshot-led sections or temporary overlays.
 

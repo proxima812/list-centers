@@ -10,7 +10,7 @@ export const markdownClasses = {
 
 	strong: `${markdownTone.text} font-semibold`,
 	blockquote: [
-		"my-0 rounded-2xl border-l-4 px-4 py-3 italic",
+		"my-0 rounded-control border-l-4 px-4 py-3 italic",
 		markdownTone.border,
 		"text-foreground/90 bg-depth-100/40",
 	].join(" "),

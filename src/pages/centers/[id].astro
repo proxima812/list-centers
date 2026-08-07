@@ -278,7 +278,7 @@ const jsonLd = {
 		</div>
 
 		<main
-			class="relative flex w-full min-w-0 max-w-full flex-col justify-between gap-6 rounded-2xl bg-surface-muted p-5 shadow-2xs ring ring-depth-100/70 sm:p-10 lg:flex-row lg:items-start lg:gap-10 xl:gap-12"
+			class="relative flex w-full min-w-0 max-w-full flex-col justify-between gap-6 rounded-control bg-surface-muted p-5 shadow-2xs ring ring-depth-100/70 sm:p-10 lg:flex-row lg:items-start lg:gap-10 xl:gap-12"
 		>
 			<div class="prose min-w-0 max-w-full">
 				<Content components={{ ...markdownComponents, h1: SkipNode }} />
@@ -303,7 +303,7 @@ const jsonLd = {
 
 			{
 				facts.length > 0 && (
-					<aside class="order-first h-fit w-full shrink-0 rounded-2xl corner-squircle bg-depth-100/30 p-5 shadow-2xs ring ring-depth-100/70 sm:p-6 lg:sticky lg:top-12 lg:order-2 lg:w-72">
+					<aside class="order-first h-fit w-full shrink-0 rounded-control corner-squircle bg-depth-100/30 p-5 shadow-2xs ring ring-depth-100/70 sm:p-6 lg:sticky lg:top-12 lg:order-2 lg:w-72">
 						<span class="mb-4 flex items-center gap-2 text-sm font-semibold text-foreground">
 							<Icon name="mdi:information-outline" class="h-4 w-4 text-muted-foreground" />
 							<span>{t("detail.summary")}</span>

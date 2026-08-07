@@ -46,7 +46,7 @@ const websiteLabel = getUrlLabel(data.website);
 	<BackButton href="/projects" variant="outline" label="Проекты" />
 	<main class="mx-auto w-full max-w-4xl space-y-6">
 		<header
-			class="corner-squircle rounded-4xl bg-surface p-5 shadow-2xs ring ring-border-muted sm:p-6"
+			class="corner-squircle rounded-catalog bg-surface p-5 shadow-2xs ring ring-border-muted sm:p-6"
 		>
 			<div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
 					<div class="flex min-w-0 max-w-full items-center gap-4">
@@ -54,13 +54,13 @@ const websiteLabel = getUrlLabel(data.website);
 						<Image
 							src={logo}
 							alt={`Логотип ${data.title}`}
-							class="size-20 shrink-0 rounded-3xl bg-white object-contain p-1.5 ring ring-border-muted"
+							class="size-20 shrink-0 rounded-card bg-white object-contain p-1.5 ring ring-border-muted"
 							widths={[80, 160]}
 							sizes="5rem"
 						/>
 					) : (
 						<div
-							class="size-20 shrink-0 rounded-3xl ring ring-inset ring-white/15"
+							class="size-20 shrink-0 rounded-card ring ring-inset ring-white/15"
 							style={`background:${getProjectGradient(data.title)}`}
 							aria-hidden="true"
 						/>
@@ -101,7 +101,7 @@ const websiteLabel = getUrlLabel(data.website);
 								href={data.orderUrl}
 								target="_blank"
 								rel="noreferrer noopener"
-								class="inline-flex items-center rounded-2xl corner-squircle bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground no-underline transition hover:bg-primary/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+								class="inline-flex items-center rounded-control corner-squircle bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground no-underline transition hover:bg-primary/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
 							>
 								{data.orderLabel ?? "Заказать"}
 							</a>
@@ -113,7 +113,7 @@ const websiteLabel = getUrlLabel(data.website);
 								href={data.instagram}
 								target="_blank"
 								rel="noreferrer noopener"
-								class="inline-flex items-center gap-2 rounded-2xl corner-squircle bg-transparent px-4 py-2 text-sm font-semibold text-primary/80 no-underline ring ring-inset ring-primary/10 transition hover:bg-primary/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+								class="inline-flex items-center gap-2 rounded-control corner-squircle bg-transparent px-4 py-2 text-sm font-semibold text-primary/80 no-underline ring ring-inset ring-primary/10 transition hover:bg-primary/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
 							>
 								<Icon name="mdi:instagram" class="size-4" aria-hidden="true" />
 								Instagram
@@ -128,7 +128,7 @@ const websiteLabel = getUrlLabel(data.website);
 			<Image
 				src={image}
 				alt={`Фото проекта ${data.title}`}
-				class="corner-squircle max-h-[34rem] w-full rounded-4xl object-cover shadow-2xs ring ring-border-muted"
+				class="corner-squircle max-h-[34rem] w-full rounded-catalog object-cover shadow-2xs ring ring-border-muted"
 				widths={[640, 960, 1280]}
 				sizes="(min-width: 1024px) 56rem, 100vw"
 			/>
@@ -136,7 +136,7 @@ const websiteLabel = getUrlLabel(data.website);
 
 		<section class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_16rem]" aria-label="Описание проекта">
 			<article
-				class="corner-squircle rounded-4xl bg-surface p-5 shadow-2xs ring ring-border-muted sm:p-6"
+				class="corner-squircle rounded-catalog bg-surface p-5 shadow-2xs ring ring-border-muted sm:p-6"
 			>
 				<h2 class="text-xl font-bold tracking-tight text-foreground">Описание</h2>
 				<p class="mt-3 text-sm leading-6 text-muted-foreground sm:text-base">
@@ -150,7 +150,7 @@ const websiteLabel = getUrlLabel(data.website);
 			</article>
 
 			<aside
-				class="corner-squircle h-fit rounded-4xl bg-surface p-5 shadow-2xs ring ring-border-muted sm:p-6"
+				class="corner-squircle h-fit rounded-catalog bg-surface p-5 shadow-2xs ring ring-border-muted sm:p-6"
 			>
 				<h2 class="text-sm font-bold uppercase tracking-wide text-muted-foreground">Теги</h2>
 				<ul class="mt-4 flex flex-wrap gap-2" aria-label={`Теги ${data.title}`}>

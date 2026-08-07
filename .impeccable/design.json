@@ -159,11 +159,14 @@
       }
     },
     "shape": {
-      "small": "8px",
-      "medium": "12px",
-      "control": "16px",
-      "feature": "24px",
-      "catalogCard": "32px",
+      "scale": "Four semantic steps, used as Tailwind utilities. Never write a raw rounded-2xl/3xl/4xl — those are the default preset's numbers, not the meaning.",
+      "micro": "rounded-micro — 8px — badges, chips, inputs, small icon buttons",
+      "control": "rounded-control — 16px — buttons, menu items, toolbars, popovers",
+      "card": "rounded-card — 24px — panels, sections, ordinary cards, marketing blocks",
+      "catalog": "rounded-catalog — 32px — center cards and other large catalog surfaces",
+      "full": "rounded-full stays raw: a pill is not a step on the scale and must not move with the preset, or toggles and avatars stop being circles",
+      "followsAccent": "Radius is part of the accent preset, not a constant — the same way data-accent already swaps the dark neutrals. Values above are the `green` default. violet: 8/12/18/24. blue: 6/8/12/16. The scale is shared by light and dark: contrast depends on the background, shape does not. Steps compress non-uniformly — large radii give up proportionally more, since a flat multiplier would flatten `micro` to a square corner while barely touching `catalog`.",
+      "exceptions": "src/pages/centers/print.astro keeps raw radii — paper must not shift with a screen preset.",
       "plugin": "@toolwind/corner-shape"
     },
     "shadows": [
@@ -261,16 +264,16 @@
       "kind": "stats",
       "refersTo": "CatalogStats",
       "description": "Three compact stat pills with icons, tabular numbers, muted labels, and a brief focus animation.",
-      "html": "<dl class=\"stats-focus grid w-full max-w-md grid-cols-3 gap-2\"><div class=\"rounded-2xl corner-squircle bg-surface px-2.5 py-2 ring ring-depth-100/60\"><dd>128</dd><dt>Centers</dt></div></dl>",
-      "css": ".stats-focus__item { border-radius: 16px; background: var(--color-surface); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-depth-100) 60%, transparent); }"
+      "html": "<dl class=\"stats-focus grid w-full max-w-md grid-cols-3 gap-2\"><div class=\"rounded-control corner-squircle bg-surface px-2.5 py-2 ring ring-depth-100/60\"><dd>128</dd><dt>Centers</dt></div></dl>",
+      "css": ".stats-focus__item { border-radius: var(--radius-control, 16px); background: var(--color-surface); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-depth-100) 60%, transparent); }"
     },
     {
       "name": "Search Screenshot Section",
       "kind": "feature-section",
       "refersTo": "homepage-search-section",
       "description": "Localized product-image section using real search screenshots beside concise explanatory copy.",
-      "html": "<section class=\"grid overflow-hidden rounded-3xl bg-surface shadow-2xl shadow-shade/10 dark:shadow-shade/40 md:grid-cols-2\"><div><h2>Search title</h2><p>Search copy</p></div><img alt=\"Localized search interface\" /></section>",
-      "css": ".search-feature { overflow: hidden; border-radius: 24px; background: var(--color-surface); box-shadow: 0 25px 50px -12px color-mix(in oklab, var(--color-shade) 10%, transparent); }"
+      "html": "<section class=\"grid overflow-hidden rounded-card bg-surface shadow-2xl shadow-shade/10 dark:shadow-shade/40 md:grid-cols-2\"><div><h2>Search title</h2><p>Search copy</p></div><img alt=\"Localized search interface\" /></section>",
+      "css": ".search-feature { overflow: hidden; border-radius: var(--radius-card, 24px); background: var(--color-surface); box-shadow: 0 25px 50px -12px color-mix(in oklab, var(--color-shade) 10%, transparent); }"
     },
     {
       "name": "Primary Button",
@@ -278,7 +281,7 @@
       "refersTo": "button-primary",
       "description": "Compact primary action for clear navigation or active commands.",
       "html": "<button class=\"ds-button-primary\">Open catalog</button>",
-      "css": ".ds-button-primary { display: inline-flex; align-items: center; gap: 6px; border: 0; border-radius: 16px; background: var(--color-primary, #1d1d1d); color: var(--color-primary-foreground, #ffffff); padding: 8px 16px; font: 500 14px/1.25 'Twemoji Country Flags', 'Tatarverse Sans', ui-sans-serif, system-ui, sans-serif; cursor: pointer; transition: background-color 150ms ease, color 150ms ease; } .ds-button-primary:focus-visible { outline: 2px solid var(--color-primary, #1d1d1d); outline-offset: 2px; }"
+      "css": ".ds-button-primary { display: inline-flex; align-items: center; gap: 6px; border: 0; border-radius: var(--radius-control, 16px); background: var(--color-primary, #1d1d1d); color: var(--color-primary-foreground, #ffffff); padding: 8px 16px; font: 500 14px/1.25 'Twemoji Country Flags', 'Tatarverse Sans', ui-sans-serif, system-ui, sans-serif; cursor: pointer; transition: background-color 150ms ease, color 150ms ease; } .ds-button-primary:focus-visible { outline: 2px solid var(--color-primary, #1d1d1d); outline-offset: 2px; }"
     },
     {
       "name": "Ghost Button",
@@ -286,7 +289,7 @@
       "refersTo": "button-ghost",
       "description": "Quiet navigation action used in header and mobile menu links.",
       "html": "<button class=\"ds-button-ghost\">Sources</button>",
-      "css": ".ds-button-ghost { display: inline-flex; align-items: center; gap: 6px; border: 0; border-radius: 16px; background: transparent; color: var(--color-primary, #1d1d1d); padding: 8px 16px; font: 500 14px/1.25 'Twemoji Country Flags', 'Tatarverse Sans', ui-sans-serif, system-ui, sans-serif; cursor: pointer; transition: background-color 150ms ease, color 150ms ease; } .ds-button-ghost:hover { background: color-mix(in srgb, var(--color-primary, #1d1d1d) 5%, transparent); } .ds-button-ghost:focus-visible { outline: 2px solid var(--color-primary, #1d1d1d); outline-offset: 2px; }"
+      "css": ".ds-button-ghost { display: inline-flex; align-items: center; gap: 6px; border: 0; border-radius: var(--radius-control, 16px); background: transparent; color: var(--color-primary, #1d1d1d); padding: 8px 16px; font: 500 14px/1.25 'Twemoji Country Flags', 'Tatarverse Sans', ui-sans-serif, system-ui, sans-serif; cursor: pointer; transition: background-color 150ms ease, color 150ms ease; } .ds-button-ghost:hover { background: color-mix(in srgb, var(--color-primary, #1d1d1d) 5%, transparent); } .ds-button-ghost:focus-visible { outline: 2px solid var(--color-primary, #1d1d1d); outline-offset: 2px; }"
     },
     {
       "name": "Filter Chip",
@@ -294,7 +297,7 @@
       "refersTo": "chip-active",
       "description": "Compact filter control with a clear active state.",
       "html": "<button class=\"ds-filter-chip\" data-active=\"true\"><span>All</span><span class=\"ds-filter-count\">128</span></button>",
-      "css": ".ds-filter-chip { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; border: 0; border-radius: 16px; background: var(--color-muted, #f0f0f0); color: var(--color-muted-foreground, #6b6b6b); padding: 6px 10px; font: 500 14px/1.25 'Twemoji Country Flags', 'Tatarverse Sans', ui-sans-serif, system-ui, sans-serif; cursor: pointer; transition: background-color 150ms ease, color 150ms ease; } .ds-filter-chip[data-active='true'] { background: var(--color-primary, #1d1d1d); color: var(--color-primary-foreground, #ffffff); }"
+      "css": ".ds-filter-chip { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; border: 0; border-radius: var(--radius-control, 16px); background: var(--color-muted, #f0f0f0); color: var(--color-muted-foreground, #6b6b6b); padding: 6px 10px; font: 500 14px/1.25 'Twemoji Country Flags', 'Tatarverse Sans', ui-sans-serif, system-ui, sans-serif; cursor: pointer; transition: background-color 150ms ease, color 150ms ease; } .ds-filter-chip[data-active='true'] { background: var(--color-primary, #1d1d1d); color: var(--color-primary-foreground, #ffffff); }"
     },
     {
       "name": "Search Field",
@@ -302,7 +305,7 @@
       "refersTo": "Search",
       "description": "Primary catalog search field with soft ring and visible focus.",
       "html": "<label class=\"ds-search\"><input placeholder=\"Search centers\" /></label>",
-      "css": ".ds-search input { width: 100%; border: 0; border-radius: 16px; background: var(--color-surface, #ffffff); color: var(--color-surface-foreground, #1d1d1d); padding: 12px 16px; font: 400 14px/1.25 'Twemoji Country Flags', 'Tatarverse Sans', ui-sans-serif, system-ui, sans-serif; box-shadow: inset 0 0 0 1px var(--color-depth-100, #e6e6e6); outline: none; } .ds-search input::placeholder { color: var(--color-subtle-foreground, #8f8f8f); } .ds-search input:focus { box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--color-primary, #1d1d1d) 25%, transparent); }"
+      "css": ".ds-search input { width: 100%; border: 0; border-radius: var(--radius-control, 16px); background: var(--color-surface, #ffffff); color: var(--color-surface-foreground, #1d1d1d); padding: 12px 16px; font: 400 14px/1.25 'Twemoji Country Flags', 'Tatarverse Sans', ui-sans-serif, system-ui, sans-serif; box-shadow: inset 0 0 0 1px var(--color-depth-100, #e6e6e6); outline: none; } .ds-search input::placeholder { color: var(--color-subtle-foreground, #8f8f8f); } .ds-search input:focus { box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--color-primary, #1d1d1d) 25%, transparent); }"
     },
     {
       "name": "Center Card",
@@ -310,14 +313,14 @@
       "refersTo": "CardItem",
       "description": "Signature catalog list item for center pages. It keeps title, type, category, location, and summary readable in a quiet neutral surface.",
       "html": "<article class=\"ds-center-card\"><p>Location metadata</p><h3>Example Tatar Cultural Center</h3></article>",
-      "css": ".ds-center-card { overflow: hidden; border-radius: 32px; background: var(--color-muted, #f0f0f0); color: var(--color-surface-foreground, #1d1d1d); padding: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.04), inset 0 0 0 1px color-mix(in srgb, var(--color-depth-100, #e6e6e6) 40%, transparent); } .ds-center-card h3 { overflow-wrap: anywhere; color: var(--color-surface-foreground, #1d1d1d); font: 700 16px/1.375 'Twemoji Country Flags', 'Tatarverse Sans', ui-sans-serif, system-ui, sans-serif; letter-spacing: -0.015em; }"
+      "css": ".ds-center-card { overflow: hidden; border-radius: var(--radius-catalog, 32px); background: var(--color-muted, #f0f0f0); color: var(--color-surface-foreground, #1d1d1d); padding: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.04), inset 0 0 0 1px color-mix(in srgb, var(--color-depth-100, #e6e6e6) 40%, transparent); } .ds-center-card h3 { overflow-wrap: anywhere; color: var(--color-surface-foreground, #1d1d1d); font: 700 16px/1.375 'Twemoji Country Flags', 'Tatarverse Sans', ui-sans-serif, system-ui, sans-serif; letter-spacing: -0.015em; }"
     },
     {
       "name": "MDX Surface",
       "kind": "content",
       "refersTo": "MDX",
       "description": "Readable factual prose surface with typography tokens, restrained border, and quiet lift.",
-      "html": "<article class=\"prose rounded-2xl border border-border-muted bg-surface p-8 shadow-2xs ring ring-depth-100/40\">Content</article>",
+      "html": "<article class=\"prose rounded-control border border-border-muted bg-surface p-8 shadow-2xs ring ring-depth-100/40\">Content</article>",
       "css": ".prose { --tw-prose-body: var(--color-muted-foreground); --tw-prose-headings: var(--color-foreground); --tw-prose-links: var(--color-link); }"
     }
   ],

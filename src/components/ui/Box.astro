@@ -23,10 +23,10 @@ const {
 } = Astro.props;
 
 const base = {
-	outer: "max-w-full rounded-4xl corner-squircle",
-	middle: "rounded-4xl corner-squircle bg-depth-100/30 p-2 shadow-2xs ring ring-depth-100/70",
+	outer: "max-w-full rounded-catalog corner-squircle",
+	middle: "rounded-catalog corner-squircle bg-depth-100/30 p-2 shadow-2xs ring ring-depth-100/70",
 	inner:
-		"rounded-4xl corner-squircle bg-surface p-6 text-surface-foreground shadow-2xs ring ring-border-muted",
+		"rounded-catalog corner-squircle bg-surface p-6 text-surface-foreground shadow-2xs ring ring-border-muted",
 };
 
 const variants = {
@@ -53,7 +53,7 @@ const variants = {
 	squircle: {
 		outer: "corner-shape",
 		middle: "corner-shape",
-		inner: "rounded-3xl corner-shape bg-linear-to-t from-surface to-surface-muted/40",
+		inner: "rounded-card corner-shape bg-linear-to-t from-surface to-surface-muted/40",
 	},
 } as const;
 

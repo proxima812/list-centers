@@ -13,7 +13,7 @@ const t = useTranslations(locale);
 	data-voice-listening={t("list.voiceListening")}
 	data-voice-error={t("list.voiceError")}
 	role="search"
-	class="relative z-40 mb-6 flex items-center gap-1 rounded-4xl corner-squircle bg-surface p-1 shadow-2xs has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-accent lg:mb-10"
+	class="relative z-40 mb-6 flex items-center gap-1 rounded-catalog corner-squircle bg-surface p-1 shadow-2xs has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-accent lg:mb-10"
 >
 	<label class="relative z-50 min-w-0 flex-1" for="centers-search">
 		<span class="sr-only">{t("list.search.placeholder")}</span>
@@ -85,7 +85,7 @@ const t = useTranslations(locale);
 		id="search-suggestions"
 		data-search-suggestions
 		role="listbox"
-		class="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-40 hidden max-h-80 overflow-y-auto rounded-2xl corner-squircle bg-surface p-1.5 text-sm overlay-lift ring ring-depth-100"
+		class="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-40 hidden max-h-80 overflow-y-auto rounded-control corner-squircle bg-surface p-1.5 text-sm overlay-lift ring ring-depth-100"
 	>
 	</ul>
 </form>

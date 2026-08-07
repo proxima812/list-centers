@@ -555,7 +555,7 @@ export function initCardsToolbar() {
 			option.role = "option";
 			option.dataset.searchSuggestion = value;
 			option.className =
-				"cursor-pointer rounded-xl px-3 py-2 text-surface-foreground transition hover:bg-muted aria-selected:bg-muted";
+				"cursor-pointer rounded-control px-3 py-2 text-surface-foreground transition hover:bg-muted aria-selected:bg-muted";
 			option.textContent = value;
 			option.addEventListener("mousedown", (event) => {
 				event.preventDefault();

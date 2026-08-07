@@ -168,12 +168,12 @@ const projectCards = projects.map((project) => ({
 			{
 				projectCards.map(({ entry: project, detailHref, logo, websiteLabel }) => (
 					<article
-						class="project-card corner-squircle relative flex h-full flex-col gap-4 rounded-4xl bg-surface p-5 text-surface-foreground shadow-2xs ring ring-border-muted transition hover:bg-primary/5 hover:ring-primary/30 sm:p-6"
+						class="project-card corner-squircle relative flex h-full flex-col gap-4 rounded-catalog bg-surface p-5 text-surface-foreground shadow-2xs ring ring-border-muted transition hover:bg-primary/5 hover:ring-primary/30 sm:p-6"
 						data-category={project.data.category}
 					>
 						<a
 							href={detailHref}
-							class="absolute inset-0 z-0 rounded-4xl corner-squircle"
+							class="absolute inset-0 z-0 rounded-catalog corner-squircle"
 							aria-label={project.data.title}
 						>
 							<span class="sr-only">{project.data.title}</span>
@@ -183,14 +183,14 @@ const projectCards = projects.map((project) => ({
 								<Image
 									src={logo}
 									alt={`Логотип ${project.data.title}`}
-									class="size-16 shrink-0 rounded-2xl bg-white object-contain p-1 ring ring-border-muted"
+									class="size-16 shrink-0 rounded-control bg-white object-contain p-1 ring ring-border-muted"
 									widths={[64, 128]}
 									sizes="4rem"
 									loading="lazy"
 								/>
 							) : (
 								<div
-									class="size-16 shrink-0 rounded-2xl ring ring-inset ring-white/15"
+									class="size-16 shrink-0 rounded-control ring ring-inset ring-white/15"
 									style={`background:${getProjectGradient(project.data.title)}`}
 									aria-hidden="true"
 								/>
@@ -235,7 +235,7 @@ const projectCards = projects.map((project) => ({
 						<div class="relative z-10 mt-auto flex flex-wrap gap-2">
 							<a
 								href={detailHref}
-								class="group/btn inline-flex items-center gap-2 rounded-2xl corner-squircle bg-primary px-4 py-2 text-sm font-bold tracking-tight text-primary-foreground no-underline transition hover:bg-primary/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+								class="group/btn inline-flex items-center gap-2 rounded-control corner-squircle bg-primary px-4 py-2 text-sm font-bold tracking-tight text-primary-foreground no-underline transition hover:bg-primary/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
 							>
 								Подробнее
 								<Icon
@@ -249,7 +249,7 @@ const projectCards = projects.map((project) => ({
 									href={project.data.instagram}
 									target="_blank"
 									rel="noreferrer noopener"
-									class="inline-flex items-center gap-2 rounded-2xl corner-squircle bg-transparent px-4 py-2 text-sm font-semibold text-primary/80 no-underline ring ring-inset ring-primary/10 transition hover:bg-rose-500/5 hover:text-rose-600 hover:ring-rose-500/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+									class="inline-flex items-center gap-2 rounded-control corner-squircle bg-transparent px-4 py-2 text-sm font-semibold text-primary/80 no-underline ring ring-inset ring-primary/10 transition hover:bg-rose-500/5 hover:text-rose-600 hover:ring-rose-500/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
 								>
 									<Icon name="mdi:instagram" class="size-4 text-rose-500" aria-hidden="true" />
 									Instagram

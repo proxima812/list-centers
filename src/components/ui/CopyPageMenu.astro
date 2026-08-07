@@ -22,10 +22,10 @@ const aiPlatforms = [
 ---
 
 <div class={cn("relative inline-flex", className)} data-copy-page-menu data-locale={locale}>
-	<div class="group relative flex rounded-lg bg-muted">
+	<div class="group relative flex rounded-micro bg-muted">
 		<button
 			type="button"
-			class="inline-flex text-sm h-9 max-w-fit items-center gap-1.5 rounded-l-lg pl-2.5 pr-2.5 text-[0.8rem] font-medium text-foreground transition-colors hover:bg-border/60"
+			class="inline-flex text-sm h-9 max-w-fit items-center gap-1.5 rounded-l-micro pl-2.5 pr-2.5 text-[0.8rem] font-medium text-foreground transition-colors hover:bg-border/60"
 			data-copy-btn
 			aria-label={t("copy.copyPageUrl")}
 		>
@@ -59,7 +59,7 @@ const aiPlatforms = [
 
 		<button
 			type="button"
-			class="inline-flex size-9 shrink-0 items-center justify-center rounded-r-lg text-foreground transition-colors hover:bg-border/60"
+			class="inline-flex size-9 shrink-0 items-center justify-center rounded-r-micro text-foreground transition-colors hover:bg-border/60"
 			aria-haspopup="menu"
 			aria-expanded="false"
 			aria-controls="copy-page-dropdown"
@@ -82,7 +82,7 @@ const aiPlatforms = [
 			id="copy-page-dropdown"
 			role="menu"
 			aria-label={t("copy.openPageIn")}
-			class="absolute md:right-0 top-[calc(100%+0.375rem)] z-50 hidden max-h-[min(70vh,30rem)] md:min-w-[220px] w-[250px] -right-0 overflow-y-auto rounded-lg border border-border bg-surface p-1 overlay-lift"
+			class="absolute md:right-0 top-[calc(100%+0.375rem)] z-50 hidden max-h-[min(70vh,30rem)] md:min-w-[220px] w-[250px] -right-0 overflow-y-auto rounded-control border border-border bg-surface p-1 overlay-lift"
 			data-dropdown
 		>
 			{
@@ -92,7 +92,7 @@ const aiPlatforms = [
 						role="menuitem"
 						target="_blank"
 						rel="noopener noreferrer"
-						class="flex w-full items-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm text-foreground hover:bg-muted focus-visible:bg-muted"
+						class="flex w-full items-center gap-2.5 rounded-micro px-2.5 py-1.5 text-sm text-foreground hover:bg-muted focus-visible:bg-muted"
 						data-ai-platform
 						data-prompt-base={platform.base}
 					>
