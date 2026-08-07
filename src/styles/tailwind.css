@@ -285,28 +285,61 @@
   --color-mark-tint: hsl(263 78% 62%);
 }
 
+[data-accent="red"] {
+  --color-accent: hsl(0 72% 52.5%);
+  --color-accent-foreground: hsl(0 0% 100%);
+  --color-accent-vivid: hsl(0 80% 56.5%);
+  --color-accent-glow: hsl(0 85% 72%);
+  --color-mark-tint: hsl(0 78% 62%);
+}
+
+/* Оранжевый сидит заметно ниже остальных по светлоте (39.5% против ~50%):
+   на этом тоне жёлто-красный сектор набирает яркость быстрее всего, и на
+   белом более светлый вариант проваливает 4.5:1 для мелкого UI. */
+[data-accent="orange"] {
+  --color-accent: hsl(25 88% 39.5%);
+  --color-accent-foreground: hsl(0 0% 100%);
+  --color-accent-vivid: hsl(25 96% 43.5%);
+  --color-accent-glow: hsl(30 92% 60%);
+  --color-mark-tint: hsl(28 90% 52%);
+}
+
+[data-accent="pink"] {
+  --color-accent: hsl(335 72% 50.5%);
+  --color-accent-foreground: hsl(0 0% 100%);
+  --color-accent-vivid: hsl(335 80% 54.5%);
+  --color-accent-glow: hsl(335 88% 72%);
+  --color-mark-tint: hsl(335 78% 60%);
+}
+
 /* ─── Геометрия под пресет акцента ────────────────────────────────────────
    Шкала одна на обе темы: контраст зависит от фона, форма — нет.
 
-   green — дефолт, щедрые углы из @theme; здесь переопределять нечего.
+   Регистров формы три, а пресетов шесть — цвет различает их сам, и шесть
+   разных геометрий превратили бы шкалу в набор случайностей.
 
-   blue — малый радиус: регистр Uber Base строится на плотных границах и
-   чистом белом тексте, крупная скругленность его размывает.
+   green, orange — дефолт, щедрые углы из @theme; переопределять нечего.
 
-   violet — средний: Vercel собраннее зелёного, но не такой строгий, как
-   Uber Base.
+   blue, red — малый радиус: регистр Uber Base строится на плотных границах и
+   чистом белом тексте, крупная скругленность его размывает. Красный садится
+   сюда же — это самый громкий акцент, и строгая форма его уравновешивает.
+
+   violet, pink — средний: Vercel собраннее зелёного, но не такой строгий,
+   как Uber Base.
 
    Ступени сжимаются непропорционально — крупные радиусы теряют больше.
    Равномерный коэффициент делал бы micro на 4px неотличимым от прямого угла
    и при этом почти не трогал catalog, где смена формы как раз и читается. */
-[data-accent="blue"] {
+[data-accent="blue"],
+[data-accent="red"] {
   --radius-micro: 6px;
   --radius-control: 8px;
   --radius-card: 12px;
   --radius-catalog: 16px;
 }
 
-[data-accent="violet"] {
+[data-accent="violet"],
+[data-accent="pink"] {
   --radius-micro: 8px;
   --radius-control: 12px;
   --radius-card: 18px;
@@ -335,6 +368,30 @@
   --color-accent-vivid: hsl(263 82% 70%);
   --color-accent-glow: hsl(263 90% 82%);
   --color-mark-tint: hsl(263 88% 80%);
+}
+
+.dark[data-accent="red"] {
+  --color-accent: hsl(0 80% 67.5%);
+  --color-accent-foreground: hsl(0 0% 4%);
+  --color-accent-vivid: hsl(0 85% 67%);
+  --color-accent-glow: hsl(0 90% 80%);
+  --color-mark-tint: hsl(0 85% 76%);
+}
+
+.dark[data-accent="orange"] {
+  --color-accent: hsl(30 90% 51.5%);
+  --color-accent-foreground: hsl(0 0% 11%);
+  --color-accent-vivid: hsl(30 95% 52%);
+  --color-accent-glow: hsl(35 95% 66%);
+  --color-mark-tint: hsl(32 92% 62%);
+}
+
+.dark[data-accent="pink"] {
+  --color-accent: hsl(335 85% 67.5%);
+  --color-accent-foreground: hsl(0 0% 6%);
+  --color-accent-vivid: hsl(335 88% 67%);
+  --color-accent-glow: hsl(335 92% 80%);
+  --color-mark-tint: hsl(335 88% 76%);
 }
 
 /* ─── Тёмные нейтрали под пресет акцента ──────────────────────────────────
@@ -406,6 +463,99 @@
   --color-depth-500: hsl(0 0% 55%);
   --color-depth-600: hsl(0 0% 69%);
   --color-depth-700: hsl(0 0% 85%);
+}
+
+/* red — самый глубокий регистр: холст ниже всех остальных (4%), поверхности
+   подняты скупо, рамки тихие. Красный акцент сам по себе громкий, и на светлой
+   тёмной «бумаге» он начинает звенеть — фон приходится увести. */
+.dark[data-accent="red"] {
+  --color-background: hsl(0 0% 4%);
+  --color-foreground: hsl(0 0% 96%);
+  --color-muted: hsl(0 0% 13%);
+  --color-muted-foreground: hsl(0 0% 74%);
+  --color-subtle: hsl(0 0% 19%);
+  --color-subtle-foreground: hsl(0 0% 60%);
+  --color-surface: hsl(0 0% 12%);
+  --color-surface-foreground: hsl(0 0% 96%);
+  --color-surface-muted: hsl(0 0% 16%);
+  --color-border: hsl(0 0% 22%);
+  --color-border-muted: hsl(0 0% 15%);
+  --color-ring: hsl(0 0% 44%);
+  --color-primary: hsl(0 0% 96%);
+  --color-primary-foreground: hsl(0 0% 4%);
+  --color-link: hsl(0 0% 96%);
+  --color-link-decoration: hsl(0 0% 44%);
+
+  --color-depth-100: hsl(0 0% 18%);
+  --color-depth-200: hsl(0 0% 23%);
+  --color-depth-300: hsl(0 0% 29%);
+  --color-depth-400: hsl(0 0% 38%);
+  --color-depth-500: hsl(0 0% 57%);
+  --color-depth-600: hsl(0 0% 71%);
+  --color-depth-700: hsl(0 0% 86%);
+}
+
+/* orange — самая светлая тёмная тема: холст 11%, не чёрный вообще. Оранжевый
+   акцент — единственный, чей светлый вариант пришлось увести к 39.5%, и на
+   чистом чёрном контраст между тёплым акцентом и холодным нулём читается как
+   ошибка. Приподнятый уголь его успокаивает.
+
+   Обратная сторона: `subtle-foreground` здесь 68%, а не привычные 63% —
+   на более светлом `bg-subtle` (25%) значения ниже проваливали AA. */
+.dark[data-accent="orange"] {
+  --color-background: hsl(0 0% 11%);
+  --color-foreground: hsl(0 0% 92%);
+  --color-muted: hsl(0 0% 20%);
+  --color-muted-foreground: hsl(0 0% 76%);
+  --color-subtle: hsl(0 0% 25%);
+  --color-subtle-foreground: hsl(0 0% 68%);
+  --color-surface: hsl(0 0% 20%);
+  --color-surface-foreground: hsl(0 0% 92%);
+  --color-surface-muted: hsl(0 0% 24%);
+  --color-border: hsl(0 0% 32%);
+  --color-border-muted: hsl(0 0% 25%);
+  --color-ring: hsl(0 0% 50%);
+  --color-primary: hsl(0 0% 92%);
+  --color-primary-foreground: hsl(0 0% 11%);
+  --color-link: hsl(0 0% 92%);
+  --color-link-decoration: hsl(0 0% 50%);
+
+  --color-depth-100: hsl(0 0% 26%);
+  --color-depth-200: hsl(0 0% 31%);
+  --color-depth-300: hsl(0 0% 38%);
+  --color-depth-400: hsl(0 0% 47%);
+  --color-depth-500: hsl(0 0% 62%);
+  --color-depth-600: hsl(0 0% 75%);
+  --color-depth-700: hsl(0 0% 87%);
+}
+
+/* pink — средний регистр между red и базовым green: холст 6%, поверхности
+   подняты обычным шагом, рамки умеренные. */
+.dark[data-accent="pink"] {
+  --color-background: hsl(0 0% 6%);
+  --color-foreground: hsl(0 0% 94%);
+  --color-muted: hsl(0 0% 15%);
+  --color-muted-foreground: hsl(0 0% 73%);
+  --color-subtle: hsl(0 0% 21%);
+  --color-subtle-foreground: hsl(0 0% 63%);
+  --color-surface: hsl(0 0% 15%);
+  --color-surface-foreground: hsl(0 0% 94%);
+  --color-surface-muted: hsl(0 0% 19%);
+  --color-border: hsl(0 0% 26%);
+  --color-border-muted: hsl(0 0% 18%);
+  --color-ring: hsl(0 0% 46%);
+  --color-primary: hsl(0 0% 94%);
+  --color-primary-foreground: hsl(0 0% 6%);
+  --color-link: hsl(0 0% 94%);
+  --color-link-decoration: hsl(0 0% 46%);
+
+  --color-depth-100: hsl(0 0% 20%);
+  --color-depth-200: hsl(0 0% 26%);
+  --color-depth-300: hsl(0 0% 33%);
+  --color-depth-400: hsl(0 0% 45%);
+  --color-depth-500: hsl(0 0% 60%);
+  --color-depth-600: hsl(0 0% 73%);
+  --color-depth-700: hsl(0 0% 84%);
 }
 
 @layer base {

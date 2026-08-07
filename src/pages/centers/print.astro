@@ -5,9 +5,11 @@
 // печатному листу всё это только мешает. Тёмная тема в проекте включается
 // классом `.dark` (см. @custom-variant в tailwind.css), поэтому без скрипта
 // Layout страница всегда светлая и токены можно использовать как обычно.
-// Акцент (green/blue/violet) здесь не используется сознательно: страница —
-// про бумагу, поэтому вся экранная часть тоже монохромная, на нейтральных
-// токенах foreground/background/border.
+// Акцент здесь не используется сознательно: страница — про бумагу, поэтому
+// вся экранная часть тоже монохромная, на нейтральных токенах
+// foreground/background/border. По той же причине радиусы остаются сырыми
+// (rounded-2xl, а не rounded-control): бумага не должна ехать вместе с
+// экранным пресетом.
 import { config } from "@/config";
 import { createCenterRouteIdMap, getCenterPath } from "@/utils/centers";
 import { getCollection } from "astro:content";

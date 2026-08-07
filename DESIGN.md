@@ -146,12 +146,17 @@ The base palette is neutral and semantic. It is defined in `src/styles/tailwind.
 
 ### Themes
 
-The site ships **light and dark** themes plus **three accent palettes**. Both are user
+The site ships **light and dark** themes plus **six accent palettes**. Both are user
 choices, persisted in `localStorage` and applied by an inline script in `<head>` before
 first paint (`src/layouts/Layout.astro`).
 
 - Theme: `.dark` class on `<html>`, chosen via `light` / `dark` / `system`.
-- Accent: `data-accent` on `<html>` — `green` (default), `blue`, `violet`.
+- Accent: `data-accent` on `<html>` — `green` (default), `blue`, `violet`, `red`,
+  `orange`, `pink`.
+
+The preset list lives in exactly one place, `src/utils/accents.ts`, and both the header
+dropdown and the mobile toggle read it. Adding a palette means editing that file plus the
+`[data-accent]` blocks in `tailwind.css` — never a second copy of the swatch array.
 
 Every token is declared once in `@theme` (light values) and overridden in `.dark`.
 Accent presets are `[data-accent="…"]` and `.dark[data-accent="…"]` blocks. **Light and
@@ -159,23 +164,31 @@ dark values of an accent are deliberately different** — a single hue cannot cl
 contrast threshold on both a white and a near-black background.
 
 **In dark theme the accent also swaps the neutrals.** The same grey reads differently
-under green, blue, and violet, so each preset ships its own dark paper. Light theme is
-shared by all three — there the accent changes nothing but the accent tokens.
+under each hue, so every preset ships its own dark paper. Light theme is shared by all
+six — there the accent changes nothing but the accent tokens.
 
 - `green` — the base `.dark` set: soft charcoal (`7%` page, `15%` surface), no pure black.
 - `violet` — Vercel register: pure black page, surfaces barely lifted off it (`4%`/`10%`),
   quiet borders (`18%`), ink at `93%` instead of white. Hierarchy comes from type, not rules.
 - `blue` — Uber Base register: the same black page, but visibly lifted surfaces
   (`8%`/`12%`), denser borders (`20%`), and pure-white ink. Louder and more contrasty.
+- `red` — the deepest register: page at `4%`, surfaces raised sparingly (`12%`), quiet
+  borders. Red is the loudest accent in the set and a lighter paper makes it ring.
+- `orange` — the lightest dark theme: page at `11%`, not black at all. Orange is the one
+  hue whose light value had to drop to `39.5%` to clear AA, and against a pure-black page
+  the warm accent against a cold zero reads as a mistake. Its `subtle-foreground` is `68%`
+  rather than the usual `63%` — on the lighter `bg-subtle` (`25%`) anything less fails AA.
+- `pink` — the middle register between `red` and base `green`: page `6%`, ordinary surface
+  step, moderate borders.
 
 **The page → surface step is the main depth signal in dark, and it is deliberately larger
 than its light counterpart.** Light theme lets a shadow finish the job; dark theme has no
 usable shadow, so the step has to carry it alone. Measured in perceptual lightness
-(oklch `L`), all three dark palettes now clear `+8`, matching HeroUI's `12% → 21%`. Steps
+(oklch `L`), all six dark palettes clear `+8`, matching HeroUI's `12% → 21%`. Steps
 below that read as flat. Deeper nesting needs far less — `surface → surface-muted` is
 about `+4`.
 
-All six theme × accent combinations are verified at >=4.5:1 for body text, footer text,
+All twelve theme × accent combinations are verified at >=4.5:1 for body text, footer text,
 and the accent itself against its own background. Watch `subtle-foreground` in particular:
 it is the dimmest text token and it lands on `bg-subtle`, the lightest fill, so that pair
 is the binding constraint whenever a dark surface is raised.
@@ -191,7 +204,7 @@ prose, footer links, or center detail pages unless a specific design pass asks f
 
 `accent-soft` / `accent-soft-hover` / `accent-soft-foreground` are the quiet fill of the
 accent — currently only the hero badge. They are not authored per preset: each is a
-`color-mix()` over the current `accent` and neutrals, so all six theme × accent pairs
+`color-mix()` over the current `accent` and neutrals, so all twelve theme × accent pairs
 follow for free.
 
 Two things are deliberate there. The text is **not** pure `accent` — on a 12% fill light
@@ -273,11 +286,17 @@ register — this is how HeroUI themes work, where a theme carries `--heroui-rad
 alongside its colors. The scale is shared by light and dark: contrast depends on the
 background, shape does not.
 
-| preset | micro | control | card | catalog |
-| --- | --- | --- | --- | --- |
-| `green` (default) | 8 | 16 | 24 | 32 |
-| `violet` (medium) | 8 | 12 | 18 | 24 |
-| `blue` (small) | 6 | 8 | 12 | 16 |
+There are **three shape registers for six presets** — the hue already tells them apart,
+and six different geometries would turn the scale into a set of accidents.
+
+| register | presets | micro | control | card | catalog |
+| --- | --- | --- | --- | --- | --- |
+| default | `green`, `orange` | 8 | 16 | 24 | 32 |
+| medium | `violet`, `pink` | 8 | 12 | 18 | 24 |
+| small | `blue`, `red` | 6 | 8 | 12 | 16 |
+
+`red` joins the small register on purpose: it is the loudest accent in the set, and the
+strict shape balances it.
 
 The steps compress **non-uniformly** — large radii give up proportionally more. A flat
 multiplier would push `micro` down to `4px`, indistinguishable from a square corner, while

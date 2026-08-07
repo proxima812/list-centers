@@ -18,12 +18,12 @@
         },
         {
           "name": "Appearance layer",
-          "purpose": "User-controlled presentation: theme (system/light/dark), accent preset (green/blue/violet), and a motion on/off toggle. Applied as `.dark`, `[data-accent]`, and `[data-motion]` on <html> by an inline script in Layout.astro <head> before first paint."
+          "purpose": "User-controlled presentation: theme (system/light/dark), accent preset (green/blue/violet/red/orange/pink), and a motion on/off toggle. Applied as `.dark`, `[data-accent]`, and `[data-motion]` on <html> by an inline script in Layout.astro <head> before first paint."
         }
       ],
       "rules": [
         "Keep catalog utility first.",
-        "Never hardcode a hue. Ship only `--color-*` tokens (`accent`, `accent-vivid`, `accent-glow`, `foreground`, `surface`, `border`, `depth-*`), so a surface survives all three accent presets in both themes.",
+        "Never hardcode a hue. Ship only `--color-*` tokens (`accent`, `accent-vivid`, `accent-glow`, `foreground`, `surface`, `border`, `depth-*`), so a surface survives all six accent presets in both themes.",
         "The accent is a signal — hero word, focus ring, active state — not a general palette. Neutrals carry the catalog.",
         "Every new color must be authored twice: a light value in `@theme` and a dark value under `.dark` in src/styles/tailwind.css. Contrast floors: >=4.5:1 for small UI, >=3:1 for display type.",
         "Use real interface imagery when explaining product behavior.",
@@ -90,9 +90,13 @@
         "presets": {
           "green": { "light": "hsl(142 66% 32%)", "dark": "hsl(142 58% 52%)", "default": true },
           "blue": { "light": "hsl(217 79% 45%)", "dark": "hsl(213 90% 66%)" },
-          "violet": { "light": "hsl(263 60% 50%)", "dark": "hsl(263 85% 72%)" }
+          "violet": { "light": "hsl(263 60% 50%)", "dark": "hsl(263 85% 72%)" },
+          "red": { "light": "hsl(0 72% 52.5%)", "dark": "hsl(0 80% 67.5%)" },
+          "orange": { "light": "hsl(25 88% 39.5%)", "dark": "hsl(30 90% 51.5%)" },
+          "pink": { "light": "hsl(335 72% 50.5%)", "dark": "hsl(335 85% 67.5%)" }
         },
-        "usage": "Focus rings, active states, and the homepage hero word. Green is the default preset. Held at >=4.5:1 on its own background in every preset/theme pair — treat these six values as contrast-audited and do not retune one in isolation."
+        "source": "The preset list itself lives in src/utils/accents.ts — one array feeding both the header dropdown and the mobile toggle. Never copy the swatch array into a component.",
+        "usage": "Focus rings, active states, and the homepage hero word. Green is the default preset. Held at >=4.5:1 on its own background in every preset/theme pair — treat these twelve values as contrast-audited and do not retune one in isolation. `node scripts/audit-accents.mjs` re-checks all twelve pairs (accent on its background, accent-foreground on accent, vivid at display scale, accent-soft pair, subtle-foreground on bg-subtle, and the page→surface lightness step)."
       },
       "accentVivid": {
         "role": "accent",
@@ -165,7 +169,7 @@
       "card": "rounded-card — 24px — panels, sections, ordinary cards, marketing blocks",
       "catalog": "rounded-catalog — 32px — center cards and other large catalog surfaces",
       "full": "rounded-full stays raw: a pill is not a step on the scale and must not move with the preset, or toggles and avatars stop being circles",
-      "followsAccent": "Radius is part of the accent preset, not a constant — the same way data-accent already swaps the dark neutrals. Values above are the `green` default. violet: 8/12/18/24. blue: 6/8/12/16. The scale is shared by light and dark: contrast depends on the background, shape does not. Steps compress non-uniformly — large radii give up proportionally more, since a flat multiplier would flatten `micro` to a square corner while barely touching `catalog`.",
+      "followsAccent": "Radius is part of the accent preset, not a constant — the same way data-accent already swaps the dark neutrals. Three shape registers serve six presets, because the hue already tells them apart. default (green, orange): 8/16/24/32 — the values above. medium (violet, pink): 8/12/18/24. small (blue, red): 6/8/12/16. The scale is shared by light and dark: contrast depends on the background, shape does not. Steps compress non-uniformly — large radii give up proportionally more, since a flat multiplier would flatten `micro` to a square corner while barely touching `catalog`.",
       "exceptions": "src/pages/centers/print.astro keeps raw radii — paper must not shift with a screen preset.",
       "plugin": "@toolwind/corner-shape"
     },

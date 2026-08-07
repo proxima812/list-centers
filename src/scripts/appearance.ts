@@ -8,11 +8,13 @@
  * количество экземпляров на странице не имеет значения.
  */
 
+import { ACCENT_VALUES, DEFAULT_ACCENT } from "@/utils/accents";
+
 const THEME_KEY = "theme";
 const ACCENT_KEY = "accent";
 const MOTION_KEY = "motion";
 const THEMES = ["system", "light", "dark"];
-const ACCENTS = ["green", "blue", "violet"];
+const ACCENTS = ACCENT_VALUES;
 const MOTIONS = ["on", "off"];
 
 const root = document.documentElement;
@@ -27,7 +29,7 @@ const readTheme = () => {
 
 const readAccent = () => {
 	const value = localStorage.getItem(ACCENT_KEY) ?? "";
-	return ACCENTS.includes(value) ? value : "green";
+	return ACCENTS.includes(value) ? value : DEFAULT_ACCENT;
 };
 
 const readMotion = () => {
@@ -110,7 +112,7 @@ export function initAppearance() {
 
 		const accentOption = target.closest<HTMLElement>("[data-accent-option]");
 		if (accentOption) {
-			setAccent(accentOption.dataset.accentOption ?? "green");
+			setAccent(accentOption.dataset.accentOption ?? DEFAULT_ACCENT);
 			return;
 		}
 
