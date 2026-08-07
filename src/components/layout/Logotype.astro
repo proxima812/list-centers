@@ -1,7 +1,7 @@
 ---
 // Прямой путь, а не баррель @/components: тот реэкспортит и сам Logotype,
 // импорт через него замкнул бы цикл.
-import LIquidMetal from "@/components/LIquidMetal.astro";
+import LogoMark from "@/components/layout/LogoMark.astro";
 import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
 
 const locale = getLocaleFromUrl(Astro.url);
@@ -13,7 +13,9 @@ const t = useTranslations(locale);
 	class="inline-flex shrink-0 items-center gap-1 text-foreground no-underline focus-visible:outline-none focus-visible:outline-none"
 	aria-label={t("nav.home")}
 >
-	<LIquidMetal size={32} />
+	{/* 20, а не 32 старой обёртки: там холст был с запасом под растекание
+	    шейдера, и сама марка занимала 60%. Здесь холст равен марке. */}
+	<LogoMark size={20} />
 
 	<span class="text-sm">tatarverse</span>
 </a>

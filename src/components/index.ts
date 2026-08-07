@@ -1,5 +1,3 @@
-export { default as LIquidMetal } from "./LIquidMetal.astro";
-
 export { default as CatalogStats } from "./centers/CatalogStats.astro";
 export { default as CenterPagination } from "./centers/CenterPagination.astro";
 export { default as GridCards } from "./centers/GridCards.astro";
@@ -11,6 +9,7 @@ export { default as Toolbar } from "./centers/Toolbar.astro";
 export { default as HomeHeroBadge } from "./home/HomeHeroBadge.astro";
 export { default as HomeHeroTitle } from "./home/HomeHeroTitle.astro";
 export { default as HomeLinks } from "./home/HomeLinks.astro";
+export { default as HomeFollowersCarousel } from "./home/HomeFollowersCarousel.astro";
 export { default as HomeSections } from "./home/HomeSections.astro";
 export { default as WordMarquee } from "./home/WordMarquee.astro";
 
@@ -20,6 +19,7 @@ export { default as Container } from "./layout/Container.astro";
 export { default as Footer } from "./layout/Footer.astro";
 export { default as Header } from "./layout/Header.astro";
 export { default as LanguageToggle } from "./layout/LanguageToggle.astro";
+export { default as LogoMark } from "./layout/LogoMark.astro";
 export { default as Logotype } from "./layout/Logotype.astro";
 export { default as Menu } from "./layout/Menu.astro";
 export { default as MotionToggle } from "./layout/MotionToggle.astro";

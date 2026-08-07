@@ -14,9 +14,6 @@ import robotsTxt from "./src/integrations/robotsTxt.ts";
 import { includeAssets, manifest, workbox } from "./src/utils/pwaSettings.ts";
 
 
-import react from "@astrojs/react";
-
-
 export default defineConfig({
     site: config.site.url,
     i18n: {
@@ -74,7 +71,6 @@ export default defineConfig({
           manifest,
           workbox,
       }),
-      react(),
     ],
 
     prefetch: {
