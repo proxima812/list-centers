@@ -33,114 +33,30 @@ const items = [
 	})),
 ];
 
+// Подписи не переносятся, поэтому колонка обязана вмещать самую длинную из
+// них целиком: на узких экранах это одна колонка, дальше — две и три.
 const gridClass = hasBuckets
-	? "grid w-full max-w-3xl grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-3"
-	: "grid w-full max-w-md grid-cols-3 gap-x-6 gap-y-3";
+	? "grid w-full max-w-5xl grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2 lg:grid-cols-3"
+	: "grid w-full max-w-lg grid-cols-3 gap-x-6 gap-y-3";
 ---
 
 {/* Цифры каталога — справка, а не управление. Никаких поверхностей, колец и
     ховеров: заливка + ring читались как кнопки, и в них кликали. Крупное
     число + тихая подпись — это уже статистика. `flex-row-reverse` внутри:
     в разметке `dt` идёт перед `dd`, как и положено в `dl`, а видеть первым
-    нужно число. */}
-<dl class:list={["stats-focus cursor-default select-text", gridClass, className]}>
+    нужно число. Колонки грида равной ширины, содержимое центрировано. */}
+<dl class:list={["cursor-default select-text", gridClass, className]}>
 	{
-		items.map((item, index) => (
-			<div class="stats-focus__item flex min-w-0 flex-row-reverse items-center justify-center gap-1.5" style={`--i: ${index}`}>
-				<dt class="flex min-w-0 items-center gap-1.5 text-xs font-medium text-muted-foreground">
-					<Icon name={item.icon} class="stats-focus__icon size-3.5 shrink-0" aria-hidden="true" />
-					<span class="min-w-0">{item.label}</span>
+		items.map((item) => (
+			<div class="flex w-full flex-row-reverse items-center justify-center gap-1.5">
+				<dt class="flex items-center gap-1.5 whitespace-nowrap text-xs font-medium text-muted-foreground">
+					<Icon name={item.icon} class="size-3.5 shrink-0" aria-hidden="true" />
+					<span>{item.label}</span>
 				</dt>
 				<dd class="shrink-0 text-lg font-semibold leading-none tracking-tight tabular-nums text-foreground sm:text-xl">
-					<span class="stats-focus__number" style={`--target: ${item.value}; --i: ${index}`} aria-hidden="true" />
-					<span class="sr-only">{item.value}</span>
+					{item.value}
 				</dd>
 			</div>
 		))
 	}
 </dl>
-
-<style>
-	@property --stat-value {
-		syntax: "<integer>";
-		inherits: false;
-		initial-value: 0;
-	}
-
-	.stats-focus {
-		--ease: cubic-bezier(0.16, 1, 0.3, 1);
-	}
-
-	.stats-focus__item {
-		animation: stats-rise 912ms var(--ease) both;
-		animation-delay: calc(var(--i) * 120ms);
-	}
-
-	.stats-focus__icon {
-		animation: stats-icon-mark 620ms var(--ease) both;
-		animation-delay: calc(140ms + (var(--i) * 120ms));
-	}
-
-	.stats-focus__number {
-		--stat-value: 0;
-		counter-reset: stat var(--stat-value);
-		animation: stats-number 912ms var(--ease) both;
-		animation-delay: calc(80ms + (var(--i) * 90ms));
-	}
-
-	.stats-focus__number::after {
-		content: counter(stat);
-	}
-
-	@keyframes stats-number {
-		to {
-			--stat-value: var(--target);
-		}
-	}
-
-	@keyframes stats-rise {
-		0% {
-			opacity: 0;
-			transform: translateY(6px);
-		}
-		100% {
-			opacity: 1;
-			transform: none;
-		}
-	}
-
-	@keyframes stats-icon-mark {
-		0% {
-			opacity: 0.45;
-			transform: scale(0.92);
-		}
-		100% {
-			opacity: 1;
-			transform: scale(1);
-		}
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.stats-focus__item,
-		.stats-focus__number,
-		.stats-focus__icon {
-			--stat-value: var(--target);
-			animation-duration: 0.01ms;
-			animation-delay: 0ms;
-			transform: none;
-			filter: none;
-		}
-	}
-
-	/* Тумблер анимаций гасит анимации целиком (`animation: none`), а счётчик
-	   набирал значение именно в кейфрейме — без этой ветки все цифры
-	   оставались нулями. */
-	:global([data-motion="off"]) .stats-focus__number {
-		--stat-value: var(--target);
-	}
-
-	:global([data-motion="off"]) .stats-focus__item {
-		opacity: 1;
-		transform: none;
-	}
-</style>
