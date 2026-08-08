@@ -1,5 +1,19 @@
 @import "tailwindcss";
 
+/* Палитры вынесены по файлам: один пресет — один файл, целиком, вместе со
+   своей тёмной «бумагой» и регистром формы. Раньше значения одного пресета
+   были размазаны по трём блокам в разных концах этого файла, и держать их
+   согласованными приходилось глазами.
+
+   Порядок импортов значения не имеет: селекторы внутри начинаются с :root
+   и выигрывают по специфичности у :root из @theme и у .dark. */
+@import "./palettes/green.css";
+@import "./palettes/blue.css";
+@import "./palettes/violet.css";
+@import "./palettes/red.css";
+@import "./palettes/orange.css";
+@import "./palettes/pink.css";
+
 @plugin "@tailwindcss/typography";
 @plugin "@toolwind/corner-shape";
 
@@ -16,8 +30,6 @@
   font-display: optional;
 }
 
-/* Флаги-эмодзи не рендерятся во встроенных шрифтах Windows — этот шрифт
-   содержит только глифы флагов, остальной текст падает на "Tatarverse Sans". */
 @font-face {
   font-family: "Twemoji Country Flags";
   src: url("/fonts/twemoji-country-flags.woff2") format("woff2");
@@ -25,41 +37,57 @@
   font-display: swap;
 }
 
-/* Значения в @theme — это светлая тема и одновременно регистрация утилит
-   (bg-accent, text-surface и т.д.). Тёмные значения и пресеты акцента
-   переопределяют те же переменные ниже, обычным CSS. */
+/* ─── Светлые нейтрали ─────────────────────────────────────────────────────
+   Значения в @theme — это светлая тема и одновременно регистрация утилит
+   (bg-accent, text-surface и т.д.). Светлая палитра общая для всех шести
+   пресетов: акцент там не трогает нейтрали. Тёмные значения и акценты —
+   в файлах палитр.
+
+   ЛЕСТНИЦА ПОВЕРХНОСТЕЙ (светлая тема, сверху вниз):
+     surface 100% → background 97.5% → surface-muted 95% → muted 92.5% → subtle 89%
+
+   `surface` и `background` больше не равны. Раньше оба были чистым белым,
+   и любая панель на `bg-surface` — Box, MDX, карточки проектов — лежала
+   белым по белому: разделение держалось на границе в 1.20:1 и тени 2xs.
+   Страница теперь чуть тонирована, карточка осталась белой.
+
+   Возле белого шкала сжата: шаг surface→background даёт всего ΔL 1.9, и это
+   нормально — светлой теме помогает тень, которой нет у тёмной. Работу
+   доделывает граница, поэтому border-muted подтянут с 92% до 86.5%. */
 @theme {
   --font-sans: "Twemoji Country Flags", "Tatarverse Sans", ui-sans-serif, system-ui, sans-serif;
 
-  --color-background: hsl(0 0% 100%);
-  --color-foreground: hsl(0 0% 11.4%);
-  --color-muted: hsl(0 0% 94%);
-  --color-muted-foreground: hsl(0 0% 42%);
-  --color-subtle: hsl(0 0% 90%);
-  /* 46%, а не 56%: на 56% контраст к белому 3.24:1 — ниже порога WCAG AA
-     для текста, а этим токеном покрашен весь футер и подписи фильтров. */
-  --color-subtle-foreground: hsl(0 0% 46%);
+  --color-background: hsl(0 0% 97.5%);
   --color-surface: hsl(0 0% 100%);
-  --color-surface-foreground: hsl(0 0% 11.4%);
-  --color-surface-muted: hsl(0 0% 96%);
-  --color-border: hsl(0 0% 86%);
-  --color-border-muted: hsl(0 0% 92%);
+  --color-surface-muted: hsl(0 0% 95%);
+  --color-muted: hsl(0 0% 92.5%);
+  --color-subtle: hsl(0 0% 89%);
+
+  --color-border-muted: hsl(0 0% 86.5%);
+  --color-border: hsl(0 0% 80%);
   --color-ring: hsl(0 0% 78%);
+
+  --color-foreground: hsl(0 0% 11.4%);
+  --color-surface-foreground: hsl(0 0% 11.4%);
   --color-primary: hsl(0 0% 11.4%);
   --color-primary-foreground: hsl(0 0% 100%);
   --color-link: hsl(0 0% 11.4%);
-  --color-link-decoration: hsl(0 0% 78%);
-  --color-depth-100: hsl(0 0% 90%);
-  --color-depth-200: hsl(0 0% 82%);
-  --color-depth-300: hsl(0 0% 64%);
-  --color-depth-400: hsl(0 0% 48%);
-  --color-depth-500: hsl(0 0% 36%);
-  --color-depth-600: hsl(0 0% 28%);
-  --color-depth-700: hsl(0 0% 20%);
+
+  /* Оба тона проверены на 4.55:1 против всех пяти заливок светлой палитры,
+     а не только против белой страницы. Прежние 42%/46% проходили на белом,
+     но проваливались на bg-muted (4.01) и bg-subtle (3.66) — а именно туда
+     они и садятся в тулбаре и футере. */
+  --color-muted-foreground: hsl(0 0% 35%);
+  --color-subtle-foreground: hsl(0 0% 39.5%);
+
+  /* Подчёркивание ссылок: 78% давали 1.69:1 — линии практически не было.
+     56.5% выводят её на 3:1, порог для нетекстовых элементов. */
+  --color-link-decoration: hsl(0 0% 56.5%);
 
   /* Акцент — сигнал, а не декорация: герой, фокус, активное состояние.
-     Пресеты и тёмные пары — в блоке «Темы» ниже. */
-  --color-accent: hsl(142 66% 32%);
+     Значения по пресетам — в файлах палитр; здесь дефолт (green) на случай,
+     если data-accent ещё не проставлен. */
+  --color-accent: hsl(142 66% 30.9%);
   --color-accent-foreground: hsl(0 0% 100%);
 
   /* Отдельная яркая пара только для героя. Дисплейный кегль — это «крупный
@@ -70,11 +98,7 @@
 
   /* Тихая заливка акцентом: подложка «плашки» вроде бейджа над героем.
      Не дублируется по пресетам — это color-mix поверх текущих `accent` и
-     нейтралей, поэтому пара сама следует за темой и палитрой.
-
-     Текст не может быть чистым `accent`: на 12% подложке светло-зелёный даёт
-     3.9:1 — ниже AA для 12px. Подмешанные 25% foreground выводят худшую пару
-     (light green) на 5.6:1, остальные пять комбинаций — выше. */
+     нейтралей, поэтому пара сама следует за темой и палитрой. */
   --color-accent-soft: color-mix(in oklab, var(--color-accent) 12%, var(--color-background));
   --color-accent-soft-hover: color-mix(in oklab, var(--color-accent) 20%, var(--color-background));
   --color-accent-soft-foreground: color-mix(
@@ -92,8 +116,7 @@
 
   /* Тень не может быть завязана на foreground: в тёмной теме он почти белый,
      и «тень» получалась светящейся. Этот тон чёрный в обеих темах, меняется
-     только непрозрачность. Тёмной теме тень при этом почти не нужна: чёрное
-     на чёрном не читается — там подъём рисует `--color-lift`. */
+     только непрозрачность. */
   --color-shade: hsl(0 0% 0%);
 
   /* Парный к shade: подсветка верхней грани. Белый в обеих темах, работает
@@ -102,18 +125,24 @@
 
   --color-destructive: hsl(15 74% 45%);
 
+  /* depth-100 несёт кольцо карточки каталога и обязан читаться и на surface,
+     и на muted, поэтому он ушёл с 90% на 84%. */
+  --color-depth-100: hsl(0 0% 84%);
+  --color-depth-200: hsl(0 0% 76%);
+  --color-depth-300: hsl(0 0% 62%);
+  --color-depth-400: hsl(0 0% 48%);
+  --color-depth-500: hsl(0 0% 36%);
+  --color-depth-600: hsl(0 0% 28%);
+  --color-depth-700: hsl(0 0% 20%);
+
   /* ─── Геометрия ───────────────────────────────────────────────────────────
-     Радиус — часть пресета, а не константа: `data-accent` уже переопределяет
-     всю тёмную нейтральную палитру (регистры Vercel/Uber Base ниже), и форма
-     углов идёт тем же регистром. Пресеты — в блоке «Темы».
+     Радиус — часть пресета, а не константа. Здесь дефолтный регистр
+     (green, orange); остальные — в своих файлах палитр.
 
-     Четыре ступени вместо шести случайных: micro — мелкие служебные элементы
-     (бейдж, чип, поле), control — кнопки и меню, card — панели и карточки,
-     catalog — крупные карточки каталога. `rounded-full` остаётся сырым:
-     пилюля — не ступень шкалы, она не должна ехать вместе с пресетом.
-
-     Значения дефолта совпадают с текущими 2xl/3xl/4xl, поэтому миграция
-     разметки на семантические классы ничего не сдвигает визуально. */
+     Четыре ступени вместо шести случайных: micro — мелкие служебные элементы,
+     control — кнопки и меню, card — панели и карточки, catalog — крупные
+     карточки каталога. `rounded-full` остаётся сырым: пилюля — не ступень
+     шкалы, она не должна ехать вместе с пресетом. */
   --radius-micro: 8px;
   --radius-control: 16px;
   --radius-card: 24px;
@@ -197,9 +226,9 @@
 }
 
 /* ─── Темы ────────────────────────────────────────────────────────────────
-   Переопределяем те же переменные, что объявлены в @theme. Специфичность
-   у `:root` и `.dark` одинаковая — решает порядок, поэтому блок должен
-   оставаться ниже @theme. */
+   :root и .dark задают базу; всё остальное приезжает из файлов палитр.
+   Значения ниже дублируют пресет green — это дефолт на случай, если
+   data-accent ещё не проставлен инлайн-скриптом. */
 
 :root {
   color-scheme: light;
@@ -208,32 +237,33 @@
 .dark {
   color-scheme: dark;
 
-  /* Шаг фон→поверхность — главный носитель глубины в тёмной теме, и он должен
-     быть заметно крупнее, чем в светлой: там карточку добирает тень, здесь её
-     нет. 7%→15% даёт +8.8 перцептивной светлоты (в oklch) — примерно как у
-     HeroUI (12%→21%). Дальше ступени мельче: вложенность требует шёпота. */
+  /* Лестница: background 7% → muted 11% → surface 16% → surface-muted 19% → subtle 22%.
+     Шаг background→surface — главный носитель глубины в тёмной теме и
+     намеренно крупнее светлого: там карточку добирает тень, здесь её нет.
+     `muted` встроен между ними: полоса секции утоплена, карточка на ней
+     приподнята. */
   --color-background: hsl(0 0% 7%);
-  --color-foreground: hsl(0 0% 95%);
-  --color-muted: hsl(0 0% 18%);
-  --color-muted-foreground: hsl(0 0% 72%);
-  --color-subtle: hsl(0 0% 21%);
-  /* 63%, а не 56%: `subtle-foreground` садится в том числе на `bg-subtle`
-     (счётчик в Toolbar), а там 56% давало 3.9:1 — ниже AA. */
-  --color-subtle-foreground: hsl(0 0% 63%);
-  --color-surface: hsl(0 0% 15%);
-  --color-surface-foreground: hsl(0 0% 95%);
+  --color-muted: hsl(0 0% 11%);
+  --color-surface: hsl(0 0% 16%);
   --color-surface-muted: hsl(0 0% 19%);
+  --color-subtle: hsl(0 0% 22%);
+
+  --color-border-muted: hsl(0 0% 23%);
   --color-border: hsl(0 0% 29%);
-  --color-border-muted: hsl(0 0% 22%);
   --color-ring: hsl(0 0% 47%);
+
+  --color-foreground: hsl(0 0% 95%);
+  --color-surface-foreground: hsl(0 0% 95%);
   --color-primary: hsl(0 0% 95%);
   --color-primary-foreground: hsl(0 0% 7%);
   --color-link: hsl(0 0% 95%);
+  --color-muted-foreground: hsl(0 0% 72%);
+  --color-subtle-foreground: hsl(0 0% 63.5%);
   --color-link-decoration: hsl(0 0% 47%);
 
   /* Ramp разворачивается: в светлой теме depth идёт от светлого к тёмному,
      в тёмной — наоборот, иначе «глубина» читается вывернутой. */
-  --color-depth-100: hsl(0 0% 21%);
+  --color-depth-100: hsl(0 0% 23.5%);
   --color-depth-200: hsl(0 0% 28%);
   --color-depth-300: hsl(0 0% 36%);
   --color-depth-400: hsl(0 0% 48%);
@@ -243,7 +273,6 @@
 
   --color-destructive: hsl(15 80% 65%);
 
-  /* Дефолт на случай, если data-accent ещё не проставлен. */
   --color-accent: hsl(142 58% 52%);
   --color-accent-foreground: hsl(0 0% 7%);
   --color-accent-vivid: hsl(142 62% 52%);
@@ -252,310 +281,9 @@
 
   /* Тихая заливка та же, но подмешивать акцента приходится больше: на почти
      чёрном фоне 12% давали подъём 6.7-8.4 по перцептивной светлоте — ровно на
-     границе, за которой ступень читается плоской. 18% выводят все три пресета
-     на 10-12.6, как обычную приподнятую поверхность. */
+     границе, за которой ступень читается плоской. */
   --color-accent-soft: color-mix(in oklab, var(--color-accent) 18%, var(--color-background));
   --color-accent-soft-hover: color-mix(in oklab, var(--color-accent) 28%, var(--color-background));
-}
-
-/* Пресеты акцента. У светлой и тёмной темы значения разные намеренно: один
-   и тот же тон не может пройти по контрасту на обоих фонах. `accent` держит
-   >=4.5:1 для мелкого UI, пара vivid/glow — >=3:1 для дисплейного кегля. */
-[data-accent="green"] {
-  --color-accent: hsl(142 66% 32%);
-  --color-accent-foreground: hsl(0 0% 100%);
-  --color-accent-vivid: hsl(142 76% 36%);
-  --color-accent-glow: hsl(142 71% 55%);
-  --color-mark-tint: hsl(142 70% 46%);
-}
-
-[data-accent="blue"] {
-  --color-accent: hsl(217 79% 45%);
-  --color-accent-foreground: hsl(0 0% 100%);
-  --color-accent-vivid: hsl(217 88% 44%);
-  --color-accent-glow: hsl(213 92% 62%);
-  --color-mark-tint: hsl(215 84% 56%);
-}
-
-[data-accent="violet"] {
-  --color-accent: hsl(263 60% 50%);
-  --color-accent-foreground: hsl(0 0% 100%);
-  --color-accent-vivid: hsl(263 75% 50%);
-  --color-accent-glow: hsl(263 85% 68%);
-  --color-mark-tint: hsl(263 78% 62%);
-}
-
-[data-accent="red"] {
-  --color-accent: hsl(0 72% 52.5%);
-  --color-accent-foreground: hsl(0 0% 100%);
-  --color-accent-vivid: hsl(0 80% 56.5%);
-  --color-accent-glow: hsl(0 85% 72%);
-  --color-mark-tint: hsl(0 78% 62%);
-}
-
-/* Оранжевый сидит заметно ниже остальных по светлоте (39.5% против ~50%):
-   на этом тоне жёлто-красный сектор набирает яркость быстрее всего, и на
-   белом более светлый вариант проваливает 4.5:1 для мелкого UI. */
-[data-accent="orange"] {
-  --color-accent: hsl(25 88% 39.5%);
-  --color-accent-foreground: hsl(0 0% 100%);
-  --color-accent-vivid: hsl(25 96% 43.5%);
-  --color-accent-glow: hsl(30 92% 60%);
-  --color-mark-tint: hsl(28 90% 52%);
-}
-
-[data-accent="pink"] {
-  --color-accent: hsl(335 72% 50.5%);
-  --color-accent-foreground: hsl(0 0% 100%);
-  --color-accent-vivid: hsl(335 80% 54.5%);
-  --color-accent-glow: hsl(335 88% 72%);
-  --color-mark-tint: hsl(335 78% 60%);
-}
-
-/* ─── Геометрия под пресет акцента ────────────────────────────────────────
-   Шкала одна на обе темы: контраст зависит от фона, форма — нет.
-
-   Регистров формы три, а пресетов шесть — цвет различает их сам, и шесть
-   разных геометрий превратили бы шкалу в набор случайностей.
-
-   green, orange — дефолт, щедрые углы из @theme; переопределять нечего.
-
-   blue, red — малый радиус: регистр Uber Base строится на плотных границах и
-   чистом белом тексте, крупная скругленность его размывает. Красный садится
-   сюда же — это самый громкий акцент, и строгая форма его уравновешивает.
-
-   violet, pink — средний: Vercel собраннее зелёного, но не такой строгий,
-   как Uber Base.
-
-   Ступени сжимаются непропорционально — крупные радиусы теряют больше.
-   Равномерный коэффициент делал бы micro на 4px неотличимым от прямого угла
-   и при этом почти не трогал catalog, где смена формы как раз и читается. */
-[data-accent="blue"],
-[data-accent="red"] {
-  --radius-micro: 6px;
-  --radius-control: 8px;
-  --radius-card: 12px;
-  --radius-catalog: 16px;
-}
-
-[data-accent="violet"],
-[data-accent="pink"] {
-  --radius-micro: 8px;
-  --radius-control: 12px;
-  --radius-card: 18px;
-  --radius-catalog: 24px;
-}
-
-.dark[data-accent="green"] {
-  --color-accent: hsl(142 58% 52%);
-  --color-accent-foreground: hsl(0 0% 7%);
-  --color-accent-vivid: hsl(142 62% 52%);
-  --color-accent-glow: hsl(142 70% 70%);
-  --color-mark-tint: hsl(142 66% 64%);
-}
-
-.dark[data-accent="blue"] {
-  --color-accent: hsl(213 90% 66%);
-  --color-accent-foreground: hsl(0 0% 0%);
-  --color-accent-vivid: hsl(213 90% 64%);
-  --color-accent-glow: hsl(213 95% 78%);
-  --color-mark-tint: hsl(213 92% 74%);
-}
-
-.dark[data-accent="violet"] {
-  --color-accent: hsl(263 85% 72%);
-  --color-accent-foreground: hsl(0 0% 0%);
-  --color-accent-vivid: hsl(263 82% 70%);
-  --color-accent-glow: hsl(263 90% 82%);
-  --color-mark-tint: hsl(263 88% 80%);
-}
-
-.dark[data-accent="red"] {
-  --color-accent: hsl(0 80% 67.5%);
-  --color-accent-foreground: hsl(0 0% 4%);
-  --color-accent-vivid: hsl(0 85% 67%);
-  --color-accent-glow: hsl(0 90% 80%);
-  --color-mark-tint: hsl(0 85% 76%);
-}
-
-.dark[data-accent="orange"] {
-  --color-accent: hsl(30 90% 51.5%);
-  --color-accent-foreground: hsl(0 0% 11%);
-  --color-accent-vivid: hsl(30 95% 52%);
-  --color-accent-glow: hsl(35 95% 66%);
-  --color-mark-tint: hsl(32 92% 62%);
-}
-
-.dark[data-accent="pink"] {
-  --color-accent: hsl(335 85% 67.5%);
-  --color-accent-foreground: hsl(0 0% 6%);
-  --color-accent-vivid: hsl(335 88% 67%);
-  --color-accent-glow: hsl(335 92% 80%);
-  --color-mark-tint: hsl(335 88% 76%);
-}
-
-/* ─── Тёмные нейтрали под пресет акцента ──────────────────────────────────
-   Акцент тянет за собой всю тёмную «бумагу»: один и тот же серый под зелёным,
-   синим и фиолетовым читается по-разному. Светлая тема при этом общая для
-   всех трёх — там нейтрали не переопределяются.
-
-   green — базовый набор из `.dark` выше, мягкий уголь без чистого чёрного.
-
-   violet — регистр Vercel: чистый чёрный холст, приподнятые поверхности почти
-   не отличаются от фона, границы тихие, текст не белый (#ededed), контраст
-   держится на типографике, а не на рамках. */
-.dark[data-accent="violet"] {
-  --color-background: hsl(0 0% 0%);
-  --color-foreground: hsl(0 0% 93%);
-  --color-muted: hsl(0 0% 10%);
-  --color-muted-foreground: hsl(0 0% 63%);
-  --color-subtle: hsl(0 0% 16%);
-  /* 58%, а не 56%: на `bg-subtle` 56% давало ровно 4.50:1 — без запаса. */
-  --color-subtle-foreground: hsl(0 0% 58%);
-  --color-surface: hsl(0 0% 4%);
-  --color-surface-foreground: hsl(0 0% 93%);
-  --color-surface-muted: hsl(0 0% 10%);
-  --color-border: hsl(0 0% 18%);
-  --color-border-muted: hsl(0 0% 12%);
-  --color-ring: hsl(0 0% 40%);
-  --color-primary: hsl(0 0% 93%);
-  --color-primary-foreground: hsl(0 0% 0%);
-  --color-link: hsl(0 0% 93%);
-  --color-link-decoration: hsl(0 0% 40%);
-
-  --color-depth-100: hsl(0 0% 12%);
-  --color-depth-200: hsl(0 0% 16%);
-  --color-depth-300: hsl(0 0% 20%);
-  --color-depth-400: hsl(0 0% 27%);
-  --color-depth-500: hsl(0 0% 45%);
-  --color-depth-600: hsl(0 0% 63%);
-  --color-depth-700: hsl(0 0% 80%);
-}
-
-/* blue — регистр Uber Base: тот же чёрный холст, но поверхности заметно
-   приподняты (#141414/#1f1f1f), границы плотнее, а текст уходит в чистый
-   белый — палитра громче и контрастнее, чем у Vercel. */
-.dark[data-accent="blue"] {
-  --color-background: hsl(0 0% 0%);
-  --color-foreground: hsl(0 0% 100%);
-  --color-muted: hsl(0 0% 12%);
-  --color-muted-foreground: hsl(0 0% 80%);
-  --color-subtle: hsl(0 0% 16%);
-  --color-subtle-foreground: hsl(0 0% 69%);
-  --color-surface: hsl(0 0% 8%);
-  --color-surface-foreground: hsl(0 0% 100%);
-  --color-surface-muted: hsl(0 0% 12%);
-  --color-border: hsl(0 0% 20%);
-  --color-border-muted: hsl(0 0% 14%);
-  --color-ring: hsl(0 0% 47%);
-  --color-primary: hsl(0 0% 100%);
-  --color-primary-foreground: hsl(0 0% 0%);
-  --color-link: hsl(0 0% 100%);
-  --color-link-decoration: hsl(0 0% 47%);
-
-  /* depth-100 здесь ходит поверх surface 8%, и на 12% кольцо `ring-depth-100/70`
-     давало разницу в 3 единицы светлоты — не читалось вообще. 15% выводит его
-     на один уровень с violet, где та же связка работает. */
-  --color-depth-100: hsl(0 0% 15%);
-  --color-depth-200: hsl(0 0% 19%);
-  --color-depth-300: hsl(0 0% 24%);
-  --color-depth-400: hsl(0 0% 33%);
-  --color-depth-500: hsl(0 0% 55%);
-  --color-depth-600: hsl(0 0% 69%);
-  --color-depth-700: hsl(0 0% 85%);
-}
-
-/* red — самый глубокий регистр: холст ниже всех остальных (4%), поверхности
-   подняты скупо, рамки тихие. Красный акцент сам по себе громкий, и на светлой
-   тёмной «бумаге» он начинает звенеть — фон приходится увести. */
-.dark[data-accent="red"] {
-  --color-background: hsl(0 0% 4%);
-  --color-foreground: hsl(0 0% 96%);
-  --color-muted: hsl(0 0% 13%);
-  --color-muted-foreground: hsl(0 0% 74%);
-  --color-subtle: hsl(0 0% 19%);
-  --color-subtle-foreground: hsl(0 0% 60%);
-  --color-surface: hsl(0 0% 12%);
-  --color-surface-foreground: hsl(0 0% 96%);
-  --color-surface-muted: hsl(0 0% 16%);
-  --color-border: hsl(0 0% 22%);
-  --color-border-muted: hsl(0 0% 15%);
-  --color-ring: hsl(0 0% 44%);
-  --color-primary: hsl(0 0% 96%);
-  --color-primary-foreground: hsl(0 0% 4%);
-  --color-link: hsl(0 0% 96%);
-  --color-link-decoration: hsl(0 0% 44%);
-
-  --color-depth-100: hsl(0 0% 18%);
-  --color-depth-200: hsl(0 0% 23%);
-  --color-depth-300: hsl(0 0% 29%);
-  --color-depth-400: hsl(0 0% 38%);
-  --color-depth-500: hsl(0 0% 57%);
-  --color-depth-600: hsl(0 0% 71%);
-  --color-depth-700: hsl(0 0% 86%);
-}
-
-/* orange — самая светлая тёмная тема: холст 11%, не чёрный вообще. Оранжевый
-   акцент — единственный, чей светлый вариант пришлось увести к 39.5%, и на
-   чистом чёрном контраст между тёплым акцентом и холодным нулём читается как
-   ошибка. Приподнятый уголь его успокаивает.
-
-   Обратная сторона: `subtle-foreground` здесь 68%, а не привычные 63% —
-   на более светлом `bg-subtle` (25%) значения ниже проваливали AA. */
-.dark[data-accent="orange"] {
-  --color-background: hsl(0 0% 11%);
-  --color-foreground: hsl(0 0% 92%);
-  --color-muted: hsl(0 0% 20%);
-  --color-muted-foreground: hsl(0 0% 76%);
-  --color-subtle: hsl(0 0% 25%);
-  --color-subtle-foreground: hsl(0 0% 68%);
-  --color-surface: hsl(0 0% 20%);
-  --color-surface-foreground: hsl(0 0% 92%);
-  --color-surface-muted: hsl(0 0% 24%);
-  --color-border: hsl(0 0% 32%);
-  --color-border-muted: hsl(0 0% 25%);
-  --color-ring: hsl(0 0% 50%);
-  --color-primary: hsl(0 0% 92%);
-  --color-primary-foreground: hsl(0 0% 11%);
-  --color-link: hsl(0 0% 92%);
-  --color-link-decoration: hsl(0 0% 50%);
-
-  --color-depth-100: hsl(0 0% 26%);
-  --color-depth-200: hsl(0 0% 31%);
-  --color-depth-300: hsl(0 0% 38%);
-  --color-depth-400: hsl(0 0% 47%);
-  --color-depth-500: hsl(0 0% 62%);
-  --color-depth-600: hsl(0 0% 75%);
-  --color-depth-700: hsl(0 0% 87%);
-}
-
-/* pink — средний регистр между red и базовым green: холст 6%, поверхности
-   подняты обычным шагом, рамки умеренные. */
-.dark[data-accent="pink"] {
-  --color-background: hsl(0 0% 6%);
-  --color-foreground: hsl(0 0% 94%);
-  --color-muted: hsl(0 0% 15%);
-  --color-muted-foreground: hsl(0 0% 73%);
-  --color-subtle: hsl(0 0% 21%);
-  --color-subtle-foreground: hsl(0 0% 63%);
-  --color-surface: hsl(0 0% 15%);
-  --color-surface-foreground: hsl(0 0% 94%);
-  --color-surface-muted: hsl(0 0% 19%);
-  --color-border: hsl(0 0% 26%);
-  --color-border-muted: hsl(0 0% 18%);
-  --color-ring: hsl(0 0% 46%);
-  --color-primary: hsl(0 0% 94%);
-  --color-primary-foreground: hsl(0 0% 6%);
-  --color-link: hsl(0 0% 94%);
-  --color-link-decoration: hsl(0 0% 46%);
-
-  --color-depth-100: hsl(0 0% 20%);
-  --color-depth-200: hsl(0 0% 26%);
-  --color-depth-300: hsl(0 0% 33%);
-  --color-depth-400: hsl(0 0% 45%);
-  --color-depth-500: hsl(0 0% 60%);
-  --color-depth-600: hsl(0 0% 73%);
-  --color-depth-700: hsl(0 0% 84%);
 }
 
 @layer base {

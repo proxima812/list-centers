@@ -10,8 +10,7 @@ const t = useTranslations(locale);
 	data-active-filters-bar
 	data-remove-label={t("list.removeFilter")}
 	aria-label={t("list.activeFilters")}
-	hidden
-	class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-3 rounded-control corner-squircle bg-surface/60 p-3 ring ring-depth-100/50"
+	class="flex flex-wrap items-center gap-x-4 gap-y-3 rounded-control corner-squircle bg-surface px-3 py-2 ring ring-depth-100"
 >
 	<span
 		data-results-count
@@ -28,6 +27,7 @@ const t = useTranslations(locale);
 	<button
 		type="button"
 		data-filters-reset
+		hidden
 		class="ml-auto inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-sm font-medium text-muted-foreground transition hover:bg-subtle hover:text-foreground"
 	>
 		<Icon name="mdi:close-circle-outline" class="size-4" aria-hidden="true" />

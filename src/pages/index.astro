@@ -1,5 +1,5 @@
 ---
-import { HomeHeroBadge, HomeHeroTitle, HomeLinks, HomeSections } from "@/components";
+import { HomeFollowersCarousel, HomeHeroBadge, HomeHeroTitle, HomeLinks, HomeSections } from "@/components";
 import { getLocaleFromUrl, useTranslations } from "@/i18n";
 import Layout from "@/layouts/Layout.astro";
 import { getCollection } from "astro:content";
@@ -41,6 +41,8 @@ const t = useTranslations(locale);
 		<div>
 			<HomeLinks />
 		</div>
+
+		<!-- <HomeFollowersCarousel /> -->
 
 		<HomeSections />
 	</main>

@@ -1,26 +1,94 @@
 // Прогон контраст-аудита по всем шести пресетам × двум темам.
 // Запуск: node scripts/audit-accents.mjs
-// Значения должны совпадать с [data-accent] блоками в src/styles/tailwind.css —
-// если тронул палитру, прогони это и убедись, что все пары держат AA.
-import { audit } from "./audit-accent.mjs";
+//
+// Значения ЧИТАЮТСЯ из CSS, а не дублируются здесь. Раньше в этом файле лежала
+// своя копия палитры с пометкой «должны совпадать с tailwind.css» — она отстала
+// от CSS и продолжала печатать «✅ Все 12 пар проходят» для значений, которых в
+// проекте уже не было. Копия палитры, которую надо синхронизировать руками, —
+// это не аудит, а второй источник правды.
+import { readFileSync, readdirSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+import { audit, ladder } from "./audit-accent.mjs";
 
-const LIGHT = { bg: [0, 0, 100], fg: [0, 0, 11.4], softPct: 0.12, accentFg: [0, 0, 100] };
+const root = join(dirname(fileURLToPath(import.meta.url)), "..");
+const styles = join(root, "src/styles");
+
+const sources = [
+	readFileSync(join(styles, "tailwind.css"), "utf8"),
+	...readdirSync(join(styles, "palettes"))
+		.filter((f) => f.endsWith(".css"))
+		.map((f) => readFileSync(join(styles, "palettes", f), "utf8")),
+].join("\n");
+
+// Собираем объявления из всех блоков, подходящих под селектор. Блоков может быть
+// несколько (в @theme и в файле палитры), выигрывает последний — как в CSS.
+const collect = (selector) => {
+	const out = {};
+	let from = 0;
+	for (;;) {
+		const at = sources.indexOf(`${selector} {`, from);
+		if (at < 0) break;
+		const prev = sources[at - 1];
+		if (prev && !/[\s,}/]/.test(prev)) {
+			from = at + 1;
+			continue;
+		}
+		let depth = 0;
+		let end = sources.indexOf("{", at);
+		const open = end;
+		for (; end < sources.length; end += 1) {
+			if (sources[end] === "{") depth += 1;
+			else if (sources[end] === "}") {
+				depth -= 1;
+				if (!depth) break;
+			}
+		}
+		for (const m of sources.slice(open + 1, end).matchAll(/(--color-[a-z0-9-]+):\s*hsl\(([^)]*)\)/g)) {
+			const [h, s, l] = m[2].trim().split(/\s+/).map((v) => Number.parseFloat(v));
+			out[m[1].replace("--color-", "")] = [h, s, l];
+		}
+		from = end + 1;
+	}
+	return out;
+};
+
+const theme = collect("@theme");
+const darkBase = collect(".dark");
+const PRESETS = ["green", "blue", "violet", "red", "orange", "pink"];
+
 let ok = true;
-const run = (n, p) => (ok = audit(n, p) && ok);
+for (const name of PRESETS) {
+	const light = { ...theme, ...collect(`:root[data-accent="${name}"]`) };
+	const dark = {
+		...theme,
+		...darkBase,
+		...collect(`:root[data-accent="${name}"]`),
+		...collect(`:root.dark[data-accent="${name}"]`),
+	};
 
-run("green light", { ...LIGHT, accent: [142, 66, 32], vivid: [142, 76, 36] });
-run("blue light", { ...LIGHT, accent: [217, 79, 45], vivid: [217, 88, 44] });
-run("violet light", { ...LIGHT, accent: [263, 60, 50], vivid: [263, 75, 50] });
-run("red light", { ...LIGHT, accent: [0, 72, 52.5], vivid: [0, 80, 56.5] });
-run("orange light", { ...LIGHT, accent: [25, 88, 39.5], vivid: [25, 96, 43.5] });
-run("pink light", { ...LIGHT, accent: [335, 72, 50.5], vivid: [335, 80, 54.5] });
-
-run("green dark", { bg: [0, 0, 7], fg: [0, 0, 95], softPct: 0.18, accent: [142, 58, 52], accentFg: [0, 0, 7], vivid: [142, 62, 52], subtleFg: [0, 0, 63], subtle: [0, 0, 21], surface: [0, 0, 15] });
-run("blue dark", { bg: [0, 0, 0], fg: [0, 0, 100], softPct: 0.18, accent: [213, 90, 66], accentFg: [0, 0, 0], vivid: [213, 90, 64], subtleFg: [0, 0, 69], subtle: [0, 0, 16], surface: [0, 0, 8] });
-run("violet dark", { bg: [0, 0, 0], fg: [0, 0, 93], softPct: 0.18, accent: [263, 85, 72], accentFg: [0, 0, 0], vivid: [263, 82, 70], subtleFg: [0, 0, 58], subtle: [0, 0, 16], surface: [0, 0, 4] });
-run("red dark", { bg: [0, 0, 4], fg: [0, 0, 96], softPct: 0.18, accent: [0, 80, 67.5], accentFg: [0, 0, 4], vivid: [0, 85, 67], subtleFg: [0, 0, 60], subtle: [0, 0, 19], surface: [0, 0, 12] });
-run("orange dark", { bg: [0, 0, 11], fg: [0, 0, 92], softPct: 0.18, accent: [30, 90, 51.5], accentFg: [0, 0, 11], vivid: [30, 95, 52], subtleFg: [0, 0, 68], subtle: [0, 0, 25], surface: [0, 0, 20] });
-run("pink dark", { bg: [0, 0, 6], fg: [0, 0, 94], softPct: 0.18, accent: [335, 85, 67.5], accentFg: [0, 0, 6], vivid: [335, 88, 67], subtleFg: [0, 0, 63], subtle: [0, 0, 21], surface: [0, 0, 15] });
+	for (const [label, p, softPct] of [
+		[`${name} light`, light, 0.12],
+		[`${name} dark`, dark, 0.18],
+	]) {
+		ok =
+			audit(label, {
+				bg: p.background,
+				fg: p.foreground,
+				accent: p.accent,
+				accentFg: p["accent-foreground"],
+				vivid: p["accent-vivid"],
+				softPct,
+				subtleFg: p["subtle-foreground"],
+				subtle: p.subtle,
+				// Порог «фон→поверхность ≥ 8» — только для тёмной темы: там нет
+				// тени, и ступень светлоты несёт глубину одна. Возле белого шкала
+				// сжата (100%→97.5% это ΔL 1.9), и добирают тень с границей.
+				surface: label.endsWith("dark") ? p.surface : undefined,
+			}) && ok;
+		ok = ladder(label, p) && ok;
+	}
+}
 
 console.log(ok ? "\n✅ Все 12 пар проходят" : "\n❌ Есть провалы");
 process.exit(ok ? 0 : 1);

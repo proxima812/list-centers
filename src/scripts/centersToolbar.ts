@@ -118,6 +118,7 @@ export function initCardsToolbar() {
 	const voiceStatus = document.querySelector<HTMLElement>("[data-voice-status]");
 	const filtersToggle = document.querySelector<HTMLButtonElement>("[data-filters-toggle]");
 	const filtersShell = document.querySelector<HTMLElement>("[data-filters-shell]");
+	const stickyBar = document.querySelector<HTMLElement>("[data-catalog-bar]");
 	const filtersPanel = document.getElementById("filters-panel");
 	const filtersBadge = document.querySelector<HTMLElement>("[data-filters-badge]");
 	const filtersResetButtons =
@@ -273,12 +274,18 @@ export function initCardsToolbar() {
 		window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
 	}
 
+	// `scroll-behavior: auto` из `[data-motion="off"]` не помогает: явный
+	// `behavior: "smooth"` в scrollTo/scrollIntoView перебивает CSS-свойство.
+	// Поэтому тумблер приходится читать руками — иначе он гасит весь сайт,
+	// кроме доводки каталога.
+	function getScrollBehavior(): ScrollBehavior {
+		const motionOff = document.documentElement.dataset.motion === "off";
+		return motionOff || prefersReducedMotion.matches ? "auto" : "smooth";
+	}
+
 	function scrollToCards() {
 		if (isDesktopLayout.matches) return;
-		cardsGridElement.scrollIntoView({
-			behavior: prefersReducedMotion.matches ? "auto" : "smooth",
-			block: "start",
-		});
+		cardsGridElement.scrollIntoView({ behavior: getScrollBehavior(), block: "start" });
 	}
 
 	function updateFiltersBadge() {
@@ -289,9 +296,13 @@ export function initCardsToolbar() {
 			filtersBadge.textContent = String(total);
 			filtersBadge.classList.toggle("hidden", total === 0);
 		}
-		if (activeFiltersBar) {
-			activeFiltersBar.hidden = total === 0 && !hasSearchQuery;
-		}
+		// Счётчик — постоянный якорь каталога: сколько всего центров видно
+		// уже при загрузке. Поэтому бар не прячем, прячем только сброс,
+		// когда сбрасывать нечего.
+		const hasAnything = total > 0 || hasSearchQuery;
+		filtersResetButtons.forEach((button) => {
+			button.hidden = !hasAnything;
+		});
 	}
 
 	function syncSearchActions() {
@@ -796,6 +807,18 @@ export function initCardsToolbar() {
 		filtersShell?.classList.toggle("hidden", !isHidden);
 		filtersPanel.classList.toggle("hidden", !isHidden);
 		filtersToggle.setAttribute("aria-expanded", String(isHidden));
+
+		// Кнопка живёт в липкой панели и едет вместе со скроллом, а сами
+		// фильтры остались в потоке. Без доводки тап в глубине каталога
+		// раскрыл бы их за экраном. Целимся не в саму секцию, а под нижнюю
+		// кромку липкой панели — её высота меняется вместе с активными
+		// фильтрами, поэтому берём фактическую, а не константу.
+		if (isHidden && !isDesktopLayout.matches && filtersShell) {
+			const barBottom = stickyBar?.getBoundingClientRect().bottom ?? 0;
+			const target =
+				filtersShell.getBoundingClientRect().top + window.scrollY - barBottom - 8;
+			window.scrollTo({ top: Math.max(target, 0), behavior: getScrollBehavior() });
+		}
 	});
 
 	filtersResetButtons.forEach((button) => {

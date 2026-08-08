@@ -25,12 +25,12 @@ const getEntryPath = (entry: CollectionEntry<"centers">) =>
 	(previousEntry || nextEntry) && (
 		<nav
 			aria-label={t("detail.pagination")}
-			class="bg-surface p-1 flex items-center justify-between rounded-card corner-squircle shadow-2xs ring ring-depth-100/40 gap-1.5"
+			class="bg-surface p-1 flex items-center justify-between rounded-card corner-squircle shadow-2xs ring ring-depth-100 gap-1.5"
 		>
 			{previousEntry ? (
 				<a
 					href={getEntryPath(previousEntry)}
-					class="bg-muted/60 inline-flex min-w-0 items-center gap-2 rounded-control corner-squircle  px-4 py-3 text-sm font-medium text-primary/80 transition hover:bg-muted/40 ring-[0.5px] ring-depth-200/80"
+					class="bg-muted inline-flex min-w-0 items-center gap-2 rounded-control corner-squircle  px-4 py-3 text-sm font-medium text-primary/80 transition hover:bg-subtle ring-[0.5px] ring-depth-200"
 				>
 					<Icon name="mdi:arrow-left" class="size-4 shrink-0" aria-hidden="true" />
 					<span class="min-w-0 truncate">{trimTitle(previousEntry.data.title)}</span>
@@ -41,7 +41,7 @@ const getEntryPath = (entry: CollectionEntry<"centers">) =>
 			{nextEntry && (
 				<a
 					href={getEntryPath(nextEntry)}
-					class="bg-muted/60 inline-flex min-w-0 items-center justify-end gap-2 rounded-control corner-squircle  px-4 py-3 text-right text-sm font-medium text-primary/80  transition hover:bg-muted/40 ring-[0.5px] ring-depth-200/80"
+					class="bg-muted inline-flex min-w-0 items-center justify-end gap-2 rounded-control corner-squircle  px-4 py-3 text-right text-sm font-medium text-primary/80  transition hover:bg-subtle ring-[0.5px] ring-depth-200"
 				>
 					<span class="min-w-0 truncate">{trimTitle(nextEntry.data.title)}</span>
 					<Icon name="mdi:arrow-right" class="size-4 shrink-0" aria-hidden="true" />

@@ -1,6 +1,6 @@
 ---
 import { countryFlagsByRu, getCountryLabel, getCountryLabels } from "@/data/worldCountries";
-import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
+import { getLocaleFromUrl, localizePath } from "@/i18n";
 import { getCenterPath } from "@/utils/centers";
 import { Icon } from "astro-icon/components";
 
@@ -33,7 +33,6 @@ interface Props {
 const { id, routeId, title, summary, type, category, location, region, pubDate } =
 	Astro.props as Props;
 const locale = getLocaleFromUrl(Astro.url);
-const t = useTranslations(locale);
 const centerPath = getCenterPath(routeId ?? id);
 
 const NO_DATA = "Нет данных.";
@@ -81,97 +80,79 @@ const truncate = (value?: string, max = 23) => {
 	data-city={cleanCity ?? ""}
 	data-region={region ?? ""}
 	href={localizePath(locale, centerPath)}
-	class="block min-w-0 rounded-catalog corner-squircle text-surface-foreground no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+	class="group block min-w-0 rounded-catalog corner-squircle text-surface-foreground no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
 >
+	{/*
+		Одна обводка на уровень вложенности. Раньше внутри кольца карточки жили
+		ещё четыре кольца — пилюля «Подробнее», сегментированная пара тип/категория
+		и капсула даты, — и все элементы читались одинаково важными. Мета осталась
+		той же, но держится типографикой: заголовок жирный, остальное тихое.
+
+		Подъём тратится только на ховер: 340 карточек с тенью в покое — это шум и
+		композитинг без пользы. Вся карточка и так ссылка, поэтому наведение
+		обозначает себя кольцом, подъёмом и подчёркиванием заголовка, а не
+		отдельной фальшивой кнопкой внутри ссылки.
+	*/}
 	<article
-		class="relative flex h-full flex-col justify-between overflow-hidden rounded-catalog corner-squircle bg-surface shadow-2xs p-6 ring-1 ring-depth-100/70 "
+		class="flex h-full flex-col gap-3 rounded-catalog corner-squircle bg-surface p-6 ring-1 ring-depth-100 transition group-hover:ring-depth-300 group-hover:surface-lift"
 	>
-		<div class="relative space-y-4">
-			<div class="flex min-w-0 items-start justify-between gap-3">
-				<div
-					class="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-surface-foreground"
-				>
-					{
-						displayLocation && (
-							<div
-								data-card-section="location"
-								class="flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground"
-							>
-								{displayLocation.flag && (
-									<span class="shrink-0 text-base leading-none">{displayLocation.flag}</span>
-								)}
-								{displayLocation.city && (
-									<span>{truncate(displayLocation.city.trim(), 16)}</span>
-								)}
-								{displayLocation.city && displayLocation.countryLabels && (
-									<span aria-hidden="true">&#10625;</span>
-								)}
-								{displayLocation.countryLabels && (
-									<span
-										data-country-label={cleanCountry}
-										data-country-labels={JSON.stringify(displayLocation.countryLabels)}
-									>
-										{displayLocation.country}
-									</span>
-								)}
-							</div>
-						)
-					}
-				</div>
-				<span
-					class="shrink-0 rounded-full bg-surface px-2 py-1 text-xs font-medium text-muted-foreground ring ring-depth-100/60"
-				>
-					{t("card.details")}
-				</span>
-			</div>
-			<h2
-				data-card-section="title"
-				class="min-w-0 wrap-anywhere text-lg font-bold leading-snug tracking-tight text-surface-foreground sm:text-xl"
-			>
-				{displayTitle}
-			</h2>
+		{
+			displayLocation && (
+				<p class="flex min-w-0 flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
+					{displayLocation.flag && (
+						<span class="shrink-0 text-base leading-none">{displayLocation.flag}</span>
+					)}
+					{displayLocation.city && <span>{truncate(displayLocation.city.trim(), 16)}</span>}
+					{displayLocation.city && displayLocation.countryLabels && (
+						<span aria-hidden="true">&#10625;</span>
+					)}
+					{displayLocation.countryLabels && (
+						<span
+							data-country-label={cleanCountry}
+							data-country-labels={JSON.stringify(displayLocation.countryLabels)}
+						>
+							{displayLocation.country}
+						</span>
+					)}
+				</p>
+			)
+		}
+		<h2
+			class="min-w-0 wrap-anywhere text-lg font-bold leading-snug tracking-tight text-surface-foreground underline-offset-4 group-hover:underline sm:text-xl"
+		>
+			{displayTitle}
+		</h2>
+		{
+			displaySummary && (
+				<p class="line-clamp-2 text-sm leading-6 text-muted-foreground">{displaySummary}</p>
+			)
+		}
+		<p
+			class="mt-auto flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 pt-1 text-xs text-muted-foreground"
+		>
 			{
-				displaySummary && (
-					<p class="line-clamp-2 max-w-3xl text-sm leading-6 text-muted-foreground">
-						{displaySummary}
-					</p>
+				category && (
+					<span class="inline-flex min-w-0 items-center gap-1.5 font-semibold text-surface-foreground">
+						{hasIcons && (
+							<span class="inline-flex shrink-0 items-center gap-0.5" aria-hidden="true">
+								{icons.map((icon) => (
+									<Icon name={icon} class="size-3" />
+								))}
+							</span>
+						)}
+						{category}
+					</span>
 				)
 			}
-		</div>
-		<div
-			class="relative mt-5 flex flex-wrap items-center gap-1.5 text-xs font-semibold text-surface-foreground"
-		>
-			<div
-				class="inline-flex min-h-7 max-w-full flex-wrap items-center overflow-hidden rounded-full bg-surface ring ring-depth-200/80"
-			>
-				{type && <span class="px-2.5 py-1">{type}</span>}
-				{
-					category && (
-						<span
-							class:list={[
-								"inline-flex items-center gap-1.5 px-2.5 py-1",
-								type && "border-l border-depth-100/80",
-							]}
-						>
-							{hasIcons && (
-								<span class="inline-flex items-center gap-0.5" aria-hidden="true">
-									{icons.map((icon) => (
-										<Icon name={icon} class="size-3" />
-									))}
-								</span>
-							)}
-							{category}
-						</span>
-					)
-				}
-			</div>
+			{category && type && <span aria-hidden="true">·</span>}
+			{type && <span class="min-w-0">{type}</span>}
 			{
 				formattedDate && (
-					<span class="ml-auto inline-flex min-h-7 items-center rounded-full bg-surface/70 px-2 py-1 tabular-nums text-muted-foreground ring ring-depth-100/60">
+					<span class="ml-auto shrink-0 tabular-nums text-subtle-foreground">
 						{formattedDate}
 					</span>
 				)
 			}
-		</div>
+		</p>
 	</article>
 </a>

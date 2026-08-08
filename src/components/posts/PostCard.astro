@@ -34,15 +34,15 @@ const {
 
 <article
 	id={id}
-	class="group relative scroll-mt-24 overflow-hidden rounded-catalog corner-squircle bg-linear-to-br from-surface via-surface to-surface-muted/70 p-5 text-surface-foreground shadow-2xs ring ring-depth-100/80 transition duration-300 ease-out hover:-translate-y-0.5 hover:ring-depth-200 hover:shadow-sm sm:p-6"
+	class="group relative scroll-mt-24 overflow-hidden rounded-catalog corner-squircle bg-linear-to-br from-surface via-surface to-surface-muted/70 p-5 text-surface-foreground shadow-2xs ring ring-depth-100 transition duration-300 ease-out hover:-translate-y-0.5 hover:ring-depth-200 hover:shadow-sm sm:p-6"
 >
 	<header>
 		<div class="flex flex-wrap items-center gap-2 text-xs leading-5">
-			<span class="rounded-full bg-background px-2.5 py-1 font-medium text-muted-foreground ring ring-depth-100/70">
+			<span class="rounded-full bg-background px-2.5 py-1 font-medium text-muted-foreground ring ring-depth-100">
 				{author}
 			</span>
 			<time
-				class="rounded-full bg-background px-2.5 py-1 font-medium tabular-nums text-muted-foreground ring ring-depth-100/70"
+				class="rounded-full bg-background px-2.5 py-1 font-medium tabular-nums text-muted-foreground ring ring-depth-100"
 				datetime={pubDate.toISOString()}
 				title={fullDate}
 			>
@@ -67,7 +67,7 @@ const {
 		</p>
 	</header>
 
-	<div class="mt-5 rounded-card corner-squircle bg-background/85 p-4 ring ring-depth-100/80 transition group-hover:ring-depth-200/80 sm:p-5">
+	<div class="mt-5 rounded-card corner-squircle bg-background/85 p-4 ring ring-depth-100 transition group-hover:ring-depth-200 sm:p-5">
 		<div
 			class:list={[
 				"prose prose-sm max-w-none text-depth-600 sm:prose-base prose-p:my-2 prose-a:font-medium prose-a:text-link prose-a:decoration-link-decoration prose-a:underline-offset-4 prose-blockquote:my-3 first:prose-p:mt-0 last:prose-p:mb-0",
@@ -81,7 +81,7 @@ const {
 		    своя страница, туда и ведёт кнопка. */}
 		<a
 			href={href}
-			class="mt-3 inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1.5 text-sm font-medium text-muted-foreground no-underline ring ring-depth-100/70 transition hover:bg-primary hover:text-primary-foreground"
+			class="mt-3 inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1.5 text-sm font-medium text-muted-foreground no-underline ring ring-depth-100 transition hover:bg-primary hover:text-primary-foreground"
 		>
 			<span>Читать пост</span>
 			<svg

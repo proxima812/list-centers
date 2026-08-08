@@ -63,23 +63,39 @@ const toolbarProps = {
 ---
 
 {/*
-	Три грид-ребёнка вместо двух: на мобильном порядок в потоке — поиск,
-	панель фильтров, результаты, то есть панель раскрывается прямо под своей
-	кнопкой, а не над ней. На lg явные col/row возвращают сайдбар в левую
-	колонку на всю высоту.
+	Панель поиска живёт вне грида: у sticky-элемента внутри грида containing
+	block — его грид-область, и в строке высотой с сам элемент запаса хода нет.
+	Снаружи она липнет вдоль всей страницы, а в потоке всё равно стоит перед
+	фильтрами, поэтому на мобильном панель фильтров по-прежнему раскрывается
+	под своей кнопкой, а не над ней.
+
+	Шапка сайта sticky только до lg (`lg:static`), поэтому на мобильном
+	отступаем на её высоту, а на десктопе прижимаемся к нулю.
 */}
-<div
-	class="not-container grid grid-cols-1 gap-x-8 bg-muted px-5 py-12 sm:px-8 lg:grid-cols-[20rem_minmax(0,1fr)] lg:gap-x-12 lg:px-12"
->
-	<div class="lg:col-start-2 lg:row-start-1">
+<div class="not-container bg-muted px-5 pt-8 pb-12 sm:px-8 lg:px-12 lg:pt-10">
+	<div
+		data-catalog-bar
+		class="sticky top-15 z-30 -mx-5 flex flex-col gap-2 bg-muted px-5 py-2 sm:-mx-8 sm:px-8 lg:top-0 lg:-mx-12 lg:gap-3 lg:pr-12 lg:pb-5 lg:pl-[calc(var(--catalog-aside)+var(--catalog-gap)+3rem)] lg:pt-5"
+	>
 		<Search />
 		<ActiveFilters />
 	</div>
 
-	<Toolbar {...toolbarProps} />
+	<div
+		class="grid grid-cols-1 gap-x-8 lg:grid-cols-[var(--catalog-aside)_minmax(0,1fr)] lg:gap-x-[var(--catalog-gap)]"
+	>
+		<Toolbar {...toolbarProps} />
 
-	<div class="lg:col-start-2 lg:row-start-2">
-		<GridCards cards={cards} />
-		<NoResults />
+		<div>
+			<GridCards cards={cards} />
+			<NoResults />
+		</div>
 	</div>
 </div>
+
+<style>
+	.not-container {
+		--catalog-aside: 20rem;
+		--catalog-gap: 3rem;
+	}
+</style>

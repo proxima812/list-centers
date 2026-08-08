@@ -1,0 +1,71 @@
+/* ─── Пресет «orange» ─────────────────────────────────────────────────────
+   самая светлая тёмная тема — холст 11%, не чёрный вообще: тёплый акцент на холодном нуле читается как ошибка.
+
+   Файл описывает пресет целиком: акцент в обеих темах, тёмную нейтральную
+   «бумагу» и регистр формы. Светлые нейтрали общие для всех шести пресетов
+   и живут в @theme в tailwind.css — здесь их нет намеренно.
+
+   Селекторы начинаются с :root не для красоты, а ради специфичности:
+   (0,2,0) и (0,3,0) против (0,1,0) у :root из @theme и у .dark. Благодаря
+   этому порядок @import не влияет на результат, и файлы палитр можно
+   подключать в любой последовательности.
+
+   ЛЕСТНИЦА ПОВЕРХНОСТЕЙ (тёмная тема, снизу вверх):
+     background 11% → muted 15.5% → surface 20% → surface-muted 24% → subtle 28%
+
+   Главное правило: `muted` лежит МЕЖДУ `background` и `surface`.
+   Полоса секции утоплена относительно страницы, карточка на полосе —
+   приподнята. Раньше `muted` стоял выше `surface`, и карточка каталога
+   на полосе списка сливалась с ней вплотную до неразличимости.
+*/
+
+:root[data-accent="orange"] {
+  --color-accent: hsl(25 88% 38.7%);
+  --color-accent-foreground: hsl(0 0% 100%);
+  --color-accent-vivid: hsl(25 96% 43.5%);
+  --color-accent-glow: hsl(30 92% 60%);
+  --color-mark-tint: hsl(28 90% 52%);
+}
+
+:root.dark[data-accent="orange"] {
+  --color-accent: hsl(30 90% 51.5%);
+  --color-accent-foreground: hsl(0 0% 11%);
+  --color-accent-vivid: hsl(30 95% 52%);
+  --color-accent-glow: hsl(35 95% 66%);
+  --color-mark-tint: hsl(32 92% 62%);
+
+  /* Поверхности — лестница из шапки файла. */
+  --color-background: hsl(0 0% 11%);
+  --color-muted: hsl(0 0% 15.5%);
+  --color-surface: hsl(0 0% 20%);
+  --color-surface-muted: hsl(0 0% 24%);
+  --color-subtle: hsl(0 0% 28%);
+
+  /* Границы: border-muted читается на surface и на background,
+     border — ещё и на muted и на subtle. */
+  --color-border-muted: hsl(0 0% 26.5%);
+  --color-border: hsl(0 0% 33%);
+  --color-ring: hsl(0 0% 50%);
+
+  /* Текст: muted-foreground и subtle-foreground проходят 4.55:1 на всех
+     пяти заливках этой палитры, а не только на странице. */
+  --color-foreground: hsl(0 0% 92%);
+  --color-surface-foreground: hsl(0 0% 92%);
+  --color-primary: hsl(0 0% 92%);
+  --color-primary-foreground: hsl(0 0% 11%);
+  --color-link: hsl(0 0% 92%);
+  --color-muted-foreground: hsl(0 0% 76%);
+  --color-subtle-foreground: hsl(0 0% 71.5%);
+  --color-link-decoration: hsl(0 0% 50%);
+
+  /* Ramp глубины развёрнут: в тёмной теме «глубже» значит светлее.
+     depth-100 подобран так, чтобы работать кольцом карточки — он обязан
+     читаться и на surface, и на muted. */
+  --color-depth-100: hsl(0 0% 27%);
+  --color-depth-200: hsl(0 0% 31%);
+  --color-depth-300: hsl(0 0% 38%);
+  --color-depth-400: hsl(0 0% 47%);
+  --color-depth-500: hsl(0 0% 62%);
+  --color-depth-600: hsl(0 0% 75%);
+  --color-depth-700: hsl(0 0% 87%);
+}

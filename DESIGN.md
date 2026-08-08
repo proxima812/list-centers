@@ -3,30 +3,30 @@ name: Tatarverse
 description: Bilingual catalog of Tatar, Bashkir, Tatar-Bashkir, and Crimean Tatar centers.
 register: brand
 colors:
-  background: "#ffffff"
+  background: "#f9f9f9"
   foreground: "#1d1d1d"
-  muted: "#f0f0f0"
-  muted-foreground: "#6b6b6b"
-  subtle: "#e6e6e6"
-  subtle-foreground: "#757575"
+  muted: "#ececec"
+  muted-foreground: "#595959"
+  subtle: "#e3e3e3"
+  subtle-foreground: "#656565"
   surface: "#ffffff"
   surface-foreground: "#1d1d1d"
-  surface-muted: "#f5f5f5"
-  border: "#dbdbdb"
-  border-muted: "#ebebeb"
+  surface-muted: "#f2f2f2"
+  border: "#cccccc"
+  border-muted: "#dddddd"
   ring: "#c7c7c7"
   primary: "#1d1d1d"
   primary-foreground: "#ffffff"
   link: "#1d1d1d"
-  link-decoration: "#c7c7c7"
-  depth-100: "#e6e6e6"
-  depth-200: "#d1d1d1"
-  depth-300: "#a3a3a3"
+  link-decoration: "#909090"
+  depth-100: "#d6d6d6"
+  depth-200: "#c2c2c2"
+  depth-300: "#9e9e9e"
   depth-400: "#7a7a7a"
   depth-500: "#5c5c5c"
   depth-600: "#474747"
   depth-700: "#333333"
-  accent: "#1c8743"
+  accent: "#1b8341"
   accent-foreground: "#ffffff"
 typography:
   display:
@@ -100,7 +100,7 @@ components:
   chip-active:
     backgroundColor: "{colors.accent}"
     textColor: "{colors.accent-foreground}"
-    rounded: "{rounded.control}"
+    rounded: "{rounded.full}"
     padding: "6px 10px"
     typography: "{typography.label}"
   stats-pill:
@@ -110,7 +110,7 @@ components:
     padding: "8px 10px"
     typography: "{typography.label}"
   card-center:
-    backgroundColor: "{colors.muted}"
+    backgroundColor: "{colors.surface}"
     textColor: "{colors.surface-foreground}"
     rounded: "{rounded.catalog}"
     padding: "20px"
@@ -133,7 +133,7 @@ The brand layer should make the site memorable. The catalog layer should make th
 
 ## 2. Color
 
-The base palette is neutral and semantic. It is defined in `src/styles/tailwind.css` through Tailwind v4 tokens: `background`, `foreground`, `muted`, `surface`, `border`, `ring`, `primary`, `link`, `depth-*`, and `accent`.
+The base palette is neutral and semantic. Light neutrals live in `@theme` in `src/styles/tailwind.css`; each accent preset carries its own dark neutrals in `src/styles/palettes/<name>.css`. The Tailwind v4 tokens are `background`, `foreground`, `muted`, `surface`, `border`, `ring`, `primary`, `link`, `depth-*`, and `accent`.
 
 ### Base Roles
 
@@ -155,47 +155,76 @@ first paint (`src/layouts/Layout.astro`).
   `orange`, `pink`.
 
 The preset list lives in exactly one place, `src/utils/accents.ts`, and both the header
-dropdown and the mobile toggle read it. Adding a palette means editing that file plus the
-`[data-accent]` blocks in `tailwind.css` — never a second copy of the swatch array.
+dropdown and the mobile toggle read it. Adding a palette means editing that file plus
+adding `src/styles/palettes/<name>.css` — never a second copy of the swatch array.
 
-Every token is declared once in `@theme` (light values) and overridden in `.dark`.
-Accent presets are `[data-accent="…"]` and `.dark[data-accent="…"]` blocks. **Light and
-dark values of an accent are deliberately different** — a single hue cannot clear the
-contrast threshold on both a white and a near-black background.
+**One preset — one file.** `src/styles/palettes/` holds six files, and each describes its
+preset whole: the accent in both themes, the dark neutral paper, and the shape register.
+Light neutrals are shared by all six and stay in `@theme` in `tailwind.css`. Previously a
+single preset was spread across three blocks at opposite ends of one file, and keeping
+them consistent was done by eye.
+
+Selectors inside a palette file start with `:root` on purpose, not for looks: `(0,2,0)` and
+`(0,3,0)` beat the `(0,1,0)` of `:root` from `@theme` and of `.dark`. That makes `@import`
+order irrelevant, so palette files can be listed in any sequence.
+
+**Light and dark values of an accent are deliberately different** — a single hue cannot
+clear the contrast threshold on both a white and a near-black background.
 
 **In dark theme the accent also swaps the neutrals.** The same grey reads differently
 under each hue, so every preset ships its own dark paper. Light theme is shared by all
 six — there the accent changes nothing but the accent tokens.
 
-- `green` — the base `.dark` set: soft charcoal (`7%` page, `15%` surface), no pure black.
-- `violet` — Vercel register: pure black page, surfaces barely lifted off it (`4%`/`10%`),
-  quiet borders (`18%`), ink at `93%` instead of white. Hierarchy comes from type, not rules.
-- `blue` — Uber Base register: the same black page, but visibly lifted surfaces
-  (`8%`/`12%`), denser borders (`20%`), and pure-white ink. Louder and more contrasty.
-- `red` — the deepest register: page at `4%`, surfaces raised sparingly (`12%`), quiet
-  borders. Red is the loudest accent in the set and a lighter paper makes it ring.
-- `orange` — the lightest dark theme: page at `11%`, not black at all. Orange is the one
-  hue whose light value had to drop to `39.5%` to clear AA, and against a pure-black page
-  the warm accent against a cold zero reads as a mistake. Its `subtle-foreground` is `68%`
-  rather than the usual `63%` — on the lighter `bg-subtle` (`25%`) anything less fails AA.
-- `pink` — the middle register between `red` and base `green`: page `6%`, ordinary surface
-  step, moderate borders.
+### The Surface Ladder
+
+**`muted` sits between `background` and `surface`. This is the load-bearing rule of the
+whole system.** A section band takes `bg-muted` and is recessed relative to the page; a
+card on that band takes `bg-surface` and is raised above it. Order the two the other way
+and the catalog collapses.
+
+That is exactly what used to happen. `muted` sat *above* `surface` in dark, and at three
+presets they landed on the same value or one point apart — `orange` `20%`/`20%`,
+`pink` `15%/15%`, `red` `13%/12%`. Several hundred centre cards rendered the same colour
+as the list band behind them. In light, `surface` and `background` were both pure white,
+so every `bg-surface` panel on the page — `Box`, MDX, project cards — was white on white.
+
+    dark:   background  <  muted  <  surface  <  surface-muted  <  subtle
+    light:  surface  >  background  >  surface-muted  >  muted  >  subtle
+
+| preset | background | muted | surface | surface-muted | subtle |
+| --- | --- | --- | --- | --- | --- |
+| light (all six) | 97.5% | 92.5% | 100% | 95% | 89% |
+| `green` | 7% | 11% | 16% | 19% | 22% |
+| `blue` | 0% | 4% | 8% | 12% | 16% |
+| `violet` | 0% | 2% | 5% | 9% | 14% |
+| `red` | 4% | 8% | 12% | 16% | 20% |
+| `orange` | 11% | 15.5% | 20% | 24% | 28% |
+| `pink` | 6% | 10.5% | 15% | 19% | 23% |
+
+Each preset keeps its character: `violet` the Vercel register on pure black, `blue` the
+louder Uber Base with pure-white ink, `red` the deepest paper, `orange` the lightest dark
+theme at `11%`, `pink` the middle register, `green` the soft charcoal base.
 
 **The page → surface step is the main depth signal in dark, and it is deliberately larger
 than its light counterpart.** Light theme lets a shadow finish the job; dark theme has no
-usable shadow, so the step has to carry it alone. Measured in perceptual lightness
-(oklch `L`), all six dark palettes clear `+8`, matching HeroUI's `12% → 21%`. Steps
-below that read as flat. Deeper nesting needs far less — `surface → surface-muted` is
-about `+4`.
+usable shadow, so the step has to carry it alone. All six dark palettes clear `+9` in
+oklch `L`. Near white the scale is compressed and `surface → background` is only `ΔL 1.9` —
+that is fine, because light theme still has a shadow and a border to finish the job.
 
-All twelve theme × accent combinations are verified at >=4.5:1 for body text, footer text,
-and the accent itself against its own background. Watch `subtle-foreground` in particular:
-it is the dimmest text token and it lands on `bg-subtle`, the lightest fill, so that pair
-is the binding constraint whenever a dark surface is raised.
+Every value is solved numerically, not chosen by eye. The constraints: the ladder order
+above, `card on band >= ΔL 4`, `border-muted >= 1.28:1` against both `surface` and
+`background`, `border >= 1.5:1`, and `muted-foreground` / `subtle-foreground` at
+`>= 4.55:1` against **all five fills of their own palette** — not just against the page.
+The old values cleared AA on the page and failed on `bg-muted` (`4.01`) and `bg-subtle`
+(`3.66`), which is precisely where the toolbar counter and the footer put them.
+
+`depth-100` carries the catalog card ring and is solved for that duty: it must read on
+`surface` and on `muted` at once. Do not put an alpha modifier on it. `ring-depth-100/70`
+measured `1.04-1.22:1` across all twelve combinations — a ring that was not there.
 
 ### Brand Accent
 
-The accent is green by default (`#1c8743` light, `#3ecc72` dark) and appears in the hero
+The accent is green by default (`#1b8341` light, `#3ecc72` dark) and appears in the hero
 word treatment, the liquid-metal mark, focus indicators, active filter chips, and the
 filter badge. Treat it as a named signal, not a general palette. Do not apply it to cards,
 prose, footer links, or center detail pages unless a specific design pass asks for that.
@@ -250,7 +279,10 @@ The site uses centered content, generous vertical rhythm on the homepage, and co
 
 - Homepage: stacked brand mark, hero title, quick links, stats, and a screenshot-led search section.
 - Centers index: list hero, toolbar, search/filter controls, grid cards, and pagination.
-- Center detail: compact navigation, centered header, metadata badges, source links, sidebar facts, and MDX body.
+- Center detail: compact navigation, a left-aligned header, the MDX body in a measured
+  column, and a facts aside. Everything sits on one left axis — the header must not be
+  centered above left-aligned prose, and neither the body nor the aside is wrapped in a
+  panel. Separation comes from spacing, column measure, and hairline rules.
 - MDX pages: a readable surface with clear prose styles and restrained borders.
 
 ### Layout Rules
@@ -287,7 +319,9 @@ alongside its colors. The scale is shared by light and dark: contrast depends on
 background, shape does not.
 
 There are **three shape registers for six presets** — the hue already tells them apart,
-and six different geometries would turn the scale into a set of accidents.
+and six different geometries would turn the scale into a set of accidents. The default
+register lives in `@theme`; the two others sit in the palette files that use them, so a
+preset is still described by exactly one file.
 
 | register | presets | micro | control | card | catalog |
 | --- | --- | --- | --- | --- | --- |
@@ -401,7 +435,27 @@ The homepage search section combines explanatory copy with localized screenshot 
 
 ### Buttons And Chips
 
-Buttons and chips use compact padding, squircle rounding, and semantic tokens. Active filter chips use `accent` and `accent-foreground`; primary buttons use `primary` and `primary-foreground`.
+Buttons and chips use compact padding, squircle rounding, and semantic tokens. Primary
+buttons use `primary` and `primary-foreground`.
+
+### Catalog Filters
+
+The filter list has **two registers driven by one markup**, switched at `lg`.
+
+- **Below `lg`** the filters open as a band under the search field, where a wrapped row of
+  chips works: `rounded-full`, a resting `border` on `bg-surface`, active in solid `accent`
+  / `accent-foreground`.
+- **From `lg`** the same buttons become full-width rows in the aside: label left, count
+  right in `tabular-nums`, active in `accent-soft` / `accent-soft-foreground`.
+
+A chip cloud in a 20rem column wraps raggedly and truncates long country and region names
+mid-word, which is why the desktop register is a list. And a full-width row filled with
+solid `accent` turns twenty rows into a carpet, so the row register takes the quiet fill
+instead. The accent is still the signal in both — only its loudness follows the shape.
+
+The count is plain text, never a filled pill: inside a chip that was a capsule within a
+capsule. Resting hover fills must not use `bg-muted` on the catalog page — that is the
+page background itself, so the hover would be invisible.
 
 ### Focus
 
@@ -410,6 +464,17 @@ There is exactly one focus recipe, in `@layer base`: a 2px `accent` outline with
 ### Center Cards
 
 Center cards remain the core catalog primitive. They must keep titles readable, metadata compact, locations scannable, and localized routes stable.
+
+**One ring per nesting level.** The card owns exactly one ring, and nothing inside it gets
+a second one. Metadata is carried by type and spacing — weight, tone, a `·` separator —
+not by a pill, badge, or bordered segment per field. A card that nests four ringed
+capsules inside its own ring flattens its hierarchy: every element reads equally
+important, and the title stops leading.
+
+The whole card is a link, so it must never contain a decorative "details" button, and it
+must have a hover state — ring step, lift, and an underlined title. Resting elevation
+stays off: a shadow under each of several hundred cards is noise plus compositing cost,
+so `surface-lift` is spent on hover instead.
 
 ### MDX Surfaces
 

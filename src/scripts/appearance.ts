@@ -45,15 +45,40 @@ const syncGroup = (attr: string, value: string) => {
 	}
 };
 
+// Цвет адресной строки берётся из вычисленного --color-background, а не из
+// таблицы в JS. Иначе он был бы третьей копией палитры и разъезжался бы с CSS:
+// раньше здесь стоял фиксированный #141414, который совпадал только с green, а
+// у blue и violet страница чёрная — полоса браузера была светлее страницы на
+// 19 единиц перцептивной светлоты. Фон зависит и от темы, и от акцента, поэтому
+// звать нужно из обоих applyTheme/applyAccent.
+const syncThemeColor = () => {
+	const background = getComputedStyle(root).getPropertyValue("--color-background").trim();
+	if (!background) return;
+
+	// Тег должен остаться ровно один: PWA-плагин вставляет свой, статический.
+	const metas = document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]');
+	for (let i = 1; i < metas.length; i += 1) metas[i].remove();
+
+	let meta = metas[0];
+	if (!meta) {
+		meta = document.createElement("meta");
+		meta.name = "theme-color";
+		document.head.append(meta);
+	}
+	meta.content = background;
+};
+
 const applyTheme = (theme: string) => {
 	root.dataset.theme = theme;
 	root.classList.toggle("dark", theme === "dark" || (theme === "system" && media.matches));
 	syncGroup("data-theme-option", theme);
+	syncThemeColor();
 };
 
 const applyAccent = (accent: string) => {
 	root.dataset.accent = accent;
 	syncGroup("data-accent-option", accent);
+	syncThemeColor();
 };
 
 // Флаг живёт на <html>, а не на классе конкретных блоков: по нему гасятся все

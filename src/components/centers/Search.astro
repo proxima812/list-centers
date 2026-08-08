@@ -1,5 +1,5 @@
 ---
-import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
+import { getLocaleFromUrl, useTranslations } from "@/i18n";
 import { Icon } from "astro-icon/components";
 
 const locale = getLocaleFromUrl(Astro.url);
@@ -8,12 +8,11 @@ const t = useTranslations(locale);
 
 <form
 	data-search-form
-	data-search-index-url={localizePath(locale, "/centers/search-index.json")}
 	data-speech-lang={locale === "en" ? "en-US" : "ru-RU"}
 	data-voice-listening={t("list.voiceListening")}
 	data-voice-error={t("list.voiceError")}
 	role="search"
-	class="relative z-40 mb-6 flex items-center gap-1 rounded-catalog corner-squircle bg-surface p-1 shadow-2xs has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-accent lg:mb-10"
+	class="relative z-40 flex items-center gap-1 rounded-catalog corner-squircle bg-surface p-1 shadow-2xs has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-accent"
 >
 	<label class="relative z-50 min-w-0 flex-1" for="centers-search">
 		<span class="sr-only">{t("list.search.placeholder")}</span>

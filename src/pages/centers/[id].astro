@@ -84,7 +84,10 @@ const nextEntry =
 		? centerEntries[currentIndex + 1]
 		: null;
 
-const placeLine = [flag, country].filter(Boolean).join(" ");
+// Страна в справке раньше бралась сырой из данных, то есть на английской
+// версии страницы оставалась русской. `getCountryLabel` уже локализует её.
+const localizedCountry = country ? getCountryLabel(country, locale) : null;
+const placeLine = [flag, localizedCountry ?? country].filter(Boolean).join(" ");
 const cityLine = city ?? null;
 const formattedDate = rawPubDate
 	? new Date(rawPubDate).toLocaleDateString(locale, {
@@ -107,39 +110,18 @@ const sourceLabel = (() => {
 	}
 })();
 
+// Иконка на каждой строке справки — украшение: пара «метка — значение» и так
+// себя объясняет, а четыре разных пиктограммы подряд только шумят.
 const facts = [
-	placeLine
-		? {
-				label: t("detail.country"),
-				value: placeLine,
-				icon: "mdi:earth",
-			}
-		: null,
-	cityLine
-		? {
-				label: t("detail.city"),
-				value: cityLine,
-				icon: "mdi:city-variant-outline",
-			}
-		: null,
-	region
-		? {
-				label: t("detail.region"),
-				value: region,
-				icon: "mdi:map-marker-radius-outline",
-			}
-		: null,
-	formattedDate
-		? {
-				label: t("content.published"),
-				value: formattedDate,
-				icon: "mdi:calendar-outline",
-			}
-		: null,
-].filter(Boolean);
+	placeLine ? { label: t("detail.country"), value: placeLine } : null,
+	cityLine ? { label: t("detail.city"), value: cityLine } : null,
+	region ? { label: t("detail.region"), value: region } : null,
+	formattedDate ? { label: t("content.published"), value: formattedDate } : null,
+].filter((fact): fact is { label: string; value: string } => Boolean(fact));
 
+// Категория и тип — таксономия, она уходит в надзаголовок. В справке остаётся
+// география, дата и источник, поэтому ничего не дублируется.
 const headerBadges = [category, type].filter((value): value is string => Boolean(value));
-const localizedCountry = country ? getCountryLabel(country, locale) : null;
 const descriptionDetails = [...new Set((locale === "en"
 	? [city, region, localizedCountry]
 	: [city, region, localizedCountry, category, type]
@@ -220,12 +202,9 @@ const jsonLd = {
 	dateModified={modifiedDate}
 >
 	<article class="mx-auto flex w-full max-w-5xl min-w-0 flex-col gap-10">
-		<nav
-			class="w-full flex justify-between items-center flex-wrap"
-		>
+		<nav class="flex w-full flex-wrap items-center justify-between gap-3">
 			<ButtonLink
 				href={localizePath(locale, "/centers")}
-				label="Все центры"
 				labelKey="nav.allCenters"
 				variant="outline"
 				icon="tabler:arrow-back-up"
@@ -233,39 +212,36 @@ const jsonLd = {
 			<CopyPageMenu class="max-w-full justify-self-start sm:justify-self-end" />
 		</nav>
 
-		<div
-			class="h-px w-[calc(100%-180px)] mx-auto bg-linear-to-r from-transparent via-border to-transparent"
-		>
-		</div>
+		{/*
+			Страница держалась на трёх декоративных градиентных волосках шириной
+			`calc(100% - 180px)` — магическое число и чистое украшение, — а тело
+			лежало в панели с кольцом, внутри которой сидела вторая панель с
+			кольцом. Разделение теперь делают отступы и мера колонки.
 
-		<header
-			class="relative mx-auto flex w-full max-w-4xl min-w-0 flex-col items-center gap-4 overflow-hidden text-center"
-		>
+			Ось одна — левая. Раньше шапка была центрирована, а проза под ней
+			прижата влево, и страница дважды меняла выравнивание на одном экране.
+		*/}
+		<header class="flex w-full min-w-0 flex-col gap-4">
 			{
-				(headerBadges.length > 0 || localizedCountry) && (
-					<div class="flex flex-wrap items-center justify-center gap-2 text-xs text-muted-foreground">
-						{localizedCountry && (
-							<span class="inline-flex items-center gap-1.5 rounded-full bg-surface px-3 py-1 font-medium ring ring-depth-100/60">
-								{flag && <span class="text-sm leading-none">{flag}</span>}
-								{localizedCountry}
-							</span>
-						)}
-						{headerBadges.map((badge) => (
-							<span class="rounded-full bg-surface px-3 py-1 font-medium ring ring-depth-100/60">
-								{badge}
-							</span>
+				headerBadges.length > 0 && (
+					<p class="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-medium text-muted-foreground">
+						{headerBadges.map((badge, index) => (
+							<>
+								{index > 0 && <span aria-hidden="true">·</span>}
+								<span>{badge}</span>
+							</>
 						))}
-					</div>
+					</p>
 				)
 			}
 			<h1
-				class="max-w-full text-balance break-words text-3xl font-semibold leading-tight text-foreground sm:text-4xl lg:text-5xl"
+				class="max-w-4xl text-balance break-words text-3xl font-semibold leading-tight text-foreground sm:text-4xl lg:text-5xl"
 			>
 				{title}
 			</h1>
 			{
 				summary && (
-					<p class="max-w-3xl text-base leading-7 text-muted-foreground sm:text-lg">
+					<p class="max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">
 						{summary}
 					</p>
 				)
@@ -273,18 +249,13 @@ const jsonLd = {
 		</header>
 
 		<div
-			class="h-px w-[calc(100%-180px)] mx-auto bg-linear-to-r from-transparent via-border to-transparent"
+			class="grid min-w-0 grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-12"
 		>
-		</div>
-
-		<main
-			class="relative flex w-full min-w-0 max-w-full flex-col justify-between gap-6 rounded-control bg-surface-muted p-5 shadow-2xs ring ring-depth-100/70 sm:p-10 lg:flex-row lg:items-start lg:gap-10 xl:gap-12"
-		>
-			<div class="prose min-w-0 max-w-full">
+			<div class="prose min-w-0 max-w-[68ch]">
 				<Content components={{ ...markdownComponents, h1: SkipNode }} />
 				{
 					(publishedLabel || modifiedLabel) && (
-						<footer class="mt-8 border-t border-depth-100 pt-3 text-[0.68rem] leading-5 text-muted-foreground/60">
+						<footer class="mt-8 border-t border-depth-100 pt-3 text-xs leading-5 text-subtle-foreground">
 							{publishedLabel && (
 								<time datetime={publishedDate?.toISOString()}>
 									{t("content.published")}: {publishedLabel}
@@ -302,47 +273,45 @@ const jsonLd = {
 			</div>
 
 			{
-				facts.length > 0 && (
-					<aside class="order-first h-fit w-full shrink-0 rounded-control corner-squircle bg-depth-100/30 p-5 shadow-2xs ring ring-depth-100/70 sm:p-6 lg:sticky lg:top-12 lg:order-2 lg:w-72">
-						<span class="mb-4 flex items-center gap-2 text-sm font-semibold text-foreground">
-							<Icon name="mdi:information-outline" class="h-4 w-4 text-muted-foreground" />
-							<span>{t("detail.summary")}</span>
-						</span>
-						<dl class="space-y-4 text-sm text-muted-foreground">
-							{facts &&
-								facts.map((fact) => (
-									<div>
-										<dt class="mb-1 flex items-center gap-1.5 text-xs uppercase text-subtle-foreground">
-											<Icon name={fact?.icon} class="h-3.5 w-3.5" />
-											<span>{fact?.label}</span>
-										</dt>
-										<dd class="break-words text-foreground">{fact?.value}</dd>
-									</div>
-								))}
+				(facts.length > 0 || sourceUrl) && (
+					<aside class="order-first h-fit min-w-0 lg:sticky lg:top-12 lg:order-2">
+						<dl class="divide-y divide-depth-100/70 border-y border-depth-100/70 text-sm">
+							{facts.map((fact) => (
+								<div class="flex items-baseline justify-between gap-4 py-2.5">
+									<dt class="shrink-0 text-xs uppercase text-subtle-foreground">
+										{fact.label}
+									</dt>
+									<dd class="min-w-0 break-words text-right text-foreground">
+										{fact.value}
+									</dd>
+								</div>
+							))}
+							{/*
+								Ссылка на источник раньше лежала внутри условия `facts.length > 0`:
+								у центра с источником, но без страны, города, региона и даты она
+								не выводилась вовсе.
+							*/}
+							{sourceUrl && (
+								<div class="flex items-baseline justify-between gap-4 py-2.5">
+									<dt class="shrink-0 text-xs uppercase text-subtle-foreground">
+										{t("detail.source")}
+									</dt>
+									<dd class="min-w-0 text-right">
+										<a
+											target="_blank"
+											rel="nofollow noreferrer noopener"
+											href={sourceUrl}
+											class="break-words text-foreground underline decoration-link-decoration underline-offset-4"
+										>
+											{sourceLabel}
+										</a>
+									</dd>
+								</div>
+							)}
 						</dl>
-						<hr class="bg-primary/10 my-4" />
-						<span class="mb-1 flex items-center gap-1.5 text-xs uppercase text-subtle-foreground">
-							<Icon name="mdi:link" />
-							{t("detail.source")}
-						</span>
-						{sourceUrl && (
-							<a
-								target="_blank"
-								rel="nofollow noreferrer noopener"
-								href={sourceUrl}
-								class="break-words text-sm underline"
-							>
-								{sourceLabel}
-							</a>
-						)}
 					</aside>
 				)
 			}
-		</main>
-
-		<div
-			class="h-px w-[calc(100%-180px)] mx-auto bg-linear-to-r from-transparent via-border to-transparent"
-		>
 		</div>
 
 		{

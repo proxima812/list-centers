@@ -85,3 +85,42 @@ export function audit(name, p) {
 	}
 	return bad.length === 0;
 }
+
+// Лестница поверхностей — несущее правило системы: `muted` лежит между
+// `background` и `surface`. Полоса секции утоплена относительно страницы,
+// карточка на полосе приподнята. Обратный порядок схлопывает каталог: именно
+// так карточки центров однажды стали одного цвета с полосой списка.
+export function ladder(name, p) {
+	const isDark = name.endsWith("dark");
+	const L = (token) => okL(hsl(...p[token]));
+	const order = isDark
+		? ["background", "muted", "surface", "surface-muted", "subtle"]
+		: ["subtle", "muted", "surface-muted", "background", "surface"];
+
+	const rows = [];
+	for (let i = 0; i < order.length - 1; i += 1) {
+		const [a, b] = [order[i], order[i + 1]];
+		rows.push([`порядок ${a}→${b}`, L(b) - L(a), 0.01]);
+	}
+	// Карточка каталога на полосе списка — та самая пара, ради которой всё это.
+	rows.push(["ΔL карточка на полосе", Math.abs(L("surface") - L("muted")), 4.0]);
+	rows.push(["border-muted на surface", ratio(hsl(...p["border-muted"]), hsl(...p.surface)), 1.28]);
+	rows.push(["border на surface", ratio(hsl(...p.border), hsl(...p.surface)), 1.5]);
+	// depth-100 несёт кольцо карточки: обязан читаться и на surface, и на muted.
+	rows.push(["depth-100 на surface", ratio(hsl(...p["depth-100"]), hsl(...p.surface)), 1.3]);
+	rows.push(["depth-100 на полосе", ratio(hsl(...p["depth-100"]), hsl(...p.muted)), 1.22]);
+	// Тусклый текст обязан проходить на всех заливках своей палитры, а не
+	// только на странице: subtle-fg садится и в тулбар, и в футер.
+	for (const fill of ["surface", "surface-muted", "muted", "subtle"]) {
+		rows.push([`subtle-fg на ${fill}`, ratio(hsl(...p["subtle-foreground"]), hsl(...p[fill])), 4.5]);
+		rows.push([`muted-fg на ${fill}`, ratio(hsl(...p["muted-foreground"]), hsl(...p[fill])), 4.5]);
+	}
+
+	const bad = rows.filter(([, v, floor]) => v < floor);
+	if (bad.length) {
+		for (const [label, v, floor] of bad) {
+			console.log(`   FAIL ${label.padEnd(26)} ${f(v)} (нужно ≥${floor})`);
+		}
+	}
+	return bad.length === 0;
+}

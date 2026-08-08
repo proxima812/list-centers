@@ -49,6 +49,12 @@ const locale = getLocaleFromUrl(Astro.url);
 	class="scroll-smooth subpixel-antialiased transition-colors duration-300 ease-linear"
 >
 	<head>
+		{/* Запасной вариант без JS: светлая тема — её же дефолт. Тег объявлен ДО
+		    инлайн-скрипта намеренно: скрипт находит его через querySelector и
+		    переписывает. Если объявить ниже, на момент выполнения скрипта тега
+		    ещё нет в DOM, и в <head> оказываются два theme-color. */}
+		<meta name="theme-color" content="#ffffff" />
+
 		{/* Тема применяется до первой отрисовки — иначе на каждой навигации
 		    будет вспышка светлой темы. Скрипт намеренно синхронный и лежит
 		    выше любых стилей и разметки. Переключатель (ThemeToggle) только
@@ -67,13 +73,40 @@ const locale = getLocaleFromUrl(Astro.url);
 				root.dataset.accent = accent;
 				root.dataset.motion = motion;
 				root.classList.toggle("dark", dark);
+
+				// Фон страницы зависит и от темы, и от акцента: каждый пресет
+				// несёт свою тёмную «бумагу». Поэтому цвет адресной строки
+				// читается из вычисленного токена, а не из константы. Здесь, в
+				// <head>, стилей может ещё не быть — тогда добираем на
+				// DOMContentLoaded. Дальше за тег отвечает appearance.ts.
+				const syncThemeColor = () => {
+					const background = getComputedStyle(root)
+						.getPropertyValue("--color-background")
+						.trim();
+					if (!background) return;
+
+					// Плагин PWA вставляет собственный theme-color из манифеста —
+					// одно статическое значение, которое не знает ни про тему, ни
+					// про акцент. Тег должен остаться ровно один, наш.
+					const metas = document.querySelectorAll('meta[name="theme-color"]');
+					for (let i = 1; i < metas.length; i += 1) metas[i].remove();
+
+					let meta = metas[0];
+					if (!meta) {
+						meta = document.createElement("meta");
+						meta.name = "theme-color";
+						document.head.append(meta);
+					}
+					meta.content = background;
+				};
+
+				// Дважды: сейчас — чтобы адресная строка была верной до первой
+				// отрисовки, и на DOMContentLoaded — когда <head> разобрана
+				// целиком и стал виден тег от PWA.
+				syncThemeColor();
+				document.addEventListener("DOMContentLoaded", syncThemeColor, { once: true });
 			})();
 		</script>
-
-		{/* Два тега вместо одного: браузер выбирает по медиавыражению, поэтому
-		    адресная строка совпадает с фоном страницы в обеих темах. */}
-		<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
-		<meta name="theme-color" content="#141414" media="(prefers-color-scheme: dark)" />
 
 		<link
 			rel="preload"

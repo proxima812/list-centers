@@ -32,6 +32,10 @@ const searchImage = locale === "en" ? searchImageEn : searchImageRu;
 		<Image
 			src={present}
 			alt={t("home.present.imageAlt")}
+			widths={[400, 640, 768, 1200]}
+			sizes="(min-width: 768px) 50vw, 100vw"
+			loading="eager"
+			fetchpriority="high"
 			class="h-full w-full object-cover"
 		/>
 		<div class="space-y-6 px-6 py-10 sm:px-8 md:px-12 md:py-16">
@@ -67,6 +71,8 @@ const searchImage = locale === "en" ? searchImageEn : searchImageRu;
 		<Image
 			src={searchImage}
 			alt={t("home.search.imageAlt")}
+			widths={[400, 640, 768, 1200]}
+			sizes="(min-width: 768px) 50vw, 100vw"
 			class="order-1 h-full w-full object-cover md:order-2"
 		/>
 	</section>

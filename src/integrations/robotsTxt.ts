@@ -16,7 +16,7 @@ const getRobotsTxt = (site: URL) => {
 	const aiPolicy = _options.aiPolicy ?? new URL("ai.txt", site).href;
 	const rules = _options.rules ?? "User-agent: *\nAllow: /";
 
-	return `${rules}\n\nSitemap: ${sitemap}\nAI usage policy: ${aiPolicy}\n`;
+	return `${rules}\n\nSitemap: ${sitemap}\n# AI usage policy: ${aiPolicy}\n`;
 };
 
 export const GET: APIRoute = ({ site }) => {

@@ -1,5 +1,4 @@
 ---
-import { Icon } from "astro-icon/components";
 import { getCountryLabels, getCountryLabel } from "@/data/worldCountries";
 import { getLocaleFromUrl, useTranslations } from "@/i18n";
 
@@ -24,22 +23,36 @@ const t = useTranslations(locale);
 
 type CountryLabels = Record<string, string>;
 
-// Активный чип раньше был `bg-white` — на белой подложке он ничем не
-// отличался от неактивного. Акцент здесь и есть то самое «сигнальное»
-// применение цвета, ради которого он введён.
+// Одна разметка, два режима. На мобильном фильтры лежат лентой под поиском —
+// там чип честно работает. В десктопном aside шириной 20rem чипо-облако
+// переносилось рвано, а длинные страны и регионы резались `truncate` на
+// середине слова, поэтому с lg то же самое становится строкой: метка слева,
+// счётчик справа.
+//
+// Заливка акцентом во всю ширину строки на два десятка строк превращается в
+// ковёр, поэтому активное состояние на десктопе берёт тихую заливку
+// `accent-soft`. Сигнал остаётся акцентным, громкость падает.
+//
+// Ховер раньше был `bg-muted` — ровно фон каталога, то есть невидимый.
+// Чип в покое раньше был прозрачным и без рамки, а границу ему рисовал только
+// вложенный счётчик-пилюля. Без него лента на мобильном слипалась в сплошную
+// строку «Россия 195 Казахстан 54», поэтому форму держит собственная рамка.
+// В строке она не нужна: полная ширина сама себя ограничивает.
 const chipClass =
-	"group min-w-0 cursor-pointer items-center gap-1.5 rounded-full border border-transparent bg-transparent px-2.5 py-1.5 text-sm font-medium text-muted-foreground transition hover:border-border hover:bg-muted hover:text-foreground data-[active]:bg-accent data-[active]:text-accent-foreground";
+	"group flex min-w-0 max-w-fit cursor-pointer items-center gap-1.5 rounded-full border border-border bg-surface px-2.5 py-1.5 text-sm font-medium text-muted-foreground transition hover:border-depth-300 hover:text-foreground data-[active]:border-accent data-[active]:bg-accent data-[active]:text-accent-foreground lg:w-full lg:max-w-none lg:rounded-micro lg:border-0 lg:bg-transparent lg:px-2 lg:not-data-[active]:hover:bg-subtle lg:data-[active]:bg-accent-soft lg:data-[active]:font-semibold lg:data-[active]:text-accent-soft-foreground";
 const filterSectionClass =
 	"border-b border-depth-100/70 pb-4 last:border-b-0 last:pb-0";
 const filterHeadingClass =
-	"text-xs font-semibold tracking-wide text-subtle-foreground uppercase";
-const filterGroupClass = "flex max-w-80 flex-wrap items-center gap-1.5";
-// Счётчик внутри активного чипа лежит уже на акценте, поэтому берёт его
-// контрастную пару, а не primary.
+	"text-xs font-semibold tracking-wide text-subtle-foreground uppercase lg:px-2";
+const filterGroupClass =
+	"flex flex-wrap items-center gap-1.5 lg:flex-col lg:items-stretch lg:gap-0.5";
+// Счётчик — не вложенная пилюля с собственным фоном, а просто число: внутри
+// чипа это была капсула в капсуле. В активном состоянии наследует цвет
+// строки, каким бы он ни был в текущем режиме.
 const countClass =
-	"rounded-full bg-subtle px-1.5 py-0.5 text-xs tabular-nums text-subtle-foreground group-data-[active]:bg-accent-foreground/15 group-data-[active]:text-accent-foreground";
+	"shrink-0 text-xs tabular-nums text-subtle-foreground group-data-[active]:text-current lg:ml-auto lg:pl-2";
 const moreButtonClass =
-	"mt-0.5 inline-flex max-w-fit cursor-pointer text-xs font-medium text-muted-foreground underline decoration-border underline-offset-4 transition hover:text-foreground";
+	"mt-0.5 inline-flex max-w-fit cursor-pointer text-xs font-medium text-muted-foreground underline decoration-border underline-offset-4 transition hover:text-foreground lg:mt-1 lg:px-2";
 const countryVisibleLimit = 5;
 const defaultVisibleLimit = 2;
 
@@ -66,10 +79,10 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 
 <aside
 	data-filters-shell
-	class="hidden w-full max-w-80 pb-8 lg:sticky lg:top-12 lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:block lg:max-h-[calc(100vh-3rem)] lg:overflow-y-auto lg:pb-12"
+	class="hidden w-full pb-8 lg:sticky lg:top-36 lg:block lg:max-h-[calc(100vh-10rem)] lg:overflow-y-auto lg:pb-12"
 >
-	<section class="w-full max-w-80">
-		<div id="filters-panel" data-filters-panel class="hidden w-full max-w-80 space-y-4">
+	<section class="w-full">
+		<div id="filters-panel" data-filters-panel class="hidden w-full space-y-4">
 			<section class={filterSectionClass}>
 				<p class={filterHeadingClass}>
 					{t("list.countries")}
@@ -85,15 +98,10 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 						data-filter-all="country"
 						data-active=""
 						aria-pressed="true"
-						class={`inline-flex max-w-fit ${chipClass}`}
+						class={chipClass}
 					>
-						<Icon name="mdi:align-horizontal-left" />
-						<span>{t("list.all")}</span>
-						<span
-							class={countClass}
-						>
-							{cardsCount}
-						</span>
+						<span class="min-w-0 truncate">{t("list.all")}</span>
+						<span class={countClass}>{cardsCount}</span>
 					</button>
 
 					{
@@ -103,10 +111,12 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 								data-filter-chip="country"
 								data-filter-value={country}
 								aria-pressed="false"
-								class={`inline-flex max-w-fit ${chipClass}`}
+								class={chipClass}
 							>
 								{countryFlags.get(country) && (
-									<span class="text-sm leading-none">{countryFlags.get(country)}</span>
+									<span class="shrink-0 text-sm leading-none">
+										{countryFlags.get(country)}
+									</span>
 								)}
 								<span
 									class="min-w-0 truncate"
@@ -129,11 +139,13 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 								data-filter-value={country}
 								data-overflow-chip="true"
 								aria-pressed="false"
-								class={`inline-flex max-w-fit ${chipClass}`}
+								class={chipClass}
 								hidden
 							>
 								{countryFlags.get(country) && (
-									<span class="text-sm leading-none">{countryFlags.get(country)}</span>
+									<span class="shrink-0 text-sm leading-none">
+										{countryFlags.get(country)}
+									</span>
 								)}
 								<span
 									class="min-w-0 truncate"
@@ -184,10 +196,9 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 								data-filter-all="type"
 								data-active=""
 								aria-pressed="true"
-								class={`inline-flex max-w-fit ${chipClass}`}
+								class={chipClass}
 							>
-								<Icon name="mdi:align-horizontal-left" />
-								<span>{t("list.allTypes")}</span>
+								<span class="min-w-0 truncate">{t("list.allTypes")}</span>
 							</button>
 
 							{getVisibleOptions(typeOptions).map((option) => (
@@ -196,7 +207,7 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 									data-filter-chip="type"
 									data-filter-value={option.value}
 									aria-pressed="false"
-									class={`inline-flex max-w-fit ${chipClass}`}
+									class={chipClass}
 								>
 									<span class="min-w-0 truncate">{option.value}</span>
 									<span class={countClass}>
@@ -211,7 +222,7 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 									data-filter-value={option.value}
 									data-overflow-chip="true"
 									aria-pressed="false"
-									class={`inline-flex max-w-fit ${chipClass}`}
+									class={chipClass}
 									hidden
 								>
 									<span class="min-w-0 truncate">{option.value}</span>
@@ -254,10 +265,9 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 								data-filter-all="category"
 								data-active=""
 								aria-pressed="true"
-								class={`inline-flex max-w-fit ${chipClass}`}
+								class={chipClass}
 							>
-								<Icon name="mdi:align-horizontal-left" />
-								<span>{t("list.allCategories")}</span>
+								<span class="min-w-0 truncate">{t("list.allCategories")}</span>
 							</button>
 
 							{getVisibleOptions(categoryOptions).map((option) => (
@@ -266,7 +276,7 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 									data-filter-chip="category"
 									data-filter-value={option.value}
 									aria-pressed="false"
-									class={`inline-flex max-w-fit ${chipClass}`}
+									class={chipClass}
 								>
 									<span class="min-w-0 truncate">{option.value}</span>
 									<span class={countClass}>
@@ -281,7 +291,7 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 									data-filter-value={option.value}
 									data-overflow-chip="true"
 									aria-pressed="false"
-									class={`inline-flex max-w-fit ${chipClass}`}
+									class={chipClass}
 									hidden
 								>
 									<span class="min-w-0 truncate">{option.value}</span>
@@ -324,10 +334,9 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 								data-filter-all="region"
 								data-active=""
 								aria-pressed="true"
-								class={`inline-flex max-w-fit ${chipClass}`}
+								class={chipClass}
 							>
-								<Icon name="mdi:align-horizontal-left" />
-								<span>{t("list.allRegions")}</span>
+								<span class="min-w-0 truncate">{t("list.allRegions")}</span>
 							</button>
 
 							{getVisibleOptions(regionOptions).map((option) => (
@@ -336,7 +345,7 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 									data-filter-chip="region"
 									data-filter-value={option.value}
 									aria-pressed="false"
-									class={`inline-flex max-w-fit ${chipClass}`}
+									class={chipClass}
 								>
 									<span class="min-w-0 truncate">{option.value}</span>
 									<span class={countClass}>
@@ -351,7 +360,7 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 									data-filter-value={option.value}
 									data-overflow-chip="true"
 									aria-pressed="false"
-									class={`inline-flex max-w-fit ${chipClass}`}
+									class={chipClass}
 									hidden
 								>
 									<span class="min-w-0 truncate">{option.value}</span>

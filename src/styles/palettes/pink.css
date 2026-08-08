@@ -1,0 +1,81 @@
+/* ─── Пресет «pink» ─────────────────────────────────────────────────────
+   средний регистр между red и green — обычный шаг поверхностей, умеренные рамки.
+
+   Файл описывает пресет целиком: акцент в обеих темах, тёмную нейтральную
+   «бумагу» и регистр формы. Светлые нейтрали общие для всех шести пресетов
+   и живут в @theme в tailwind.css — здесь их нет намеренно.
+
+   Селекторы начинаются с :root не для красоты, а ради специфичности:
+   (0,2,0) и (0,3,0) против (0,1,0) у :root из @theme и у .dark. Благодаря
+   этому порядок @import не влияет на результат, и файлы палитр можно
+   подключать в любой последовательности.
+
+   ЛЕСТНИЦА ПОВЕРХНОСТЕЙ (тёмная тема, снизу вверх):
+     background 6% → muted 10.5% → surface 15% → surface-muted 19% → subtle 23%
+
+   Главное правило: `muted` лежит МЕЖДУ `background` и `surface`.
+   Полоса секции утоплена относительно страницы, карточка на полосе —
+   приподнята. Раньше `muted` стоял выше `surface`, и карточка каталога
+   на полосе списка сливалась с ней вплотную до неразличимости.
+*/
+
+:root[data-accent="pink"] {
+  --color-accent: hsl(335 72% 49.1%);
+  --color-accent-foreground: hsl(0 0% 100%);
+  --color-accent-vivid: hsl(335 80% 54.5%);
+  --color-accent-glow: hsl(335 88% 72%);
+  --color-mark-tint: hsl(335 78% 60%);
+}
+
+/* Регистр формы: 8/12/18/24 вместо дефолтных 8/16/24/32. Ступени
+   сжимаются непропорционально — крупные радиусы отдают больше, иначе micro
+   схлопнулся бы до неотличимого от прямого угла. */
+:root[data-accent="pink"] {
+  --radius-micro: 8px;
+  --radius-control: 12px;
+  --radius-card: 18px;
+  --radius-catalog: 24px;
+}
+
+:root.dark[data-accent="pink"] {
+  --color-accent: hsl(335 85% 67.5%);
+  --color-accent-foreground: hsl(0 0% 6%);
+  --color-accent-vivid: hsl(335 88% 67%);
+  --color-accent-glow: hsl(335 92% 80%);
+  --color-mark-tint: hsl(335 88% 76%);
+
+  /* Поверхности — лестница из шапки файла. */
+  --color-background: hsl(0 0% 6%);
+  --color-muted: hsl(0 0% 10.5%);
+  --color-surface: hsl(0 0% 15%);
+  --color-surface-muted: hsl(0 0% 19%);
+  --color-subtle: hsl(0 0% 23%);
+
+  /* Границы: border-muted читается на surface и на background,
+     border — ещё и на muted и на subtle. */
+  --color-border-muted: hsl(0 0% 22%);
+  --color-border: hsl(0 0% 28.5%);
+  --color-ring: hsl(0 0% 46%);
+
+  /* Текст: muted-foreground и subtle-foreground проходят 4.55:1 на всех
+     пяти заливках этой палитры, а не только на странице. */
+  --color-foreground: hsl(0 0% 94%);
+  --color-surface-foreground: hsl(0 0% 94%);
+  --color-primary: hsl(0 0% 94%);
+  --color-primary-foreground: hsl(0 0% 6%);
+  --color-link: hsl(0 0% 94%);
+  --color-muted-foreground: hsl(0 0% 73%);
+  --color-subtle-foreground: hsl(0 0% 65%);
+  --color-link-decoration: hsl(0 0% 46%);
+
+  /* Ramp глубины развёрнут: в тёмной теме «глубже» значит светлее.
+     depth-100 подобран так, чтобы работать кольцом карточки — он обязан
+     читаться и на surface, и на muted. */
+  --color-depth-100: hsl(0 0% 22.5%);
+  --color-depth-200: hsl(0 0% 26%);
+  --color-depth-300: hsl(0 0% 33%);
+  --color-depth-400: hsl(0 0% 45%);
+  --color-depth-500: hsl(0 0% 60%);
+  --color-depth-600: hsl(0 0% 73%);
+  --color-depth-700: hsl(0 0% 84%);
+}

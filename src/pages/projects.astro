@@ -35,10 +35,14 @@ function getUrlLabel(url?: string) {
 
 // Цветные акценты — только в иконках: палитра сайта монохромная,
 // цвет здесь работает как маркер типа проекта, а не как второй бренд-цвет.
+// Ступень 600, а не 500: на 500 amber давал 2.04:1 к светлой странице, sky —
+// 2.63:1, то есть ниже порога 3:1 для нетекстовых элементов. 600 проходит и на
+// светлой (3.03-3.89), и на самой светлой тёмной «бумаге» (4.16-5.35), поэтому
+// пара dark: здесь не нужна.
 const pitchItems = [
-	{ icon: "mdi:storefront-outline", title: "Небольшой бизнес", tone: "text-amber-500" },
+	{ icon: "mdi:storefront-outline", title: "Небольшой бизнес", tone: "text-amber-600" },
 	{ icon: "mdi:youtube", title: "YouTube-канал", tone: "text-rose-500" },
-	{ icon: "mdi:web", title: "Сайт", tone: "text-sky-500" },
+	{ icon: "mdi:web", title: "Сайт", tone: "text-sky-600" },
 	{ icon: "mdi:telegram", title: "Telegram и соцсети", tone: "text-violet-500" },
 ] as const;
 
@@ -204,7 +208,7 @@ const projectCards = projects.map((project) => ({
 										<span class="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground">
 											<Icon
 												name="mdi:map-marker-outline"
-												class="size-4 text-sky-500"
+												class="size-4 text-subtle-foreground"
 												aria-hidden="true"
 											/>
 											{project.data.location}
@@ -223,7 +227,7 @@ const projectCards = projects.map((project) => ({
 									>
 										<Icon
 											name="mdi:link-variant"
-											class="size-4 shrink-0 text-emerald-500 no-underline"
+											class="size-4 shrink-0 no-underline"
 											aria-hidden="true"
 										/>
 										<span class="truncate">{websiteLabel}</span>
@@ -264,7 +268,7 @@ const projectCards = projects.map((project) => ({
 		<div id="project-empty" class="hidden py-12 text-center">
 			<Icon
 				name="mdi:folder-open-outline"
-				class="mx-auto size-8 text-amber-500"
+				class="mx-auto size-8 text-subtle-foreground"
 				aria-hidden="true"
 			/>
 			<p class="mt-3 text-sm font-medium text-muted-foreground">

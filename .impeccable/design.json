@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-08-02T00:00:00Z",
+  "generatedAt": "2026-08-08T00:00:00.000Z",
   "title": "Design System: Tatarverse",
   "register": "brand",
   "summary": "Bilingual cultural-center catalog with a controlled homepage brand layer and a quiet neutral catalog layer, themed by a user-chosen accent across light and dark.",
@@ -25,20 +25,20 @@
         "Keep catalog utility first.",
         "Never hardcode a hue. Ship only `--color-*` tokens (`accent`, `accent-vivid`, `accent-glow`, `foreground`, `surface`, `border`, `depth-*`), so a surface survives all six accent presets in both themes.",
         "The accent is a signal — hero word, focus ring, active state — not a general palette. Neutrals carry the catalog.",
-        "Every new color must be authored twice: a light value in `@theme` and a dark value under `.dark` in src/styles/tailwind.css. Contrast floors: >=4.5:1 for small UI, >=3:1 for display type.",
+        "Every new color is authored twice: a light value in `@theme` in src/styles/tailwind.css and a dark value in src/styles/palettes/<preset>.css. Contrast floors: >=4.5:1 for small UI, >=3:1 for display type. `node scripts/audit-accents.mjs` reads the CSS and checks all twelve pairs plus the surface ladder — run it after touching a palette.",
         "Use real interface imagery when explaining product behavior.",
         "Preserve locale routes, source links, stable slugs, and factual copy.",
         "Every animated component needs two escape paths, not one: `prefers-reduced-motion` and the user toggle `[data-motion=\"off\"]`. The toggle kills animation and transition globally, so never rely on `transitionend`/`animationend` firing without an explicit 1ms carve-out."
       ]
     },
     "colorMeta": {
-      "source": "src/styles/tailwind.css — light values in `@theme`, dark overrides under `.dark`, accent presets under `[data-accent]` / `.dark[data-accent]`. That file is the single source of truth; `canonical` below is the light value and `dark` the paired one.",
+      "source": "src/styles/tailwind.css несёт светлые нейтрали в @theme; тёмную «бумагу» и акцент каждого пресета — src/styles/palettes/<name>.css. `canonical` ниже — светлое значение, `dark` — парное ему из пресета green (базовый .dark). Остальные пять пресетов переопределяют тёмные нейтрали целиком.",
       "background": {
         "role": "neutral",
         "displayName": "Page Plane",
-        "canonical": "hsl(0 0% 100%)",
-        "dark": "hsl(0 0% 8%)",
-        "usage": "Page background and default clean plane."
+        "canonical": "hsl(0 0% 97.5%)",
+        "dark": "hsl(0 0% 7%)",
+        "usage": "Плоскость страницы. Больше не равна surface: в светлой теме страница слегка тонирована (97.5%), карточка остаётся белой."
       },
       "foreground": {
         "role": "neutral",
@@ -50,29 +50,29 @@
       "muted": {
         "role": "neutral",
         "displayName": "Quiet Muted",
-        "canonical": "hsl(0 0% 94%)",
-        "dark": "hsl(0 0% 16%)",
-        "usage": "Low-emphasis surfaces, chips, and catalog cards."
+        "canonical": "hsl(0 0% 92.5%)",
+        "dark": "hsl(0 0% 11%)",
+        "usage": "Полоса секции и тихие заливки. Лежит МЕЖДУ background и surface: полоса утоплена относительно страницы, карточка на ней приподнята."
       },
       "subtleForeground": {
         "role": "neutral",
         "displayName": "Subtle Ink",
-        "canonical": "hsl(0 0% 46%)",
-        "dark": "hsl(0 0% 56%)",
-        "usage": "Footer, filter captions, and quiet metadata. The light value is 46% and not 56% on purpose: 56% lands at 3.24:1 on white, below the AA floor for body text. Do not lighten it."
+        "canonical": "hsl(0 0% 39.5%)",
+        "dark": "hsl(0 0% 63.5%)",
+        "usage": "Самый тусклый текстовый токен. Проходит 4.55:1 против всех пяти заливок своей палитры, а не только против страницы."
       },
       "surface": {
         "role": "neutral",
         "displayName": "Surface Plane",
         "canonical": "hsl(0 0% 100%)",
-        "dark": "hsl(0 0% 12%)",
-        "usage": "Cards, menus, MDX surfaces, controls, and screenshot blocks. In dark it sits above `background`, not below."
+        "dark": "hsl(0 0% 16%)",
+        "usage": "Карточки, панели, поповеры. Верхняя ступень лестницы поверхностей."
       },
       "border": {
         "role": "neutral",
         "displayName": "Soft Structure",
-        "canonical": "hsl(0 0% 86%)",
-        "dark": "hsl(0 0% 26%)",
+        "canonical": "hsl(0 0% 80%)",
+        "dark": "hsl(0 0% 29%)",
         "usage": "Borders, separators, and quiet content framing."
       },
       "primary": {
@@ -85,18 +85,37 @@
       "accent": {
         "role": "accent",
         "displayName": "User Accent Signal",
-        "canonical": "hsl(142 66% 32%)",
+        "canonical": "hsl(142 66% 30.9%)",
         "dark": "hsl(142 58% 52%)",
         "presets": {
-          "green": { "light": "hsl(142 66% 32%)", "dark": "hsl(142 58% 52%)", "default": true },
-          "blue": { "light": "hsl(217 79% 45%)", "dark": "hsl(213 90% 66%)" },
-          "violet": { "light": "hsl(263 60% 50%)", "dark": "hsl(263 85% 72%)" },
-          "red": { "light": "hsl(0 72% 52.5%)", "dark": "hsl(0 80% 67.5%)" },
-          "orange": { "light": "hsl(25 88% 39.5%)", "dark": "hsl(30 90% 51.5%)" },
-          "pink": { "light": "hsl(335 72% 50.5%)", "dark": "hsl(335 85% 67.5%)" }
+          "green": {
+            "light": "hsl(142 66% 30.9%)",
+            "dark": "hsl(142 58% 52%)",
+            "default": true
+          },
+          "blue": {
+            "light": "hsl(217 79% 45%)",
+            "dark": "hsl(213 90% 66%)"
+          },
+          "violet": {
+            "light": "hsl(263 60% 50%)",
+            "dark": "hsl(263 85% 72%)"
+          },
+          "red": {
+            "light": "hsl(0 72% 52.5%)",
+            "dark": "hsl(0 80% 67.5%)"
+          },
+          "orange": {
+            "light": "hsl(25 88% 39.5%)",
+            "dark": "hsl(30 90% 51.5%)"
+          },
+          "pink": {
+            "light": "hsl(335 72% 50.5%)",
+            "dark": "hsl(335 85% 67.5%)"
+          }
         },
         "source": "The preset list itself lives in src/utils/accents.ts — one array feeding both the header dropdown and the mobile toggle. Never copy the swatch array into a component.",
-        "usage": "Focus rings, active states, and the homepage hero word. Green is the default preset. Held at >=4.5:1 on its own background in every preset/theme pair — treat these twelve values as contrast-audited and do not retune one in isolation. `node scripts/audit-accents.mjs` re-checks all twelve pairs (accent on its background, accent-foreground on accent, vivid at display scale, accent-soft pair, subtle-foreground on bg-subtle, and the page→surface lightness step)."
+        "usage": "Focus rings, active states, and the homepage hero word. Green is the default preset. Held at >=4.5:1 on its own background in every preset/theme pair — the audit script is the check, not this note: it reads the CSS, so a retuned value is caught rather than assumed. `node scripts/audit-accents.mjs` re-checks all twelve pairs (accent on its background, accent-foreground on accent, vivid at display scale, accent-soft pair, subtle-foreground on bg-subtle, and the page→surface lightness step)."
       },
       "accentVivid": {
         "role": "accent",
@@ -129,9 +148,18 @@
       "depth": {
         "role": "neutral",
         "displayName": "Depth Ramp",
-        "canonical": "hsl(0 0% 20%)",
-        "dark": "hsl(0 0% 84%)",
-        "usage": "Rings, tonal hierarchy, inset lines, metadata, and quiet separation. The 100→700 ramp runs light→dark in light theme and inverts in dark; always reference the step (`depth-300`), never a raw value."
+        "canonical": "hsl(0 0% 84%)",
+        "dark": "hsl(0 0% 23.5%)",
+        "usage": "Ступени тональной глубины. depth-100 несёт кольцо карточки каталога и подобран так, чтобы читаться и на surface, и на muted — альфа-модификатор на нём запрещён.",
+        "tonalRamp": [
+          "hsl(0 0% 84%)",
+          "hsl(0 0% 76%)",
+          "hsl(0 0% 62%)",
+          "hsl(0 0% 48%)",
+          "hsl(0 0% 36%)",
+          "hsl(0 0% 28%)",
+          "hsl(0 0% 20%)"
+        ]
       }
     },
     "typographyMeta": {
@@ -245,7 +273,76 @@
         "name": "lg",
         "value": "1024px"
       }
-    ]
+    ],
+    "surfaceLadder": {
+      "rule": "muted лежит между background и surface. Полоса секции утоплена относительно страницы, карточка на полосе приподнята. Обратный порядок схлопывает каталог.",
+      "dark": [
+        "background",
+        "muted",
+        "surface",
+        "surface-muted",
+        "subtle"
+      ],
+      "light": [
+        "surface",
+        "background",
+        "surface-muted",
+        "muted",
+        "subtle"
+      ],
+      "values": {
+        "light": {
+          "background": 97.5,
+          "muted": 92.5,
+          "surface": 100,
+          "surface-muted": 95,
+          "subtle": 89
+        },
+        "green": {
+          "background": 7,
+          "muted": 11,
+          "surface": 16,
+          "surface-muted": 19,
+          "subtle": 22
+        },
+        "blue": {
+          "background": 0,
+          "muted": 4,
+          "surface": 8,
+          "surface-muted": 12,
+          "subtle": 16
+        },
+        "violet": {
+          "background": 0,
+          "muted": 2,
+          "surface": 5,
+          "surface-muted": 9,
+          "subtle": 14
+        },
+        "red": {
+          "background": 4,
+          "muted": 8,
+          "surface": 12,
+          "surface-muted": 16,
+          "subtle": 20
+        },
+        "orange": {
+          "background": 11,
+          "muted": 15.5,
+          "surface": 20,
+          "surface-muted": 24,
+          "subtle": 28
+        },
+        "pink": {
+          "background": 6,
+          "muted": 10.5,
+          "surface": 15,
+          "surface-muted": 19,
+          "subtle": 23
+        }
+      },
+      "constraints": "Значения решены численно: порядок лестницы, карточка-на-полосе >= ΔL 4, border-muted >= 1.28:1 к surface и background, border >= 1.5:1, muted-foreground и subtle-foreground >= 4.55:1 против всех пяти заливок своей палитры."
+    }
   },
   "components": [
     {
@@ -268,7 +365,7 @@
       "kind": "stats",
       "refersTo": "CatalogStats",
       "description": "Three compact stat pills with icons, tabular numbers, muted labels, and a brief focus animation.",
-      "html": "<dl class=\"stats-focus grid w-full max-w-md grid-cols-3 gap-2\"><div class=\"rounded-control corner-squircle bg-surface px-2.5 py-2 ring ring-depth-100/60\"><dd>128</dd><dt>Centers</dt></div></dl>",
+      "html": "<dl class=\"stats-focus grid w-full max-w-md grid-cols-3 gap-2\"><div class=\"rounded-control corner-squircle bg-surface px-2.5 py-2 ring ring-depth-100\"><dd>128</dd><dt>Centers</dt></div></dl>",
       "css": ".stats-focus__item { border-radius: var(--radius-control, 16px); background: var(--color-surface); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-depth-100) 60%, transparent); }"
     },
     {
@@ -317,14 +414,14 @@
       "refersTo": "CardItem",
       "description": "Signature catalog list item for center pages. It keeps title, type, category, location, and summary readable in a quiet neutral surface.",
       "html": "<article class=\"ds-center-card\"><p>Location metadata</p><h3>Example Tatar Cultural Center</h3></article>",
-      "css": ".ds-center-card { overflow: hidden; border-radius: var(--radius-catalog, 32px); background: var(--color-muted, #f0f0f0); color: var(--color-surface-foreground, #1d1d1d); padding: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.04), inset 0 0 0 1px color-mix(in srgb, var(--color-depth-100, #e6e6e6) 40%, transparent); } .ds-center-card h3 { overflow-wrap: anywhere; color: var(--color-surface-foreground, #1d1d1d); font: 700 16px/1.375 'Twemoji Country Flags', 'Tatarverse Sans', ui-sans-serif, system-ui, sans-serif; letter-spacing: -0.015em; }"
+      "css": ".ds-center-card { overflow: hidden; border-radius: var(--radius-catalog, 32px); background: var(--color-surface, #ffffff); color: var(--color-surface-foreground, #1d1d1d); padding: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.04), inset 0 0 0 1px var(--color-depth-100, #d6d6d6); } .ds-center-card h3 { overflow-wrap: anywhere; color: var(--color-surface-foreground, #1d1d1d); font: 700 16px/1.375 'Twemoji Country Flags', 'Tatarverse Sans', ui-sans-serif, system-ui, sans-serif; letter-spacing: -0.015em; }"
     },
     {
       "name": "MDX Surface",
       "kind": "content",
       "refersTo": "MDX",
       "description": "Readable factual prose surface with typography tokens, restrained border, and quiet lift.",
-      "html": "<article class=\"prose rounded-control border border-border-muted bg-surface p-8 shadow-2xs ring ring-depth-100/40\">Content</article>",
+      "html": "<article class=\"prose rounded-control border border-border-muted bg-surface p-8 shadow-2xs ring ring-depth-100\">Content</article>",
       "css": ".prose { --tw-prose-body: var(--color-muted-foreground); --tw-prose-headings: var(--color-foreground); --tw-prose-links: var(--color-link); }"
     }
   ],

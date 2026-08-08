@@ -1,0 +1,47 @@
+---
+import followersSource from "@/data/instagram_followers_340.txt?raw";
+
+type Follower = {
+	handle: string;
+	name?: string;
+};
+
+const followers = followersSource
+	.split("\n")
+	.map((line) => line.trim())
+	.filter(Boolean)
+	.map<Follower | undefined>((line) => {
+		const match = line.match(/^\d+\.\s+(@[^\s—]+)(?:\s+—\s+(.+))?$/);
+
+		if (!match) return undefined;
+
+		const [, handle, name] = match;
+
+		return {
+			handle,
+			name: name?.trim(),
+		};
+	})
+	.filter((follower): follower is Follower => Boolean(follower));
+---
+
+{
+	followers.length > 0 && (
+		<section class="mx-auto flex w-full flex-col gap-6" aria-labelledby="followers-title">
+			<h2 id="followers-title" class="text-2xl font-bold tracking-tight text-foreground">
+				Спасибо за подписку
+			</h2>
+
+			<ul class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+				{followers.map(({ handle, name }) => (
+					<li>
+						<div class="flex min-w-0 flex-col gap-0.5 px-1 text-sm text-foreground">
+							<span class="truncate font-semibold">{handle}</span>
+							{name && <span class="truncate text-muted-foreground">{name}</span>}
+						</div>
+					</li>
+				))}
+			</ul>
+		</section>
+	)
+}

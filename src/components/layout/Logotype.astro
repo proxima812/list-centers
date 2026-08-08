@@ -10,8 +10,8 @@ const t = useTranslations(locale);
 
 <a
 	href={localizePath(locale, "/")}
-	class="inline-flex shrink-0 items-center gap-1 text-foreground no-underline focus-visible:outline-none focus-visible:outline-none"
-	aria-label={t("nav.home")}
+	class="inline-flex shrink-0 items-center gap-1 text-foreground no-underline"
+	aria-label={`tatarverse - ${t("nav.home")}`}
 >
 	{/* 20, а не 32 старой обёртки: там холст был с запасом под растекание
 	    шейдера, и сама марка занимала 60%. Здесь холст равен марке. */}
