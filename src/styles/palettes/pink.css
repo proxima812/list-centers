@@ -48,13 +48,10 @@
   --color-background: hsl(0 0% 6%);
   --color-muted: hsl(0 0% 10.5%);
   --color-surface: hsl(0 0% 15%);
-  --color-surface-muted: hsl(0 0% 19%);
   --color-subtle: hsl(0 0% 23%);
 
   /* Границы: border-muted читается на surface и на background,
      border — ещё и на muted и на subtle. */
-  --color-border-muted: hsl(0 0% 22%);
-  --color-border: hsl(0 0% 28.5%);
   --color-ring: hsl(0 0% 46%);
 
   /* Текст: muted-foreground и subtle-foreground проходят 4.55:1 на всех
@@ -71,7 +68,6 @@
   /* Ramp глубины развёрнут: в тёмной теме «глубже» значит светлее.
      depth-100 подобран так, чтобы работать кольцом карточки — он обязан
      читаться и на surface, и на muted. */
-  --color-depth-100: hsl(0 0% 22.5%);
   --color-depth-200: hsl(0 0% 26%);
   --color-depth-300: hsl(0 0% 33%);
   --color-depth-400: hsl(0 0% 45%);

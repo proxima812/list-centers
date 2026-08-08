@@ -222,6 +222,40 @@ The old values cleared AA on the page and failed on `bg-muted` (`4.01`) and `bg-
 `surface` and on `muted` at once. Do not put an alpha modifier on it. `ring-depth-100/70`
 measured `1.04-1.22:1` across all twelve combinations — a ring that was not there.
 
+### Derived Steps
+
+Four tokens are **not authored per palette**. They are computed as their own backing
+surface mixed toward its own ink, one proportion for the whole project:
+
+| token | formula |
+| --- | --- |
+| `surface-muted` | `color-mix(in oklab, surface 94.5%, surface-foreground)` |
+| `border-muted` | `color-mix(in oklab, surface 86%, surface-foreground)` |
+| `border` | `color-mix(in oklab, surface 80%, surface-foreground)` |
+| `depth-100` | `color-mix(in oklab, surface 84%, surface-foreground)` |
+
+The point is not fewer lines. **A hand-written border can drift, and did** — `border-muted`
+measured `1.10:1` on `surface` under `red` and `pink`, meaning it was not visible. A derived
+value cannot fail that way: it is always a fixed perceptual distance from its own surface,
+whatever that surface becomes.
+
+This is HeroUI v3's approach, where `--border-secondary` and `--separator-secondary` are
+mixes of `--surface` and `--surface-foreground`. **Their proportions are not ours**: HeroUI's
+`78%` / `92%` produce `ΔL 2.6-3.7` against our anchors where we need `4`, because they are
+tuned for a single dark palette with a `12% → 21%` gap. Ours are solved against our own
+floors and verified in the browser across all twelve combinations.
+
+**Not everything derives, and that is deliberate.** `muted`, `subtle` and the two ink tokens
+stay authored per palette. A single global proportion would flatten the presets into each
+other — a derived `muted` moves `blue`'s band from `L* 14.6` to `6.25`, erasing exactly the
+"visibly lifted surfaces" register that makes `blue` the Uber Base entry. And `subtle` has no
+feasible global proportion at all while the inks stay authored. Six dark papers with
+deliberately different characters is the feature; the derivation serves it, not the reverse.
+
+`node scripts/audit-accents.mjs` reads both the authored `hsl()` values and these
+`color-mix()` formulas out of the CSS and resolves them the same way the browser does, so
+the percentages above live in exactly one place.
+
 ### Brand Accent
 
 The accent is green by default (`#1b8341` light, `#3ecc72` dark) and appears in the hero

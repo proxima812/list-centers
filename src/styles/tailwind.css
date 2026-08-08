@@ -59,12 +59,37 @@
 
   --color-background: hsl(0 0% 97.5%);
   --color-surface: hsl(0 0% 100%);
-  --color-surface-muted: hsl(0 0% 95%);
   --color-muted: hsl(0 0% 92.5%);
   --color-subtle: hsl(0 0% 89%);
 
-  --color-border-muted: hsl(0 0% 86.5%);
-  --color-border: hsl(0 0% 80%);
+  /* ─── Выводимые ступени ───────────────────────────────────────────────────
+     Приём из HeroUI v3: граница, кольцо и вложенная заливка не пишутся руками
+     по палитрам, а вычисляются как подмешивание собственной подложки к её же
+     чернилам. Пропорция одна на весь проект, а результат сам едет за палитрой,
+     потому что color-mix разрешается на этапе вычисленного значения.
+
+     Смысл не в экономии строк. Рукописная граница может уехать — и уезжала:
+     `border-muted` давал 1.10:1 на surface у red и pink, то есть его не было
+     видно. У выводимого значения такой отказ структурно невозможен: оно
+     всегда на фиксированной перцептивной дистанции от своей поверхности.
+
+     Проценты решены под наши пороги, а не взяты у HeroUI: их 78%/92% дают
+     ΔL 2.6-3.7 на наших опорах при требуемых 4 — они подогнаны под их
+     единственную тёмную палитру с зазором 12%→21%.
+
+     Проверено на всех семи палитрах, сдвиг относительно рукописных значений
+     0.7-3.4 L*. */
+  --color-surface-muted: color-mix(
+    in oklab,
+    var(--color-surface) 94.5%,
+    var(--color-surface-foreground)
+  );
+  --color-border-muted: color-mix(
+    in oklab,
+    var(--color-surface) 86%,
+    var(--color-surface-foreground)
+  );
+  --color-border: color-mix(in oklab, var(--color-surface) 80%, var(--color-surface-foreground));
   --color-ring: hsl(0 0% 78%);
 
   --color-foreground: hsl(0 0% 11.4%);
@@ -126,8 +151,10 @@
   --color-destructive: hsl(15 74% 45%);
 
   /* depth-100 несёт кольцо карточки каталога и обязан читаться и на surface,
-     и на muted, поэтому он ушёл с 90% на 84%. */
-  --color-depth-100: hsl(0 0% 84%);
+     и на muted. Тоже выводится: ровно из-за рукописного значения кольцо и
+     оказалось невидимым. Остальные ступени ramp пока авторские — у них нет
+     собственной работы, по которой их можно было бы решить. */
+  --color-depth-100: color-mix(in oklab, var(--color-surface) 84%, var(--color-surface-foreground));
   --color-depth-200: hsl(0 0% 76%);
   --color-depth-300: hsl(0 0% 62%);
   --color-depth-400: hsl(0 0% 48%);
@@ -245,11 +272,7 @@
   --color-background: hsl(0 0% 7%);
   --color-muted: hsl(0 0% 11%);
   --color-surface: hsl(0 0% 16%);
-  --color-surface-muted: hsl(0 0% 19%);
   --color-subtle: hsl(0 0% 22%);
-
-  --color-border-muted: hsl(0 0% 23%);
-  --color-border: hsl(0 0% 29%);
   --color-ring: hsl(0 0% 47%);
 
   --color-foreground: hsl(0 0% 95%);
@@ -263,7 +286,6 @@
 
   /* Ramp разворачивается: в светлой теме depth идёт от светлого к тёмному,
      в тёмной — наоборот, иначе «глубина» читается вывернутой. */
-  --color-depth-100: hsl(0 0% 23.5%);
   --color-depth-200: hsl(0 0% 28%);
   --color-depth-300: hsl(0 0% 36%);
   --color-depth-400: hsl(0 0% 48%);

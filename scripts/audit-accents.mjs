@@ -9,7 +9,7 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { audit, ladder } from "./audit-accent.mjs";
+import { audit, hslToRgb, ladder, mixOklab } from "./audit-accent.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const styles = join(root, "src/styles");
@@ -44,9 +44,21 @@ const collect = (selector) => {
 				if (!depth) break;
 			}
 		}
-		for (const m of sources.slice(open + 1, end).matchAll(/(--color-[a-z0-9-]+):\s*hsl\(([^)]*)\)/g)) {
+		const body = sources.slice(open + 1, end);
+		for (const m of body.matchAll(/(--color-[a-z0-9-]+):\s*hsl\(([^)]*)\)/g)) {
 			const [h, s, l] = m[2].trim().split(/\s+/).map((v) => Number.parseFloat(v));
-			out[m[1].replace("--color-", "")] = [h, s, l];
+			out[m[1].replace("--color-", "")] = { kind: "hsl", hsl: [h, s, l] };
+		}
+		// Выводимые ступени: color-mix(in oklab, var(--color-BASE) N%, var(--color-OTHER))
+		const mixRe =
+			/(--color-[a-z0-9-]+):\s*color-mix\(\s*in oklab,\s*var\((--color-[a-z0-9-]+)\)\s*([\d.]+)%,\s*var\((--color-[a-z0-9-]+)\)\s*\)/g;
+		for (const m of body.replace(/\s+/g, " ").matchAll(mixRe)) {
+			out[m[1].replace("--color-", "")] = {
+				kind: "mix",
+				base: m[2].replace("--color-", ""),
+				pct: Number.parseFloat(m[3]) / 100,
+				other: m[4].replace("--color-", ""),
+			};
 		}
 		from = end + 1;
 	}
@@ -57,15 +69,38 @@ const theme = collect("@theme");
 const darkBase = collect(".dark");
 const PRESETS = ["green", "blue", "violet", "red", "orange", "pink"];
 
+// Разрешаем объявления в sRGB: hsl считается напрямую, color-mix — той же
+// формулой, что применит браузер, поэтому проценты в CSS остаются единственным
+// местом, где они записаны.
+const resolve = (decls) => {
+	const cache = {};
+	const get = (token, seen = new Set()) => {
+		if (token in cache) return cache[token];
+		const d = decls[token];
+		if (!d) throw new Error(`токен --color-${token} не найден в CSS`);
+		if (seen.has(token)) throw new Error(`циклическая ссылка на --color-${token}`);
+		seen.add(token);
+		const value =
+			d.kind === "hsl"
+				? hslToRgb(...d.hsl)
+				: mixOklab(get(d.base, seen), get(d.other, seen), d.pct);
+		cache[token] = value;
+		return value;
+	};
+	const out = {};
+	for (const token of Object.keys(decls)) out[token] = get(token);
+	return out;
+};
+
 let ok = true;
 for (const name of PRESETS) {
-	const light = { ...theme, ...collect(`:root[data-accent="${name}"]`) };
-	const dark = {
+	const light = resolve({ ...theme, ...collect(`:root[data-accent="${name}"]`) });
+	const dark = resolve({
 		...theme,
 		...darkBase,
 		...collect(`:root[data-accent="${name}"]`),
 		...collect(`:root.dark[data-accent="${name}"]`),
-	};
+	});
 
 	for (const [label, p, softPct] of [
 		[`${name} light`, light, 0.12],

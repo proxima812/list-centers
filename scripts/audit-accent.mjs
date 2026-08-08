@@ -54,15 +54,22 @@ const mix = (c1, c2, p) => {
 };
 const okL = (c) => srgbToOklab(c)[0] * 100;
 
+// Нужны наружу: audit-accents.mjs собирает палитру из CSS и сам вычисляет
+// выводимые токены той же формулой, что и браузер.
+export const hslToRgb = hsl;
+export const mixOklab = mix;
+
 const f = (n) => n.toFixed(2);
 const mark = (v, floor) => (v >= floor ? "ok " : "FAIL");
 
+// p — карта токен → sRGB-триплет [0..1]. Раньше сюда приходили hsl-тройки, но
+// часть токенов теперь выводится через color-mix и в hsl не выражается.
 export function audit(name, p) {
-	const bg = hsl(...p.bg);
-	const fg = hsl(...p.fg);
-	const accent = hsl(...p.accent);
-	const accentFg = hsl(...p.accentFg);
-	const vivid = hsl(...p.vivid);
+	const bg = p.bg;
+	const fg = p.fg;
+	const accent = p.accent;
+	const accentFg = p.accentFg;
+	const vivid = p.vivid;
 	const soft = mix(accent, bg, p.softPct);
 	const softFg = mix(accent, fg, 0.75);
 
@@ -73,10 +80,10 @@ export function audit(name, p) {
 		["soft-fg на accent-soft", ratio(softFg, soft), 4.5],
 	];
 	if (p.subtleFg && p.subtle) {
-		rows.push(["subtle-fg на bg-subtle", ratio(hsl(...p.subtleFg), hsl(...p.subtle)), 4.5]);
-		rows.push(["subtle-fg на фоне", ratio(hsl(...p.subtleFg), bg), 4.5]);
+		rows.push(["subtle-fg на bg-subtle", ratio(p.subtleFg, p.subtle), 4.5]);
+		rows.push(["subtle-fg на фоне", ratio(p.subtleFg, bg), 4.5]);
 	}
-	if (p.surface) rows.push(["ΔL фон→поверхн. (oklch)", okL(hsl(...p.surface)) - okL(bg), 8.0]);
+	if (p.surface) rows.push(["ΔL фон→поверхн. (oklch)", okL(p.surface) - okL(bg), 8.0]);
 
 	const bad = rows.filter(([, v, floor]) => v < floor);
 	console.log(`\n── ${name} ${bad.length ? "❌" : "✅"}`);
@@ -92,7 +99,7 @@ export function audit(name, p) {
 // так карточки центров однажды стали одного цвета с полосой списка.
 export function ladder(name, p) {
 	const isDark = name.endsWith("dark");
-	const L = (token) => okL(hsl(...p[token]));
+	const L = (token) => okL(p[token]);
 	const order = isDark
 		? ["background", "muted", "surface", "surface-muted", "subtle"]
 		: ["subtle", "muted", "surface-muted", "background", "surface"];
@@ -104,16 +111,16 @@ export function ladder(name, p) {
 	}
 	// Карточка каталога на полосе списка — та самая пара, ради которой всё это.
 	rows.push(["ΔL карточка на полосе", Math.abs(L("surface") - L("muted")), 4.0]);
-	rows.push(["border-muted на surface", ratio(hsl(...p["border-muted"]), hsl(...p.surface)), 1.28]);
-	rows.push(["border на surface", ratio(hsl(...p.border), hsl(...p.surface)), 1.5]);
+	rows.push(["border-muted на surface", ratio(p["border-muted"], p.surface), 1.28]);
+	rows.push(["border на surface", ratio(p.border, p.surface), 1.5]);
 	// depth-100 несёт кольцо карточки: обязан читаться и на surface, и на muted.
-	rows.push(["depth-100 на surface", ratio(hsl(...p["depth-100"]), hsl(...p.surface)), 1.3]);
-	rows.push(["depth-100 на полосе", ratio(hsl(...p["depth-100"]), hsl(...p.muted)), 1.22]);
+	rows.push(["depth-100 на surface", ratio(p["depth-100"], p.surface), 1.3]);
+	rows.push(["depth-100 на полосе", ratio(p["depth-100"], p.muted), 1.22]);
 	// Тусклый текст обязан проходить на всех заливках своей палитры, а не
 	// только на странице: subtle-fg садится и в тулбар, и в футер.
 	for (const fill of ["surface", "surface-muted", "muted", "subtle"]) {
-		rows.push([`subtle-fg на ${fill}`, ratio(hsl(...p["subtle-foreground"]), hsl(...p[fill])), 4.5]);
-		rows.push([`muted-fg на ${fill}`, ratio(hsl(...p["muted-foreground"]), hsl(...p[fill])), 4.5]);
+		rows.push([`subtle-fg на ${fill}`, ratio(p["subtle-foreground"], p[fill]), 4.5]);
+		rows.push([`muted-fg на ${fill}`, ratio(p["muted-foreground"], p[fill]), 4.5]);
 	}
 
 	const bad = rows.filter(([, v, floor]) => v < floor);

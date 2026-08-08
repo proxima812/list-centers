@@ -71,9 +71,9 @@
       "border": {
         "role": "neutral",
         "displayName": "Soft Structure",
-        "canonical": "hsl(0 0% 80%)",
-        "dark": "hsl(0 0% 29%)",
-        "usage": "Borders, separators, and quiet content framing."
+        "canonical": "color-mix(in oklab, var(--color-surface) 80%, var(--color-surface-foreground))",
+        "dark": "color-mix(in oklab, var(--color-surface) 80%, var(--color-surface-foreground))",
+        "usage": "Выводится, а не пишется по палитрам: всегда на фиксированной перцептивной дистанции от своей поверхности. Рукописное значение уезжало — border-muted давал 1.10:1 на surface у red и pink."
       },
       "primary": {
         "role": "primary",
@@ -342,6 +342,17 @@
         }
       },
       "constraints": "Значения решены численно: порядок лестницы, карточка-на-полосе >= ΔL 4, border-muted >= 1.28:1 к surface и background, border >= 1.5:1, muted-foreground и subtle-foreground >= 4.55:1 против всех пяти заливок своей палитры."
+    },
+    "derivedSteps": {
+      "rationale": "Приём HeroUI v3: ступень вычисляется как подмешивание собственной подложки к её же чернилам. Отказ вида «граница стала невидимой» становится структурно невозможным. Проценты решены под наши пороги — у HeroUI 78%/92% дают ΔL 2.6-3.7 там, где нам нужно 4.",
+      "formulas": {
+        "surface-muted": "surface 94.5% + surface-foreground",
+        "border-muted": "surface 86% + surface-foreground",
+        "border": "surface 80% + surface-foreground",
+        "depth-100": "surface 84% + surface-foreground"
+      },
+      "authored": "muted, subtle и оба ink остаются авторскими по палитрам: единый процент сплющил бы пресеты друг в друга — выводимый muted увёл бы полосу blue с L* 14.6 на 6.25.",
+      "verified": "Худшие случаи в браузере по 12 комбинациям: border-muted 1.28, border 1.51, depth-100 на surface 1.35, на полосе 1.23, ΔL surface-muted 3.4."
     }
   },
   "components": [
