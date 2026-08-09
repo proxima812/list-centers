@@ -8,9 +8,6 @@ const t = useTranslations(locale);
 
 <form
 	data-search-form
-	data-speech-lang={locale === "en" ? "en-US" : "ru-RU"}
-	data-voice-listening={t("list.voiceListening")}
-	data-voice-error={t("list.voiceError")}
 	role="search"
 	class="relative z-40 flex items-center gap-1 rounded-catalog corner-squircle bg-surface p-1 shadow-2xs has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-accent"
 >
@@ -57,18 +54,6 @@ const t = useTranslations(locale);
 	</button>
 
 	<button
-		type="button"
-		data-search-voice
-		data-listening="false"
-		aria-label={t("list.voiceSearch")}
-		aria-pressed="false"
-		hidden
-		class="grid size-11 shrink-0 place-items-center rounded-full text-muted-foreground transition hover:bg-muted hover:text-foreground data-[listening=true]:bg-primary data-[listening=true]:text-primary-foreground"
-	>
-		<Icon name="mdi:microphone-outline" class="size-5" aria-hidden="true" />
-	</button>
-
-	<button
 		type="submit"
 		data-search-submit
 		aria-label={t("list.submitSearch")}
@@ -77,8 +62,6 @@ const t = useTranslations(locale);
 	>
 		<Icon name="mdi:arrow-up" class="size-5" aria-hidden="true" />
 	</button>
-
-	<p data-voice-status class="sr-only" aria-live="polite"></p>
 
 	<ul
 		id="search-suggestions"

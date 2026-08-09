@@ -73,35 +73,6 @@ type FuseConstructor = new (
 	},
 ) => FuseInstance;
 
-type VoiceRecognitionResultEvent = {
-	results: ArrayLike<{
-		0?: {
-			transcript?: string;
-		};
-	}>;
-};
-
-type VoiceRecognition = {
-	lang: string;
-	continuous: boolean;
-	interimResults: boolean;
-	start: () => void;
-	stop: () => void;
-	onstart: (() => void) | null;
-	onend: (() => void) | null;
-	onresult: ((event: VoiceRecognitionResultEvent) => void) | null;
-	onerror: (() => void) | null;
-};
-
-type VoiceRecognitionConstructor = new () => VoiceRecognition;
-
-declare global {
-	interface Window {
-		SpeechRecognition?: VoiceRecognitionConstructor;
-		webkitSpeechRecognition?: VoiceRecognitionConstructor;
-	}
-}
-
 const filterQueryKeys: Record<FilterGroupName, string> = {
 	country: "country",
 	type: "type",
@@ -116,8 +87,6 @@ export function initCardsToolbar() {
 	const searchInput = document.querySelector<HTMLInputElement>("[data-toolbar-search]");
 	const suggestions = document.querySelector<HTMLUListElement>("[data-search-suggestions]");
 	const searchSubmit = document.querySelector<HTMLButtonElement>("[data-search-submit]");
-	const voiceButton = document.querySelector<HTMLButtonElement>("[data-search-voice]");
-	const voiceStatus = document.querySelector<HTMLElement>("[data-voice-status]");
 	const filtersToggle = document.querySelector<HTMLButtonElement>("[data-filters-toggle]");
 	const filtersShell = document.querySelector<HTMLElement>("[data-filters-shell]");
 	const stickyBar = document.querySelector<HTMLElement>("[data-catalog-bar]");
@@ -194,8 +163,6 @@ export function initCardsToolbar() {
 	let filterFrame = 0;
 	let activeSuggestionIndex = -1;
 	let currentSuggestionValues: string[] = [];
-	let voiceRecognition: VoiceRecognition | null = null;
-	let isListening = false;
 	let searchItemsPromise: Promise<SearchIndexItem[]> | null = null;
 	let fusePromise: Promise<FuseInstance> | null = null;
 
@@ -631,80 +598,6 @@ export function initCardsToolbar() {
 		scheduleApplyFilters(true);
 	}
 
-	function setListeningState(listening: boolean) {
-		isListening = listening;
-		if (!voiceButton) return;
-
-		voiceButton.dataset.listening = String(listening);
-		voiceButton.setAttribute("aria-pressed", String(listening));
-		if (voiceStatus) {
-			const listeningLabel = searchForm?.dataset.voiceListening ?? "";
-			if (listening) {
-				voiceStatus.textContent = listeningLabel;
-			} else if (voiceStatus.textContent === listeningLabel) {
-				voiceStatus.textContent = "";
-			}
-		}
-	}
-
-	function initVoiceSearch() {
-		const Recognition = window.SpeechRecognition ?? window.webkitSpeechRecognition;
-		if (!Recognition || !voiceButton || !searchInput) return;
-
-		voiceButton.hidden = false;
-		voiceRecognition = new Recognition();
-		voiceRecognition.lang = searchForm?.dataset.speechLang ?? "ru-RU";
-		voiceRecognition.continuous = false;
-		voiceRecognition.interimResults = false;
-
-		voiceRecognition.onstart = () => {
-			setListeningState(true);
-		};
-
-		voiceRecognition.onresult = (event) => {
-			const lastResult = event.results[event.results.length - 1];
-			const transcript = lastResult?.[0]?.transcript?.trim() ?? "";
-			if (!transcript) return;
-
-			window.clearTimeout(searchTimer);
-			searchInput.value = transcript;
-			searchQuery = transcript;
-			if (voiceStatus) voiceStatus.textContent = "";
-			syncSearchActions();
-			void updateSuggestions();
-			scheduleApplyFilters(false);
-			searchInput.focus();
-		};
-
-		voiceRecognition.onerror = () => {
-			setListeningState(false);
-			if (voiceStatus) {
-				voiceStatus.textContent = searchForm?.dataset.voiceError ?? "";
-			}
-		};
-
-		voiceRecognition.onend = () => {
-			setListeningState(false);
-		};
-
-		voiceButton.addEventListener("click", () => {
-			if (!voiceRecognition) return;
-			if (isListening) {
-				voiceRecognition.stop();
-				return;
-			}
-
-			if (voiceStatus) voiceStatus.textContent = "";
-			try {
-				voiceRecognition.start();
-			} catch {
-				if (voiceStatus) {
-					voiceStatus.textContent = searchForm?.dataset.voiceError ?? "";
-				}
-			}
-		});
-	}
-
 	function syncOverflowUI(groupName: FilterGroupName) {
 		const moreButton = getMoreButton(groupName);
 		if (!moreButton) return;
@@ -898,7 +791,6 @@ export function initCardsToolbar() {
 		window.setTimeout(hideSuggestions, 120);
 	});
 
-	initVoiceSearch();
 	readStateFromUrl();
 	(Object.keys(state) as FilterGroupName[]).forEach(syncGroupUI);
 	void applyFilters();
