@@ -16,6 +16,10 @@
  *    ушли сами, отдельного дерева в состоянии не нужно.
  * 3. Секции появляются по условию (`data-filter-gate`): город не показывают,
  *    пока не выбрана страна или регион, иначе это список на 122 строки.
+ *
+ * Выбор внутри группы один. Раньше он был множественным, и «СНГ» вместе с
+ * «Азией» складывались в сумму двух веток дерева — набор, у которого нет
+ * общих потомков, так что следующий уровень после него показывать нечего.
  */
 
 type FacetKey = string;
@@ -280,9 +284,11 @@ export function initCardsToolbar() {
 		for (const key of facetKeys) {
 			const validValues = getValidValues(key);
 			state[key].clear();
-			for (const value of params.getAll(key)) {
-				if (validValues.has(value)) state[key].add(value);
-			}
+			// Выбор в группе один, поэтому из ссылки берём первое валидное
+			// значение: старая ссылка с двумя странами не должна воскрешать
+			// мультивыбор.
+			const value = params.getAll(key).find((candidate) => validValues.has(candidate));
+			if (value) state[key].add(value);
 		}
 
 		void updateSuggestions();
@@ -515,16 +521,16 @@ export function initCardsToolbar() {
 			// 79 регионов вперемешку с казахстанскими областями не читается, а
 			// «Казахстан + Пермский край» — кликабельная комбинация, дающая
 			// ноль. Сузить может любой из трёх уровней выше — корень «Россия»,
-			// федеральный округ или одна выбранная страна.
+			// федеральный округ или страна.
 			case "region":
 				return (
-					scope === "ru" || (state.okrug?.size ?? 0) > 0 || state.country?.size === 1
+					scope === "ru" || (state.okrug?.size ?? 0) > 0 || (state.country?.size ?? 0) > 0
 				);
 			// Тот самый случай из постановки: Киев — город, Украина — страна,
 			// и город показывается только внутри своей страны или своего
 			// региона.
 			case "city":
-				return state.region?.size === 1 || state.country?.size === 1;
+				return (state.region?.size ?? 0) > 0 || (state.country?.size ?? 0) > 0;
 			default:
 				return key.length > 0;
 		}
@@ -629,12 +635,21 @@ export function initCardsToolbar() {
 		}
 	}
 
+	/**
+	 * Внутри группы выбор один.
+	 *
+	 * Мультивыбор здесь читался как «СНГ и Азия одновременно» — сумма двух
+	 * веток дерева, у которой нет ни одного общего потомка, и следующий
+	 * уровень после неё показывать нечего. Повторный клик по активному
+	 * значению снимает его и возвращает группу в «все».
+	 */
 	function toggleChip(groupName: FacetKey, value: string) {
 		const groupState = state[groupName];
 		if (!groupState) return;
 
-		if (groupState.has(value)) groupState.delete(value);
-		else groupState.add(value);
+		const wasActive = groupState.has(value);
+		groupState.clear();
+		if (!wasActive) groupState.add(value);
 
 		// Сменил страну — город прежней страны уходит вместе с ней. Иначе он
 		// остался бы активным токеном, который тихо схлопывает выдачу в ноль.
