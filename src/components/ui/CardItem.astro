@@ -1,9 +1,10 @@
 ---
 import { normalizeCity, type CenterGeo } from "@/data/geo";
 import { countryFlagsByRu, getCountryLabel, getCountryLabels } from "@/data/worldCountries";
-import { getLocaleFromUrl, localizePath } from "@/i18n";
+import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
 import { getCenterPath } from "@/utils/centers";
-import type { CenterLink } from "@/utils/centerLinks";
+import { formatCenterLinkLabel, type CenterLink } from "@/utils/centerLinks";
+import { Icon } from "astro-icon/components";
 import SaveCenterButton from "./SaveCenterButton.astro";
 
 interface Location {
@@ -36,6 +37,7 @@ interface Props {
 const { id, routeId, title, summary, type, category, location, region, geo, pubDate, links } =
 	Astro.props as Props;
 const locale = getLocaleFromUrl(Astro.url);
+const t = useTranslations(locale);
 const centerPath = getCenterPath(routeId ?? id);
 
 const cleanCity = geo ? geo.city || undefined : normalizeCity(location?.city);
@@ -68,8 +70,18 @@ const metaChipClass =
 // Быстрые ссылки лежат над растянутой ссылкой карточки, поэтому им нужен свой
 // слой по z: иначе перекрытие съедает клик и с сайта центра уводит на страницу
 // центра.
+//
+// Пилюли у ссылок сняты. Подписью стал сам адрес, а он длиннее слова
+// «Instagram» — три залитых плашки с адресами внутри карточки читались бы
+// вторым списком, а не сноской. Ссылку держит иконка площадки и цвет.
 const quickLinkClass =
-	"relative z-10 inline-flex items-center rounded-micro corner-squircle bg-surface-muted px-2 py-1 text-xs font-medium text-muted-foreground no-underline transition hover:bg-subtle hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
+	"relative z-10 inline-flex min-w-0 items-center gap-1 text-xs font-medium text-muted-foreground no-underline transition hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
+// «Смотреть» — не ссылка, а подсказка: вся карточка и так кликабельна, и
+// вторая ссылка на тот же адрес удвоила бы её в списке ссылок скринридера и
+// в порядке табуляции. Поэтому span, `aria-hidden` и никакого z-слоя: клик
+// проваливается на растянутую ссылку заголовка, которая лежит ниже.
+const viewButtonClass =
+	"ml-auto inline-flex shrink-0 items-center gap-1 rounded-full corner-squircle bg-surface-muted px-2.5 py-1 text-xs font-medium text-muted-foreground transition group-hover:bg-accent group-hover:text-accent-foreground";
 const quickLinks = links ?? [];
 ---
 
@@ -185,16 +197,20 @@ const quickLinks = links ?? [];
 			)
 		}
 	</p>
-	{
-		quickLinks.length > 0 && (
-			<div class="flex min-w-0 flex-wrap items-center gap-1.5 border-t border-depth-100 pt-3">
-				{quickLinks.map((link) => (
-					<a href={link.href} target="_blank" rel="noopener noreferrer" class={quickLinkClass}>
-						{link.label}
-						<span class="sr-only">: {displayTitle}</span>
-					</a>
-				))}
-			</div>
-		)
-	}
+	<div class="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1.5 pt-1">
+		{
+			quickLinks.map((link) => (
+				<a href={link.href} target="_blank" rel="noopener noreferrer" class={quickLinkClass}>
+					<Icon name={link.icon} class="size-3.5 shrink-0" aria-hidden="true" />
+					<span class="min-w-0 truncate">{formatCenterLinkLabel(link.href)}</span>
+					{/* Видимая подпись — адрес, а вслух нужна площадка и название центра. */}
+					<span class="sr-only"> — {link.label}: {displayTitle}</span>
+				</a>
+			))
+		}
+		<span class={viewButtonClass} aria-hidden="true">
+			<span>{t("card.details")}</span>
+			<Icon name="mdi:arrow-right" class="size-3.5 shrink-0" />
+		</span>
+	</div>
 </article>

@@ -161,7 +161,7 @@ const dict: Dictionary = {
 	"detail.pagination": "Навигация между центрами",
 	"content.published": "Опубликовано",
 	"content.updated": "Обновлено",
-	"card.details": "Подробнее",
+	"card.details": "Смотреть",
 	"footer.updated": "Обновлено {date}",
 	"footer.links": "Ссылки в подвале",
 	"footer.description":

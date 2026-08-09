@@ -158,7 +158,7 @@ const dict: Dictionary = {
 	"detail.pagination": "Center navigation",
 	"content.published": "Published",
 	"content.updated": "Updated",
-	"card.details": "Details",
+	"card.details": "View",
 	"footer.updated": "Updated {date}",
 	"footer.links": "Footer links",
 	"footer.description":
