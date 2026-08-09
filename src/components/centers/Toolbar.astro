@@ -60,6 +60,9 @@ const moreButtonClass =
 	"mt-0.5 inline-flex max-w-fit cursor-pointer text-xs font-medium text-muted-foreground underline decoration-border underline-offset-4 transition hover:text-foreground lg:mt-1 lg:px-2";
 const countryVisibleLimit = 5;
 const defaultVisibleLimit = 2;
+// Типов всего три, и «показать ещё 1» ради последнего — лишний клик и лишняя
+// строка под группой. Показываем всю тройку сразу.
+const typeVisibleLimit = 3;
 
 function buildCountryLabels(country: string): CountryLabels {
 	return getCountryLabels(country);
@@ -209,7 +212,7 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 								<span class="min-w-0 truncate">{t("list.allTypes")}</span>
 							</button>
 
-							{getVisibleOptions(typeOptions).map((option) => (
+							{getVisibleOptions(typeOptions, typeVisibleLimit).map((option) => (
 								<button
 									type="button"
 									data-filter-chip="type"
@@ -223,7 +226,7 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 									</span>
 								</button>
 							))}
-							{getOverflowOptions(typeOptions).map((option) => (
+							{getOverflowOptions(typeOptions, typeVisibleLimit).map((option) => (
 								<button
 									type="button"
 									data-filter-chip="type"
@@ -240,7 +243,7 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 								</button>
 							))}
 						</div>
-						{getOverflowOptions(typeOptions).length > 0 && (
+						{getOverflowOptions(typeOptions, typeVisibleLimit).length > 0 && (
 							<button
 								type="button"
 								class={moreButtonClass}
@@ -249,7 +252,7 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 								data-show-more={t("list.showMore", { count: "__COUNT__" })}
 								data-show-less={t("list.showLess")}
 							>
-								{t("list.showMore", { count: getOverflowOptions(typeOptions).length })}
+								{t("list.showMore", { count: getOverflowOptions(typeOptions, typeVisibleLimit).length })}
 							</button>
 						)}
 					</section>
