@@ -71,11 +71,6 @@ const metaChipClass =
 const quickLinkClass =
 	"relative z-10 inline-flex items-center rounded-micro corner-squircle bg-surface-muted px-2 py-1 text-xs font-medium text-muted-foreground no-underline transition hover:bg-subtle hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
 const quickLinks = links ?? [];
-const truncate = (value?: string, max = 23) => {
-	if (!value) return "";
-	const v = value.trim();
-	return v.length > max ? v.slice(0, max).trimEnd() + "…" : v;
-};
 ---
 
 {
@@ -89,7 +84,10 @@ const truncate = (value?: string, max = 23) => {
 	композитинг без пользы. Кликабельна вся карточка, поэтому наведение
 	поднимает её целиком. Кольца в покое нет: от фона каталога карточку
 	отделяет собственная заливка, а обводка на squircle-углах не совпадает
-	с их формой. Подчёркивания у заголовка нет:
+	с их формой. На ховере к подъёму добавляется `card-ring` — акцентное
+	градиентное кольцо с бегущей дугой; оно рисуется маской по форме
+	squircle и живёт только под курсором, по тому же счёту, что и тень.
+	Подчёркивания у заголовка нет:
 	оно делало вид, что кликабелен один h2, хотя цель — весь блок.
 
 	Карточка больше не обёрнута в `<a>`: внизу появились быстрые ссылки на сайт
@@ -121,7 +119,7 @@ const truncate = (value?: string, max = 23) => {
 	data-flag={cleanFlag ?? ""}
 	data-pub-date={pubDate ?? ""}
 	data-href={centerPath}
-	class="group relative flex h-full min-w-0 flex-col gap-3 rounded-catalog corner-squircle bg-surface p-6 text-surface-foreground transition hover:surface-lift has-[[data-card-link]:focus-visible]:outline-2 has-[[data-card-link]:focus-visible]:outline-offset-2 has-[[data-card-link]:focus-visible]:outline-primary"
+	class="group card-ring relative flex h-full min-w-0 flex-col gap-3 rounded-catalog corner-squircle bg-surface p-6 text-surface-foreground transition hover:surface-lift has-[[data-card-link]:focus-visible]:outline-2 has-[[data-card-link]:focus-visible]:outline-offset-2 has-[[data-card-link]:focus-visible]:outline-primary"
 >
 	<SaveCenterButton title={displayTitle} />
 	{

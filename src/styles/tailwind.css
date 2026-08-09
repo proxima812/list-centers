@@ -375,7 +375,8 @@
   /* Тумблер «анимации выключены» из шапки. Гасит всю моушен-часть сайта разом
      — герой, марку, marquee, ховеры — оставляя цвета и градиенты на месте.
      Drawer исключён: он снимает состояние по animationend, поэтому ему, как и
-     в prefers-reduced-motion, отдаётся 1ms вместо `none`. */
+     в prefers-reduced-motion, отдаётся 1ms вместо `none`. Кольцо карточки —
+     второе исключение, оно убирается целиком: см. `card-ring` ниже. */
   [data-motion="off"] *:not([data-menu-list]):not([data-menu-backdrop]),
   [data-motion="off"] *::before,
   [data-motion="off"] *::after {
@@ -535,6 +536,109 @@
 
 @utility content-auto {
   content-visibility: auto;
+}
+
+/* ─── Градиентное кольцо карточки ─────────────────────────────────────────
+   Акцентная рамка, по которой на ховере бежит светлая дуга.
+
+   Кольцо рисует ::before, а не border: градиент в border-image не умеет
+   squircle, а бордер поверх `corner-shape` режет углы по своей форме и
+   выглядит приклеенным — про это уже сказано в DESIGN.md. Псевдоэлемент
+   маскируется парой слоёв с `mask-composite: exclude`: остаётся только
+   ободок толщиной в padding, а внутренний вырез считается по скруглению
+   content-box, то есть повторяет ту же squircle-форму.
+
+   Класть ::before под фон карточки через отрицательный z-index нельзя:
+   у карточек каталога стоит `content-visibility: auto`, а это `contain:
+   paint`, то есть карточка сама становится контекстом наложения и
+   отрицательный слой всплывает поверх её заливки, а не уходит за неё.
+   Маска снимает вопрос: ободок и так не залезает внутрь.
+
+   Кольцо горит всегда, дуга бежит постоянно. Платить за это на четырёх
+   сотнях карточек разом не приходится по той же причине, по которой
+   ::before нельзя было увести за фон: `content-visibility: auto`
+   пропускает содержимое карточек за экраном, а генерируемый контент —
+   это содержимое. Перерисовываются только те карточки, что сейчас в
+   окне, — на практике меньше десятка.
+
+   Громкость при этом разведена. В покое дуга идёт по тихой заливке в 8%
+   акцента, и четыре сотни колец не превращаются в ковёр; под курсором
+   тот же градиент берёт полный акцент и `accent-glow`. Сигнал остаётся
+   сигналом, а рамка в покое читается как форма, а не как выделение.
+
+   Фокус кольцо не трогает: на него есть единый рецепт сайта (outline
+   акцентом), и два кольца разом читались бы как ошибка.
+
+   При `[data-motion="off"]` кольца нет вовсе — это исключение из общего
+   правила тумблера, который обычно только останавливает движение и
+   оставляет цвет. Здесь остановить нечего: смысл кольца — бегущая дуга,
+   а замерший на случайном угле градиент читается не как решение, а как
+   недогрузившаяся анимация. */
+@property --card-ring-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes card-ring-spin {
+  to {
+    --card-ring-angle: 360deg;
+  }
+}
+
+@utility card-ring {
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    /* Толщина ободка: маска вырезает всё, кроме этого padding. */
+    padding: 1.5px;
+    border-radius: inherit;
+    corner-shape: inherit;
+    pointer-events: none;
+    background: conic-gradient(
+      from var(--card-ring-angle),
+      var(--color-accent) 0deg,
+      color-mix(in oklab, var(--color-accent) 32%, transparent) 60deg,
+      color-mix(in oklab, var(--color-accent) 8%, transparent) 150deg,
+      color-mix(in oklab, var(--color-accent) 8%, transparent) 290deg,
+      var(--color-accent) 360deg
+    );
+    animation: card-ring-spin 6s linear infinite;
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+
+  &:hover::before {
+    background: conic-gradient(
+      from var(--card-ring-angle),
+      var(--color-accent-glow) 0deg,
+      var(--color-accent) 55deg,
+      color-mix(in oklab, var(--color-accent) 20%, transparent) 150deg,
+      color-mix(in oklab, var(--color-accent) 20%, transparent) 290deg,
+      var(--color-accent-glow) 360deg
+    );
+  }
+
+  /* Тумблер анимаций и системная просьба о меньшем движении убирают кольцо
+     целиком, а не останавливают дугу: без движения оно теряет смысл. */
+  [data-motion="off"] &::before {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &::before {
+      display: none;
+    }
+  }
 }
 
 /* ─── Подъём над плоскостью ───────────────────────────────────────────────
