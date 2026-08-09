@@ -2,16 +2,7 @@
 import { countryFlagsByRu, getCountryLabel, getCountryLabels } from "@/data/worldCountries";
 import { getLocaleFromUrl, localizePath } from "@/i18n";
 import { getCenterPath } from "@/utils/centers";
-import { Icon } from "astro-icon/components";
 
-type IconName = "tt" | "qt" | "bs";
-type Category = "Татарский" | "Татаро-Башкирский" | "Башкирский" | "Крымотатарский";
-const categoryIconMap: Record<Category, IconName[]> = {
-	Татарский: ["tt"],
-	"Татаро-Башкирский": ["tt", "bs"],
-	Башкирский: ["bs"],
-	Крымотатарский: ["qt"],
-};
 interface Location {
 	flag?: string;
 	city?: string;
@@ -61,8 +52,11 @@ const formattedDate =
 		new Date(pubDate),
 	);
 
-const icons = categoryIconMap[category as Category] ?? [];
-const hasIcons = icons.length > 0;
+// Категория и тип — тихая мета, но на ровном фоне карточки она сливалась с
+// описанием. Отдельный слой на ступень глубже (`surface-muted` + кольцо)
+// отделяет её типографике в помощь, не поднимая громкость до акцента.
+const metaChipClass =
+	"inline-flex min-w-0 items-center rounded-micro corner-squircle bg-surface-muted px-2 py-1 ring-1 ring-depth-100";
 const truncate = (value?: string, max = 23) => {
 	if (!value) return "";
 	const v = value.trim();
@@ -132,20 +126,10 @@ const truncate = (value?: string, max = 23) => {
 		>
 			{
 				category && (
-					<span class="inline-flex min-w-0 items-center gap-1.5 font-semibold text-surface-foreground">
-						{hasIcons && (
-							<span class="inline-flex shrink-0 items-center gap-0.5" aria-hidden="true">
-								{icons.map((icon) => (
-									<Icon name={icon} class="size-3" />
-								))}
-							</span>
-						)}
-						{category}
-					</span>
+					<span class={`${metaChipClass} font-semibold text-surface-foreground`}>{category}</span>
 				)
 			}
-			{category && type && <span aria-hidden="true">·</span>}
-			{type && <span class="min-w-0">{type}</span>}
+			{type && <span class={metaChipClass}>{type}</span>}
 			{
 				formattedDate && (
 					<span class="ml-auto shrink-0 tabular-nums text-subtle-foreground">
