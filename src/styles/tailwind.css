@@ -92,6 +92,13 @@
   --color-border: color-mix(in oklab, var(--color-surface) 80%, var(--color-surface-foreground));
   --color-ring: hsl(0 0% 78%);
 
+  /* Полоса каталога. Раньше она брала `muted`, но в светлой теме это ΔL 5 от
+     страницы: секция читалась серой плашкой, а не сменой контекста. Нужен
+     минимальный шаг, который всё же виден, — 97.5% → 95%. В тёмной теме
+     разрыв страница→карточка (7% → 16%) и так крупный, полосе там хватает
+     `muted`, поэтому она переопределяется в `.dark`. */
+  --color-catalog: var(--color-surface-muted);
+
   --color-foreground: hsl(0 0% 11.4%);
   --color-surface-foreground: hsl(0 0% 11.4%);
   --color-primary: hsl(0 0% 11.4%);
@@ -273,6 +280,7 @@
   --color-muted: hsl(0 0% 11%);
   --color-surface: hsl(0 0% 16%);
   --color-subtle: hsl(0 0% 22%);
+  --color-catalog: var(--color-muted);
   --color-ring: hsl(0 0% 47%);
 
   --color-foreground: hsl(0 0% 95%);

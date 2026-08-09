@@ -34,16 +34,14 @@ type CountryLabels = Record<string, string>;
 // `accent-soft`. Сигнал остаётся акцентным, громкость падает.
 //
 // Ховер раньше был `bg-muted` — ровно фон каталога, то есть невидимый.
-// Чип в покое раньше был прозрачным и без рамки, а границу ему рисовал только
-// вложенный счётчик-пилюля. Без него лента на мобильном слипалась в сплошную
-// строку «Россия 195 Казахстан 54», поэтому форму держит собственная рамка.
-// В строке она не нужна: полная ширина сама себя ограничивает.
+// Неактивный фильтр в покое — не пустое место, а своя поверхность на ступень
+// глубже панели (`surface-muted`), тем же приёмом, что мета в карточке. Заголовки групп («Страны», «Тип») сняты: смысл столбца
+// читается по самим значениям, а для скринридеров он остался в
+// `aria-label` у role="group".
 const chipClass =
-	"group flex min-w-0 max-w-fit cursor-pointer items-center gap-1.5 rounded-full border border-border bg-surface px-2.5 py-1.5 text-sm font-medium text-muted-foreground transition hover:border-depth-300 hover:text-foreground data-[active]:border-accent data-[active]:bg-accent data-[active]:text-accent-foreground lg:w-full lg:max-w-none lg:rounded-micro lg:border-0 lg:bg-transparent lg:px-2 lg:not-data-[active]:hover:bg-subtle lg:data-[active]:bg-accent-soft lg:data-[active]:font-semibold lg:data-[active]:text-accent-soft-foreground";
+	"group flex min-w-0 max-w-fit cursor-pointer items-center gap-1.5 rounded-full bg-surface-muted px-2.5 py-1.5 text-sm font-medium text-muted-foreground transition not-data-[active]:hover:bg-subtle hover:text-foreground data-[active]:bg-accent data-[active]:text-accent-foreground lg:w-full lg:max-w-none lg:rounded-micro lg:corner-squircle lg:px-2 lg:data-[active]:bg-accent-soft lg:data-[active]:font-semibold lg:data-[active]:text-accent-soft-foreground";
 const filterSectionClass =
 	"border-b border-depth-100/70 pb-4 last:border-b-0 last:pb-0";
-const filterHeadingClass =
-	"text-xs font-semibold tracking-wide text-subtle-foreground uppercase lg:px-2";
 const filterGroupClass =
 	"flex flex-wrap items-center gap-1.5 lg:flex-col lg:items-stretch lg:gap-0.5";
 // Счётчик — не вложенная пилюля с собственным фоном, а просто число: внутри
@@ -82,13 +80,19 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 	class="hidden w-full pb-8 lg:sticky lg:top-36 lg:block lg:max-h-[calc(100vh-10rem)] lg:overflow-y-auto lg:pb-12"
 >
 	<section class="w-full">
-		<div id="filters-panel" data-filters-panel class="hidden w-full space-y-4">
+		{/*
+			Панель — своя поверхность, а не голая колонка на фоне каталога:
+			без заголовков групп у столбца фильтров не осталось ничего, что
+			очерчивало бы его границы.
+		*/}
+		<div
+			id="filters-panel"
+			data-filters-panel
+			class="hidden w-full space-y-4 rounded-catalog corner-squircle bg-surface p-4 text-surface-foreground"
+		>
 			<section class={filterSectionClass}>
-				<p class={filterHeadingClass}>
-					{t("list.countries")}
-				</p>
 				<div
-					class={`${filterGroupClass} mt-2`}
+					class={filterGroupClass}
 					role="group"
 					aria-label={t("list.countries.aria")}
 					data-filter-group="country"
@@ -182,11 +186,8 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 			{
 				typeOptions.length > 0 && (
 					<section class={filterSectionClass}>
-						<p class={filterHeadingClass}>
-							{t("list.types")}
-						</p>
 						<div
-							class={`${filterGroupClass} mt-2`}
+							class={filterGroupClass}
 							role="group"
 							aria-label={t("list.types.aria")}
 							data-filter-group="type"
@@ -251,11 +252,8 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 			{
 				categoryOptions.length > 0 && (
 					<section class={filterSectionClass}>
-						<p class={filterHeadingClass}>
-							{t("list.categories")}
-						</p>
 						<div
-							class={`${filterGroupClass} mt-2`}
+							class={filterGroupClass}
 							role="group"
 							aria-label={t("list.categories.aria")}
 							data-filter-group="category"
@@ -320,11 +318,8 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 			{
 				regionOptions.length > 0 && (
 					<section class={filterSectionClass}>
-						<p class={filterHeadingClass}>
-							{t("list.regions")}
-						</p>
 						<div
-							class={`${filterGroupClass} mt-2`}
+							class={filterGroupClass}
 							role="group"
 							aria-label={t("list.regions.aria")}
 							data-filter-group="region"

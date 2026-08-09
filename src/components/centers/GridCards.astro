@@ -1,5 +1,6 @@
 ---
 import { createCenterRouteIdMap } from "@/utils/centers";
+import { getCenterLinks } from "@/utils/centerLinks";
 import type { CollectionEntry } from "astro:content";
 import CardItem from "../ui/CardItem.astro";
 
@@ -27,6 +28,7 @@ const routeIds = createCenterRouteIdMap(cards);
 				location={card.data.location}
 				region={card.data.location?.region}
 				pubDate={card.data.pubDate}
+				links={getCenterLinks(card.body, card.data.source)}
 			/>
 		))
 	}

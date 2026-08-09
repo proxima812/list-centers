@@ -14,6 +14,7 @@ import { getCollection, render, type CollectionEntry } from "astro:content";
 
 import { getCountryLabel } from "@/data/worldCountries";
 import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
+import { getCenterLinks } from "@/utils/centerLinks";
 import { createCenterRouteIdMap, getCenterPath } from "@/utils/centers";
 import { formatContentDateTime, getContentDates } from "@/utils/contentDates";
 
@@ -333,6 +334,7 @@ const jsonLd = {
 								location={relatedEntry.data.location}
 								region={relatedEntry.data.location?.region}
 								pubDate={relatedEntry.data.pubDate}
+								links={getCenterLinks(relatedEntry.body, relatedEntry.data.source)}
 							/>
 						))}
 					</div>

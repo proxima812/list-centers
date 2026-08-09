@@ -16,7 +16,9 @@ type ExpandableFilterButton = HTMLButtonElement & {
 	};
 };
 
-type FilterableCard = HTMLAnchorElement & {
+// Карточка больше не `<a>`: внутри неё живут быстрые ссылки, а вложенные
+// ссылки невалидны. Ищем по data-атрибуту, а не по тегу.
+type FilterableCard = HTMLElement & {
 	dataset: DOMStringMap & {
 		country?: string;
 		searchId?: string;
@@ -136,7 +138,7 @@ export function initCardsToolbar() {
 
 	const cardsGridElement = cardsGrid;
 	const noResultsElement = noResults;
-	const cards = Array.from(cardsGridElement.querySelectorAll<FilterableCard>(":scope > a"));
+	const cards = Array.from(cardsGridElement.querySelectorAll<FilterableCard>(":scope > [data-search-id]"));
 	const cardBySearchId = new Map(
 		cards.map((card, order) => [card.dataset.searchId ?? String(order), card] as const),
 	);
