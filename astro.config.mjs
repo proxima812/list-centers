@@ -24,8 +24,14 @@ export default defineConfig({
         },
     },
     integrations: [
+      // `/saved` — личный список из localStorage конкретного браузера. Для
+      // робота он всегда пустой каркас, поэтому его нет ни в карте сайта, ни в
+      // обходе (Disallow ниже), а сама страница отдаёт noindex.
       sitemap({
-          filter: (page) => new URL(page).pathname.replace(/\/$/, "") !== "/map",
+          filter: (page) => {
+              const path = new URL(page).pathname.replace(/\/$/, "");
+              return path !== "/map" && path !== "/saved" && path !== "/en/saved";
+          },
       }),
       mdx(),
       icon({ uis: ["*"] }),

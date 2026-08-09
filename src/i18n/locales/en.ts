@@ -181,6 +181,20 @@ const dict: Dictionary = {
 	"feedback.text":
 		"Found a mistake or inaccuracy, or want to fix, expand, or improve the translation? Let us know.",
 	"feedback.link": "Open Telegram",
+	"saved.title": "Saved",
+	"saved.description":
+		"Your personal list of centers: the cards you bookmarked in the catalog. The list is stored in this browser only.",
+	"saved.heroIntro":
+		"Marked cards live in this browser's storage - no account, no server. Clear the site data or open it in another browser, and the list will be empty.",
+	"saved.save": "Save center",
+	"saved.remove": "Remove from saved",
+	"saved.delete": "Delete",
+	"saved.count": "Saved cards: {count}",
+	"saved.empty": "Nothing saved yet.",
+	"saved.emptyHint": "Tap the bookmark in the corner of a card in the catalog and it will show up here.",
+	"saved.toCatalog": "Open the catalog",
+	"saved.clear": "Clear the list",
+	"saved.clearConfirm": "Remove all saved cards?",
 	"copy.copyPageUrl": "Copy page URL",
 	"copy.copyUrl": "Copy URL",
 	"copy.moreOptions": "More options",

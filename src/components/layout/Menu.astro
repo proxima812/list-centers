@@ -2,6 +2,7 @@
 import ButtonLink from "../ui/ButtonLink.astro";
 import AccentToggle from "./AccentToggle.astro";
 import MotionToggle from "./MotionToggle.astro";
+import SavedLink from "./SavedLink.astro";
 import ThemeToggle from "./ThemeToggle.astro";
 import { links } from "@/data/links";
 import {
@@ -130,6 +131,10 @@ const isActivePath = (href: string) => {
 							/>
 						))
 					}
+					{/* В шапке «Сохранённые» стоят до палитры; на мобильном шапка
+					    свёрнута в это меню, поэтому ссылка идёт сюда, к каталогу —
+					    рядом с тем, откуда карточки в неё и попадают. */}
+					<SavedLink withLabel />
 				</section>
 
 				<section class="flex min-w-0 max-w-full flex-col" aria-labelledby="mobile-menu-materials">

@@ -25,7 +25,11 @@ const ogLocales: Record<AppLocale, string> = {
 	en: "en_US",
 };
 
-const unlocalizedPathnames = new Set(["posts", "sabantye", "map"]);
+// `saved` здесь по той же причине, что `map`: страница одна на обе локали.
+// Содержимое у неё не редакционное, а из localStorage браузера, и заводить
+// вторую копию каркаса ради заголовка — лишний маршрут в карте сайта и лишний
+// повод для расхождения. Рендерится в дефолтной локали, отсюда русские строки.
+const unlocalizedPathnames = new Set(["posts", "sabantye", "map", "saved"]);
 
 export function isAppLocale(value: string | null | undefined): value is AppLocale {
 	return Boolean(value && locales.includes(value as AppLocale));

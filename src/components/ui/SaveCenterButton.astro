@@ -1,0 +1,77 @@
+---
+import { getLocaleFromUrl, useTranslations } from "@/i18n";
+import { cn } from "@/utils/libs/cn";
+import { Icon } from "astro-icon/components";
+
+interface Props {
+	title?: string;
+	class?: string;
+}
+
+const { title, class: className } = Astro.props as Props;
+const locale = getLocaleFromUrl(Astro.url);
+const t = useTranslations(locale);
+
+// Подпись всегда называет карточку: в списке кнопок скринридера три с
+// половиной сотни одинаковых «Сохранить» неотличимы друг от друга.
+const suffix = title ? `: ${title}` : "";
+const saveLabel = `${t("saved.save")}${suffix}`;
+const removeLabel = `${t("saved.remove")}${suffix}`;
+---
+
+{
+	/*
+	Кнопка лежит над растянутой ссылкой карточки по z (как быстрые ссылки
+	внизу), иначе клик по закладке уводил бы на страницу центра.
+
+	Разметка отдаётся в состоянии «не сохранено» и без aria-pressed=true:
+	хранилище читается только на клиенте, а статический HTML один на всех.
+	Реальное состояние проставляет initSavedCenters сразу после гидрации.
+
+	Своего кольца у кнопки нет — на карточке ровно одно кольцо на уровень
+	вложенности; в покое это просто иконка, форму ей даёт только ховер.
+	*/
+}
+<button
+	type="button"
+	data-save-center
+	data-label-save={saveLabel}
+	data-label-remove={removeLabel}
+	aria-pressed="false"
+	aria-label={saveLabel}
+	title={saveLabel}
+	class={cn(
+		"save-center absolute right-3 top-3 z-10 inline-flex size-9 cursor-pointer items-center justify-center rounded-full text-subtle-foreground transition-colors hover:bg-surface-muted hover:text-foreground aria-pressed:text-favorite aria-pressed:hover:text-favorite",
+		className,
+	)}
+>
+	<Icon name="tabler:bookmark" class="save-center-off size-5" aria-hidden="true" />
+	<Icon name="tabler:bookmark-filled" class="save-center-on size-5" aria-hidden="true" />
+</button>
+
+<style>
+	/* Две иконки вместо подмены пути: контурная и залитая закладка у tabler —
+	   разные глифы, и переключение классом не даёт браузеру анимировать
+	   заливку. Показываем нужное, второе снимаем из потока. */
+	.save-center-on,
+	[aria-pressed="true"] .save-center-off {
+		display: none;
+	}
+
+	[aria-pressed="true"] .save-center-on {
+		display: block;
+	}
+
+	/* Единственная моторика — короткий толчок в момент сохранения. Он живёт на
+	   :active, а не на смене состояния: `[data-motion="off"]` глушит
+	   transition целиком, и состояние кнопки не должно его ждать. */
+	.save-center:active {
+		transform: scale(0.88);
+	}
+</style>
+
+<script>
+	import { initSavedCenters } from "@/scripts/savedCentersUi";
+
+	initSavedCenters();
+</script>

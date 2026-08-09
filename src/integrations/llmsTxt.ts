@@ -20,6 +20,10 @@ const IGNORE_FILES = new Set([
 	"llms.txt.ts",
 	"robots.txt.ts",
 	"sitemap.xml.ts",
+	// Личный список из localStorage конкретного браузера: в статическом HTML
+	// он всегда пуст, читать модели там нечего. Страница отдаёт noindex и
+	// закрыта в robots.txt — здесь то же решение.
+	"saved.astro",
 ]);
 
 function normalizeSite(site: URL) {

@@ -3,6 +3,7 @@ import { countryFlagsByRu, getCountryLabel, getCountryLabels } from "@/data/worl
 import { getLocaleFromUrl, localizePath } from "@/i18n";
 import { getCenterPath } from "@/utils/centers";
 import type { CenterLink } from "@/utils/centerLinks";
+import SaveCenterButton from "./SaveCenterButton.astro";
 
 interface Location {
 	flag?: string;
@@ -93,6 +94,12 @@ const truncate = (value?: string, max = 23) => {
 	(`before:absolute before:inset-0`), а быстрые ссылки лежат над ней по z.
 	Заголовок остаётся текстом ссылки, поэтому в списке ссылок скринридера
 	карточка называет себя осмысленно.
+
+	Часть data-атрибутов ниже поставил поиск с фильтрами (title, summary, city,
+	country, type, category); закладка дописала к ним flag, pub-date и href.
+	Вместе это ровно тот снимок, который уходит в localStorage и из которого
+	/saved рисует карточку, не поднимая каталог. Страна берётся русская:
+	/saved — одна страница на обе локали, в дефолтной.
 */
 }
 <article
@@ -104,11 +111,15 @@ const truncate = (value?: string, max = 23) => {
 	data-summary={summary ?? ""}
 	data-city={cleanCity ?? ""}
 	data-region={region ?? ""}
+	data-flag={cleanFlag ?? ""}
+	data-pub-date={pubDate ?? ""}
+	data-href={centerPath}
 	class="group relative flex h-full min-w-0 flex-col gap-3 rounded-catalog corner-squircle bg-surface p-6 text-surface-foreground transition hover:surface-lift has-[[data-card-link]:focus-visible]:outline-2 has-[[data-card-link]:focus-visible]:outline-offset-2 has-[[data-card-link]:focus-visible]:outline-primary"
 >
+	<SaveCenterButton title={displayTitle} />
 	{
 		displayLocation && (
-			<p class="flex min-w-0 flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
+			<p class="flex min-w-0 flex-wrap items-center gap-1.5 pr-9 text-xs text-muted-foreground">
 				{displayLocation.flag && (
 					<span class="shrink-0 text-base leading-none">{displayLocation.flag}</span>
 				)}
@@ -128,7 +139,15 @@ const truncate = (value?: string, max = 23) => {
 			</p>
 		)
 	}
-	<h2 class="min-w-0 wrap-anywhere font-bold leading-snug tracking-tight">
+	<h2
+		class:list={[
+			"min-w-0 wrap-anywhere font-bold leading-snug tracking-tight",
+			// Без строки локации заголовок оказывается первым и подъезжает под
+			// закладку. Отступ ставим только в этом случае: у карточек с локацией
+			// место под кнопку освобождает она.
+			!displayLocation && "pr-9",
+		]}
+	>
 		<a
 			data-card-link
 			href={localizePath(locale, centerPath)}

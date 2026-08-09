@@ -1,0 +1,62 @@
+---
+import { getLocaleFromUrl, getLocalePathname, localizePath, useTranslations } from "@/i18n";
+import { cn } from "@/utils/libs/cn";
+import { Icon } from "astro-icon/components";
+
+interface Props {
+	class?: string;
+	/** Разворачивает контрол в строку с подписью — для мобильного меню. */
+	withLabel?: boolean;
+}
+
+const { class: className, withLabel = false } = Astro.props as Props;
+const locale = getLocaleFromUrl(Astro.url);
+const t = useTranslations(locale);
+const href = localizePath(locale, "/saved");
+const isActive = getLocalePathname(Astro.url.pathname) === getLocalePathname(href);
+---
+
+{
+	/*
+	Стоит слева от AppearanceMenu — первым в группе служебных контролов шапки,
+	до палитры и темы: тема с акцентом настраиваются однажды, а сюда
+	возвращаются регулярно.
+
+	Счётчик отдаётся скрытым и без числа: HTML статический и один на всех, а
+	сколько карточек сохранено, знает только localStorage конкретного браузера.
+	Проставить число в разметке значило бы показать всем ноль и мигнуть им у
+	тех, у кого сохранено. Число вписывает initSavedCenters после гидрации.
+	*/
+}
+<a
+	href={href}
+	aria-current={isActive ? "page" : undefined}
+	aria-label={t("saved.title")}
+	title={t("saved.title")}
+	class={cn(
+		// Та же оболочка, что у AppearanceMenu и MotionToggle: h-9, пилюля,
+		// граница border-muted. Контрол стоит с ними в одном ряду и обязан
+		// сидеть на той же ступени глубины — иначе он читается не элементом
+		// панели, а голой ссылкой, случайно оказавшейся рядом.
+		"inline-flex h-9 shrink-0 cursor-pointer items-center gap-1.5 rounded-full border border-border-muted px-2.5 text-sm font-medium text-foreground no-underline transition-colors hover:bg-muted aria-[current]:bg-muted",
+		// В мобильном меню ряда переключателей нет: там ссылка стоит среди
+		// разделов, поэтому граница снимается и остаётся обычная строка меню.
+		withLabel &&
+			"h-auto w-full max-w-full justify-start gap-2 border-transparent px-4 py-2 text-lg",
+		className,
+	)}
+>
+	<Icon
+		name="tabler:bookmark"
+		class={withLabel ? "size-5 shrink-0" : "size-4.5 shrink-0"}
+		aria-hidden="true"
+	/>
+	{withLabel && <span class="min-w-0 wrap-anywhere">{t("saved.title")}</span>}
+	<span data-saved-count class="shrink-0 tabular-nums text-muted-foreground" hidden></span>
+</a>
+
+<script>
+	import { initSavedCenters } from "@/scripts/savedCentersUi";
+
+	initSavedCenters();
+</script>

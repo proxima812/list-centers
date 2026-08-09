@@ -1,0 +1,261 @@
+---
+// «Сохраненные» — личный список карточек каталога.
+//
+// Страница статическая, как и весь сайт: сервер о списке ничего не знает и
+// знать не может. Разметка здесь — это пустой каркас плюс <template> карточки;
+// содержимое подставляет скрипт из localStorage. Поэтому indexRobots=false:
+// у поисковика эта страница всегда пустая, и индексировать в ней нечего.
+//
+// Карточка в шаблоне повторяет CardItem, но без быстрых ссылок на сайт и
+// соцсети: их нет в снимке. Тянуть ради них весь каталог в память браузера —
+// несоразмерная цена, а до контактов один клик по самой карточке.
+import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
+import Layout from "@/layouts/Layout.astro";
+import { Icon } from "astro-icon/components";
+
+const locale = getLocaleFromUrl(Astro.url);
+const t = useTranslations(locale);
+const catalogHref = localizePath(locale, "/centers");
+
+const metaChipClass =
+	"inline-flex min-w-0 items-center rounded-micro corner-squircle bg-surface-muted px-2 py-1";
+---
+
+<Layout
+	title={t("saved.title")}
+	description={t("saved.description")}
+	indexRobots={false}
+	classContainer="max-w-7xl"
+>
+	<section class="flex min-w-0 flex-col gap-4">
+		<h1 class="text-3xl font-bold tracking-[-0.03em] text-foreground sm:text-4xl">
+			{t("saved.title")}
+		</h1>
+		<p class="max-w-3xl text-base leading-7 text-muted-foreground">{t("saved.heroIntro")}</p>
+
+		<div class="flex flex-wrap items-center gap-3 pt-2">
+			{/* Строки для скрипта едут на data-атрибутах: словарь остаётся на
+			    сборке, в бандл браузера он не попадает. */}
+			<p
+				data-saved-summary
+				data-count={t("saved.count", { count: "{count}" })}
+				data-confirm={t("saved.clearConfirm")}
+				data-remove={t("saved.remove")}
+				class="text-sm text-subtle-foreground tabular-nums"
+				role="status"
+				aria-live="polite"
+			>
+			</p>
+			{/* Очистка появляется только когда есть что чистить: кнопка, которая
+			    ничего не делает, на пустой странице читается как поломка. */}
+			<button
+				type="button"
+				data-saved-clear
+				hidden
+				class="inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-border-muted px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+			>
+				<Icon name="tabler:trash" class="size-4 shrink-0" aria-hidden="true" />
+				<span>{t("saved.clear")}</span>
+			</button>
+		</div>
+	</section>
+
+	<section
+		data-saved-empty
+		hidden
+		class="flex min-w-0 flex-col items-center gap-4 rounded-catalog corner-squircle bg-surface px-6 py-16 text-center text-surface-foreground"
+	>
+		<Icon
+			name="tabler:bookmark"
+			class="size-8 shrink-0 text-subtle-foreground"
+			aria-hidden="true"
+		/>
+		<p class="text-lg font-semibold">{t("saved.empty")}</p>
+		<p class="max-w-md text-sm leading-6 text-muted-foreground">{t("saved.emptyHint")}</p>
+		<a
+			href={catalogHref}
+			class="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm font-medium text-muted-foreground no-underline transition hover:bg-muted hover:text-foreground"
+		>
+			{t("saved.toCatalog")}
+		</a>
+	</section>
+
+	<section data-saved-grid hidden class="grid min-w-0 grid-cols-1 gap-6 md:grid-cols-2"></section>
+
+	<template data-saved-card>
+		<article
+			data-search-id
+			class="group relative flex h-full min-w-0 flex-col gap-3 rounded-catalog corner-squircle bg-surface p-6 text-surface-foreground transition hover:surface-lift has-[[data-card-link]:focus-visible]:outline-2 has-[[data-card-link]:focus-visible]:outline-offset-2 has-[[data-card-link]:focus-visible]:outline-primary"
+		>
+			{/*
+				Закладки на этой карточке нет: здесь всё сохранено по
+				определению, и переключатель показывал бы состояние, которое не
+				меняется. Вместо него — прямое действие: убрать из списка.
+				Единственное место на сайте, где destructive стоит на кнопке, а
+				не на предупреждении, поэтому заливка тихая (10%), а красным
+				горят только текст с иконкой.
+			*/}
+			<button
+				type="button"
+				data-saved-delete
+				class="absolute right-3 top-3 z-10 inline-flex cursor-pointer items-center gap-1 rounded-full bg-destructive/10 px-2.5 py-1 text-xs font-medium text-destructive transition-colors hover:bg-destructive/20"
+			>
+				<Icon name="tabler:trash" class="size-3.5 shrink-0" aria-hidden="true" />
+				<span>{t("saved.delete")}</span>
+			</button>
+			<p
+				data-saved-location
+				class="flex min-w-0 flex-wrap items-center gap-1.5 pr-24 text-xs text-muted-foreground"
+			>
+				<span data-saved-flag class="shrink-0 text-base leading-none"></span>
+				<span data-saved-city></span>
+				<span data-saved-separator aria-hidden="true">&#10625;</span>
+				<span data-saved-country></span>
+			</p>
+			<h2 data-saved-heading class="min-w-0 wrap-anywhere font-bold leading-snug tracking-tight">
+				<a
+					data-card-link
+					data-saved-title
+					href="#"
+					class="text-surface-foreground no-underline before:absolute before:inset-0 before:rounded-catalog before:content-[''] focus-visible:outline-hidden"
+				>
+				</a>
+			</h2>
+			<p data-saved-summary-text class="line-clamp-2 text-sm leading-6 text-muted-foreground"></p>
+			<p
+				class="mt-auto flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 pt-1 text-xs text-muted-foreground"
+			>
+				<span data-saved-category class={`${metaChipClass} font-semibold text-surface-foreground`}
+				></span>
+				<span data-saved-type class={metaChipClass}></span>
+				<span data-saved-date class="ml-auto shrink-0 tabular-nums text-subtle-foreground"></span>
+			</p>
+		</article>
+	</template>
+</Layout>
+
+<script>
+	import { clearSaved, onSavedChange, readSaved, removeSaved } from "@/scripts/savedCenters";
+
+	const grid = document.querySelector<HTMLElement>("[data-saved-grid]");
+	const empty = document.querySelector<HTMLElement>("[data-saved-empty]");
+	const summary = document.querySelector<HTMLElement>("[data-saved-summary]");
+	const clearButton = document.querySelector<HTMLButtonElement>("[data-saved-clear]");
+	const template = document.querySelector<HTMLTemplateElement>("[data-saved-card]");
+
+	if (grid && empty && summary && template) {
+		// Страница одна на обе локали и рендерится в дефолтной (см.
+		// unlocalizedPathnames в src/i18n) — отсюда и русские строки, и русская
+		// страна в снимке, и русский формат даты.
+		const dateFormat = new Intl.DateTimeFormat("ru", { month: "short", year: "numeric" });
+
+		// Локализованные строки приходят из разметки, а не дублируются в
+		// скрипте: словарь живёт на сборке, в браузер он не едет.
+		const strings = {
+			count: summary.dataset.count ?? "",
+			confirm: summary.dataset.confirm ?? "",
+			remove: summary.dataset.remove ?? "",
+		};
+
+		const setText = (root: ParentNode, selector: string, value: string) => {
+			const node = root.querySelector<HTMLElement>(selector);
+			if (!node) return;
+
+			node.textContent = value;
+			node.hidden = value.length === 0;
+		};
+
+		const formatDate = (value: string) => {
+			if (!value) return "";
+
+			const date = new Date(value);
+			return Number.isNaN(date.getTime()) ? "" : dateFormat.format(date);
+		};
+
+		const render = () => {
+			const list = readSaved().sort((a, b) => b.savedAt - a.savedAt);
+
+			summary.textContent = strings.count.replace("{count}", String(list.length));
+			empty.hidden = list.length > 0;
+			grid.hidden = list.length === 0;
+			if (clearButton) clearButton.hidden = list.length === 0;
+
+			const fragment = document.createDocumentFragment();
+
+			for (const item of list) {
+				const node = template.content.cloneNode(true) as DocumentFragment;
+				const article = node.querySelector<HTMLElement>("[data-search-id]");
+				const link = node.querySelector<HTMLAnchorElement>("[data-saved-title]");
+				const deleteButton = node.querySelector<HTMLElement>("[data-saved-delete]");
+				if (!article || !link) continue;
+
+				// id остаётся на карточке: по нему кнопка удаления понимает, что
+				// именно убирать, и он же нужен, если карточка снова попадёт под
+				// общую логику сохранения.
+				article.dataset.searchId = item.id;
+
+				link.href = item.href;
+				link.textContent = item.title;
+
+				if (deleteButton) {
+					// Подпись называет карточку: в списке кнопок скринридера
+					// десяток одинаковых «Удалить» неотличим.
+					const label = item.title ? `${strings.remove}: ${item.title}` : strings.remove;
+					deleteButton.setAttribute("aria-label", label);
+					deleteButton.setAttribute("title", label);
+				}
+
+				setText(node, "[data-saved-flag]", item.flag);
+				setText(node, "[data-saved-city]", item.city);
+				setText(node, "[data-saved-country]", item.country);
+				setText(node, "[data-saved-summary-text]", item.summary);
+				setText(node, "[data-saved-category]", item.category);
+				setText(node, "[data-saved-type]", item.type);
+				setText(node, "[data-saved-date]", formatDate(item.pubDate));
+
+				const separator = node.querySelector<HTMLElement>("[data-saved-separator]");
+				if (separator) separator.hidden = !(item.city && item.country);
+
+				const hasLocation = Boolean(item.flag || item.city || item.country);
+				const location = node.querySelector<HTMLElement>("[data-saved-location]");
+				if (location) location.hidden = !hasLocation;
+
+				// Место под кнопку освобождает строка локации. Если её нет,
+				// первым идёт заголовок — и подъезжает прямо под «Удалить».
+				const heading = node.querySelector<HTMLElement>("[data-saved-heading]");
+				if (heading) heading.classList.toggle("pr-24", !hasLocation);
+
+				fragment.append(node);
+			}
+
+			grid.replaceChildren(fragment);
+		};
+
+		clearButton?.addEventListener("click", () => {
+			if (!confirm(strings.confirm)) return;
+
+			clearSaved();
+		});
+
+		// Делегируем на сетку: карточки пересоздаются на каждой перерисовке, и
+		// слушатель на каждой кнопке пришлось бы вешать заново.
+		grid.addEventListener("click", (event) => {
+			const target = event.target;
+			if (!(target instanceof Element)) return;
+
+			const button = target.closest<HTMLElement>("[data-saved-delete]");
+			if (!button) return;
+
+			// Карточка целиком — ссылка на страницу центра.
+			event.preventDefault();
+
+			const id = button.closest<HTMLElement>("[data-search-id]")?.dataset.searchId;
+			if (id) removeSaved(id);
+		});
+
+		// Перерисовка по любому изменению хранилища: закладка на самой карточке
+		// снимает её из списка, и карточка обязана исчезнуть сразу.
+		onSavedChange(render);
+		render();
+	}
+</script>
