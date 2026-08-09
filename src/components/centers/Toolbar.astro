@@ -1,88 +1,38 @@
 ---
-import { getCountryLabels, getCountryLabel } from "@/data/worldCountries";
-import { getLocaleFromUrl, useTranslations } from "@/i18n";
+import type { CenterFacets } from "@/utils/centerFacets";
+import FilterSection from "./FilterSection.astro";
+import ScopeSwitch from "./ScopeSwitch.astro";
 
-interface FilterOption {
-	value: string;
-	count: number;
-}
+// Панель фильтров — дерево, а не четыре равноправных списка.
+//
+// Порядок секций сверху вниз повторяет вложенность: scope решает ветку,
+// округ или макрорегион сужает её до десятка строк, дальше страна, регион и
+// город. Категория стоит последней, потому что она единственная ортогональна
+// географии и не участвует в дереве.
+//
+// `gate` — условие показа секции, его проверяет клиент:
+//   ru        — только когда выбрана Россия;
+//   world     — когда Россия не выбрана;
+//   country   — когда выбрана корзина мира или scope «Зарубеж»;
+//   region    — регион виден, когда выбрана ровно одна страна или Россия;
+//   city      — город виден, когда выбран ровно один регион или одна страна.
+// Именно `city`/`region` и склеивают уровни: выбрал Украину — под ней остался
+// Киев, выбрал Пермский край — под ним Пермь, Лысьва, Березники.
 
 interface Props {
-	cardsCount: number;
-	countries: [string, number][];
-	countryFlags: Map<string, string>;
-	types: [string, number][];
-	categories: [string, number][];
-	regions: [string, number][];
+	facets: CenterFacets;
 }
 
-const { cardsCount, countries, countryFlags, types, categories, regions } =
-	Astro.props as Props;
-const locale = getLocaleFromUrl(Astro.url);
-const t = useTranslations(locale);
+const { facets } = Astro.props as Props;
 
-type CountryLabels = Record<string, string>;
-
-// Одна разметка, два режима. На мобильном фильтры лежат лентой под поиском —
-// там чип честно работает. В десктопном aside шириной 20rem чипо-облако
-// переносилось рвано, а длинные страны и регионы резались `truncate` на
-// середине слова, поэтому с lg то же самое становится строкой: метка слева,
-// счётчик справа.
-//
-// Заливка акцентом во всю ширину строки на два десятка строк превращается в
-// ковёр, поэтому активное состояние на десктопе берёт тихую заливку
-// `accent-soft`. Сигнал остаётся акцентным, громкость падает.
-//
-// Ховер раньше был `bg-muted` — ровно фон каталога, то есть невидимый.
-//
-// Заливки в покое у неактивного фильтра нет. Два десятка залитых строк подряд
-// — это ровно тот же ковёр, что и акцент во всю ширину: рябит, а разобрать по
-// нему всё равно нечего, потому что все строки одинаковые. Форму строке даёт
-// ширина колонки, а заливка осталась там, где несёт смысл: ховер и активное.
-// На мобильном лента переносится, соседние чипы стоят вплотную, и без своей
-// поверхности строка «Россия 195 Казахстан 54» слипается — там тихая заливка
-// в покое остаётся.
-//
-// Заголовки групп («Страны», «Тип») сняты: смысл столбца читается по самим
-// значениям, а для скринридеров он остался в `aria-label` у role="group".
-const chipClass =
-	"group flex min-w-0 max-w-fit cursor-pointer items-center gap-1.5 rounded-full bg-surface-muted px-2.5 py-1.5 text-sm font-medium text-muted-foreground transition not-data-[active]:hover:bg-subtle hover:text-foreground data-[active]:bg-accent data-[active]:text-accent-foreground lg:w-full lg:max-w-none lg:rounded-micro lg:corner-squircle lg:bg-transparent lg:px-2 lg:not-data-[active]:hover:bg-surface-muted lg:data-[active]:bg-accent-soft lg:data-[active]:font-semibold lg:data-[active]:text-accent-soft-foreground";
-const filterSectionClass =
-	"border-b border-depth-100/70 pb-4 last:border-b-0 last:pb-0";
-const filterGroupClass =
-	"flex flex-wrap items-center gap-1.5 lg:flex-col lg:items-stretch lg:gap-0.5";
-// Счётчик — не вложенная пилюля с собственным фоном, а просто число: внутри
-// чипа это была капсула в капсуле. В активном состоянии наследует цвет
-// строки, каким бы он ни был в текущем режиме.
-const countClass =
-	"shrink-0 text-xs tabular-nums text-subtle-foreground group-data-[active]:text-current lg:ml-auto lg:pl-2";
-const moreButtonClass =
-	"mt-0.5 inline-flex max-w-fit cursor-pointer text-xs font-medium text-muted-foreground underline decoration-border underline-offset-4 transition hover:text-foreground lg:mt-1 lg:px-2";
-const countryVisibleLimit = 5;
-const defaultVisibleLimit = 2;
-// Типов всего три, и «показать ещё 1» ради последнего — лишний клик и лишняя
-// строка под группой. Показываем всю тройку сразу.
-const typeVisibleLimit = 3;
-
-function buildCountryLabels(country: string): CountryLabels {
-	return getCountryLabels(country);
-}
-
-function buildOptions(entries: [string, number][]): FilterOption[] {
-	return entries.map(([value, count]) => ({ value, count }));
-}
-
-const typeOptions = buildOptions(types);
-const categoryOptions = buildOptions(categories);
-const regionOptions = buildOptions(regions);
-
-function getVisibleOptions<T>(options: T[], limit = defaultVisibleLimit) {
-	return options.slice(0, limit);
-}
-
-function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
-	return options.slice(limit);
-}
+const GATES: Record<string, string> = {
+	macro: "world",
+	okrug: "ru",
+	country: "country",
+	region: "region",
+	city: "city",
+	category: "always",
+};
 ---
 
 <aside
@@ -100,295 +50,12 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 			data-filters-panel
 			class="hidden w-full space-y-4 rounded-catalog corner-squircle bg-surface p-4 text-surface-foreground"
 		>
-			<section class={filterSectionClass}>
-				<div
-					class={filterGroupClass}
-					role="group"
-					aria-label={t("list.countries.aria")}
-					data-filter-group="country"
-				>
-					<button
-						type="button"
-						data-filter-all="country"
-						data-active=""
-						aria-pressed="true"
-						class={chipClass}
-					>
-						<span class="min-w-0 truncate">{t("list.all")}</span>
-						<span class={countClass}>{cardsCount}</span>
-					</button>
-
-					{
-						getVisibleOptions(countries, countryVisibleLimit).map(([country, count]) => (
-							<button
-								type="button"
-								data-filter-chip="country"
-								data-filter-value={country}
-								aria-pressed="false"
-								class={chipClass}
-							>
-								{countryFlags.get(country) && (
-									<span class="shrink-0 text-sm leading-none">
-										{countryFlags.get(country)}
-									</span>
-								)}
-								<span
-									class="min-w-0 truncate"
-									data-country-label={country}
-									data-country-labels={JSON.stringify(buildCountryLabels(country))}
-								>
-									{getCountryLabel(country, locale)}
-								</span>
-								<span class={countClass}>
-									{count}
-								</span>
-							</button>
-						))
-					}
-					{
-						getOverflowOptions(countries, countryVisibleLimit).map(([country, count]) => (
-							<button
-								type="button"
-								data-filter-chip="country"
-								data-filter-value={country}
-								data-overflow-chip="true"
-								aria-pressed="false"
-								class={chipClass}
-								hidden
-							>
-								{countryFlags.get(country) && (
-									<span class="shrink-0 text-sm leading-none">
-										{countryFlags.get(country)}
-									</span>
-								)}
-								<span
-									class="min-w-0 truncate"
-									data-country-label={country}
-									data-country-labels={JSON.stringify(buildCountryLabels(country))}
-								>
-									{getCountryLabel(country, locale)}
-								</span>
-								<span class={countClass}>
-									{count}
-								</span>
-							</button>
-						))
-					}
-				</div>
-				{
-					getOverflowOptions(countries, countryVisibleLimit).length > 0 && (
-						<button
-							type="button"
-							class={moreButtonClass}
-							data-filter-more="country"
-							data-expanded="false"
-							data-show-more={t("list.showMore", { count: "__COUNT__" })}
-							data-show-less={t("list.showLess")}
-						>
-							{t("list.showMore", {
-								count: getOverflowOptions(countries, countryVisibleLimit).length,
-							})}
-						</button>
-					)
-				}
-			</section>
+			<ScopeSwitch scopes={facets.scopes} total={facets.total} />
 
 			{
-				typeOptions.length > 0 && (
-					<section class={filterSectionClass}>
-						<div
-							class={filterGroupClass}
-							role="group"
-							aria-label={t("list.types.aria")}
-							data-filter-group="type"
-						>
-							<button
-								type="button"
-								data-filter-all="type"
-								data-active=""
-								aria-pressed="true"
-								class={chipClass}
-							>
-								<span class="min-w-0 truncate">{t("list.allTypes")}</span>
-							</button>
-
-							{getVisibleOptions(typeOptions, typeVisibleLimit).map((option) => (
-								<button
-									type="button"
-									data-filter-chip="type"
-									data-filter-value={option.value}
-									aria-pressed="false"
-									class={chipClass}
-								>
-									<span class="min-w-0 truncate">{option.value}</span>
-									<span class={countClass}>
-										{option.count}
-									</span>
-								</button>
-							))}
-							{getOverflowOptions(typeOptions, typeVisibleLimit).map((option) => (
-								<button
-									type="button"
-									data-filter-chip="type"
-									data-filter-value={option.value}
-									data-overflow-chip="true"
-									aria-pressed="false"
-									class={chipClass}
-									hidden
-								>
-									<span class="min-w-0 truncate">{option.value}</span>
-									<span class={countClass}>
-										{option.count}
-									</span>
-								</button>
-							))}
-						</div>
-						{getOverflowOptions(typeOptions, typeVisibleLimit).length > 0 && (
-							<button
-								type="button"
-								class={moreButtonClass}
-								data-filter-more="type"
-								data-expanded="false"
-								data-show-more={t("list.showMore", { count: "__COUNT__" })}
-								data-show-less={t("list.showLess")}
-							>
-								{t("list.showMore", { count: getOverflowOptions(typeOptions, typeVisibleLimit).length })}
-							</button>
-						)}
-					</section>
-				)
-			}
-
-			{
-				categoryOptions.length > 0 && (
-					<section class={filterSectionClass}>
-						<div
-							class={filterGroupClass}
-							role="group"
-							aria-label={t("list.categories.aria")}
-							data-filter-group="category"
-						>
-							<button
-								type="button"
-								data-filter-all="category"
-								data-active=""
-								aria-pressed="true"
-								class={chipClass}
-							>
-								<span class="min-w-0 truncate">{t("list.allCategories")}</span>
-							</button>
-
-							{getVisibleOptions(categoryOptions).map((option) => (
-								<button
-									type="button"
-									data-filter-chip="category"
-									data-filter-value={option.value}
-									aria-pressed="false"
-									class={chipClass}
-								>
-									<span class="min-w-0 truncate">{option.value}</span>
-									<span class={countClass}>
-										{option.count}
-									</span>
-								</button>
-							))}
-							{getOverflowOptions(categoryOptions).map((option) => (
-								<button
-									type="button"
-									data-filter-chip="category"
-									data-filter-value={option.value}
-									data-overflow-chip="true"
-									aria-pressed="false"
-									class={chipClass}
-									hidden
-								>
-									<span class="min-w-0 truncate">{option.value}</span>
-									<span class={countClass}>
-										{option.count}
-									</span>
-								</button>
-							))}
-						</div>
-						{getOverflowOptions(categoryOptions).length > 0 && (
-							<button
-								type="button"
-								class={moreButtonClass}
-								data-filter-more="category"
-								data-expanded="false"
-								data-show-more={t("list.showMore", { count: "__COUNT__" })}
-								data-show-less={t("list.showLess")}
-							>
-								{t("list.showMore", { count: getOverflowOptions(categoryOptions).length })}
-							</button>
-						)}
-					</section>
-				)
-			}
-
-			{
-				regionOptions.length > 0 && (
-					<section class={filterSectionClass}>
-						<div
-							class={filterGroupClass}
-							role="group"
-							aria-label={t("list.regions.aria")}
-							data-filter-group="region"
-						>
-							<button
-								type="button"
-								data-filter-all="region"
-								data-active=""
-								aria-pressed="true"
-								class={chipClass}
-							>
-								<span class="min-w-0 truncate">{t("list.allRegions")}</span>
-							</button>
-
-							{getVisibleOptions(regionOptions).map((option) => (
-								<button
-									type="button"
-									data-filter-chip="region"
-									data-filter-value={option.value}
-									aria-pressed="false"
-									class={chipClass}
-								>
-									<span class="min-w-0 truncate">{option.value}</span>
-									<span class={countClass}>
-										{option.count}
-									</span>
-								</button>
-							))}
-							{getOverflowOptions(regionOptions).map((option) => (
-								<button
-									type="button"
-									data-filter-chip="region"
-									data-filter-value={option.value}
-									data-overflow-chip="true"
-									aria-pressed="false"
-									class={chipClass}
-									hidden
-								>
-									<span class="min-w-0 truncate">{option.value}</span>
-									<span class={countClass}>
-										{option.count}
-									</span>
-								</button>
-							))}
-						</div>
-						{getOverflowOptions(regionOptions).length > 0 && (
-							<button
-								type="button"
-								class={moreButtonClass}
-								data-filter-more="region"
-								data-expanded="false"
-								data-show-more={t("list.showMore", { count: "__COUNT__" })}
-								data-show-less={t("list.showLess")}
-							>
-								{t("list.showMore", { count: getOverflowOptions(regionOptions).length })}
-							</button>
-						)}
-					</section>
-				)
+				facets.facets.map((facet) => (
+					<FilterSection facet={facet} gate={GATES[facet.key] ?? "always"} />
+				))
 			}
 		</div>
 	</section>

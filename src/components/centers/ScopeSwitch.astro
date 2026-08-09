@@ -1,0 +1,73 @@
+---
+import { getLocaleFromUrl, useTranslations } from "@/i18n";
+import type { ScopeOption } from "@/utils/centerFacets";
+
+// Корень дерева фильтров, а не пятый список чипов.
+//
+// Раньше здесь стояла группа «Тип» — «Регион РФ» / «Зарубежный» / «Онлайн», —
+// и она на 99% повторяла страну: «Регион РФ» стоял ровно у российских
+// карточек, «Зарубежный» у нерусских, «Онлайн» у тех, где страны нет. Две
+// независимые группы чипов несли одну и ту же информацию.
+//
+// Теперь это переключатель, и он не фильтрует наравне с остальными, а решает,
+// какая ветка географии показывается ниже: у России — федеральные округа и
+// субъекты, у зарубежья — макрорегионы и страны, у «Онлайн» географии нет
+// вовсе.
+//
+// Отсюда и громкость. Выбор здесь всегда ровно один и всегда виден, вариантов
+// четыре — залить активный полным акцентом можно без риска получить ковёр.
+// Списки ниже, где строк десятки, остаются на тихом `accent-soft`.
+
+interface Props {
+	scopes: ScopeOption[];
+	total: number;
+}
+
+const { scopes, total } = Astro.props as Props;
+const locale = getLocaleFromUrl(Astro.url);
+const t = useTranslations(locale);
+
+const scopeButtonClass =
+	"group flex min-w-0 cursor-pointer items-center gap-1.5 rounded-full bg-surface-muted px-2.5 py-1.5 text-sm font-medium text-muted-foreground transition not-data-[active]:hover:bg-subtle hover:text-foreground data-[active]:bg-accent data-[active]:font-semibold data-[active]:text-accent-foreground lg:rounded-micro lg:corner-squircle lg:px-2";
+const scopeCountClass =
+	"shrink-0 text-xs tabular-nums text-subtle-foreground group-data-[active]:text-current lg:ml-auto lg:pl-2";
+---
+
+<section
+	class="border-b border-depth-100/70 pb-4"
+	data-scope-section
+>
+	<div
+		class="flex flex-wrap items-center gap-1.5 lg:grid lg:grid-cols-2 lg:gap-1"
+		role="group"
+		aria-label={t("list.scope.aria")}
+		data-scope-group
+	>
+		<button
+			type="button"
+			data-scope-all
+			data-active=""
+			aria-pressed="true"
+			class={scopeButtonClass}
+		>
+			<span class="min-w-0 truncate">{t("list.scope.all")}</span>
+			<span class={scopeCountClass} data-scope-count>{total}</span>
+		</button>
+
+		{
+			scopes.map((scope) => (
+				<button
+					type="button"
+					data-scope-value={scope.value}
+					aria-pressed="false"
+					class={scopeButtonClass}
+				>
+					<span class="min-w-0 truncate">{t(scope.labelKey)}</span>
+					<span class={scopeCountClass} data-scope-count>
+						{scope.count}
+					</span>
+				</button>
+			))
+		}
+	</div>
+</section>

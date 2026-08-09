@@ -1,0 +1,61 @@
+---
+// Одна разметка, два режима. На мобильном фильтры лежат лентой под поиском —
+// там чип честно работает. В десктопном aside шириной 20rem чипо-облако
+// переносилось рвано, а длинные страны и регионы резались `truncate` на
+// середине слова, поэтому с lg то же самое становится строкой: метка слева,
+// счётчик справа.
+//
+// Заливка акцентом во всю ширину строки на два десятка строк превращается в
+// ковёр, поэтому активное состояние на десктопе берёт тихую заливку
+// `accent-soft`. Сигнал остаётся акцентным, громкость падает.
+//
+// Ховер раньше был `bg-muted` — ровно фон каталога, то есть невидимый.
+//
+// Заливки в покое у неактивного фильтра нет. Два десятка залитых строк подряд
+// — это ровно тот же ковёр, что и акцент во всю ширину: рябит, а разобрать по
+// нему всё равно нечего, потому что все строки одинаковые. Форму строке даёт
+// ширина колонки, а заливка осталась там, где несёт смысл: ховер и активное.
+// На мобильном лента переносится, соседние чипы стоят вплотную, и без своей
+// поверхности строка «Россия 195 Казахстан 54» слипается — там тихая заливка
+// в покое остаётся.
+
+interface Props {
+	group: string;
+	label: string;
+	value?: string;
+	count?: number;
+	flag?: string;
+	/** Кнопка «все …»: сбрасывает группу, а не выбирает значение. */
+	all?: boolean;
+}
+
+const { group, label, value, count, flag, all = false } = Astro.props as Props;
+
+const chipClass =
+	"group flex min-w-0 max-w-fit cursor-pointer items-center gap-1.5 rounded-full bg-surface-muted px-2.5 py-1.5 text-sm font-medium text-muted-foreground transition not-data-[active]:hover:bg-subtle hover:text-foreground data-[active]:bg-accent data-[active]:text-accent-foreground lg:w-full lg:max-w-none lg:rounded-micro lg:corner-squircle lg:bg-transparent lg:px-2 lg:not-data-[active]:hover:bg-surface-muted lg:data-[active]:bg-accent-soft lg:data-[active]:font-semibold lg:data-[active]:text-accent-soft-foreground";
+// Счётчик — не вложенная пилюля с собственным фоном, а просто число: внутри
+// чипа это была капсула в капсуле. В активном состоянии наследует цвет
+// строки, каким бы он ни был в текущем режиме.
+const countClass =
+	"shrink-0 text-xs tabular-nums text-subtle-foreground group-data-[active]:text-current lg:ml-auto lg:pl-2";
+---
+
+<button
+	type="button"
+	data-filter-chip={all ? undefined : group}
+	data-filter-all={all ? group : undefined}
+	data-filter-value={all ? undefined : value}
+	data-active={all ? "" : undefined}
+	aria-pressed={all ? "true" : "false"}
+	class={chipClass}
+>
+	{flag && <span class="shrink-0 text-sm leading-none">{flag}</span>}
+	<span class="min-w-0 truncate" data-chip-label>{label}</span>
+	{
+		count !== undefined && (
+			<span class={countClass} data-chip-count>
+				{count}
+			</span>
+		)
+	}
+</button>

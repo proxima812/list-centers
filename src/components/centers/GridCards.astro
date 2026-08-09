@@ -1,4 +1,5 @@
 ---
+import type { CenterGeo } from "@/data/geo";
 import { createCenterRouteIdMap } from "@/utils/centers";
 import { getCenterLinks } from "@/utils/centerLinks";
 import type { CollectionEntry } from "astro:content";
@@ -6,9 +7,11 @@ import CardItem from "../ui/CardItem.astro";
 
 interface Props {
 	cards: CollectionEntry<"centers" | "centersEn">[];
+	/** Нормализованная география по id карточки — источник ключей для фильтров. */
+	geoByCardId?: Map<string, CenterGeo>;
 }
 
-const { cards } = Astro.props as Props;
+const { cards, geoByCardId } = Astro.props as Props;
 const routeIds = createCenterRouteIdMap(cards);
 ---
 
@@ -27,6 +30,7 @@ const routeIds = createCenterRouteIdMap(cards);
 				category={card.data.category}
 				location={card.data.location}
 				region={card.data.location?.region}
+				geo={geoByCardId?.get(card.id)}
 				pubDate={card.data.pubDate}
 				links={getCenterLinks(card.body, card.data.source)}
 			/>

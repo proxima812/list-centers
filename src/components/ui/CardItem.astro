@@ -1,4 +1,5 @@
 ---
+import { normalizeCity, type CenterGeo } from "@/data/geo";
 import { countryFlagsByRu, getCountryLabel, getCountryLabels } from "@/data/worldCountries";
 import { getLocaleFromUrl, localizePath } from "@/i18n";
 import { getCenterPath } from "@/utils/centers";
@@ -20,25 +21,28 @@ interface Props {
 	category?: string;
 	location?: Location;
 	region?: string;
+	/**
+	 * Нормализованная география из `src/data/geo`. Когда она есть, карточка
+	 * берёт значения фильтров из неё, а не из сырого frontmatter: ключ фасета
+	 * и ключ карточки обязаны совпадать, иначе фильтр не находит свои же
+	 * карточки. Без неё компонент работает по-старому — так его зовут связанные
+	 * центры на странице центра.
+	 */
+	geo?: CenterGeo;
 	pubDate?: string;
 	links?: CenterLink[];
 }
 
-const { id, routeId, title, summary, type, category, location, region, pubDate, links } =
+const { id, routeId, title, summary, type, category, location, region, geo, pubDate, links } =
 	Astro.props as Props;
 const locale = getLocaleFromUrl(Astro.url);
 const centerPath = getCenterPath(routeId ?? id);
 
-const NO_DATA = "Нет данных.";
-const cleanCity = location?.city && location.city !== NO_DATA ? location.city : undefined;
-const cleanCountry =
-	location?.country && location.country !== NO_DATA ? location.country : undefined;
+const cleanCity = geo ? geo.city || undefined : normalizeCity(location?.city);
+const cleanCountry = geo ? geo.country || undefined : location?.country?.trim() || undefined;
+const cleanRegion = geo ? geo.region : (region ?? "");
 const cleanFlag =
-	location?.flag && location.flag !== NO_DATA
-		? location.flag
-		: cleanCountry
-			? countryFlagsByRu[cleanCountry]
-			: undefined;
+	location?.flag?.trim() || (cleanCountry ? countryFlagsByRu[cleanCountry] : undefined);
 const displayCountry = cleanCountry ? getCountryLabel(cleanCountry, locale) : undefined;
 const countryKey = cleanCountry ?? "Прочее";
 const countryLabels = cleanCountry ? getCountryLabels(cleanCountry) : undefined;
@@ -110,7 +114,10 @@ const truncate = (value?: string, max = 23) => {
 	data-title={displayTitle}
 	data-summary={summary ?? ""}
 	data-city={cleanCity ?? ""}
-	data-region={region ?? ""}
+	data-region={cleanRegion}
+	data-macro={geo?.macro ?? ""}
+	data-okrug={geo?.okrug ?? ""}
+	data-scope={geo?.scope ?? ""}
 	data-flag={cleanFlag ?? ""}
 	data-pub-date={pubDate ?? ""}
 	data-href={centerPath}

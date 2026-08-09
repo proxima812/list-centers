@@ -1,15 +1,34 @@
-type FilterGroupName = "country" | "type" | "category" | "region";
+/**
+ * Движок каталога: поиск, фасеты, активные фильтры.
+ *
+ * Фасеты обобщены. Раньше имя каждой группы («country», «type», «category»,
+ * «region») было вписано в тип `FilterState`, в карту query-параметров, в
+ * `groupElements` и в четыре ветки `applyFilters` — добавление пятой оси
+ * означало правку в восьми местах. Теперь набор осей читается из разметки:
+ * группа объявляет себя `data-filter-group`, и остальное следует.
+ *
+ * Три вещи, которых раньше не было и без которых иерархия не читается:
+ *
+ * 1. Счётчики живые. До этого они приезжали с сервера один раз, и после
+ *    выбора «Казахстан» рядом с «Пермский край» продолжала висеть цифра 17.
+ * 2. Опции с нулём скрываются. Это же делает и всю работу по согласованию
+ *    уровней: выбрал Украину — регионы и города других стран обнулились и
+ *    ушли сами, отдельного дерева в состоянии не нужно.
+ * 3. Секции появляются по условию (`data-filter-gate`): город не показывают,
+ *    пока не выбрана страна или регион, иначе это список на 122 строки.
+ */
 
-type FilterState = {
-	country: Set<string>;
-	type: Set<string>;
-	category: Set<string>;
-	region: Set<string>;
-};
+type FacetKey = string;
+type FilterState = Record<FacetKey, Set<string>>;
+
+/** Условие показа секции фильтров. */
+type FilterGate = "always" | "world" | "ru" | "country" | "region" | "city";
+
+type CenterScope = "" | "ru" | "abroad" | "online";
 
 type ExpandableFilterButton = HTMLButtonElement & {
 	dataset: DOMStringMap & {
-		filterMore?: FilterGroupName;
+		filterMore?: string;
 		expanded?: string;
 		showMore?: string;
 		showLess?: string;
@@ -20,33 +39,38 @@ type ExpandableFilterButton = HTMLButtonElement & {
 // ссылки невалидны. Ищем по data-атрибуту, а не по тегу.
 type FilterableCard = HTMLElement & {
 	dataset: DOMStringMap & {
-		country?: string;
 		searchId?: string;
+		scope?: string;
+		macro?: string;
+		okrug?: string;
+		country?: string;
+		region?: string;
+		city?: string;
 		type?: string;
 		category?: string;
-		region?: string;
 		title?: string;
 		summary?: string;
-		city?: string;
 	};
 };
 
 type CardIndexItem = {
 	id: string;
 	element: FilterableCard;
-	country: string;
-	type: string;
-	category: string;
-	region: string;
+	scope: CenterScope;
+	facets: Record<FacetKey, string>;
 	title: string;
 	summary: string;
 	city: string;
+	country: string;
+	region: string;
+	type: string;
+	category: string;
 	searchText: string;
 	terms: string[];
 	order: number;
 };
 
-type SearchIndexItem = Omit<CardIndexItem, "element">;
+type SearchIndexItem = Omit<CardIndexItem, "element" | "facets" | "scope">;
 
 type SearchResult = {
 	item: CardIndexItem;
@@ -73,11 +97,34 @@ type FuseConstructor = new (
 	},
 ) => FuseInstance;
 
-const filterQueryKeys: Record<FilterGroupName, string> = {
-	country: "country",
-	type: "type",
-	category: "category",
-	region: "region",
+const SCOPE_QUERY_KEY = "scope";
+/**
+ * Кто под кем стоит в дереве географии.
+ *
+ * Нужно для двух вещей, и обе — про то, чтобы родителя нельзя было запереть
+ * собственным потомком. Во-первых, счётчик страны считается без учёта города:
+ * иначе, выбрав Киев, пользователь видит у Казахстана ноль (Киева там нет),
+ * чип прячется, и переключить страну можно только сняв сначала город.
+ * Во-вторых, смена родителя обнуляет потомков: выбрал другую страну — город
+ * прежней страны уходит сам, а не остаётся висеть в активных фильтрах.
+ */
+const FACET_CHILDREN: Record<string, string[]> = {
+	macro: ["country", "region", "city"],
+	okrug: ["region", "city"],
+	country: ["region", "city"],
+	region: ["city"],
+};
+/** Всё, что зависит от корня: смена scope обнуляет географию целиком. */
+const GEO_FACETS = ["macro", "okrug", "country", "region", "city"];
+/**
+ * Обратная совместимость со ссылками, сохранёнными до появления scope: там
+ * лежал `?type=Регион+РФ`. Поле `type` в карточках осталось, но фильтром быть
+ * перестало — старая ссылка переводится в новый корень дерева.
+ */
+const LEGACY_TYPE_TO_SCOPE: Record<string, CenterScope> = {
+	"Регион РФ": "ru",
+	Зарубежный: "abroad",
+	Онлайн: "online",
 };
 
 export function initCardsToolbar() {
@@ -107,10 +154,24 @@ export function initCardsToolbar() {
 
 	const cardsGridElement = cardsGrid;
 	const noResultsElement = noResults;
-	const cards = Array.from(cardsGridElement.querySelectorAll<FilterableCard>(":scope > [data-search-id]"));
-	const cardBySearchId = new Map(
-		cards.map((card, order) => [card.dataset.searchId ?? String(order), card] as const),
+	const cards = Array.from(
+		cardsGridElement.querySelectorAll<FilterableCard>(":scope > [data-search-id]"),
 	);
+
+	// Набор осей объявляет разметка, а не этот файл.
+	const groupElements = Array.from(
+		document.querySelectorAll<HTMLElement>("[data-filter-group]"),
+	);
+	const facetKeys: FacetKey[] = groupElements
+		.map((group) => group.dataset.filterGroup ?? "")
+		.filter(Boolean);
+	const sections = Array.from(document.querySelectorAll<HTMLElement>("[data-filter-section]"));
+	const scopeGroup = document.querySelector<HTMLElement>("[data-scope-group]");
+	const scopeButtons = Array.from(
+		document.querySelectorAll<HTMLButtonElement>("[data-scope-value]"),
+	);
+	const scopeAllButton = document.querySelector<HTMLButtonElement>("[data-scope-all]");
+
 	const normalize = (value: string) =>
 		value
 			.toLowerCase()
@@ -121,6 +182,7 @@ export function initCardsToolbar() {
 			.trim();
 	const uniqueTerms = (terms: string[]) =>
 		Array.from(new Set(terms.map((term) => term.trim()).filter((term) => term.length > 1)));
+
 	const cardsIndex: CardIndexItem[] = cards.map((card, order) => {
 		const id = card.dataset.searchId ?? String(order);
 		const country = card.dataset.country ?? "";
@@ -130,11 +192,16 @@ export function initCardsToolbar() {
 		const title = card.dataset.title ?? "";
 		const summary = card.dataset.summary ?? "";
 		const city = card.dataset.city ?? "";
-		const terms = uniqueTerms([title, city, country, region, type, category]);
+		const facets: Record<FacetKey, string> = {};
+		for (const key of facetKeys) {
+			facets[key] = card.dataset[key] ?? "";
+		}
 
 		return {
 			id,
 			element: card,
+			scope: (card.dataset.scope ?? "") as CenterScope,
+			facets,
 			country,
 			type,
 			category,
@@ -142,21 +209,20 @@ export function initCardsToolbar() {
 			title,
 			summary,
 			city,
-			terms,
+			terms: uniqueTerms([title, city, country, region, category]),
 			order,
 			searchText: normalize(
 				`${title} ${summary} ${city} ${country} ${type} ${category} ${region}`,
 			),
 		};
 	});
+	const cardById = new Map(cardsIndex.map((item) => [item.id, item]));
 	const searchIndexUrl = searchForm?.dataset.searchIndexUrl;
 
-	const state: FilterState = {
-		country: new Set(),
-		type: new Set(),
-		category: new Set(),
-		region: new Set(),
-	};
+	const state: FilterState = Object.fromEntries(
+		facetKeys.map((key) => [key, new Set<string>()]),
+	);
+	let scope: CenterScope = "";
 
 	let searchQuery = "";
 	let searchTimer = 0;
@@ -165,34 +231,31 @@ export function initCardsToolbar() {
 	let currentSuggestionValues: string[] = [];
 	let searchItemsPromise: Promise<SearchIndexItem[]> | null = null;
 	let fusePromise: Promise<FuseInstance> | null = null;
+	let searchMatchIds: Set<string> | null = null;
 
 	const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 	const isDesktopLayout = window.matchMedia("(min-width: 1024px)");
 
-	const groupElements = {
-		country: document.querySelector<HTMLElement>('[data-filter-group="country"]'),
-		type: document.querySelector<HTMLElement>('[data-filter-group="type"]'),
-		category: document.querySelector<HTMLElement>('[data-filter-group="category"]'),
-		region: document.querySelector<HTMLElement>('[data-filter-group="region"]'),
-	};
-
-	function getGroupChips(groupName: FilterGroupName): HTMLButtonElement[] {
+	function getGroupChips(groupName: FacetKey): HTMLButtonElement[] {
 		return Array.from(
 			document.querySelectorAll<HTMLButtonElement>(`[data-filter-chip="${groupName}"]`),
 		);
 	}
 
-	function getAllChip(groupName: FilterGroupName): HTMLButtonElement | null {
+	function getAllChip(groupName: FacetKey): HTMLButtonElement | null {
 		return document.querySelector<HTMLButtonElement>(`[data-filter-all="${groupName}"]`);
 	}
 
-	function getMoreButton(groupName: FilterGroupName): ExpandableFilterButton | null {
-		return document.querySelector<ExpandableFilterButton>(
-			`[data-filter-more="${groupName}"]`,
-		);
+	function getMoreButton(groupName: FacetKey): ExpandableFilterButton | null {
+		return document.querySelector<ExpandableFilterButton>(`[data-filter-more="${groupName}"]`);
 	}
 
-	function getValidValues(groupName: FilterGroupName): Set<string> {
+	function getGroupLimit(groupName: FacetKey): number {
+		const group = groupElements.find((element) => element.dataset.filterGroup === groupName);
+		return Number(group?.dataset.filterLimit ?? 0);
+	}
+
+	function getValidValues(groupName: FacetKey): Set<string> {
 		return new Set(
 			getGroupChips(groupName)
 				.map((chip) => chip.dataset.filterValue ?? "")
@@ -206,19 +269,23 @@ export function initCardsToolbar() {
 		if (searchInput) {
 			searchInput.value = searchQuery;
 		}
+
+		const scopeParam = params.get(SCOPE_QUERY_KEY) ?? "";
+		const legacyType = params.get("type") ?? "";
+		const nextScope = (scopeParam || LEGACY_TYPE_TO_SCOPE[legacyType] || "") as CenterScope;
+		scope = scopeButtons.some((button) => button.dataset.scopeValue === nextScope)
+			? nextScope
+			: "";
+
+		for (const key of facetKeys) {
+			const validValues = getValidValues(key);
+			state[key].clear();
+			for (const value of params.getAll(key)) {
+				if (validValues.has(value)) state[key].add(value);
+			}
+		}
+
 		void updateSuggestions();
-
-		(Object.keys(state) as FilterGroupName[]).forEach((groupName) => {
-			const validValues = getValidValues(groupName);
-			const values = params.getAll(filterQueryKeys[groupName]);
-
-			state[groupName].clear();
-			values.forEach((value) => {
-				if (validValues.has(value)) {
-					state[groupName].add(value);
-				}
-			});
-		});
 	}
 
 	function writeStateToUrl() {
@@ -226,19 +293,15 @@ export function initCardsToolbar() {
 		const query = searchQuery.trim();
 
 		url.searchParams.delete("q");
-		(Object.keys(state) as FilterGroupName[]).forEach((groupName) => {
-			url.searchParams.delete(filterQueryKeys[groupName]);
-		});
+		url.searchParams.delete(SCOPE_QUERY_KEY);
+		url.searchParams.delete("type");
+		for (const key of facetKeys) url.searchParams.delete(key);
 
-		if (query) {
-			url.searchParams.set("q", query);
+		if (query) url.searchParams.set("q", query);
+		if (scope) url.searchParams.set(SCOPE_QUERY_KEY, scope);
+		for (const key of facetKeys) {
+			for (const value of state[key]) url.searchParams.append(key, value);
 		}
-
-		(Object.keys(state) as FilterGroupName[]).forEach((groupName) => {
-			state[groupName].forEach((value) => {
-				url.searchParams.append(filterQueryKeys[groupName], value);
-			});
-		});
 
 		window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
 	}
@@ -257,9 +320,14 @@ export function initCardsToolbar() {
 		cardsGridElement.scrollIntoView({ behavior: getScrollBehavior(), block: "start" });
 	}
 
+	function countActiveFilters() {
+		return (
+			facetKeys.reduce((total, key) => total + state[key].size, 0) + (scope ? 1 : 0)
+		);
+	}
+
 	function updateFiltersBadge() {
-		const total =
-			state.country.size + state.type.size + state.category.size + state.region.size;
+		const total = countActiveFilters();
 		const hasSearchQuery = searchQuery.trim().length > 0;
 		if (filtersBadge) {
 			filtersBadge.textContent = String(total);
@@ -293,16 +361,13 @@ export function initCardsToolbar() {
 		resultsCount.textContent = template.replace("__COUNT__", String(visible));
 	}
 
-	function getChipMeta(groupName: FilterGroupName, value: string) {
+	function getChipMeta(groupName: FacetKey, value: string) {
 		const chip = getGroupChips(groupName).find(
 			(item) => (item.dataset.filterValue ?? "") === value,
 		);
 		if (!chip) return { label: value, flag: "" };
-		const labelEl =
-			chip.querySelector<HTMLElement>("[data-country-label]") ??
-			chip.querySelector<HTMLElement>(".truncate");
-		const flagEl =
-			groupName === "country" ? chip.querySelector<HTMLElement>(".leading-none") : null;
+		const labelEl = chip.querySelector<HTMLElement>("[data-chip-label]");
+		const flagEl = chip.querySelector<HTMLElement>(".leading-none");
 		return {
 			label: labelEl?.textContent?.trim() || value,
 			flag: flagEl?.textContent?.trim() ?? "",
@@ -343,14 +408,18 @@ export function initCardsToolbar() {
 		if (!activeFiltersTokens) return;
 		activeFiltersTokens.replaceChildren();
 
-		(Object.keys(state) as FilterGroupName[]).forEach((groupName) => {
-			state[groupName].forEach((value) => {
-				const { label, flag } = getChipMeta(groupName, value);
-				activeFiltersTokens.append(
-					createToken(label, () => toggleChip(groupName, value), flag),
-				);
-			});
-		});
+		if (scope) {
+			const button = scopeButtons.find((item) => item.dataset.scopeValue === scope);
+			const label = button?.querySelector("span")?.textContent?.trim() ?? scope;
+			activeFiltersTokens.append(createToken(label, () => setScope("")));
+		}
+
+		for (const key of facetKeys) {
+			for (const value of state[key]) {
+				const { label, flag } = getChipMeta(key, value);
+				activeFiltersTokens.append(createToken(label, () => toggleChip(key, value), flag));
+			}
+		}
 
 		const query = searchQuery.trim();
 		if (query) {
@@ -369,61 +438,236 @@ export function initCardsToolbar() {
 		scheduleApplyFilters(false);
 	}
 
-	function syncGroupUI(groupName: FilterGroupName) {
-		const selectedValues = state[groupName];
-		const allChip = getAllChip(groupName);
-
-		getGroupChips(groupName).forEach((chip) => {
-			const value = chip.dataset.filterValue ?? "";
-			const isActive = selectedValues.has(value);
-			chip.toggleAttribute("data-active", isActive);
-			chip.setAttribute("aria-pressed", String(isActive));
-		});
-
-		const isAllActive = selectedValues.size === 0;
-		allChip?.toggleAttribute("data-active", isAllActive);
-		allChip?.setAttribute("aria-pressed", String(isAllActive));
-		syncOverflowUI(groupName);
+	function matchesScope(item: CardIndexItem) {
+		return !scope || item.scope === scope;
 	}
 
-	function toggleChip(groupName: FilterGroupName, value: string) {
-		const groupState = state[groupName];
+	function matchesSearch(item: CardIndexItem) {
+		return !searchMatchIds || searchMatchIds.has(item.id);
+	}
 
-		if (groupState.has(value)) {
-			groupState.delete(value);
-		} else {
-			groupState.add(value);
+	/**
+	 * Совпадение по всем осям, кроме `skipKey`.
+	 *
+	 * Пропуск собственной оси — это и есть правило подсчёта фасетов: цифра
+	 * рядом со «Свердловской областью» должна показывать, сколько карточек
+	 * останется, если её выбрать, а не сколько их при уже выбранном другом
+	 * регионе (там всегда ноль).
+	 */
+	function matchesExcept(item: CardIndexItem, skipKeys: readonly FacetKey[] | null) {
+		if (!matchesScope(item) || !matchesSearch(item)) return false;
+		for (const key of facetKeys) {
+			if (skipKeys?.includes(key)) continue;
+			const selected = state[key];
+			if (selected.size > 0 && !selected.has(item.facets[key])) return false;
+		}
+		return true;
+	}
+
+	function countFacet(groupName: FacetKey) {
+		const skip = [groupName, ...(FACET_CHILDREN[groupName] ?? [])];
+		const counts = new Map<string, number>();
+		for (const item of cardsIndex) {
+			if (!matchesExcept(item, skip)) continue;
+			const value = item.facets[groupName];
+			if (!value) continue;
+			counts.set(value, (counts.get(value) ?? 0) + 1);
+		}
+		return counts;
+	}
+
+	/**
+	 * Счётчики корня считаются без географии вообще: она вся под ним, и
+	 * «Зарубеж 194» не должно превращаться в «Зарубеж 0» только потому, что
+	 * сейчас выбран Пермский край.
+	 */
+	function countScopes() {
+		const counts = new Map<string, number>();
+		for (const item of cardsIndex) {
+			if (!matchesSearch(item)) continue;
+			let matches = true;
+			for (const key of facetKeys) {
+				if (GEO_FACETS.includes(key)) continue;
+				const selected = state[key];
+				if (selected.size > 0 && !selected.has(item.facets[key])) {
+					matches = false;
+					break;
+				}
+			}
+			if (matches) counts.set(item.scope, (counts.get(item.scope) ?? 0) + 1);
+		}
+		return counts;
+	}
+
+	function isSectionVisible(gate: FilterGate, key: FacetKey) {
+		switch (gate) {
+			case "ru":
+				return scope === "ru";
+			case "world":
+				return scope !== "ru" && scope !== "online";
+			// 42 зарубежные страны плоским списком — ровно та проблема, ради
+			// которой заведены макрорегионы. Под «Все» страна ждёт выбора
+			// корзины; под «Зарубеж» пользователь уже сузил каталог сам, и
+			// порог «показать ещё» там честно работает.
+			case "country":
+				return scope === "abroad" || (state.macro?.size ?? 0) > 0;
+			// Регион имеет смысл, только когда география уже сужена: список из
+			// 79 регионов вперемешку с казахстанскими областями не читается, а
+			// «Казахстан + Пермский край» — кликабельная комбинация, дающая
+			// ноль. Сузить может любой из трёх уровней выше — корень «Россия»,
+			// федеральный округ или одна выбранная страна.
+			case "region":
+				return (
+					scope === "ru" || (state.okrug?.size ?? 0) > 0 || state.country?.size === 1
+				);
+			// Тот самый случай из постановки: Киев — город, Украина — страна,
+			// и город показывается только внутри своей страны или своего
+			// региона.
+			case "city":
+				return state.region?.size === 1 || state.country?.size === 1;
+			default:
+				return key.length > 0;
+		}
+	}
+
+	/**
+	 * Выбранные значения, которые обнулились после изменения родителя.
+	 * Выбрал Украину, потом переключил на Казахстан — Киев остаётся активным и
+	 * схлопывает выдачу в ноль, хотя его чип уже скрыт.
+	 */
+	function pruneEmptySelections() {
+		let pruned = false;
+		for (const key of facetKeys) {
+			if (state[key].size === 0) continue;
+			const counts = countFacet(key);
+			for (const value of [...state[key]]) {
+				if ((counts.get(value) ?? 0) === 0) {
+					state[key].delete(value);
+					pruned = true;
+				}
+			}
+		}
+		return pruned;
+	}
+
+	function renderFacets() {
+		for (const section of sections) {
+			const key = section.dataset.filterSection ?? "";
+			const gate = (section.dataset.filterGate ?? "always") as FilterGate;
+			const counts = countFacet(key);
+			const selected = state[key] ?? new Set<string>();
+			const limit = getGroupLimit(key);
+			const moreButton = getMoreButton(key);
+			const isExpanded = moreButton?.dataset.expanded === "true";
+
+			let shown = 0;
+			let hidden = 0;
+
+			for (const chip of getGroupChips(key)) {
+				const value = chip.dataset.filterValue ?? "";
+				const count = counts.get(value) ?? 0;
+				const isActive = selected.has(value);
+				const countEl = chip.querySelector<HTMLElement>("[data-chip-count]");
+				if (countEl) countEl.textContent = String(count);
+
+				chip.toggleAttribute("data-active", isActive);
+				chip.setAttribute("aria-pressed", String(isActive));
+
+				// Активный чип виден всегда, даже если оказался за порогом:
+				// иначе снять фильтр можно было бы только через токен наверху.
+				if (count === 0 && !isActive) {
+					chip.hidden = true;
+					continue;
+				}
+
+				const overLimit = limit > 0 && shown >= limit && !isActive && !isExpanded;
+				chip.hidden = overLimit;
+				if (overLimit) hidden += 1;
+				else shown += 1;
+			}
+
+			const allChip = getAllChip(key);
+			const isAllActive = selected.size === 0;
+			allChip?.toggleAttribute("data-active", isAllActive);
+			allChip?.setAttribute("aria-pressed", String(isAllActive));
+
+			if (moreButton) {
+				moreButton.hidden = hidden === 0 && !isExpanded;
+				moreButton.textContent = isExpanded
+					? (moreButton.dataset.showLess ?? "")
+					: (moreButton.dataset.showMore ?? "").replace("__COUNT__", String(hidden));
+			}
+
+			// Секция без опций — это пустая рамка с одной кнопкой «все»,
+			// поэтому прячем её целиком, а не только её содержимое.
+			section.hidden = !isSectionVisible(gate, key) || shown === 0;
 		}
 
-		syncGroupUI(groupName);
+		const scopeCounts = countScopes();
+		let scopeTotal = 0;
+		for (const button of scopeButtons) {
+			const value = button.dataset.scopeValue ?? "";
+			const isActive = scope === value;
+			const count = scopeCounts.get(value) ?? 0;
+			scopeTotal += count;
+			button.toggleAttribute("data-active", isActive);
+			button.setAttribute("aria-pressed", String(isActive));
+			button.hidden = count === 0 && !isActive;
+			const countEl = button.querySelector<HTMLElement>("[data-scope-count]");
+			if (countEl) countEl.textContent = String(count);
+		}
+		const scopeAllCount = scopeAllButton?.querySelector<HTMLElement>("[data-scope-count]");
+		if (scopeAllCount) scopeAllCount.textContent = String(scopeTotal);
+		scopeAllButton?.toggleAttribute("data-active", scope === "");
+		scopeAllButton?.setAttribute("aria-pressed", String(scope === ""));
+		scopeGroup?.toggleAttribute("hidden", scopeButtons.length === 0);
+	}
+
+	function clearDescendants(groupName: FacetKey) {
+		for (const child of FACET_CHILDREN[groupName] ?? []) {
+			state[child]?.clear();
+		}
+	}
+
+	function toggleChip(groupName: FacetKey, value: string) {
+		const groupState = state[groupName];
+		if (!groupState) return;
+
+		if (groupState.has(value)) groupState.delete(value);
+		else groupState.add(value);
+
+		// Сменил страну — город прежней страны уходит вместе с ней. Иначе он
+		// остался бы активным токеном, который тихо схлопывает выдачу в ноль.
+		clearDescendants(groupName);
+		pruneEmptySelections();
 		scheduleApplyFilters(true);
 	}
 
-	function resetGroup(groupName: FilterGroupName) {
-		state[groupName].clear();
-		syncGroupUI(groupName);
+	function resetGroup(groupName: FacetKey) {
+		state[groupName]?.clear();
+		clearDescendants(groupName);
+		scheduleApplyFilters(true);
+	}
+
+	function setScope(next: CenterScope) {
+		scope = scope === next ? "" : next;
+		// Корень обнуляет географию целиком: федеральных округов не бывает в
+		// зарубежье, а стран — внутри России.
+		for (const key of GEO_FACETS) state[key]?.clear();
 		scheduleApplyFilters(true);
 	}
 
 	function resetFilters() {
-		(Object.keys(state) as FilterGroupName[]).forEach((groupName) => {
-			state[groupName].clear();
-			syncGroupUI(groupName);
-		});
+		for (const key of facetKeys) state[key].clear();
+		scope = "";
 		searchQuery = "";
-		if (searchInput) {
-			searchInput.value = "";
-		}
+		if (searchInput) searchInput.value = "";
 		hideSuggestions();
 		scheduleApplyFilters(true);
 	}
 
-	function matchesGroup(selectedValues: Set<string>, value: string) {
-		return selectedValues.size === 0 || selectedValues.has(value);
-	}
-
 	function getFallbackSearchItems(): SearchIndexItem[] {
-		return cardsIndex.map(({ element: _element, ...item }) => item);
+		return cardsIndex.map(({ element: _element, facets: _facets, scope: _scope, ...item }) => item);
 	}
 
 	async function loadSearchItems(): Promise<SearchIndexItem[]> {
@@ -439,12 +683,20 @@ export function initCardsToolbar() {
 		return searchItemsPromise;
 	}
 
+	/**
+	 * Поисковый индекс приезжает отдельным JSON и знает только текст. Ключи
+	 * фасетов остаются от карточки в DOM: индекс их не переопределяет, иначе
+	 * фильтр разъехался бы с разметкой.
+	 */
+	function mergeWithCard(item: SearchIndexItem): CardIndexItem | null {
+		const indexed = cardById.get(item.id);
+		if (!indexed) return null;
+		return { ...indexed, ...item, facets: indexed.facets, scope: indexed.scope, element: indexed.element };
+	}
+
 	function withCardElements(items: SearchIndexItem[]): CardIndexItem[] {
 		return items
-			.map((item) => {
-				const element = cardBySearchId.get(item.id);
-				return element ? { ...item, element } : null;
-			})
+			.map(mergeWithCard)
 			.filter((item): item is CardIndexItem => Boolean(item));
 	}
 
@@ -462,9 +714,8 @@ export function initCardsToolbar() {
 							{ name: "title", weight: 0.42 },
 							{ name: "city", weight: 0.2 },
 							{ name: "country", weight: 0.14 },
-							{ name: "region", weight: 0.1 },
+							{ name: "region", weight: 0.12 },
 							{ name: "category", weight: 0.06 },
-							{ name: "type", weight: 0.05 },
 							{ name: "summary", weight: 0.03 },
 						],
 					});
@@ -494,8 +745,8 @@ export function initCardsToolbar() {
 		fuse
 			.search(query)
 			.map((result) => {
-				const element = cardBySearchId.get(result.item.id);
-				return element ? { item: { ...result.item, element }, score: result.score ?? 1 } : null;
+				const item = mergeWithCard(result.item);
+				return item ? { item, score: result.score ?? 1 } : null;
 			})
 			.filter((result): result is SearchResult => Boolean(result))
 			.forEach((result) => {
@@ -561,14 +812,10 @@ export function initCardsToolbar() {
 		const searchResults = await getSearchResults(query);
 		if (query !== searchQuery.trim()) return;
 
-		searchResults
-			.slice(0, 8)
-			.forEach(({ item }) => {
-				const matchingTerm = item.terms.find((term) =>
-					normalize(term).includes(normalizedQuery),
-				);
-				suggestionsSet.add(matchingTerm ?? item.title);
-			});
+		searchResults.slice(0, 8).forEach(({ item }) => {
+			const matchingTerm = item.terms.find((term) => normalize(term).includes(normalizedQuery));
+			suggestionsSet.add(matchingTerm ?? item.title);
+		});
 
 		renderSuggestions(Array.from(suggestionsSet).slice(0, 6));
 	}
@@ -590,103 +837,55 @@ export function initCardsToolbar() {
 
 	function commitSuggestion(value: string) {
 		searchQuery = value;
-		if (searchInput) {
-			searchInput.value = value;
-		}
+		if (searchInput) searchInput.value = value;
 		syncSearchActions();
 		hideSuggestions();
 		scheduleApplyFilters(true);
 	}
 
-	function syncOverflowUI(groupName: FilterGroupName) {
+	function toggleOverflow(groupName: FacetKey) {
 		const moreButton = getMoreButton(groupName);
 		if (!moreButton) return;
-
-		const isExpanded = moreButton.dataset.expanded === "true";
-		const overflowChips = Array.from(
-			document.querySelectorAll<HTMLButtonElement>(
-				`[data-filter-chip="${groupName}"][data-overflow-chip="true"]`,
-			),
-		);
-		let hiddenCount = 0;
-
-		overflowChips.forEach((chip) => {
-			const value = chip.dataset.filterValue ?? "";
-			const isSelected = state[groupName].has(value);
-			const shouldHide = !isExpanded && !isSelected;
-
-			chip.hidden = shouldHide;
-			if (shouldHide) hiddenCount += 1;
-		});
-
-		moreButton.hidden = !isExpanded && hiddenCount === 0;
-		moreButton.textContent = isExpanded
-			? (moreButton.dataset.showLess ?? "")
-			: (moreButton.dataset.showMore ?? "").replace("__COUNT__", String(hiddenCount));
-	}
-
-	function toggleOverflow(groupName: FilterGroupName) {
-		const moreButton = getMoreButton(groupName);
-		if (!moreButton) return;
-
-		const isExpanded = moreButton.dataset.expanded === "true";
-		moreButton.dataset.expanded = String(!isExpanded);
-		syncOverflowUI(groupName);
+		moreButton.dataset.expanded = String(moreButton.dataset.expanded !== "true");
+		renderFacets();
 	}
 
 	async function applyFilters(shouldScrollToCards = false) {
 		const query = searchQuery.trim();
 		const rankedResults = await getSearchResults(query);
 		if (query !== searchQuery.trim()) return;
-		const searchMatches = new Map(
-			rankedResults.map((result, index) => [result.item.element, index]),
-		);
-		const hasActiveFilters =
-			state.country.size > 0 ||
-			state.type.size > 0 ||
-			state.category.size > 0 ||
-			state.region.size > 0;
-		let visible = 0;
 
-		const shouldBypassFiltering = !hasActiveFilters && !query;
+		const searchOrder = new Map(rankedResults.map((result, index) => [result.item.id, index]));
+		searchMatchIds = query ? new Set(rankedResults.map((result) => result.item.id)) : null;
+
+		// Пересчёт после поиска: запрос сужает выдачу так же, как фильтр, и
+		// выбранное значение могло обнулиться вместе с ним.
+		pruneEmptySelections();
+
+		let visible = 0;
 		const orderedIndex = query
 			? [...cardsIndex].sort((a, b) => {
-					const left = searchMatches.get(a.element) ?? Number.MAX_SAFE_INTEGER;
-					const right = searchMatches.get(b.element) ?? Number.MAX_SAFE_INTEGER;
+					const left = searchOrder.get(a.id) ?? Number.MAX_SAFE_INTEGER;
+					const right = searchOrder.get(b.id) ?? Number.MAX_SAFE_INTEGER;
 					return left - right || a.order - b.order;
 				})
 			: cardsIndex;
 
 		orderedIndex.forEach((item) => {
-			const matchesCountry = matchesGroup(state.country, item.country);
-			const matchesType = matchesGroup(state.type, item.type);
-			const matchesCategory = matchesGroup(state.category, item.category);
-			const matchesRegion = matchesGroup(state.region, item.region);
-			const matchesSearch = !query || searchMatches.has(item.element);
-
-			const show =
-				shouldBypassFiltering ||
-				(matchesCountry && matchesType && matchesCategory && matchesRegion && matchesSearch);
-
+			const show = matchesExcept(item, null);
 			item.element.hidden = !show;
-			if (query) {
-				cardsGridElement.append(item.element);
-			}
-
-			if (show) {
-				visible += 1;
-			}
+			if (query) cardsGridElement.append(item.element);
+			if (show) visible += 1;
 		});
 
+		renderFacets();
 		noResultsElement.hidden = visible > 0;
 		updateFiltersBadge();
 		updateResultsCount(visible);
 		updateSearchClear();
 		renderActiveFilters();
 		writeStateToUrl();
-		if (shouldScrollToCards) {
-			scrollToCards();
-		}
+		if (shouldScrollToCards) scrollToCards();
 	}
 
 	function scheduleApplyFilters(shouldScrollToCards = false) {
@@ -731,26 +930,21 @@ export function initCardsToolbar() {
 		scheduleApplyFilters(true);
 	});
 
-	(Object.keys(groupElements) as FilterGroupName[]).forEach((groupName) => {
-		const groupElement = groupElements[groupName];
-		if (!groupElement) return;
-
-		getAllChip(groupName)?.addEventListener("click", () => {
-			resetGroup(groupName);
-		});
-
-		getMoreButton(groupName)?.addEventListener("click", () => {
-			toggleOverflow(groupName);
-		});
-
-		getGroupChips(groupName).forEach((chip) => {
+	for (const key of facetKeys) {
+		getAllChip(key)?.addEventListener("click", () => resetGroup(key));
+		getMoreButton(key)?.addEventListener("click", () => toggleOverflow(key));
+		for (const chip of getGroupChips(key)) {
 			chip.addEventListener("click", () => {
 				const value = chip.dataset.filterValue ?? "";
-				if (!value) return;
-				toggleChip(groupName, value);
+				if (value) toggleChip(key, value);
 			});
-		});
-	});
+		}
+	}
+
+	for (const button of scopeButtons) {
+		button.addEventListener("click", () => setScope(button.dataset.scopeValue as CenterScope));
+	}
+	scopeAllButton?.addEventListener("click", () => setScope(""));
 
 	searchInput?.addEventListener("input", (event) => {
 		const value = (event.target as HTMLInputElement).value;
@@ -792,6 +986,6 @@ export function initCardsToolbar() {
 	});
 
 	readStateFromUrl();
-	(Object.keys(state) as FilterGroupName[]).forEach(syncGroupUI);
+	renderFacets();
 	void applyFilters();
 }

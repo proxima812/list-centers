@@ -1,6 +1,7 @@
 ---
-import { countryFlagsByRu } from "@/data/worldCountries";
-import type { CollectionEntry } from "astro:content";
+import { buildCenterFacets, buildFacetRecords, buildGeoIndex } from "@/utils/centerFacets";
+import { getLocaleFromUrl } from "@/i18n";
+import { getCollection, type CollectionEntry } from "astro:content";
 import NoResults from "../ui/NoResults.astro";
 import ActiveFilters from "./ActiveFilters.astro";
 import GridCards from "./GridCards.astro";
@@ -12,54 +13,17 @@ interface Props {
 }
 
 const { cards } = Astro.props as Props;
-const countryCounts = new Map<string, number>();
-const countryFlags = new Map<string, string>();
-const regionCounts = new Map<string, number>();
-const typeCounts = new Map<string, number>();
-const categoryCounts = new Map<string, number>();
+const locale = getLocaleFromUrl(Astro.url);
 
-function bump(counts: Map<string, number>, value: string | undefined) {
-	if (!value) return;
-	counts.set(value, (counts.get(value) ?? 0) + 1);
-}
-
-for (const card of cards) {
-	const { location, type, category } = card.data;
-	const country = location?.country ?? "Прочее";
-	const flag = location?.flag ?? countryFlagsByRu[country];
-
-	bump(countryCounts, country);
-	if (flag && !countryFlags.has(country)) {
-		countryFlags.set(country, flag);
-	}
-
-	bump(regionCounts, location?.region);
-	bump(typeCounts, type);
-	bump(categoryCounts, category);
-}
-
-const countries = [...countryCounts.entries()].sort((a, b) => b[1] - a[1]);
-const regions = [...regionCounts.entries()].sort((a, b) => a[0].localeCompare(b[0], "ru"));
-const types = [...typeCounts.entries()].sort((a, b) => {
-	const order = ["Регион РФ", "Зарубежный", "Онлайн"];
-	const leftIndex = order.indexOf(a[0]);
-	const rightIndex = order.indexOf(b[0]);
-	const safeLeftIndex = leftIndex === -1 ? Number.MAX_SAFE_INTEGER : leftIndex;
-	const safeRightIndex = rightIndex === -1 ? Number.MAX_SAFE_INTEGER : rightIndex;
-
-	return safeLeftIndex - safeRightIndex || b[1] - a[1] || a[0].localeCompare(b[0], "ru");
-});
-const categories = [...categoryCounts.entries()].sort(
-	(a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "ru"),
-);
-const toolbarProps = {
-	cardsCount: cards.length,
-	countries,
-	countryFlags,
-	types,
-	categories,
-	regions,
-};
+// География — из русской коллекции для всех локалей. Переводы карточек хранят
+// подписи вроде `region: Saint Petersburg`, и часть карточек географии не
+// имеет вовсе: раньше английская страница строила фильтры по своему набору
+// значений и часть каталога выпадала из фасетов. Ключ фильтра обязан быть один
+// на все языки — иначе фасет не находит собственные карточки.
+const geoById = buildGeoIndex(await getCollection("centers"));
+const records = buildFacetRecords(cards, geoById);
+const facets = buildCenterFacets(records, locale);
+const geoByCardId = new Map(records.map((record) => [record.id, record]));
 ---
 
 {/*
@@ -84,10 +48,10 @@ const toolbarProps = {
 	<div
 		class="grid grid-cols-1 gap-x-8 lg:grid-cols-[var(--catalog-aside)_minmax(0,1fr)] lg:gap-x-[var(--catalog-gap)]"
 	>
-		<Toolbar {...toolbarProps} />
+		<Toolbar facets={facets} />
 
 		<div>
-			<GridCards cards={cards} />
+			<GridCards cards={cards} geoByCardId={geoByCardId} />
 			<NoResults />
 		</div>
 	</div>
