@@ -89,9 +89,9 @@ const truncate = (value?: string, max = 23) => {
 		той же, но держится типографикой: заголовок жирный, остальное тихое.
 
 		Подъём тратится только на ховер: 340 карточек с тенью в покое — это шум и
-		композитинг без пользы. Вся карточка и так ссылка, поэтому наведение
-		обозначает себя кольцом, подъёмом и подчёркиванием заголовка, а не
-		отдельной фальшивой кнопкой внутри ссылки.
+		композитинг без пользы. Ссылка — вся карточка, поэтому наведение
+		обозначает себя кольцом и подъёмом целиком. Подчёркивания у заголовка нет:
+		оно делало вид, что кликабелен один h2, хотя цель — весь блок.
 	*/}
 	<article
 		class="flex h-full flex-col gap-3 rounded-catalog corner-squircle bg-surface p-6 ring-1 ring-depth-100 transition group-hover:ring-depth-300 group-hover:surface-lift"
@@ -118,7 +118,7 @@ const truncate = (value?: string, max = 23) => {
 			)
 		}
 		<h2
-			class="min-w-0 wrap-anywhere text-lg font-bold leading-snug tracking-tight text-surface-foreground underline-offset-4 group-hover:underline sm:text-xl"
+			class="min-w-0 wrap-anywhere text-lg font-bold leading-snug tracking-tight text-surface-foreground sm:text-xl"
 		>
 			{displayTitle}
 		</h2>

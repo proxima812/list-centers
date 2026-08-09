@@ -395,6 +395,19 @@ function getOverflowOptions<T>(options: T[], limit = defaultVisibleLimit) {
 			display: block !important;
 		}
 	}
+
+	/* Панель по-прежнему скроллится, но полосу не рисуем: в узком aside
+	   она отъедала ширину у строк фильтров и мигала при наведении. */
+	[data-filters-shell] {
+		scrollbar-width: none;
+		-ms-overflow-style: none;
+	}
+
+	[data-filters-shell]::-webkit-scrollbar {
+		width: 0;
+		height: 0;
+		display: none;
+	}
 </style>
 
 <script>
