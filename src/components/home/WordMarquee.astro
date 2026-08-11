@@ -21,6 +21,13 @@ import { Image } from "astro:assets";
 		animation: word-marquee-scroll 80s linear infinite;
 	}
 
+	/* Системный reduce-motion — второй, независимый от тумблера выключатель. */
+	@media (prefers-reduced-motion: reduce) {
+		.word-marquee-track {
+			animation: none;
+		}
+	}
+
 	@keyframes word-marquee-scroll {
 		to {
 			transform: translateX(-40%);

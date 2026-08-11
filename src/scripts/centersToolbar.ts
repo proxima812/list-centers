@@ -230,7 +230,11 @@ export function initCardsToolbar() {
 
 	let searchQuery = "";
 	let searchTimer = 0;
+	let blurTimer = 0;
 	let filterFrame = 0;
+	// Поиск физически переставляет карточки в гриде; после очистки запроса
+	// их нужно один раз вернуть в исходный порядок.
+	let gridReordered = false;
 	let activeSuggestionIndex = -1;
 	let currentSuggestionValues: string[] = [];
 	let searchItemsPromise: Promise<SearchIndexItem[]> | null = null;
@@ -291,7 +295,9 @@ export function initCardsToolbar() {
 			if (value) state[key].add(value);
 		}
 
-		void updateSuggestions();
+		// Подсказки не открываем: при загрузке по ссылке с ?q= инпут не в
+		// фокусе, и закрыть дропдаун было бы нечем. Фокус в поле сам вызовет
+		// updateSuggestions.
 	}
 
 	function writeStateToUrl() {
@@ -434,6 +440,8 @@ export function initCardsToolbar() {
 	}
 
 	function clearSearchQuery() {
+		// Иначе отложенный дебаунс-таймер воскресит только что стёртый запрос.
+		window.clearTimeout(searchTimer);
 		searchQuery = "";
 		if (searchInput) {
 			searchInput.value = "";
@@ -673,6 +681,7 @@ export function initCardsToolbar() {
 	}
 
 	function resetFilters() {
+		window.clearTimeout(searchTimer);
 		for (const key of facetKeys) state[key].clear();
 		scope = "";
 		searchQuery = "";
@@ -851,6 +860,7 @@ export function initCardsToolbar() {
 	}
 
 	function commitSuggestion(value: string) {
+		window.clearTimeout(searchTimer);
 		searchQuery = value;
 		if (searchInput) searchInput.value = value;
 		syncSearchActions();
@@ -886,12 +896,14 @@ export function initCardsToolbar() {
 				})
 			: cardsIndex;
 
+		const shouldReorderGrid = Boolean(query) || gridReordered;
 		orderedIndex.forEach((item) => {
 			const show = matchesExcept(item, null);
 			item.element.hidden = !show;
-			if (query) cardsGridElement.append(item.element);
+			if (shouldReorderGrid) cardsGridElement.append(item.element);
 			if (show) visible += 1;
 		});
+		gridReordered = Boolean(query);
 
 		renderFacets();
 		noResultsElement.hidden = visible > 0;
@@ -994,10 +1006,13 @@ export function initCardsToolbar() {
 	});
 
 	searchInput?.addEventListener("focus", () => {
+		// Быстрый рефокус не должен дать отложенному blur-таймеру погасить
+		// только что открытые подсказки.
+		window.clearTimeout(blurTimer);
 		void updateSuggestions();
 	});
 	searchInput?.addEventListener("blur", () => {
-		window.setTimeout(hideSuggestions, 120);
+		blurTimer = window.setTimeout(hideSuggestions, 120);
 	});
 
 	readStateFromUrl();

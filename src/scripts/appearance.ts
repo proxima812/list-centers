@@ -22,18 +22,37 @@ const media = matchMedia("(prefers-color-scheme: dark)");
 
 let initialized = false;
 
+// В Safari с «Блокировать все куки» само обращение к localStorage бросает
+// SecurityError, а в старом приватном режиме iOS setItem — QuotaExceededError.
+// Переключатели обязаны работать хотя бы в пределах вкладки и без хранилища.
+const readStorage = (key: string) => {
+	try {
+		return localStorage.getItem(key) ?? "";
+	} catch {
+		return "";
+	}
+};
+
+const writeStorage = (key: string, value: string) => {
+	try {
+		localStorage.setItem(key, value);
+	} catch {
+		// Хранилище недоступно — выбор живёт до конца вкладки.
+	}
+};
+
 const readTheme = () => {
-	const value = localStorage.getItem(THEME_KEY) ?? "";
+	const value = readStorage(THEME_KEY);
 	return THEMES.includes(value) ? value : "system";
 };
 
 const readAccent = () => {
-	const value = localStorage.getItem(ACCENT_KEY) ?? "";
+	const value = readStorage(ACCENT_KEY);
 	return ACCENTS.includes(value) ? value : DEFAULT_ACCENT;
 };
 
 const readMotion = () => {
-	const value = localStorage.getItem(MOTION_KEY) ?? "";
+	const value = readStorage(MOTION_KEY);
 	return MOTIONS.includes(value) ? value : "on";
 };
 
@@ -90,17 +109,17 @@ const applyMotion = (motion: string) => {
 };
 
 const setMotion = (motion: string) => {
-	localStorage.setItem(MOTION_KEY, motion);
+	writeStorage(MOTION_KEY, motion);
 	applyMotion(motion);
 };
 
 const setTheme = (theme: string) => {
-	localStorage.setItem(THEME_KEY, theme);
+	writeStorage(THEME_KEY, theme);
 	applyTheme(theme);
 };
 
 const setAccent = (accent: string) => {
-	localStorage.setItem(ACCENT_KEY, accent);
+	writeStorage(ACCENT_KEY, accent);
 	applyAccent(accent);
 };
 
@@ -218,10 +237,11 @@ export function initAppearance() {
 		if (readTheme() === "system") applyTheme("system");
 	});
 
-	// Тему могли поменять в соседней вкладке.
+	// Тему могли поменять в соседней вкладке. key === null — это
+	// localStorage.clear() оттуда же: пересинхронизируем всё.
 	window.addEventListener("storage", (event) => {
-		if (event.key === THEME_KEY) applyTheme(readTheme());
-		if (event.key === ACCENT_KEY) applyAccent(readAccent());
-		if (event.key === MOTION_KEY) applyMotion(readMotion());
+		if (event.key === null || event.key === THEME_KEY) applyTheme(readTheme());
+		if (event.key === null || event.key === ACCENT_KEY) applyAccent(readAccent());
+		if (event.key === null || event.key === MOTION_KEY) applyMotion(readMotion());
 	});
 }

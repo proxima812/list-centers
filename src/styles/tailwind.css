@@ -377,6 +377,10 @@
      Drawer исключён: он снимает состояние по animationend, поэтому ему, как и
      в prefers-reduced-motion, отдаётся 1ms вместо `none`. Кольцо карточки —
      второе исключение, оно убирается целиком: см. `card-ring` ниже. */
+  /* Сам <html> в списке обязателен: на нём висит transition-colors, а
+     правило только по потомкам его не гасит — смена темы продолжала бы
+     кросс-фейдиться при выключенных анимациях. */
+  [data-motion="off"],
   [data-motion="off"] *:not([data-menu-list]):not([data-menu-backdrop]),
   [data-motion="off"] *::before,
   [data-motion="off"] *::after {

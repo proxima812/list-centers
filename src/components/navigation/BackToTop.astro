@@ -29,7 +29,12 @@ const t = useTranslations(locale);
 		};
 
 		button.addEventListener("click", () => {
-			window.scrollTo({ top: 0, behavior: "smooth" });
+			// Явный behavior перебивает CSS `scroll-behavior: auto` из
+			// [data-motion="off"], поэтому тумблер и reduce-motion читаем руками.
+			const motionOff =
+				document.documentElement.dataset.motion === "off" ||
+				matchMedia("(prefers-reduced-motion: reduce)").matches;
+			window.scrollTo({ top: 0, behavior: motionOff ? "auto" : "smooth" });
 		});
 
 		window.addEventListener("scroll", setVisible, { passive: true });
