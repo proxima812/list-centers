@@ -115,6 +115,10 @@ export default defineConfig({
     redirects: {
         "/support": "/projects",
         "/support/[id]": "/projects/[id]",
+        "/centers/tbk-265": "/centers/tbk-4",
+        "/en/centers/tbk-265": "/en/centers/tbk-4",
+        "/centers/tbk-286": "/centers/tbk-19",
+        "/en/centers/tbk-286": "/en/centers/tbk-19",
     },
     output: "static",
 });
