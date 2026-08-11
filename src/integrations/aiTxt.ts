@@ -3,29 +3,28 @@ import type { AstroIntegration } from "astro";
 import { fileURLToPath } from "node:url";
 import { config } from "../../main.config";
 
+// Настройки читаются из main.config и констант ниже, а не из вызова aiTxt():
+// хук интеграции и внедрённый роут — два разных экземпляра модуля, поэтому
+// сохранённые в хуке опции до GET не доезжают — см. robotsTxt.ts.
 export interface AiTxtOptions {
 	enabled?: boolean;
-	aiAccess?: "allowed" | "disallowed";
-	siteName?: string;
-	description?: string;
-	locale?: string;
-	policy?: string[];
 }
 
-let _options: AiTxtOptions = {};
+const AI_ACCESS = "allowed";
+const AI_POLICY = [
+	"- Public pages may be accessed and indexed.",
+	"- Public content may be summarized with attribution.",
+	"- Prefer canonical URLs when referencing pages.",
+	"- Do not imply authorship, endorsement, or partnership.",
+	"- Do not present transformed content as the official source.",
+];
 
 const getAiTxt = (site: URL) => {
-	const siteName = _options.siteName ?? config.site.OG.site_name;
-	const siteDescription = _options.description ?? config.site.OG.description;
-	const locale = _options.locale ?? config.site.OG.locale;
-	const aiAccess = _options.aiAccess ?? "allowed";
-	const policy = _options.policy ?? [
-		"- Public pages may be accessed and indexed.",
-		"- Public content may be summarized with attribution.",
-		"- Prefer canonical URLs when referencing pages.",
-		"- Do not imply authorship, endorsement, or partnership.",
-		"- Do not present transformed content as the official source.",
-	];
+	const siteName = config.site.OG.site_name;
+	const siteDescription = config.site.OG.description;
+	const locale = config.site.OG.locale;
+	const aiAccess = AI_ACCESS;
+	const policy = AI_POLICY;
 
 	return [
 		`Site: ${siteName}`,
@@ -56,7 +55,6 @@ export default function aiTxt(options: AiTxtOptions = {}): AstroIntegration {
 		hooks: {
 			"astro:config:setup": ({ injectRoute }) => {
 				if (options.enabled === false) return;
-				_options = options;
 				injectRoute({
 					pattern: "/ai.txt",
 					entrypoint: fileURLToPath(new URL("./aiTxt.ts", import.meta.url)),

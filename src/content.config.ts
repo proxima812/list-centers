@@ -100,8 +100,8 @@ function validateCenterLocation(
 
 const CenterGeoSchema = z
 	.object({
-		lat: z.number(),
-		lng: z.number(),
+		lat: z.number().min(-90).max(90),
+		lng: z.number().min(-180).max(180),
 		address: z.string().min(1).optional(),
 		mapUrl: z.url().optional(),
 		precision: z.enum(["exact", "city", "region"]).default("exact"),
@@ -111,7 +111,14 @@ const CenterGeoSchema = z
 const CenterSchema = z
 	.object({
 		title: z.string().min(1),
-		pubDate: z.string().optional(),
+		// Строка, но обязательно разбираемая new Date(): битая дата давала NaN
+		// в компараторах сортировки каталога, и порядок молча ломался.
+		pubDate: z
+			.string()
+			.refine((value) => !Number.isNaN(new Date(value).getTime()), {
+				message: "pubDate должен быть датой в формате, понятном new Date() (напр. 2026-08-11)",
+			})
+			.optional(),
 		type: CenterTypeSchema.optional(),
 		category: CenterCategorySchema.optional(),
 		source: z.url().optional(),

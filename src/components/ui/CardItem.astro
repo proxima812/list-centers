@@ -74,14 +74,16 @@ const metaChipClass =
 // Пилюли у ссылок сняты. Подписью стал сам адрес, а он длиннее слова
 // «Instagram» — три залитых плашки с адресами внутри карточки читались бы
 // вторым списком, а не сноской. Ссылку держит иконка площадки и цвет.
+// Фокус не переопределяем: единый рецепт (2px акцентный outline) приходит из
+// @layer base и переключается вместе с пресетом акцента.
 const quickLinkClass =
-	"relative z-10 inline-flex min-w-0 items-center gap-1 text-xs font-medium text-muted-foreground no-underline transition hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
+	"relative z-10 inline-flex min-w-0 items-center gap-1 text-xs font-medium text-muted-foreground no-underline transition hover:text-foreground";
 // «Смотреть» — не ссылка, а подсказка: вся карточка и так кликабельна, и
 // вторая ссылка на тот же адрес удвоила бы её в списке ссылок скринридера и
 // в порядке табуляции. Поэтому span, `aria-hidden` и никакого z-слоя: клик
 // проваливается на растянутую ссылку заголовка, которая лежит ниже.
 const viewButtonClass =
-	"ml-auto inline-flex shrink-0 items-center gap-1 rounded-full corner-squircle bg-surface-muted px-2.5 py-1 text-xs font-medium text-muted-foreground transition group-hover:bg-accent group-hover:text-accent-foreground";
+	"ml-auto inline-flex shrink-0 items-center gap-1 rounded-full corner-squircle bg-surface-muted px-2.5 py-1 text-xs font-medium text-muted-foreground transition-colors duration-300 ease-out group-hover:bg-accent group-hover:text-accent-foreground";
 const quickLinks = links ?? [];
 ---
 
@@ -96,9 +98,10 @@ const quickLinks = links ?? [];
 	композитинг без пользы. Кликабельна вся карточка, поэтому наведение
 	поднимает её целиком. Кольца в покое нет: от фона каталога карточку
 	отделяет собственная заливка, а обводка на squircle-углах не совпадает
-	с их формой. На ховере к подъёму добавляется `card-ring` — акцентное
-	градиентное кольцо с бегущей дугой; оно рисуется маской по форме
-	squircle и живёт только под курсором, по тому же счёту, что и тень.
+	с их формой. Поверх заливки лежит `card-ring` — акцентное градиентное
+	кольцо с бегущей дугой, маской по форме squircle; горит оно постоянно
+	(см. @utility card-ring в tailwind.css), ховер только усиливает градиент
+	и добавляет подъём с тенью.
 	Подчёркивания у заголовка нет:
 	оно делало вид, что кликабелен один h2, хотя цель — весь блок.
 
@@ -131,7 +134,7 @@ const quickLinks = links ?? [];
 	data-flag={cleanFlag ?? ""}
 	data-pub-date={pubDate ?? ""}
 	data-href={centerPath}
-	class="group card-ring relative flex h-full min-w-0 flex-col gap-3 rounded-catalog corner-squircle bg-surface p-6 text-surface-foreground transition hover:surface-lift has-[[data-card-link]:focus-visible]:outline-2 has-[[data-card-link]:focus-visible]:outline-offset-2 has-[[data-card-link]:focus-visible]:outline-primary"
+	class="group card-ring relative flex h-full min-w-0 flex-col gap-3 rounded-catalog corner-squircle bg-surface p-6 text-surface-foreground transition duration-300 ease-out hover:surface-lift has-[[data-card-link]:focus-visible]:outline-2 has-[[data-card-link]:focus-visible]:outline-offset-2 has-[[data-card-link]:focus-visible]:outline-accent"
 >
 	<SaveCenterButton title={displayTitle} />
 	{

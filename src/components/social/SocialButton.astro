@@ -227,7 +227,9 @@ const {
 
 const socialName = resolveSocialName(social);
 const icon = socialIcons[socialName];
-const computedLabel = ariaLabel ?? aria_label ?? title ?? icon.label;
+// || вместо ??: title по умолчанию — пустая строка, и с ?? цепочка никогда
+// не доходила до icon.label, оставляя icon-only ссылки без доступного имени.
+const computedLabel = ariaLabel || aria_label || title || icon.label;
 const linkTarget = target ?? (external ? "_blank" : undefined);
 const linkRel = rel ?? (external ? "noreferrer noopener" : undefined);
 const iconColorStyle =

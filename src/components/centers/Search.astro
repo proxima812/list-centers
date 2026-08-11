@@ -24,13 +24,13 @@ const searchIndexUrl =
 			id="centers-search"
 			data-toolbar-search
 			type="search"
+			role="combobox"
 			placeholder={t("list.search.placeholder")}
 			aria-label={t("list.search.placeholder")}
-			aria-controls="cards-grid"
+			aria-controls="search-suggestions"
 			aria-autocomplete="list"
 			aria-expanded="false"
 			aria-haspopup="listbox"
-			aria-owns="search-suggestions"
 			autocomplete="off"
 			class="min-h-11 w-full bg-transparent px-2 pr-11 text-sm text-surface-foreground outline-none placeholder:text-muted-foreground [&::-webkit-search-cancel-button]:hidden"
 		/>

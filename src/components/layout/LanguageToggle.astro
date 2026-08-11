@@ -150,9 +150,13 @@ const buttonClass =
 
 			if (menu.hidden) return;
 
-			const activeIndex = options.findIndex(
-				(option) => option.getAttribute("aria-checked") === "true",
-			);
+			// Ходим от сфокусированного пункта, а не от aria-checked: чекнутый
+			// индекс статичен, и стрелки «залипали» бы на одной опции.
+			const focusedIndex = options.findIndex((option) => option === document.activeElement);
+			const activeIndex =
+				focusedIndex >= 0
+					? focusedIndex
+					: options.findIndex((option) => option.getAttribute("aria-checked") === "true");
 
 			if (event.key === "ArrowDown") {
 				event.preventDefault();

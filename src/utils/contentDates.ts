@@ -50,10 +50,21 @@ function getDirtyFiles() {
 			stdio: ["ignore", "pipe", "ignore"],
 		});
 
-		for (const record of output.split("\0")) {
-			if (!record) continue;
+		const records = output.split("\0").filter(Boolean);
+		for (let i = 0; i < records.length; i += 1) {
+			const record = records[i];
+			const status = record.slice(0, 2);
 			const filePath = record.length > 3 ? record.slice(3) : record;
 			if (filePath) dirtyFilesCache.add(filePath);
+
+			// При rename/copy формат -z иной: `XY new\0orig\0` — следующий
+			// NUL-блок это исходный путь без префикса статуса. Помечаем оба и
+			// не даём slice(3) откусить начало настоящего пути.
+			if (/[RC]/.test(status)) {
+				const original = records[i + 1];
+				if (original) dirtyFilesCache.add(original);
+				i += 1;
+			}
 		}
 	} catch {}
 
@@ -109,10 +120,9 @@ export function getFileCreatedDate(filePath: string | undefined, fallback?: Date
 	const absolutePath = toAbsolutePath(filePath);
 	const statDate = fs.existsSync(absolutePath) ? fs.statSync(absolutePath).birthtime : undefined;
 
-	if (getDirtyFiles().has(relativePath)) {
-		return getGitCreatedDate(relativePath) ?? statDate ?? fallbackDate;
-	}
-
+	// В отличие от modified, dirty-статус здесь не важен: правка файла не
+	// меняет дату его создания, а у нового некоммиченного файла git-даты нет
+	// и так — сработает fallback на birthtime.
 	return getGitCreatedDate(relativePath) ?? statDate ?? fallbackDate;
 }
 

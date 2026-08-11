@@ -29,10 +29,22 @@ export const createCenterRouteIdMap = (
 		return a.id.localeCompare(b.id, "en");
 	});
 
+	// Синтетический id для файла не вида tbk-N берёт первый свободный номер,
+	// а не позицию в сортировке: позиционный `tbk-${index+1}` мог совпасть с
+	// реальным id другого файла и дать дубликат маршрута в getStaticPaths.
+	const usedRouteIds = new Set(
+		entries.map((entry) => entry.id).filter((id) => CENTER_ROUTE_ID_PATTERN.test(id)),
+	);
+	let nextNumber = 1;
+
 	return new Map(
-		sortedEntries.map((entry, index) => [
-			entry.id,
-			CENTER_ROUTE_ID_PATTERN.test(entry.id) ? entry.id : `${CENTER_ROUTE_PREFIX}${index + 1}`,
-		]),
+		sortedEntries.map((entry) => {
+			if (CENTER_ROUTE_ID_PATTERN.test(entry.id)) return [entry.id, entry.id] as const;
+
+			while (usedRouteIds.has(`${CENTER_ROUTE_PREFIX}${nextNumber}`)) nextNumber += 1;
+			const routeId = `${CENTER_ROUTE_PREFIX}${nextNumber}`;
+			usedRouteIds.add(routeId);
+			return [entry.id, routeId] as const;
+		}),
 	);
 };

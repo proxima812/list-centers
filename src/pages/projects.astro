@@ -39,11 +39,13 @@ function getUrlLabel(url?: string) {
 // 2.63:1, то есть ниже порога 3:1 для нетекстовых элементов. 600 проходит и на
 // светлой (3.03-3.89), и на самой светлой тёмной «бумаге» (4.16-5.35), поэтому
 // пара dark: здесь не нужна.
+// Telegram — sky (его бренд-голубой), не violet: фиолетовая иконка при
+// фиолетовом пресете акцента читалась бы как акцентный элемент.
 const pitchItems = [
 	{ icon: "mdi:storefront-outline", title: "Небольшой бизнес", tone: "text-amber-600" },
 	{ icon: "mdi:youtube", title: "YouTube-канал", tone: "text-rose-500" },
 	{ icon: "mdi:web", title: "Сайт", tone: "text-sky-600" },
-	{ icon: "mdi:telegram", title: "Telegram и соцсети", tone: "text-violet-500" },
+	{ icon: "mdi:telegram", title: "Telegram и соцсети", tone: "text-sky-600" },
 ] as const;
 
 const projectCards = projects.map((project) => ({
@@ -113,7 +115,7 @@ const projectCards = projects.map((project) => ({
 				href={feedbackHref}
 				target="_blank"
 				rel="noreferrer noopener"
-				class="group corner-squircle mt-8 inline-flex items-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-bold tracking-tight text-background no-underline transition hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+				class="group corner-squircle mt-8 inline-flex items-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-bold tracking-tight text-background no-underline transition hover:opacity-90"
 			>
 				Предложить проект
 				<svg
@@ -143,7 +145,7 @@ const projectCards = projects.map((project) => ({
 			<button
 				type="button"
 				role="radio"
-				class="filter-btn corner-squircle inline-flex cursor-pointer items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold ring ring-inset transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary bg-primary text-primary-foreground ring-primary"
+				class="filter-btn corner-squircle inline-flex cursor-pointer items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold ring ring-inset transition bg-primary text-primary-foreground ring-primary"
 				data-category=""
 				aria-checked="true"
 				tabindex="0"
@@ -156,7 +158,7 @@ const projectCards = projects.map((project) => ({
 					<button
 						type="button"
 						role="radio"
-						class="filter-btn corner-squircle inline-flex cursor-pointer items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold ring ring-inset transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary bg-surface text-muted-foreground ring-border-muted hover:bg-primary/5"
+						class="filter-btn corner-squircle inline-flex cursor-pointer items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold ring ring-inset transition bg-surface text-muted-foreground ring-border-muted hover:bg-primary/5"
 						data-category={category}
 						aria-checked="false"
 						tabindex="-1"
@@ -239,7 +241,7 @@ const projectCards = projects.map((project) => ({
 						<div class="relative z-10 mt-auto flex flex-wrap gap-2">
 							<a
 								href={detailHref}
-								class="group/btn inline-flex items-center gap-2 rounded-control corner-squircle bg-primary px-4 py-2 text-sm font-bold tracking-tight text-primary-foreground no-underline transition hover:bg-primary/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+								class="group/btn inline-flex items-center gap-2 rounded-control corner-squircle bg-primary px-4 py-2 text-sm font-bold tracking-tight text-primary-foreground no-underline transition hover:bg-primary/80"
 							>
 								Подробнее
 								<Icon
@@ -253,7 +255,7 @@ const projectCards = projects.map((project) => ({
 									href={project.data.instagram}
 									target="_blank"
 									rel="noreferrer noopener"
-									class="inline-flex items-center gap-2 rounded-control corner-squircle bg-transparent px-4 py-2 text-sm font-semibold text-primary/80 no-underline ring ring-inset ring-primary/10 transition hover:bg-rose-500/5 hover:text-rose-600 hover:ring-rose-500/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+									class="inline-flex items-center gap-2 rounded-control corner-squircle bg-transparent px-4 py-2 text-sm font-semibold text-primary/80 no-underline ring ring-inset ring-primary/10 transition hover:bg-rose-500/5 hover:text-rose-600 hover:ring-rose-500/20"
 								>
 									<Icon name="mdi:instagram" class="size-4 text-rose-500" aria-hidden="true" />
 									Instagram

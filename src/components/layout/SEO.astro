@@ -315,4 +315,9 @@ const enabledVerifications = config.site.verifications.filter(
 <link rel="mask-icon" href="/favicon.svg" color={config.site.theme.colors.maskIcon} />
 <meta name="theme-color" content={config.site.theme.colors.theme} />
 
-<script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+{/* < — защита от разрыва тега, если в данные попадёт "</script>" */}
+<script
+	is:inline
+	type="application/ld+json"
+	set:html={JSON.stringify(schemaGraph).replace(/</g, "\\u003c")}
+/>

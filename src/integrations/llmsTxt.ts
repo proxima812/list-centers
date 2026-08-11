@@ -109,7 +109,7 @@ async function walk(dir: string): Promise<string[]> {
 }
 
 async function getPageEntries(site: URL): Promise<LlmsEntry[]> {
-	const pagesDir = _options.pagesDir ?? DEFAULT_PAGES_DIR;
+	const pagesDir = DEFAULT_PAGES_DIR;
 	const files = await walk(pagesDir);
 
 	const entries = await Promise.all(
@@ -151,9 +151,9 @@ async function getLlmsTxt(site: URL) {
 		return acc;
 	}, {});
 
-	const siteName = _options.siteName ?? config.site.OG.site_name;
-	const siteDescription = _options.description ?? config.site.OG.description;
-	const locale = _options.locale ?? config.site.OG.locale;
+	const siteName = config.site.OG.site_name;
+	const siteDescription = config.site.OG.description;
+	const locale = config.site.OG.locale;
 
 	return [
 		`# ${siteName}`,
@@ -185,15 +185,13 @@ export const GET: APIRoute = async ({ site }) => {
 	});
 };
 
+// Настройки контента читаются из main.config, а не из вызова llmsTxt():
+// хук интеграции и внедрённый роут — два разных экземпляра модуля (один
+// исполняется в Node на конфиге, второй в графе Vite при рендере), поэтому
+// сохранённые в хуке опции до GET не доезжают — см. robotsTxt.ts.
 export interface LlmsTxtOptions {
 	enabled?: boolean;
-	pagesDir?: string;
-	siteName?: string;
-	description?: string;
-	locale?: string;
 }
-
-let _options: LlmsTxtOptions = {};
 
 export default function llmsTxt(options: LlmsTxtOptions = {}): AstroIntegration {
 	return {
@@ -201,7 +199,6 @@ export default function llmsTxt(options: LlmsTxtOptions = {}): AstroIntegration 
 		hooks: {
 			"astro:config:setup": ({ injectRoute }) => {
 				if (options.enabled === false) return;
-				_options = options;
 				injectRoute({
 					pattern: "/llms.txt",
 					entrypoint: fileURLToPath(new URL("./llmsTxt.ts", import.meta.url)),

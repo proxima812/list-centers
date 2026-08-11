@@ -153,6 +153,7 @@ const items = [
 		let current = 0;
 		let timer = 0;
 		let hovered = false;
+		let focused = false;
 
 		const show = (next: number) => {
 			items.forEach((item, index) => {
@@ -170,7 +171,8 @@ const items = [
 			!reduceMotion.matches &&
 			document.documentElement.dataset.motion !== "off" &&
 			!document.hidden &&
-			!hovered;
+			!hovered &&
+			!focused;
 
 		// Только таймер, без ожидания transitionend: при выключенных анимациях
 		// событие не приходит вовсе, и ротация встала бы на первой же карточке.
@@ -202,8 +204,17 @@ const items = [
 			});
 		});
 
-		root.addEventListener("focusin", stop);
-		root.addEventListener("focusout", start);
+		// Флаг, а не голые stop/start: visibilitychange и MutationObserver
+		// зовут start() напрямую, и без флага возврат на вкладку возобновлял
+		// бы ротацию под сфокусированной ссылкой, выбрасывая фокус в body.
+		root.addEventListener("focusin", () => {
+			focused = true;
+			stop();
+		});
+		root.addEventListener("focusout", () => {
+			focused = false;
+			start();
+		});
 		document.addEventListener("visibilitychange", start);
 		reduceMotion.addEventListener("change", start);
 

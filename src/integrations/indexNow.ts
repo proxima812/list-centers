@@ -165,7 +165,11 @@ export default function indexNow(options: IndexNowOptions = {}): AstroIntegratio
 					return;
 				}
 
-				const cacheFile = path.join(outDir, ".indexnow-cache.json");
+				// Кэш живёт вне outDir: dist очищается каждой сборкой, и кэш
+				// внутри него всегда был пуст — дельта-логика не работала, а
+				// каждый деплой пинговал весь каталог. Заодно файл не деплоится.
+				const cacheFile = path.resolve("node_modules/.cache/indexnow/cache.json");
+				fs.mkdirSync(path.dirname(cacheFile), { recursive: true });
 				const prev = safeReadJson<Cache>(cacheFile, {});
 				const next: Cache = {};
 				const changed: string[] = [];

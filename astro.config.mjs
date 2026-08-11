@@ -30,7 +30,22 @@ export default defineConfig({
       sitemap({
           filter: (page) => {
               const path = new URL(page).pathname.replace(/\/$/, "");
-              return path !== "/map" && path !== "/saved" && path !== "/en/saved";
+              // Кроме /map и /saved исключаем noindex-страницу печати и
+              // 301-заглушки непереведённых EN-разделов: страницы с
+              // редиректом/noindex в карте сайта — мусор для Search Console.
+              const excluded = new Set([
+                  "/map",
+                  "/saved",
+                  "/en/saved",
+                  "/centers/print",
+                  "/en/posts",
+                  "/en/sabantye",
+                  "/en/policy",
+                  "/en/sources",
+                  "/en/translations",
+                  "/en/thanks",
+              ]);
+              return !excluded.has(path);
           },
       }),
       mdx(),
