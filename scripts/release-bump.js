@@ -92,13 +92,24 @@ function detectBumpType() {
 }
 
 function formatRuDate(date) {
-	const day = date.getDate();
-	const month = RU_MONTHS[date.getMonth()];
-	const year = date.getFullYear();
-	const hours = String(date.getHours()).padStart(2, "0");
-	const minutes = String(date.getMinutes()).padStart(2, "0");
+	// Asia/Almaty, как и все даты на сайте (contentDates.ts): локальная зона
+	// машины давала метку, расходящуюся с остальным сайтом на часы.
+	const parts = Object.fromEntries(
+		new Intl.DateTimeFormat("ru-RU", {
+			timeZone: "Asia/Almaty",
+			day: "numeric",
+			month: "numeric",
+			year: "numeric",
+			hour: "2-digit",
+			minute: "2-digit",
+			hour12: false,
+		})
+			.formatToParts(date)
+			.filter((part) => part.type !== "literal")
+			.map((part) => [part.type, part.value]),
+	);
 
-	return `${day} ${month} ${year}, ${hours}:${minutes}`;
+	return `${Number(parts.day)} ${RU_MONTHS[Number(parts.month) - 1]} ${parts.year}, ${parts.hour}:${parts.minute}`;
 }
 
 try {

@@ -46,6 +46,28 @@ export const worldCountriesRu: string[] = [
 	"ЮАР",
 	"Нидерланды",
 	"Южная Корея",
+	// Хвост — страны из MACRO_REGION_BY_COUNTRY, которых не было в списках:
+	// карточка с такой страной проходила валидацию, но оставалась без флага и
+	// переводов. Новые страны добавлять только в конец и во все 10 списков.
+	"Армения",
+	"Туркменистан",
+	"Норвегия",
+	"Дания",
+	"Ирландия",
+	"Португалия",
+	"Словения",
+	"Хорватия",
+	"Сербия",
+	"Греция",
+	"Индия",
+	"Иран",
+	"ОАЭ",
+	"Монголия",
+	"Мексика",
+	"Бразилия",
+	"Аргентина",
+	"Египет",
+	"Новая Зеландия",
 ];
 
 export const countryFlagsByRu: Record<string, string> = {
@@ -91,6 +113,25 @@ export const countryFlagsByRu: Record<string, string> = {
 	ЮАР: "🇿🇦",
 	"Южная Корея": "🇰🇷",
 	Япония: "🇯🇵",
+	Армения: "🇦🇲",
+	Туркменистан: "🇹🇲",
+	Норвегия: "🇳🇴",
+	Дания: "🇩🇰",
+	Ирландия: "🇮🇪",
+	Португалия: "🇵🇹",
+	Словения: "🇸🇮",
+	Хорватия: "🇭🇷",
+	Сербия: "🇷🇸",
+	Греция: "🇬🇷",
+	Индия: "🇮🇳",
+	Иран: "🇮🇷",
+	ОАЭ: "🇦🇪",
+	Монголия: "🇲🇳",
+	Мексика: "🇲🇽",
+	Бразилия: "🇧🇷",
+	Аргентина: "🇦🇷",
+	Египет: "🇪🇬",
+	"Новая Зеландия": "🇳🇿",
 };
 
 export const worldCountriesEn: string[] = [
@@ -136,6 +177,25 @@ export const worldCountriesEn: string[] = [
 	"South Africa",
 	"Netherlands",
 	"South Korea",
+	"Armenia",
+	"Turkmenistan",
+	"Norway",
+	"Denmark",
+	"Ireland",
+	"Portugal",
+	"Slovenia",
+	"Croatia",
+	"Serbia",
+	"Greece",
+	"India",
+	"Iran",
+	"UAE",
+	"Mongolia",
+	"Mexico",
+	"Brazil",
+	"Argentina",
+	"Egypt",
+	"New Zealand",
 ];
 
 export const worldCountriesTt: string[] = [
@@ -181,6 +241,25 @@ export const worldCountriesTt: string[] = [
 	"КАР",
 	"Нидерландлар",
 	"Көньяк Корея",
+	"Әрмәнстан",
+	"Төркмәнстан",
+	"Норвегия",
+	"Дания",
+	"Ирландия",
+	"Португалия",
+	"Словения",
+	"Хорватия",
+	"Сербия",
+	"Греция",
+	"Һиндстан",
+	"Иран",
+	"БГӘ",
+	"Монголия",
+	"Мексика",
+	"Бразилия",
+	"Аргентина",
+	"Мисыр",
+	"Яңа Зеландия",
 ];
 
 export const worldCountriesQt: string[] = [
@@ -226,6 +305,25 @@ export const worldCountriesQt: string[] = [
 	"Cenübiy Afrika",
 	"Niderlandlar",
 	"Cenübiy Koreya",
+	"Ermenistan",
+	"Türkmenistan",
+	"Norvegiya",
+	"Daniya",
+	"İrlandiya",
+	"Portugaliya",
+	"Sloveniya",
+	"Hırvatistan",
+	"Sırbistan",
+	"Yunanistan",
+	"Hindistan",
+	"İran",
+	"BAE",
+	"Moğolistan",
+	"Meksika",
+	"Braziliya",
+	"Argentina",
+	"Mısır",
+	"Yañı Zelandiya",
 ];
 
 export const worldCountriesUk: string[] = [
@@ -271,6 +369,25 @@ export const worldCountriesUk: string[] = [
 	"ПАР",
 	"Нідерланди",
 	"Південна Корея",
+	"Вірменія",
+	"Туркменістан",
+	"Норвегія",
+	"Данія",
+	"Ірландія",
+	"Португалія",
+	"Словенія",
+	"Хорватія",
+	"Сербія",
+	"Греція",
+	"Індія",
+	"Іран",
+	"ОАЕ",
+	"Монголія",
+	"Мексика",
+	"Бразилія",
+	"Аргентина",
+	"Єгипет",
+	"Нова Зеландія",
 ];
 
 export const worldCountriesDe: string[] = [
@@ -316,6 +433,25 @@ export const worldCountriesDe: string[] = [
 	"Südafrika",
 	"Niederlande",
 	"Südkorea",
+	"Armenien",
+	"Turkmenistan",
+	"Norwegen",
+	"Dänemark",
+	"Irland",
+	"Portugal",
+	"Slowenien",
+	"Kroatien",
+	"Serbien",
+	"Griechenland",
+	"Indien",
+	"Iran",
+	"VAE",
+	"Mongolei",
+	"Mexiko",
+	"Brasilien",
+	"Argentinien",
+	"Ägypten",
+	"Neuseeland",
 ];
 
 export const worldCountriesEs: string[] = [
@@ -361,6 +497,25 @@ export const worldCountriesEs: string[] = [
 	"Sudáfrica",
 	"Países Bajos",
 	"Corea del Sur",
+	"Armenia",
+	"Turkmenistán",
+	"Noruega",
+	"Dinamarca",
+	"Irlanda",
+	"Portugal",
+	"Eslovenia",
+	"Croacia",
+	"Serbia",
+	"Grecia",
+	"India",
+	"Irán",
+	"EAU",
+	"Mongolia",
+	"México",
+	"Brasil",
+	"Argentina",
+	"Egipto",
+	"Nueva Zelanda",
 ];
 
 export const worldCountriesKy: string[] = [
@@ -406,6 +561,25 @@ export const worldCountriesKy: string[] = [
 	"Түштүк Африка",
 	"Нидерланддар",
 	"Түштүк Корея",
+	"Армения",
+	"Түркмөнстан",
+	"Норвегия",
+	"Дания",
+	"Ирландия",
+	"Португалия",
+	"Словения",
+	"Хорватия",
+	"Сербия",
+	"Греция",
+	"Индия",
+	"Иран",
+	"БАЭ",
+	"Монголия",
+	"Мексика",
+	"Бразилия",
+	"Аргентина",
+	"Египет",
+	"Жаңы Зеландия",
 ];
 
 export const worldCountriesUz: string[] = [
@@ -451,6 +625,25 @@ export const worldCountriesUz: string[] = [
 	"Janubiy Afrika",
 	"Niderlandiya",
 	"Janubiy Koreya",
+	"Armaniston",
+	"Turkmaniston",
+	"Norvegiya",
+	"Daniya",
+	"Irlandiya",
+	"Portugaliya",
+	"Sloveniya",
+	"Xorvatiya",
+	"Serbiya",
+	"Gretsiya",
+	"Hindiston",
+	"Eron",
+	"BAA",
+	"Mongoliya",
+	"Meksika",
+	"Braziliya",
+	"Argentina",
+	"Misr",
+	"Yangi Zelandiya",
 ];
 
 export const worldCountriesKk: string[] = [
@@ -496,6 +689,25 @@ export const worldCountriesKk: string[] = [
 	"Оңтүстік Африка",
 	"Нидерланд",
 	"Оңтүстік Корея",
+	"Армения",
+	"Түрікменстан",
+	"Норвегия",
+	"Дания",
+	"Ирландия",
+	"Португалия",
+	"Словения",
+	"Хорватия",
+	"Сербия",
+	"Грекия",
+	"Үндістан",
+	"Иран",
+	"БАӘ",
+	"Моңғолия",
+	"Мексика",
+	"Бразилия",
+	"Аргентина",
+	"Мысыр",
+	"Жаңа Зеландия",
 ];
 
 export const worldCountriesByLocale = {
@@ -510,6 +722,17 @@ export const worldCountriesByLocale = {
 	uz: worldCountriesUz,
 	kk: worldCountriesKk,
 } satisfies Record<AppLocale, string[]>;
+
+// Списки сопоставляются по индексу, и рассинхрон длин уже однажды раздавал
+// чужие переводы (см. комментарий про «Швецию» выше). Падаем на сборке сразу.
+for (const [locale, values] of Object.entries(worldCountriesByLocale)) {
+	if (values.length !== worldCountriesRu.length) {
+		throw new Error(
+			`worldCountries: список «${locale}» (${values.length}) рассинхронизирован ` +
+				`с русским (${worldCountriesRu.length}) — переводы съедут по индексу.`,
+		);
+	}
+}
 
 type CountryLabels = Record<AppLocale, string>;
 
@@ -541,60 +764,4 @@ export function getCountryLabels(country: string): CountryLabels {
 
 export function getCountryLabel(country: string, locale: AppLocale): string {
 	return getCountryLabels(country)[locale] ?? country;
-}
-
-export const countryFlagColorsByRu: Record<string, string[]> = {
-	Россия: ["#0039A6", "#D52B1E"],
-	Казахстан: ["#00AFCA", "#FEC50C"],
-	Кыргызстан: ["#E8112D", "#FFEF00"],
-	Украина: ["#0057B7", "#FFD700"],
-	Турция: ["#E30A17", "#B00712"],
-	Узбекистан: ["#0099B5", "#1EB53A"],
-	США: ["#3C3B6E", "#B22234"],
-	Литва: ["#FDB913", "#006A44", "#C1272D"],
-	Эстония: ["#0072CE", "#1A1A1A"],
-	Канада: ["#FF0000", "#B30000"],
-	Латвия: ["#9E3039", "#C25058"],
-	Австралия: ["#012169", "#E4002B"],
-	Азербайджан: ["#00B5E2", "#EF3340", "#509E2F"],
-	Польша: ["#DC143C", "#E35D77"],
-	Беларусь: ["#CE1720", "#007C30"],
-	Германия: ["#1A1A1A", "#DD0000", "#FFCE00"],
-	Финляндия: ["#003580", "#3667A8"],
-	Таджикистан: ["#CC0000", "#006600"],
-	Абхазия: ["#3CA23C", "#CE1126"],
-	Австрия: ["#ED2939", "#F06B78"],
-	Бельгия: ["#1A1A1A", "#FAE042", "#ED2939"],
-	Румыния: ["#002B7F", "#FCD116", "#CE1126"],
-	Великобритания: ["#012169", "#C8102E"],
-	Болгария: ["#00966E", "#D62612"],
-	Китай: ["#DE2910", "#FFDE00"],
-	Франция: ["#0055A4", "#EF4135"],
-	Италия: ["#008C45", "#CD212A"],
-	Швейцария: ["#D52B1E", "#E35B51"],
-	Грузия: ["#FF0000", "#B30000"],
-	Венгрия: ["#CE2939", "#477050"],
-	Словакия: ["#0B4EA2", "#EE1C25"],
-	Молдова: ["#0046AE", "#FFD200", "#CC092F"],
-	Израиль: ["#0038B8", "#3A66D4"],
-	Афганистан: ["#1A1A1A", "#BF0000", "#007A36"],
-	Испания: ["#AA151B", "#F1BF00"],
-	Чехия: ["#11457E", "#D7141A"],
-	Перу: ["#D91023", "#E34457"],
-	Япония: ["#BC002D", "#D44563"],
-	ЮАР: ["#007749", "#FFB915", "#002395"],
-	Нидерланды: ["#AE1C28", "#21468B"],
-	"Южная Корея": ["#003478", "#C60C30"],
-};
-
-export function getCountryGradient(country?: string): string | null {
-	const colors = country ? countryFlagColorsByRu[country] : undefined;
-	if (!colors || colors.length === 0) return null;
-	const stops =
-		colors.length === 1
-			? `${colors[0]}, ${colors[0]}`
-			: colors
-					.map((color, index) => `${color} ${Math.round((index / (colors.length - 1)) * 100)}%`)
-					.join(", ");
-	return `linear-gradient(160deg, ${stops})`;
 }

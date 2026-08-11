@@ -75,6 +75,24 @@ function getGitDates() {
 	if (gitDatesCache) return gitDatesCache;
 
 	gitDatesCache = new Map();
+
+	// На shallow clone (CI) история усечена: createdDate у всех файлов
+	// схлопывается в дату граничного коммита, а fallback на birthtime — это
+	// время чекаута. Даты будут неверными — предупреждаем явно.
+	try {
+		const shallow = execFileSync("git", ["rev-parse", "--is-shallow-repository"], {
+			cwd: projectRoot,
+			encoding: "utf8",
+			stdio: ["ignore", "pipe", "ignore"],
+		}).trim();
+		if (shallow === "true") {
+			console.warn(
+				"[contentDates] git-репозиторий shallow: даты «опубликовано/обновлено» " +
+					"будут неточными. Сборке нужна полная история (fetch-depth: 0).",
+			);
+		}
+	} catch {}
+
 	try {
 		const output = execFileSync("git", ["log", "--format=%cI", "--name-only", "--", "src/data", "src/pages"], {
 			cwd: projectRoot,
