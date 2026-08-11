@@ -55,9 +55,12 @@ export const config = {
       colors: siteThemeColors,
     },
     verifications: [
-      { name_verification: "yandex-verification", content: "" },
+      { name_verification: "yandex-verification", content: "ef2c55e1bcb7f431" },
       { name_verification: "p:domain_verify", content: "" },
-      { name_verification: "google-site-verification", content: "" },
+      {
+        name_verification: "google-site-verification",
+        content: "ax8dybdaENiWae9wwuPwxMC0GOluT8W9v0yDpIM1AKo",
+      },
       { name_verification: "msvalidate.01", content: "" },
       { name_verification: "facebook-domain-verification", content: "" },
       { name_verification: "baidu-site-verification", content: "" },

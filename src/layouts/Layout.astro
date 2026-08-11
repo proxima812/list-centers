@@ -1,6 +1,8 @@
 ---
 import { BackToTop, Container, Footer, Header, SEO } from "@/components";
 import { getLocaleFromUrl, getOgLocale } from "@/i18n";
+import YandexMetrika from "@/YandexMetrika.astro";
+import { config } from "main.config";
 
 import "@/styles/tailwind.css";
 import { cn } from "@/utils/libs/cn";
@@ -41,19 +43,21 @@ const {
 } = Astro.props as Props;
 
 const locale = getLocaleFromUrl(Astro.url);
+const yandexMetrika = config.site.analytics.yandexMetrika;
 ---
 
 <html
 	lang={locale}
 	data-language={locale}
-	class="scroll-smooth subpixel-antialiased transition-colors duration-300 ease-linear"
+	class="subpixel-antialiased transition-colors duration-300 ease-linear motion-safe:scroll-smooth"
 >
 	<head>
-		{/* Запасной вариант без JS: светлая тема — её же дефолт. Тег объявлен ДО
-		    инлайн-скрипта намеренно: скрипт находит его через querySelector и
-		    переписывает. Если объявить ниже, на момент выполнения скрипта тега
-		    ещё нет в DOM, и в <head> оказываются два theme-color. */}
-		<meta name="theme-color" content="#ffffff" />
+		{/* Запасной вариант без JS: фон светлой темы (hsl(0 0% 97.5%), как в
+		    pwaSettings). Тег объявлен ДО инлайн-скрипта намеренно: скрипт
+		    находит его через querySelector и переписывает. Если объявить ниже,
+		    на момент выполнения скрипта тега ещё нет в DOM, и в <head>
+		    оказываются два theme-color. */}
+		<meta name="theme-color" content="#f9f9f9" />
 
 		{/* Тема применяется до первой отрисовки — иначе на каждой навигации
 		    будет вспышка светлой темы. Скрипт намеренно синхронный и лежит
@@ -62,9 +66,19 @@ const locale = getLocaleFromUrl(Astro.url);
 		<script is:inline>
 			(() => {
 				const root = document.documentElement;
-				const theme = localStorage.getItem("theme") ?? "system";
-				const accent = localStorage.getItem("accent") ?? "green";
-				const motion = localStorage.getItem("motion") ?? "on";
+				// В Safari с «Блокировать все куки» само обращение к localStorage
+				// бросает SecurityError — без try/catch скрипт умирал бы целиком
+				// и атрибуты темы/акцента/моушена не выставлялись вовсе.
+				const read = (key) => {
+					try {
+						return localStorage.getItem(key);
+					} catch {
+						return null;
+					}
+				};
+				const theme = read("theme") ?? "system";
+				const accent = read("accent") ?? "green";
+				const motion = read("motion") ?? "on";
 				const dark =
 					theme === "dark" ||
 					(theme === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
@@ -155,5 +169,10 @@ const locale = getLocaleFromUrl(Astro.url);
 		</Container>
 		<Footer />
 		<BackToTop />
+		{
+			yandexMetrika.enabled && yandexMetrika.counterId && (
+				<YandexMetrika counterId={yandexMetrika.counterId} />
+			)
+		}
 	</body>
 </html>
