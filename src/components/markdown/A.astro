@@ -6,7 +6,6 @@ import { Icon } from "astro-icon/components";
 
 interface Props {
 	href?: string;
-	children?: string;
 	class?: string;
 }
 
@@ -20,11 +19,20 @@ type LinkView = {
 	social: string | null;
 };
 
-const { href = "", children, class: className } = Astro.props as Props;
+const { href = "", class: className } = Astro.props as Props;
 const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
 
-const rawText = typeof children === "string" ? children.trim() : "";
+// Текст ссылки из markdown приходит слотом, не пропом
+const slotHtml = Astro.slots.has("default") ? await Astro.slots.render("default") : "";
+const rawText = slotHtml
+	.replace(/<[^>]*>/g, "")
+	.replace(/&amp;/g, "&")
+	.replace(/&lt;/g, "<")
+	.replace(/&gt;/g, ">")
+	.replace(/&quot;/g, '"')
+	.replace(/&#39;/g, "'")
+	.trim();
 
 const socialByHost: Record<string, string> = {
 	"t.me": "telegram",

@@ -31,6 +31,36 @@ const ogLocales: Record<AppLocale, string> = {
 // повод для расхождения. Рендерится в дефолтной локали, отсюда русские строки.
 const unlocalizedPathnames = new Set(["posts", "sabantye", "map", "saved"]);
 
+// EN-покрытие маршрутов частичное: посты, проекты и печать существуют только
+// по-русски, а из центров переведена лишь часть. Слепая локализация таких путей
+// давала ссылки на несуществующие /en/-страницы (404). Набор переведённых
+// центров берём из имён файлов centers_i18n/en — они совпадают с route id.
+const translatedCenterIds = new Set(
+	Object.keys(import.meta.glob("../data/centers_i18n/en/*.mdx")).map((path) =>
+		path.slice(path.lastIndexOf("/") + 1).replace(/\.mdx$/, ""),
+	),
+);
+
+const ruOnlyPathPatterns = [
+	/^posts\/.+/,
+	/^projects(\/.*)?$/,
+	/^sabantye\/.+/,
+	/^centers\/print$/,
+	// Эти страницы существуют только по-русски; /en/-адреса — 301 на них.
+	/^(policy|sources|translations|thanks)$/,
+];
+
+export function hasLocalizedRoute(locale: AppLocale, relativePath: string): boolean {
+	if (locale === defaultLocale) return true;
+	if (unlocalizedPathnames.has(relativePath)) return false;
+	if (ruOnlyPathPatterns.some((pattern) => pattern.test(relativePath))) return false;
+
+	const centerId = relativePath.match(/^centers\/([^/.]+)$/)?.[1];
+	if (centerId && !translatedCenterIds.has(centerId)) return false;
+
+	return true;
+}
+
 export function isAppLocale(value: string | null | undefined): value is AppLocale {
 	return Boolean(value && locales.includes(value as AppLocale));
 }
@@ -59,13 +89,28 @@ export function localizePath(locale: AppLocale, href: string): string {
 
 	const [pathname, hash = ""] = href.split("#");
 	const relativePath = getLocalePathname(pathname);
-	if (unlocalizedPathnames.has(relativePath)) {
-		return hash ? `/${relativePath}/#${hash}` : `/${relativePath}/`;
+	if (!hasLocalizedRoute(locale, relativePath)) {
+		const fallback = relativePath ? `/${relativePath}/` : "/";
+		return hash ? `${fallback}#${hash}` : fallback;
 	}
 
 	const localized = getRelativeLocaleUrl(locale, relativePath);
 
 	return hash ? `${localized}#${hash}` : localized;
+}
+
+// Для страницы без перевода переключатель ведёт не на 404, а на ближайший
+// существующий раздел целевой локали: /en/centers/ для непереведённого центра,
+// /en/ для поста или проекта.
+function nearestLocalizedHub(locale: AppLocale, relativePath: string): string {
+	const segments = relativePath.split("/").slice(0, -1);
+	while (segments.length > 0) {
+		const candidate = segments.join("/");
+		if (hasLocalizedRoute(locale, candidate)) return candidate;
+		segments.pop();
+	}
+
+	return "";
 }
 
 export function getSwitcherHref(locale: AppLocale, url: URL): string {
@@ -76,6 +121,10 @@ export function getSwitcherHref(locale: AppLocale, url: URL): string {
 
 	if (unlocalizedPathnames.has(currentPath)) {
 		return `/${currentPath}/${url.search}${url.hash}`;
+	}
+
+	if (!hasLocalizedRoute(locale, currentPath)) {
+		return getRelativeLocaleUrl(locale, nearestLocalizedHub(locale, currentPath));
 	}
 
 	const localized = getRelativeLocaleUrl(locale, currentPath);

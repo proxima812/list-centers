@@ -1,5 +1,4 @@
 ---
-import TranslationsPage from "../translations.mdx";
 import { defaultLocale, locales } from "@/i18n";
 
 export function getStaticPaths() {
@@ -7,6 +6,8 @@ export function getStaticPaths() {
 		.filter((locale) => locale !== defaultLocale)
 		.map((locale) => ({ params: { locale } }));
 }
----
 
-<TranslationsPage />
+// Перевода нет: раньше здесь рендерился русский MDX с lang="en" —
+// дубликат для поисковиков и русский текст под английским синтезатором.
+return Astro.redirect("/translations/", 301);
+---

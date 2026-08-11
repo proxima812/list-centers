@@ -1,5 +1,4 @@
 ---
-import ThanksPage from "../thanks.astro";
 import { defaultLocale, locales } from "@/i18n";
 
 export function getStaticPaths() {
@@ -7,6 +6,8 @@ export function getStaticPaths() {
 		.filter((locale) => locale !== defaultLocale)
 		.map((locale) => ({ params: { locale } }));
 }
----
 
-<ThanksPage />
+// Перевода нет: страница благодарностей целиком русская, EN-копия
+// отдавала тот же текст с lang="en".
+return Astro.redirect("/thanks/", 301);
+---

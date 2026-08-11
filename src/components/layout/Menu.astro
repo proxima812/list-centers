@@ -22,10 +22,17 @@ const languageItems = locales.map((locale) => ({
 	short: localeLabels[locale].short,
 	href: getSwitcherHref(locale, Astro.url),
 }));
+// Группируем по href, а не по индексам: срезы уже однажды разъехались с
+// порядком в links (политика попадала в «Материалы», источники — в «Правовую
+// информацию»).
+const materialHrefs = new Set(["/posts", "/translations", "/sources"]);
+const legalHrefs = new Set(["/policy"]);
 const mainLinks = links.slice(0, 1);
-const materialLinks = links.slice(1, 3).concat(links.slice(4, 5));
-const policyLinks = links.slice(3, 4);
-const otherLinks = links.slice(5);
+const materialLinks = links.filter((item) => materialHrefs.has(item.href));
+const policyLinks = links.filter((item) => legalHrefs.has(item.href));
+const otherLinks = links
+	.slice(1)
+	.filter((item) => !materialHrefs.has(item.href) && !legalHrefs.has(item.href));
 const codeLicenseHref = "https://github.com/proxima812/tatarverse/blob/main/LICENSE";
 const contentLicenseHref = "https://github.com/proxima812/tatarverse/blob/main/CONTENT-LICENSE.md";
 const developerHref = "https://github.com/proxima812";
@@ -316,7 +323,9 @@ const isActivePath = (href: string) => {
 			document.body.style.left = "";
 			document.body.style.right = "";
 			document.body.style.width = "";
-			window.scrollTo(0, lockedScrollY);
+			// instant, иначе scroll-smooth на <html> «провозит» страницу от нуля
+			// до прежней позиции при каждом закрытии меню.
+			window.scrollTo({ top: lockedScrollY, behavior: "instant" });
 		};
 
 		const FOCUSABLE =
