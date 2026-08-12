@@ -119,6 +119,10 @@ export default defineConfig({
         "/en/centers/tbk-265": "/en/centers/tbk-4",
         "/centers/tbk-286": "/centers/tbk-19",
         "/en/centers/tbk-286": "/en/centers/tbk-19",
+        "/centers/tbk-372": "/centers/tbk-21",
+        "/en/centers/tbk-372": "/en/centers/tbk-21",
+        "/centers/tbk-211": "/centers/tbk-205",
+        "/en/centers/tbk-211": "/en/centers/tbk-205",
     },
     output: "static",
 });
