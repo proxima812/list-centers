@@ -27,6 +27,7 @@ const dict: Dictionary = {
 	"menu.close": "Закрыть меню",
 	"menu.mobile": "Мобильное меню",
 	"menu.main": "Меню",
+	"menu.interesting": "Интересное",
 	"menu.materials": "Материалы",
 	"menu.legal": "Правовая информация",
 	"menu.other": "Прочее",
@@ -191,6 +192,7 @@ const dict: Dictionary = {
 		"Открытый каталог татарских, башкирских и крымскотатарских центров, источников и материалов.",
 	"footer.privacy": "Политика конфиденциальности",
 	"footer.project.title": "Проект",
+	"footer.navigation.title": "Разделы",
 	"footer.materials.title": "Материалы",
 	"footer.openSource.title": "Открытый исходный код",
 	"footer.openSource.text":

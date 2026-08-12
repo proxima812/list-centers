@@ -39,20 +39,42 @@ const externalProps = {
 
 const footerSections: Array<{ id: string; title: string; links: FooterLink[] }> = [
 	{
-		id: "project",
-		title: t("footer.project.title"),
+		id: "navigation",
+		title: t("footer.navigation.title"),
 		links: [
 			{
 				href: localizePath(locale, "/centers"),
 				label: t("nav.centers"),
 			},
 			{
+				href: localizePath(locale, "/stats"),
+				label: t("nav.stats"),
+			},
+			{
+				href: localizePath(locale, "/thanks"),
+				label: t("nav.thanks"),
+			},
+			{
+				href: localizePath(locale, "/map"),
+				label: t("nav.map"),
+			},
+		],
+	},
+	{
+		id: "interesting",
+		title: t("menu.interesting"),
+		links: [
+			{
+				href: localizePath(locale, "/posts"),
+				label: t("nav.posts"),
+			},
+			{
 				href: localizePath(locale, "/projects"),
 				label: t("nav.support"),
 			},
 			{
-				href: localizePath(locale, "/posts"),
-				label: t("nav.posts"),
+				href: localizePath(locale, "/sabantye"),
+				label: t("nav.sabantuy"),
 			},
 		],
 	},
@@ -67,10 +89,6 @@ const footerSections: Array<{ id: string; title: string; links: FooterLink[] }> 
 			{
 				href: localizePath(locale, "/sources"),
 				label: t("nav.sources"),
-			},
-			{
-				href: localizePath(locale, "/sabantye"),
-				label: t("nav.sabantuy"),
 			},
 			{
 				href: policyHref,
@@ -155,7 +173,7 @@ const footerSections: Array<{ id: string; title: string; links: FooterLink[] }> 
 
 			<nav
 				aria-label={t("footer.links")}
-				class="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+				class="grid gap-6 sm:grid-cols-2 md:grid-cols-3"
 			>
 				{
 					footerSections.map((section) => (

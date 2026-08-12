@@ -27,6 +27,7 @@ const dict: Dictionary = {
 	"menu.close": "Close menu",
 	"menu.mobile": "Mobile menu",
 	"menu.main": "Menu",
+	"menu.interesting": "Explore",
 	"menu.materials": "Materials",
 	"menu.legal": "Legal",
 	"menu.other": "Other",
@@ -187,6 +188,7 @@ const dict: Dictionary = {
 		"An open catalog of Tatar, Bashkir, and Crimean Tatar centers, sources, and materials.",
 	"footer.privacy": "Privacy policy",
 	"footer.project.title": "Project",
+	"footer.navigation.title": "Sections",
 	"footer.materials.title": "Materials",
 	"footer.openSource.title": "Open source code",
 	"footer.openSource.text":
