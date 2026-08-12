@@ -105,6 +105,27 @@ const dict: Dictionary = {
 	"list.stat.total": "total",
 	"list.stat.countries": "countries",
 	"list.stat.regions": "regions",
+	"list.stat.link": "Catalog statistics",
+	"nav.stats": "Statistics",
+	"macro.Россия": "Russia",
+	"macro.СНГ": "CIS",
+	"macro.Европа": "Europe",
+	"macro.Азия": "Asia",
+	"macro.Америка": "Americas",
+	"macro.Африка и Океания": "Africa and Oceania",
+	"stats.title": "Catalog statistics",
+	"stats.description":
+		"How many centers, countries and regions the TBK catalog holds: {count} entries, {countries} countries, {regions} regions. A per-country breakdown plus the countries with no center yet.",
+	"stats.intro":
+		"The catalog in numbers: how many entries fall on each country, and where no center has been found yet.",
+	"stats.byCountry": "Countries in the catalog",
+	"stats.byCountry.hint":
+		"Countries are grouped by world region; the number on the right is the entry count. Select a country to open the catalog with that filter.",
+	"stats.withoutCountry": "Online projects with no country: {count}.",
+	"stats.groupSummary": "countries: {countries} · entries: {centers}",
+	"stats.missingLabel": "No centers yet ({count}):",
+	"stats.missingNote":
+		"Countries without a single center: {count}. That does not mean no Tatars live there — it means the catalog has no source-backed organisation for them yet. If you know one, tell us.",
 	"kind.centers": "centers",
 	"kind.autonomies": "cultural autonomies",
 	"kind.communities": "societies & associations",

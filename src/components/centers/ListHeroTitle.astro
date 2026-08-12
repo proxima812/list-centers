@@ -1,26 +1,18 @@
 ---
-import CatalogStats from "./CatalogStats.astro";
-import { getLocaleFromUrl, useTranslations } from "@/i18n";
-import type { CenterKindBucket } from "@/utils/centerKinds";
+import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
 import { Icon } from "astro-icon/components";
-
-interface Props {
-	stats?: {
-		count: number;
-		countries: number;
-		regions: number;
-		buckets?: CenterKindBucket[];
-	};
-}
 
 const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
-const stats = Astro.props.stats as Props["stats"] | undefined;
 // Печатная версия каталога существует только на русском, поэтому в
 // англоязычной ветке ссылки нет — иначе она уводила бы на другой язык.
 const showPrintLink = locale === "ru";
+const statsHref = localizePath(locale, "/stats");
 ---
 
+{/* Цифры каталога переехали на /stats: в шапке списка они были справкой,
+    которую всё равно нельзя было развернуть, и занимали фолд перед тулбаром.
+    Здесь остаётся ссылка на них — тем же тихим регистром, что и печать. */}
 <section class="not-container pt-8 pb-10 lg:pt-12">
 	<div class="mx-auto max-w-7xl min-w-0 px-6 sm:px-12">
 		<div class="mx-auto flex min-w-0 max-w-5xl flex-col items-center space-y-6 text-center">
@@ -30,28 +22,26 @@ const showPrintLink = locale === "ru";
 			<p class="max-w-3xl text-base leading-7 text-muted-foreground sm:text-lg">
 				{t("list.heroIntro")}
 			</p>
-			{
-				stats && (
-					<CatalogStats
-						count={stats.count}
-						countries={stats.countries}
-						regions={stats.regions}
-						buckets={stats.buckets}
-						class="pt-2"
-					/>
-				)
-			}
-			{
-				showPrintLink && (
-					<a
-						href="/centers/print"
-						class="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm font-medium text-muted-foreground transition hover:bg-muted hover:text-foreground"
-					>
-						<Icon name="mdi:printer-outline" class="size-4 shrink-0" aria-hidden="true" />
-						<span>Список для печати и PDF</span>
-					</a>
-				)
-			}
+			<div class="flex flex-wrap items-center justify-center gap-3">
+				<a
+					href={statsHref}
+					class="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm font-medium text-muted-foreground transition hover:bg-surface hover:text-foreground"
+				>
+					<Icon name="mdi:chart-box-outline" class="size-4 shrink-0" aria-hidden="true" />
+					<span>{t("list.stat.link")}</span>
+				</a>
+				{
+					showPrintLink && (
+						<a
+							href="/centers/print"
+							class="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm font-medium text-muted-foreground transition hover:bg-surface hover:text-foreground"
+						>
+							<Icon name="mdi:printer-outline" class="size-4 shrink-0" aria-hidden="true" />
+							<span>Список для печати и PDF</span>
+						</a>
+					)
+				}
+			</div>
 		</div>
 	</div>
 </section>

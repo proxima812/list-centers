@@ -20,6 +20,15 @@ export const links: Link[] = [
 		variant: "default",
 	},
 	{
+		label: "Статистика",
+		labelKey: "nav.stats",
+		icon: "mdi:chart-box-outline",
+		class: "sm:px-4 sm:py-2 py-1.5 px-3 text-sm",
+		href: "/stats",
+		size: "default",
+		variant: "outline",
+	},
+	{
 		label: "Посты",
 		labelKey: "nav.posts",
 		icon: "mdi:access-point-check",

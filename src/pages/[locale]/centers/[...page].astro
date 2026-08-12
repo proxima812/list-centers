@@ -2,7 +2,6 @@
 import { ListCards, ListHeroTitle } from "@/components";
 import { defaultLocale, getLocaleFromUrl, locales, useTranslations } from "@/i18n";
 import Layout from "@/layouts/Layout.astro";
-import { getCenterKindBreakdown } from "@/utils/centerKinds";
 import type { GetStaticPathsOptions, Page } from "astro";
 import { getCollection, type CollectionEntry } from "astro:content";
 
@@ -41,7 +40,8 @@ interface Props {
 const { page } = Astro.props as Props;
 const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
-// Stats are catalog facts, so derive them from the Russian source collection.
+// Цифры остались только в мете: сама плитка переехала на /stats.
+// Считаем их по русской коллекции — она единственный источник географии.
 const sourceCenters = await getCollection("centers");
 const countriesCount = new Set(
 	sourceCenters.map((card) => card.data.location?.country).filter(Boolean),
@@ -49,7 +49,6 @@ const countriesCount = new Set(
 const regionsCount = new Set(
 	sourceCenters.map((card) => card.data.location?.region).filter(Boolean),
 ).size;
-const kindBreakdown = getCenterKindBreakdown(sourceCenters);
 const seoStats = {
 	count: sourceCenters.length,
 	countries: countriesCount,
@@ -77,6 +76,6 @@ const seoStats = {
 		"крымскотатарская диаспора",
 	]}
 >
-	<ListHeroTitle stats={{ ...seoStats, buckets: kindBreakdown }} />
+	<ListHeroTitle />
 	<ListCards cards={page.data} />
 </Layout>
