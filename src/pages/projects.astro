@@ -8,7 +8,7 @@ import { Icon } from "astro-icon/components";
 
 const title = "Проекты";
 const description =
-	"Поддержка в tatarverse: витрина проектов татар, башкир и крымских татар — малый и средний бизнес, YouTube-каналы, сайты, Telegram-каналы и другие соцсети. Расскажите о своём проекте, чтобы его заметили.";
+	"Витрина проектов татар, башкир и крымских татар: дело, канал, сайт или сообщество. Размещение бесплатное — это не реклама, а способ помочь своим стать заметнее.";
 
 const feedbackHref = "https://t.me/the_tatarverse/20";
 const projects = (await getCollection("projects")).sort(
@@ -22,16 +22,6 @@ const categoryCounts = new Map(
 		projects.filter((project) => project.data.category === category).length,
 	]),
 );
-
-function getUrlLabel(url?: string) {
-	if (!url) return null;
-
-	try {
-		return new URL(url).hostname.replace(/^www\./, "");
-	} catch {
-		return url;
-	}
-}
 
 // Цветные акценты — только в иконках: палитра сайта монохромная,
 // цвет здесь работает как маркер типа проекта, а не как второй бренд-цвет.
@@ -52,7 +42,9 @@ const projectCards = projects.map((project) => ({
 	entry: project,
 	detailHref: `/projects/${project.id}/`,
 	logo: getProjectAsset(project.data.logo),
-	websiteLabel: getUrlLabel(project.data.website),
+	// Одна строка мета вместо двух чипов: в узкой колонке 4-колоночной сетки
+	// категория и город читаются лучше как текст, чем как отдельные плашки.
+	meta: [project.data.category, project.data.location].filter(Boolean).join(" · "),
 }));
 ---
 
@@ -81,7 +73,8 @@ const projectCards = projects.map((project) => ({
 			<p class="mt-3 max-w-prose text-base font-medium text-muted-foreground sm:text-lg">
 				Проекты <span class="font-bold text-foreground">татар</span>, <span
 					class="font-bold text-foreground">башкир</span
-				> и <span class="font-bold text-foreground">крымских татар</span>
+				> и <span class="font-bold text-foreground">крымских татар</span> — чтобы о них узнало больше
+				людей
 			</p>
 		</header>
 
@@ -89,6 +82,11 @@ const projectCards = projects.map((project) => ({
 			<h2 class="text-2xl font-extrabold tracking-tight text-balance text-foreground sm:text-3xl">
 				Ведёте своё дело или проект?
 			</h2>
+
+			<p class="mx-auto mt-3 max-w-prose text-sm font-medium text-muted-foreground sm:text-base">
+				Размещение <span class="font-semibold text-foreground">бесплатное</span>: мы ничего не продаём
+				и не берём процент. Это не реклама, а взаимная поддержка.
+			</p>
 
 			<ul class="mt-8 flex flex-wrap justify-center gap-x-7 gap-y-4">
 				{
@@ -104,10 +102,10 @@ const projectCards = projects.map((project) => ({
 			<p
 				class="mx-auto mt-8 max-w-prose text-sm leading-relaxed font-normal text-muted-foreground sm:text-base"
 			>
-				Мы разместим ссылку и описание, чтобы земляки и гости смогли вас найти и поддержать: <span
-					class="font-semibold text-foreground">подписаться</span
-				>, <span class="font-semibold text-foreground">заказать</span>, <span
-					class="font-semibold text-foreground">рассказать друзьям</span
+				Мы разместим ссылку и описание, чтобы земляки и гости вас нашли: <span
+					class="font-semibold text-foreground">подписались</span
+				>, <span class="font-semibold text-foreground">зашли</span>, <span
+					class="font-semibold text-foreground">рассказали друзьям</span
 				>.
 			</p>
 
@@ -170,99 +168,52 @@ const projectCards = projects.map((project) => ({
 			}
 		</div>
 
-		<div id="project-grid" class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+		<div
+			id="project-grid"
+			class="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+		>
 			{
-				projectCards.map(({ entry: project, detailHref, logo, websiteLabel }) => (
-					<article
-						class="project-card corner-squircle relative flex h-full flex-col gap-4 rounded-catalog bg-surface p-5 text-surface-foreground shadow-2xs ring ring-border-muted transition hover:bg-primary/5 hover:ring-primary/30 sm:p-6"
+				projectCards.map(({ entry: project, detailHref, logo, meta }) => (
+					<a
+						href={detailHref}
+						class="project-card corner-squircle group flex h-full flex-col gap-3 rounded-card bg-surface p-4 text-surface-foreground no-underline shadow-2xs ring ring-border-muted transition hover:bg-primary/5 hover:ring-primary/30"
 						data-category={project.data.category}
 					>
-						<a
-							href={detailHref}
-							class="absolute inset-0 z-0 rounded-catalog corner-squircle"
-							aria-label={project.data.title}
-						>
-							<span class="sr-only">{project.data.title}</span>
-						</a>
-						<div class="pointer-events-none relative z-10 flex min-w-0 items-start gap-4">
-							{logo ? (
-								<Image
-									src={logo}
-									alt={`Логотип ${project.data.title}`}
-									class="size-16 shrink-0 rounded-control bg-white object-contain p-1 ring ring-border-muted"
-									widths={[64, 128]}
-									sizes="4rem"
-									loading="lazy"
-								/>
-							) : (
-								<div
-									class="size-16 shrink-0 rounded-control ring ring-inset ring-white/15"
-									style={`background:${getProjectGradient(project.data.title)}`}
-									aria-hidden="true"
-								/>
-							)}
-							<div class="min-w-0 flex-1">
-								<div class="flex flex-wrap items-center gap-2">
-									<span class="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-bold tracking-wide text-primary uppercase ring ring-inset ring-primary/10">
-										{project.data.category}
-									</span>
-									{project.data.location ? (
-										<span class="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground">
-											<Icon
-												name="mdi:map-marker-outline"
-												class="size-4 text-subtle-foreground"
-												aria-hidden="true"
-											/>
-											{project.data.location}
-										</span>
-									) : null}
-								</div>
-								<h3 class="mt-2 text-xl font-extrabold tracking-tight text-balance">
-									{project.data.title}
-								</h3>
-								{project.data.website && websiteLabel ? (
-									<a
-										href={project.data.website}
-										target="_blank"
-										rel="noreferrer noopener"
-										class="pointer-events-auto relative mt-1 inline-flex max-w-full items-center gap-1.5 text-sm font-medium text-link underline decoration-link-decoration underline-offset-4"
-									>
-										<Icon
-											name="mdi:link-variant"
-											class="size-4 shrink-0 no-underline"
-											aria-hidden="true"
-										/>
-										<span class="truncate">{websiteLabel}</span>
-									</a>
-								) : null}
-							</div>
+						{logo ? (
+							<Image
+								src={logo}
+								alt=""
+								class="size-11 shrink-0 rounded-control bg-white object-contain p-1 ring ring-border-muted"
+								widths={[44, 88]}
+								sizes="2.75rem"
+								loading="lazy"
+							/>
+						) : (
+							<div
+								class="size-11 shrink-0 rounded-control ring ring-inset ring-white/15"
+								style={`background:${getProjectGradient(project.data.title)}`}
+								aria-hidden="true"
+							/>
+						)}
+
+						<div class="min-w-0">
+							<h3 class="text-base font-bold leading-snug tracking-tight text-balance">
+								{project.data.title}
+							</h3>
+							<p class="mt-1.5 line-clamp-3 text-xs leading-relaxed font-normal text-muted-foreground">
+								{project.data.description}
+							</p>
 						</div>
 
-						<div class="relative z-10 mt-auto flex flex-wrap gap-2">
-							<a
-								href={detailHref}
-								class="group/btn inline-flex items-center gap-2 rounded-control corner-squircle bg-primary px-4 py-2 text-sm font-bold tracking-tight text-primary-foreground no-underline transition hover:bg-primary/80"
-							>
-								Подробнее
-								<Icon
-									name="mdi:arrow-right"
-									class="size-4 transition-transform duration-200 group-hover/btn:translate-x-0.5"
-									aria-hidden="true"
-								/>
-							</a>
-							{project.data.instagram ? (
-								<a
-									href={project.data.instagram}
-									target="_blank"
-									rel="noreferrer noopener"
-									class="inline-flex items-center gap-2 rounded-control corner-squircle bg-transparent px-4 py-2 text-sm font-semibold text-primary/80 no-underline ring ring-inset ring-primary/10 transition hover:bg-rose-500/5 hover:text-rose-600 hover:ring-rose-500/20"
-								>
-									<Icon name="mdi:instagram" class="size-4 text-rose-500" aria-hidden="true" />
-									Instagram
-								</a>
-							) : null}
+						<div class="mt-auto flex items-end justify-between gap-2 pt-1">
+							<span class="min-w-0 text-xs font-medium text-subtle-foreground">{meta}</span>
+							<Icon
+								name="mdi:arrow-right"
+								class="size-4 shrink-0 text-subtle-foreground transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-primary"
+								aria-hidden="true"
+							/>
 						</div>
-					</article>
+					</a>
 				))
 			}
 		</div>
