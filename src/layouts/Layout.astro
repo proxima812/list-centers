@@ -55,7 +55,7 @@ const yandexMetrika = config.site.analytics.yandexMetrika;
 		{/* Запасной вариант без JS: фон светлой темы (hsl(0 0% 97.5%), как в
 		    pwaSettings). Тег объявлен ДО инлайн-скрипта намеренно: скрипт
 		    находит его через querySelector и переписывает. Если объявить ниже,
-		    на момент выполнения скрипта тега ещё нет в DOM, и в <head>
+		    на момент выполнения скрипта тега еще нет в DOM, и в <head>
 		    оказываются два theme-color. */}
 		<meta name="theme-color" content="#f9f9f9" />
 
@@ -89,9 +89,9 @@ const yandexMetrika = config.site.analytics.yandexMetrika;
 				root.classList.toggle("dark", dark);
 
 				// Фон страницы зависит и от темы, и от акцента: каждый пресет
-				// несёт свою тёмную «бумагу». Поэтому цвет адресной строки
+				// несет свою темную «бумагу». Поэтому цвет адресной строки
 				// читается из вычисленного токена, а не из константы. Здесь, в
-				// <head>, стилей может ещё не быть — тогда добираем на
+				// <head>, стилей может еще не быть — тогда добираем на
 				// DOMContentLoaded. Дальше за тег отвечает appearance.ts.
 				const syncThemeColor = () => {
 					const background = getComputedStyle(root)

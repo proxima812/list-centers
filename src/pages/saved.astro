@@ -34,7 +34,7 @@ const metaChipClass =
 		<p class="max-w-3xl text-base leading-7 text-muted-foreground">{t("saved.heroIntro")}</p>
 
 		<div class="flex flex-wrap items-center gap-3 pt-2">
-			{/* Строки для скрипта едут на data-атрибутах: словарь остаётся на
+			{/* Строки для скрипта едут на data-атрибутах: словарь остается на
 			    сборке, в бандл браузера он не попадает. */}
 			<p
 				data-saved-summary
@@ -88,7 +88,7 @@ const metaChipClass =
 			class="group card-ring relative flex h-full min-w-0 flex-col gap-3 rounded-catalog corner-squircle bg-surface p-6 text-surface-foreground transition duration-300 ease-out hover:surface-lift has-[[data-card-link]:focus-visible]:outline-2 has-[[data-card-link]:focus-visible]:outline-offset-2 has-[[data-card-link]:focus-visible]:outline-accent"
 		>
 			{/*
-				Закладки на этой карточке нет: здесь всё сохранено по
+				Закладки на этой карточке нет: здесь все сохранено по
 				определению, и переключатель показывал бы состояние, которое не
 				меняется. Вместо него — прямое действие: убрать из списка.
 				Единственное место на сайте, где destructive стоит на кнопке, а
@@ -150,7 +150,7 @@ const metaChipClass =
 		const dateFormat = new Intl.DateTimeFormat("ru", { month: "short", year: "numeric" });
 
 		// Локализованные строки приходят из разметки, а не дублируются в
-		// скрипте: словарь живёт на сборке, в браузер он не едет.
+		// скрипте: словарь живет на сборке, в браузер он не едет.
 		const strings = {
 			count: summary.dataset.count ?? "",
 			confirm: summary.dataset.confirm ?? "",
@@ -189,8 +189,8 @@ const metaChipClass =
 				const deleteButton = node.querySelector<HTMLElement>("[data-saved-delete]");
 				if (!article || !link) continue;
 
-				// id остаётся на карточке: по нему кнопка удаления понимает, что
-				// именно убирать, и он же нужен, если карточка снова попадёт под
+				// id остается на карточке: по нему кнопка удаления понимает, что
+				// именно убирать, и он же нужен, если карточка снова попадет под
 				// общую логику сохранения.
 				article.dataset.searchId = item.id;
 
@@ -220,8 +220,8 @@ const metaChipClass =
 				const location = node.querySelector<HTMLElement>("[data-saved-location]");
 				if (location) location.hidden = !hasLocation;
 
-				// Место под кнопку освобождает строка локации. Если её нет,
-				// первым идёт заголовок — и подъезжает прямо под «Удалить».
+				// Место под кнопку освобождает строка локации. Если ее нет,
+				// первым идет заголовок — и подъезжает прямо под «Удалить».
 				const heading = node.querySelector<HTMLElement>("[data-saved-heading]");
 				if (heading) heading.classList.toggle("pr-24", !hasLocation);
 
@@ -254,7 +254,7 @@ const metaChipClass =
 		});
 
 		// Перерисовка по любому изменению хранилища: закладка на самой карточке
-		// снимает её из списка, и карточка обязана исчезнуть сразу.
+		// снимает ее из списка, и карточка обязана исчезнуть сразу.
 		onSavedChange(render);
 		render();
 	}

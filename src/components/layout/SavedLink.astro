@@ -22,7 +22,7 @@ const isActive = getLocalePathname(Astro.url.pathname) === getLocalePathname(hre
 	до палитры и темы: тема с акцентом настраиваются однажды, а сюда
 	возвращаются регулярно.
 
-	Счётчик отдаётся скрытым и без числа: HTML статический и один на всех, а
+	Счетчик отдается скрытым и без числа: HTML статический и один на всех, а
 	сколько карточек сохранено, знает только localStorage конкретного браузера.
 	Проставить число в разметке значило бы показать всем ноль и мигнуть им у
 	тех, у кого сохранено. Число вписывает initSavedCenters после гидрации.
@@ -40,7 +40,7 @@ const isActive = getLocalePathname(Astro.url.pathname) === getLocalePathname(hre
 		// панели, а голой ссылкой, случайно оказавшейся рядом.
 		"inline-flex h-9 shrink-0 cursor-pointer items-center gap-1.5 rounded-full border border-border-muted px-2.5 text-sm font-medium text-foreground no-underline transition-colors hover:bg-muted aria-[current]:bg-muted",
 		// В мобильном меню ряда переключателей нет: там ссылка стоит среди
-		// разделов, поэтому граница снимается и остаётся обычная строка меню.
+		// разделов, поэтому граница снимается и остается обычная строка меню.
 		withLabel &&
 			"h-auto w-full max-w-full justify-start gap-2 border-transparent px-4 py-2 text-lg",
 		className,

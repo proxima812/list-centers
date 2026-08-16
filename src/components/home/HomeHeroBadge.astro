@@ -32,7 +32,7 @@ const latestCenter = [...centers].sort((a, b) => {
 	return byDate !== 0 ? byDate : centerNumber(b.id) - centerNumber(a.id);
 })[0];
 
-// Заголовок центра берём из перевода, если он есть: коллекция `centers` —
+// Заголовок центра берем из перевода, если он есть: коллекция `centers` —
 // русская, и на /en иначе всплыло бы русское название.
 const centerTranslations = getCenterTranslationCollection(locale);
 const localizedCenter = centerTranslations
@@ -41,7 +41,7 @@ const localizedCenter = centerTranslations
 const latestCenterTitle = localizedCenter?.data.title ?? latestCenter?.data.title;
 
 // У каждого поста есть своя страница (src/pages/posts/[id].astro); в ленте
-// она же открывается drawer'ом, но ссылка ведёт на настоящий маршрут.
+// она же открывается drawer'ом, но ссылка ведет на настоящий маршрут.
 const items = [
 	latestPost && {
 		icon: "tabler:news",
@@ -61,7 +61,7 @@ const items = [
 	{
 		icon: "tabler:sparkles",
 		label: t("home.badge.release", { version: release.version }),
-		// Своей страницы релизов у сайта нет — версия ведёт туда же, куда ссылка
+		// Своей страницы релизов у сайта нет — версия ведет туда же, куда ссылка
 		// на репозиторий в футере.
 		href: "https://github.com/proxima812/tatarverse/releases",
 		external: true,
@@ -96,7 +96,7 @@ const items = [
 
 <style>
 	/* Появление — первая из двух моторик бейджа: он выезжает раньше героя и
-	   дальше стоит тихо. Стартовое состояние живёт только внутри keyframes:
+	   дальше стоит тихо. Стартовое состояние живет только внутри keyframes:
 	   при `[data-motion="off"]` анимация снимается целиком, и плашка обязана
 	   остаться видимой, а не залипнуть на opacity: 0. */
 	@media (prefers-reduced-motion: no-preference) {
@@ -166,7 +166,7 @@ const items = [
 		};
 
 		// Ротацию гасят оба тумблера моушена, вкладка в фоне и наведение курсора:
-		// подпись не должна убегать, пока её читают или пытаются кликнуть.
+		// подпись не должна убегать, пока ее читают или пытаются кликнуть.
 		const canRotate = () =>
 			!reduceMotion.matches &&
 			document.documentElement.dataset.motion !== "off" &&

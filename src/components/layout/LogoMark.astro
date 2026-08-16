@@ -8,8 +8,8 @@ const { size = 32, class: className } = Astro.props;
 ---
 
 {/* Марка — сам flower.svg, но не картинкой, а маской: в файле фигура залита
-    чёрным, а здесь нужен цвет, который следует за темой и акцентом. Маска
-    вырезает форму из градиента, поэтому вся раскраска живёт в токенах. */}
+    черным, а здесь нужен цвет, который следует за темой и акцентом. Маска
+    вырезает форму из градиента, поэтому вся раскраска живет в токенах. */}
 <span
 	aria-hidden="true"
 	class:list={["logo-mark pointer-events-none inline-block shrink-0", className]}
@@ -21,7 +21,7 @@ const { size = 32, class: className } = Astro.props;
 		width: var(--mark-size);
 
 		/* Три ступени одного акцента: vivid → glow → mark-tint. Все три меняются
-		   вместе с темой и пресетом, так что перелив остаётся в палитре. */
+		   вместе с темой и пресетом, так что перелив остается в палитре. */
 		background-image: linear-gradient(
 			115deg,
 			var(--color-accent-vivid) 0%,

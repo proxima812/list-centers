@@ -7,7 +7,7 @@ import { Image } from "astro:assets";
 import { getCollection } from "astro:content";
 
 // Коллекция читается тут же, а не приходит пропом: getCollection у Astro
-// кеширован, а компонент так остаётся самодостаточным — как HomeLinks.
+// кеширован, а компонент так остается самодостаточным — как HomeLinks.
 const allCenters = await getCollection("centers");
 const centers = allCenters.length;
 

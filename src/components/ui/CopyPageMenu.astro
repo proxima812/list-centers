@@ -138,7 +138,7 @@ const aiPlatforms = [
 
 		copyBtn.addEventListener("click", async () => {
 			// Галочка «скопировано» — только при успехе; при отказе clipboard
-			// (нет разрешения, не-secure контекст) ложную обратную связь не даём.
+			// (нет разрешения, не-secure контекст) ложную обратную связь не даем.
 			try {
 				await navigator.clipboard.writeText(window.location.href);
 			} catch {

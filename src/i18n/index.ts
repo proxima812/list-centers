@@ -26,15 +26,15 @@ const ogLocales: Record<AppLocale, string> = {
 };
 
 // `saved` здесь по той же причине, что `map`: страница одна на обе локали.
-// Содержимое у неё не редакционное, а из localStorage браузера, и заводить
+// Содержимое у нее не редакционное, а из localStorage браузера, и заводить
 // вторую копию каркаса ради заголовка — лишний маршрут в карте сайта и лишний
 // повод для расхождения. Рендерится в дефолтной локали, отсюда русские строки.
 const unlocalizedPathnames = new Set(["posts", "sabantye", "map", "saved"]);
 
 // EN-покрытие маршрутов частичное: посты, проекты и печать существуют только
 // по-русски, а из центров переведена лишь часть. Слепая локализация таких путей
-// давала ссылки на несуществующие /en/-страницы (404). Набор переведённых
-// центров берём из имён файлов centers_i18n/en — они совпадают с route id.
+// давала ссылки на несуществующие /en/-страницы (404). Набор переведенных
+// центров берем из имен файлов centers_i18n/en — они совпадают с route id.
 const translatedCenterIds = new Set(
 	Object.keys(import.meta.glob("../data/centers_i18n/en/*.mdx")).map((path) =>
 		path.slice(path.lastIndexOf("/") + 1).replace(/\.mdx$/, ""),
@@ -99,8 +99,8 @@ export function localizePath(locale: AppLocale, href: string): string {
 	return hash ? `${localized}#${hash}` : localized;
 }
 
-// Для страницы без перевода переключатель ведёт не на 404, а на ближайший
-// существующий раздел целевой локали: /en/centers/ для непереведённого центра,
+// Для страницы без перевода переключатель ведет не на 404, а на ближайший
+// существующий раздел целевой локали: /en/centers/ для непереведенного центра,
 // /en/ для поста или проекта.
 function nearestLocalizedHub(locale: AppLocale, relativePath: string): string {
 	const segments = relativePath.split("/").slice(0, -1);

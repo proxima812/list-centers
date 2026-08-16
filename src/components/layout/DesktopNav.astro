@@ -19,10 +19,10 @@ const interestingLinks = links.filter((item) => interestingHrefs.has(item.href))
 const materialLinks = links.filter((item) => materialHrefs.has(item.href));
 const otherLinks = links.filter((item) => otherHrefs.has(item.href));
 
-// Печатная версия каталога живёт только здесь, в выпадающем «Прочее», и не
+// Печатная версия каталога живет только здесь, в выпадающем «Прочее», и не
 // заводится в `links`: оттуда она разошлась бы и в мобильное меню, и в
 // подвал — а это служебная страница на один клик перед печатью, не раздел
-// сайта. Ставим её перед «Картой».
+// сайта. Ставим ее перед «Картой».
 const printLink = {
 	href: "/centers/print",
 	label: "Печать .pdf",
@@ -57,7 +57,7 @@ const triggerClass =
 
 // Активная страница помечается чертой снизу в цвете акцента: цвет тянется из
 // --color-accent, поэтому линия сама меняется вместе с пресетом темы
-// (зелёный / синий / фиолетовый).
+// (зеленый / синий / фиолетовый).
 const activeUnderlineClass =
 	"relative after:absolute after:-bottom-0.5 after:h-0.5 after:rounded-full after:bg-accent after:content-['']";
 

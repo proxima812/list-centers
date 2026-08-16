@@ -10,8 +10,8 @@ import { getCollection } from "astro:content";
 const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
 
-// География каталога живёт только в русской коллекции — переводы её не
-// формируют (см. комментарий в src/content.config.ts). Поэтому и счётчики,
+// География каталога живет только в русской коллекции — переводы ее не
+// формируют (см. комментарий в src/content.config.ts). Поэтому и счетчики,
 // и разбивка по странам считаются здесь, а локализуются только подписи.
 const centers = await getCollection("centers");
 

@@ -86,7 +86,7 @@ const nextEntry =
 		: null;
 
 // Страна в справке раньше бралась сырой из данных, то есть на английской
-// версии страницы оставалась русской. `getCountryLabel` уже локализует её.
+// версии страницы оставалась русской. `getCountryLabel` уже локализует ее.
 const localizedCountry = country ? getCountryLabel(country, locale) : null;
 const placeLine = [flag, localizedCountry ?? country].filter(Boolean).join(" ");
 const cityLine = city ?? null;
@@ -120,7 +120,7 @@ const facts = [
 	formattedDate ? { label: t("content.published"), value: formattedDate } : null,
 ].filter((fact): fact is { label: string; value: string } => Boolean(fact));
 
-// Категория и тип — таксономия, она уходит в надзаголовок. В справке остаётся
+// Категория и тип — таксономия, она уходит в надзаголовок. В справке остается
 // география, дата и источник, поэтому ничего не дублируется.
 const headerBadges = [category, type].filter((value): value is string => Boolean(value));
 const descriptionDetails = [...new Set((locale === "en"
@@ -214,7 +214,7 @@ const jsonLd = {
 		</nav>
 
 		{/*
-			Страница держалась на трёх декоративных градиентных волосках шириной
+			Страница держалась на трех декоративных градиентных волосках шириной
 			`calc(100% - 180px)` — магическое число и чистое украшение, — а тело
 			лежало в панели с кольцом, внутри которой сидела вторая панель с
 			кольцом. Разделение теперь делают отступы и мера колонки.
