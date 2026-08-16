@@ -23,21 +23,6 @@ const categoryCounts = new Map(
 	]),
 );
 
-// Цветные акценты — только в иконках: палитра сайта монохромная,
-// цвет здесь работает как маркер типа проекта, а не как второй бренд-цвет.
-// Ступень 600, а не 500: на 500 amber давал 2.04:1 к светлой странице, sky —
-// 2.63:1, то есть ниже порога 3:1 для нетекстовых элементов. 600 проходит и на
-// светлой (3.03-3.89), и на самой светлой тёмной «бумаге» (4.16-5.35), поэтому
-// пара dark: здесь не нужна.
-// Telegram — sky (его бренд-голубой), не violet: фиолетовая иконка при
-// фиолетовом пресете акцента читалась бы как акцентный элемент.
-const pitchItems = [
-	{ icon: "mdi:storefront-outline", title: "Небольшой бизнес", tone: "text-amber-600" },
-	{ icon: "mdi:youtube", title: "YouTube-канал", tone: "text-rose-500" },
-	{ icon: "mdi:web", title: "Сайт", tone: "text-sky-600" },
-	{ icon: "mdi:telegram", title: "Telegram и соцсети", tone: "text-sky-600" },
-] as const;
-
 const projectCards = projects.map((project) => ({
 	entry: project,
 	detailHref: `/projects/${project.id}/`,
@@ -78,42 +63,21 @@ const projectCards = projects.map((project) => ({
 			</p>
 		</header>
 
-		<article class="mt-12 w-full max-w-2xl text-center">
+		<article class="mt-12 w-full max-w-xl text-center">
 			<h2 class="text-2xl font-extrabold tracking-tight text-balance text-foreground sm:text-3xl">
 				Ведёте своё дело или проект?
 			</h2>
 
 			<p class="mx-auto mt-3 max-w-prose text-sm font-medium text-muted-foreground sm:text-base">
-				Размещение <span class="font-semibold text-foreground">бесплатное</span>: мы ничего не продаём
-				и не берём процент. Это не реклама, а взаимная поддержка.
-			</p>
-
-			<ul class="mt-8 flex flex-wrap justify-center gap-x-7 gap-y-4">
-				{
-					pitchItems.map((item) => (
-						<li class="inline-flex items-center gap-2">
-							<Icon name={item.icon} class:list={["size-5 shrink-0", item.tone]} aria-hidden="true" />
-							<span class="text-sm font-semibold text-foreground sm:text-base">{item.title}</span>
-						</li>
-					))
-				}
-			</ul>
-
-			<p
-				class="mx-auto mt-8 max-w-prose text-sm leading-relaxed font-normal text-muted-foreground sm:text-base"
-			>
-				Мы разместим ссылку и описание, чтобы земляки и гости вас нашли: <span
-					class="font-semibold text-foreground">подписались</span
-				>, <span class="font-semibold text-foreground">зашли</span>, <span
-					class="font-semibold text-foreground">рассказали друзьям</span
-				>.
+				Бизнес, канал, сайт или сообщество — разместим ссылку и описание, чтобы вас нашли.
+				<span class="font-semibold text-foreground">Бесплатно.</span>
 			</p>
 
 			<a
 				href={feedbackHref}
 				target="_blank"
 				rel="noreferrer noopener"
-				class="group corner-squircle mt-8 inline-flex items-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-bold tracking-tight text-background no-underline transition hover:opacity-90"
+				class="group corner-squircle mt-6 inline-flex items-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-bold tracking-tight text-background no-underline transition hover:opacity-90"
 			>
 				Предложить проект
 				<svg
