@@ -2,8 +2,8 @@
 import { normalizeCity, type CenterGeo } from "@/data/geo";
 import { countryFlagsByRu, getCountryLabel, getCountryLabels } from "@/data/worldCountries";
 import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
-import { getCenterPath } from "@/utils/centers";
 import { formatCenterLinkLabel, type CenterLink } from "@/utils/centerLinks";
+import { getCenterMarkHue, getCenterPath } from "@/utils/centers";
 import { Icon } from "astro-icon/components";
 import SaveCenterButton from "./SaveCenterButton.astro";
 
@@ -137,6 +137,7 @@ const quickLinks = links ?? [];
 	class="group card-ring relative flex h-full min-w-0 flex-col gap-3 rounded-catalog corner-squircle bg-surface p-6 text-surface-foreground transition duration-300 ease-out hover:surface-lift has-[[data-card-link]:focus-visible]:outline-2 has-[[data-card-link]:focus-visible]:outline-offset-2 has-[[data-card-link]:focus-visible]:outline-accent"
 >
 	<SaveCenterButton title={displayTitle} />
+
 	{
 		displayLocation && (
 			<p class="flex min-w-0 flex-wrap items-center gap-1.5 pr-9 text-xs text-muted-foreground">
@@ -159,23 +160,41 @@ const quickLinks = links ?? [];
 			</p>
 		)
 	}
-	<h2
-		class:list={[
-			"min-w-0 wrap-anywhere font-bold leading-snug tracking-tight",
-			// Без строки локации заголовок оказывается первым и подъезжает под
-			// закладку. Отступ ставим только в этом случае: у карточек с локацией
-			// место под кнопку освобождает она.
-			!displayLocation && "pr-9",
-		]}
-	>
-		<a
-			data-card-link
-			href={localizePath(locale, centerPath)}
-			class="text-surface-foreground no-underline before:absolute before:inset-0 before:rounded-catalog before:content-[''] focus-visible:outline-hidden"
+	{/*
+		Метка стоит там, где у карточки был бы логотип, и растёт вместе с
+		ховером карточки — тот же жест, что и подъём, только меньше. Отдельного
+		выключателя движению не нужно: `[data-motion="off"]` снимает transition
+		со всего дерева, и метка просто перестаёт расти плавно.
+
+		Круг — `rounded-full`, а не ступень шкалы: по DESIGN.md пилюли и
+		аватары не едут вместе с пресетом, иначе перестают быть кругами.
+		Кольца у метки нет: одна обводка на уровень вложенности, а внутри
+		кольца карточки второго быть не должно — кромку рисует сам градиент.
+	*/}
+	<div class="flex min-w-0 items-center gap-3">
+		<span
+			class="center-mark size-9 shrink-0 rounded-full transition-transform duration-300 ease-out group-hover:scale-110"
+			style={`--mark-hue:${getCenterMarkHue(id)}`}
+			aria-hidden="true"></span>
+		<h2
+			class:list={[
+				"min-w-0 wrap-anywhere font-bold leading-snug tracking-tight",
+				// Без строки локации заголовок оказывается первым и подъезжает под
+				// закладку. Отступ ставим только в этом случае: у карточек с локацией
+				// место под кнопку освобождает она.
+				!displayLocation && "pr-9",
+			]}
 		>
-			{displayTitle}
-		</a>
-	</h2>
+			<a
+				data-card-link
+				href={localizePath(locale, centerPath)}
+				class="text-surface-foreground no-underline before:absolute before:inset-0 before:rounded-catalog before:content-[''] focus-visible:outline-hidden"
+			>
+				{displayTitle}
+			</a>
+		</h2>
+	</div>
+
 	{
 		displaySummary && (
 			<p class="line-clamp-2 text-sm leading-6 text-muted-foreground">{displaySummary}</p>
@@ -207,7 +226,10 @@ const quickLinks = links ?? [];
 					<Icon name={link.icon} class="size-3.5 shrink-0" aria-hidden="true" />
 					<span class="min-w-0 truncate">{formatCenterLinkLabel(link.href)}</span>
 					{/* Видимая подпись — адрес, а вслух нужна площадка и название центра. */}
-					<span class="sr-only"> — {link.label}: {displayTitle}</span>
+					<span class="sr-only">
+						{" "}
+						— {link.label}: {displayTitle}
+					</span>
 				</a>
 			))
 		}

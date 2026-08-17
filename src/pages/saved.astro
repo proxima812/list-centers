@@ -112,15 +112,22 @@ const metaChipClass =
 				<span data-saved-separator aria-hidden="true">&#10625;</span>
 				<span data-saved-country></span>
 			</p>
-			<h2 data-saved-heading class="min-w-0 wrap-anywhere font-bold leading-snug tracking-tight">
-				<a
-					data-card-link
-					data-saved-title
-					href="#"
-					class="text-surface-foreground no-underline before:absolute before:inset-0 before:rounded-catalog before:content-[''] focus-visible:outline-hidden"
-				>
-				</a>
-			</h2>
+			{/* Метка каталожной карточки: оттенок ставит скрипт, см. ниже. */}
+			<div class="flex min-w-0 items-center gap-3">
+				<span
+					data-saved-mark
+					class="center-mark size-9 shrink-0 rounded-full transition-transform duration-300 ease-out group-hover:scale-110"
+					aria-hidden="true"></span>
+				<h2 data-saved-heading class="min-w-0 wrap-anywhere font-bold leading-snug tracking-tight">
+					<a
+						data-card-link
+						data-saved-title
+						href="#"
+						class="text-surface-foreground no-underline before:absolute before:inset-0 before:rounded-catalog before:content-[''] focus-visible:outline-hidden"
+					>
+					</a>
+				</h2>
+			</div>
 			<p data-saved-summary-text class="line-clamp-2 text-sm leading-6 text-muted-foreground"></p>
 			<p
 				class="mt-auto flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 pt-1 text-xs text-muted-foreground"
@@ -136,6 +143,7 @@ const metaChipClass =
 
 <script>
 	import { clearSaved, onSavedChange, readSaved, removeSaved } from "@/scripts/savedCenters";
+	import { getCenterMarkHue } from "@/utils/centers";
 
 	const grid = document.querySelector<HTMLElement>("[data-saved-grid]");
 	const empty = document.querySelector<HTMLElement>("[data-saved-empty]");
@@ -193,6 +201,12 @@ const metaChipClass =
 				// именно убирать, и он же нужен, если карточка снова попадет под
 				// общую логику сохранения.
 				article.dataset.searchId = item.id;
+
+				// Оттенок метки считается из id прямо здесь, а не лежит в снимке:
+				// в localStorage уже есть записи, сделанные до появления метки, и
+				// хранимое поле оставило бы их серыми навсегда.
+				const mark = node.querySelector<HTMLElement>("[data-saved-mark]");
+				mark?.style.setProperty("--mark-hue", String(getCenterMarkHue(item.id)));
 
 				link.href = item.href;
 				link.textContent = item.title;
