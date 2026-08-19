@@ -8,6 +8,7 @@ import metaTags from "astro-meta-tags";
 import { defineConfig } from "astro/config";
 import { config } from "./main.config.ts";
 import aiTxt from "./src/integrations/aiTxt.ts";
+import { buildHomeMarkdown } from "./src/integrations/homeMarkdown.ts";
 import indexNow from "./src/integrations/indexNow.ts";
 import llmsTxt from "./src/integrations/llmsTxt.ts";
 import robotsTxt from "./src/integrations/robotsTxt.ts";
@@ -67,12 +68,50 @@ export default defineConfig({
                           "Редакционные заметки tatarverse о культуре, языке и сообществах.",
                   },
               },
+              // Каталог центров — основной контент сайта. Конвертер `docs`, а
+              // не `blog`: у карточки нет автора и даты публикации, зато есть
+              // структурированное тело (контакты, ссылки, источники).
+              // Маршрут совпадает с id: все карточки лежат как `tbk-N`, и
+              // createCenterRouteIdMap отображает такие id сами на себя.
+              centers: {
+                  converter: "docs",
+                  route: "centers",
+                  slugStrategy: "single",
+                  listingMetadata: {
+                      title: "Центры tatarverse",
+                      description:
+                          "Каталог татарских, башкирских и крымскотатарских культурных центров и сообществ.",
+                  },
+              },
           },
+          // Главная не входит ни в одну коллекцию, поэтому её markdown-двойник
+          // (`/index.md`) описывается тут явно. Без него проверка `md.fetch`
+          // из AEO Spec отдаёт 404 на корне сайта.
+          //
+          // `render` собран через `new Function`, а не написан стрелкой,
+          // намеренно: пакет сериализует функцию через `render.toString()` в
+          // отдельный модуль, а `astro.config.mjs` к тому моменту уже прошёл
+          // через Vite. Любое замыкание там теряется, а `import()` внутри тела
+          // превращается в `__vite_ssr_dynamic_import__` и роняет сборку.
+          // Функция, созданная в рантайме, до Vite не доезжает и отдаёт
+          // готовый литерал — см. src/integrations/homeMarkdown.ts.
+          staticPages: [
+              {
+                  pattern: "/",
+                  render: new Function(
+                      `return ${JSON.stringify(buildHomeMarkdown(config.site.url))};`,
+                  ),
+              },
+          ],
           llmsTxt: {
               enabled: false,
           },
+          // Сайт статический (output: "static"), поэтому middleware пакета на
+          // проде не выполняется — он ставит заголовок Link на рантайме,
+          // которого нет. Тот же альтернейт отдаётся тегом в <head> через
+          // SEO.astro и заголовком из public/_headers на стороне Cloudflare.
           middleware: {
-              injectLinkHeader: true,
+              injectLinkHeader: false,
           },
       }),
       ...(config.features.indexNow
@@ -110,19 +149,8 @@ export default defineConfig({
         },
     },
     devToolbar: {
-        enabled: false,
+        enabled: true,
     },
-    redirects: {
-        "/support": "/projects",
-        "/support/[id]": "/projects/[id]",
-        "/centers/tbk-265": "/centers/tbk-4",
-        "/en/centers/tbk-265": "/en/centers/tbk-4",
-        "/centers/tbk-286": "/centers/tbk-19",
-        "/en/centers/tbk-286": "/en/centers/tbk-19",
-        "/centers/tbk-372": "/centers/tbk-21",
-        "/en/centers/tbk-372": "/en/centers/tbk-21",
-        "/centers/tbk-211": "/centers/tbk-205",
-        "/en/centers/tbk-211": "/en/centers/tbk-205",
-    },
+    // redirects: {},
     output: "static",
 });

@@ -25,6 +25,34 @@
   ! Cache-Control
   Cache-Control: public, max-age=3600
 
+# Markdown-версии страниц от @dualmark/astro. Сборка статическая: Response
+# из эндпоинта пакета на диск не попадает, остаётся только тело файла —
+# поэтому обязательные по AEO Spec заголовки проставляем здесь.
+# X-Markdown-Tokens пропущен намеренно: он свой у каждого файла, а _headers
+# статический.
+/*.md
+  ! Cache-Control
+  Cache-Control: public, max-age=3600
+  Content-Type: text/markdown; charset=utf-8
+  X-Content-Type-Options: nosniff
+  X-Robots-Tag: noindex
+  Vary: Accept
+
+# Заголовок Link на HTML-страницах: сайт статический, поэтому
+# middleware пакета (middleware.injectLinkHeader) на проде не выполняется —
+# тот же альтернейт дублируется тегом в <head> через SEO.astro.
+/
+  Link: </index.md>; rel="alternate"; type="text/markdown"
+  Vary: Accept
+
+/posts/:slug
+  Link: </posts/:slug.md>; rel="alternate"; type="text/markdown"
+  Vary: Accept
+
+/posts
+  Link: </posts.md>; rel="alternate"; type="text/markdown"
+  Vary: Accept
+
 /ai.txt
   ! Cache-Control
   Cache-Control: public, max-age=3600
