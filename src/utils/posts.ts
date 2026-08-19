@@ -4,3 +4,7 @@
 export const getPostId = (id: string) => id.replace(/\/$/, "");
 
 export const getPostPath = (id: string) => `/posts/${getPostId(id)}`;
+
+// Markdown-двойник поста, который генерирует @dualmark/astro при сборке
+// (slugStrategy: "single" — файл лежит рядом с HTML, без вложенности).
+export const getPostMarkdownPath = (id: string) => `/posts/${getPostId(id)}.md`;

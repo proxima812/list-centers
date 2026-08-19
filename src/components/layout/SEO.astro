@@ -21,6 +21,12 @@ export interface Props {
 	YM?: boolean;
 	canonicalURL?: string | URL;
 	rssURL?: string | URL;
+	/**
+	 * Markdown-версия страницы, которую генерирует dualmark (`/posts/slug.md`).
+	 * Отдаётся тегом в <head>, а не заголовком Link: сайт статический, поэтому
+	 * middleware пакета на проде не выполняется — см. astro.config.mjs.
+	 */
+	markdownURL?: string | URL;
 	alternates?: Array<{
 		hreflang: string;
 		href: string | URL;
@@ -41,6 +47,7 @@ const {
 	locale,
 	canonicalURL,
 	rssURL,
+	markdownURL,
 	alternates,
 } = Astro.props;
 
@@ -74,6 +81,9 @@ const resolvedCanonicalURL = canonicalURL
 	? new URL(canonicalURL.toString(), siteURL)
 	: new URL(Astro.url.pathname, siteURL);
 const resolvedRssURL = rssURL ? new URL(rssURL.toString(), siteURL) : undefined;
+const resolvedMarkdownURL = markdownURL
+	? new URL(markdownURL.toString(), siteURL)
+	: undefined;
 const resolvedAlternates = alternates?.map(({ hreflang, href }) => ({
 	hreflang,
 	href: formatCanonicalURL(new URL(href.toString(), siteURL)),
@@ -277,6 +287,16 @@ const enabledVerifications = config.site.verifications.filter(
 {
 	resolvedRssURL && (
 		<link rel="alternate" type="application/rss+xml" href={resolvedRssURL.href} title="RSS" />
+	)
+}
+{
+	resolvedMarkdownURL && (
+		<link
+			rel="alternate"
+			type="text/markdown"
+			href={resolvedMarkdownURL.href}
+			title="Markdown"
+		/>
 	)
 }
 

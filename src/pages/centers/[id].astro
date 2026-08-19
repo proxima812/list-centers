@@ -70,6 +70,9 @@ const { publishedDate, modifiedDate } = getContentDates({
 });
 const routeId = routeIds.get(entry.id) ?? entry.id;
 const canonicalURL = localizePath(locale, getCenterPath(routeId));
+// Markdown-двойник от @dualmark/astro генерируется только из русской
+// коллекции `centers`, поэтому на английском маршруте альтернейта нет.
+const markdownURL = locale === "ru" ? `${getCenterPath(routeId)}.md` : undefined;
 const hasEnglishTranslation = englishEntryById.has(entry.id);
 const alternateLinks = [
 	{ hreflang: "ru", href: getCenterPath(routeId) },
@@ -198,6 +201,7 @@ const jsonLd = {
 	description={pageDescription}
 	type="article"
 	canonicalURL={canonicalURL}
+	markdownURL={markdownURL}
 	alternates={alternateLinks}
 	datePublished={publishedDate}
 	dateModified={modifiedDate}

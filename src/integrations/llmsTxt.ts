@@ -4,6 +4,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { config } from "../../main.config";
+import { getPostId } from "../utils/posts";
 
 type LlmsEntry = {
 	title: string;
@@ -141,9 +142,52 @@ function renderSection(title: string, entries: LlmsEntry[]) {
 	];
 }
 
+/**
+ * Markdown-двойники постов, которые генерирует @dualmark/astro. Без этой
+ * секции они существуют, но найти их снаружи неоткуда: в sitemap их нет
+ * (там только HTML), а Link-заголовок на статике отдаёт CDN, а не Astro.
+ */
+async function getMarkdownEntries(site: URL): Promise<LlmsEntry[]> {
+	// Динамический импорт: этот же файл грузится как интеграция в Node при
+	// разборе astro.config, где виртуального модуля astro:content ещё нет и
+	// статический импорт роняет конфиг. До GET доезжает только граф Vite.
+	const { getCollection } = await import("astro:content");
+	const posts = await getCollection("posts");
+
+	const entries = posts
+		.map((post) => {
+			const id = getPostId(post.id);
+			return {
+				title: post.data.title,
+				description: post.data.description,
+				section: "Markdown",
+				url: new URL(`posts/${id}.md`, site).href,
+			};
+		})
+		.sort((a, b) => a.url.localeCompare(b.url));
+
+	return [
+		{
+			title: "Посты tatarverse",
+			description: "Список всех постов одним markdown-файлом",
+			section: "Markdown",
+			url: new URL("posts.md", site).href,
+		},
+		{
+			title: "Центры tatarverse",
+			description:
+				"Каталог центров одним markdown-файлом; карточка каждого центра доступна как /centers/tbk-N.md",
+			section: "Markdown",
+			url: new URL("centers.md", site).href,
+		},
+		...entries,
+	];
+}
+
 async function getLlmsTxt(site: URL) {
 	const baseSite = normalizeSite(site);
 	const entries = await getPageEntries(baseSite);
+	const markdownEntries = await getMarkdownEntries(baseSite);
 
 	const grouped = entries.reduce<Record<string, LlmsEntry[]>>((acc, entry) => {
 		acc[entry.section] ??= [];
@@ -169,6 +213,7 @@ async function getLlmsTxt(site: URL) {
 		...Object.entries(grouped).flatMap(([section, sectionEntries]) =>
 			renderSection(section, sectionEntries),
 		),
+		...renderSection("Markdown", markdownEntries),
 	]
 		.join("\n")
 		.trimEnd();

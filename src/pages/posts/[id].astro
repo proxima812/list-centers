@@ -4,7 +4,7 @@ import SkipNode from "@/components/markdown/SkipNode.astro";
 import BackButton from "@/components/navigation/BackButton.astro";
 import Layout from "@/layouts/Layout.astro";
 import { formatContentDateTime, getContentDates } from "@/utils/contentDates";
-import { getPostId, getPostPath } from "@/utils/posts";
+import { getPostId, getPostMarkdownPath, getPostPath } from "@/utils/posts";
 import { Icon } from "astro-icon/components";
 import { getCollection, render, type CollectionEntry } from "astro:content";
 
@@ -69,6 +69,7 @@ const neighbours = [
 	keywords={["tatarverse", "посты", data.category, ...data.tags]}
 	ogImage={data.ogImage}
 	rssURL="/posts/rss.xml"
+	markdownURL={getPostMarkdownPath(post.id)}
 	datePublished={publishedDate}
 	dateModified={modifiedDate}
 >

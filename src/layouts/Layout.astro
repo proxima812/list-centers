@@ -18,6 +18,7 @@ interface Props {
 	dateModified?: string | Date;
 	canonicalURL?: string | URL;
 	rssURL?: string | URL;
+	markdownURL?: string | URL;
 	alternates?: Array<{
 		hreflang: string;
 		href: string | URL;
@@ -37,6 +38,7 @@ const {
 	keywords,
 	canonicalURL,
 	rssURL,
+	markdownURL,
 	alternates,
 	centered,
 	classContainer,
@@ -138,6 +140,7 @@ const yandexMetrika = config.site.analytics.yandexMetrika;
 			keywords={keywords}
 			canonicalURL={canonicalURL}
 			rssURL={rssURL}
+			markdownURL={markdownURL}
 			alternates={alternates}
 			datePublished={datePublished}
 			dateModified={dateModified}

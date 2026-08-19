@@ -53,6 +53,29 @@
   Link: </posts.md>; rel="alternate"; type="text/markdown"
   Vary: Accept
 
+/centers/:id
+  Link: </centers/:id.md>; rel="alternate"; type="text/markdown"
+  Vary: Accept
+
+/centers
+  Link: </centers.md>; rel="alternate"; type="text/markdown"
+  Vary: Accept
+
+# Соседи карточек попадают под тот же `:id`/`:slug`, но markdown-двойника у
+# них нет — снимаем Link, чтобы не рекламировать роботам 404. Правила ниже по
+# файлу перекрывают те, что выше.
+/centers/print
+  ! Link
+
+/centers/rss.xml
+  ! Link
+
+/centers/search-index.json
+  ! Link
+
+/posts/rss.xml
+  ! Link
+
 /ai.txt
   ! Cache-Control
   Cache-Control: public, max-age=3600
