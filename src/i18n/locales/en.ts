@@ -43,6 +43,7 @@ const dict: Dictionary = {
 	"theme.dark": "Dark theme",
 	"accent.switcher": "Accent color",
 	// Названия палитр не переводятся — одинаковы в обеих локалях.
+	"accent.default": "Default",
 	"accent.green": "Җаным Яшел",
 	"accent.blue": "Кадерле Зәнгәр",
 	"accent.violet": "Яна Шәмәха",

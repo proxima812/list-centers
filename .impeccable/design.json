@@ -18,12 +18,12 @@
         },
         {
           "name": "Appearance layer",
-          "purpose": "User-controlled presentation: theme (system/light/dark), accent preset (green/blue/violet/red/orange/pink), and a motion on/off toggle. Applied as `.dark`, `[data-accent]`, and `[data-motion]` on <html> by an inline script in Layout.astro <head> before first paint."
+          "purpose": "User-controlled presentation: theme (system/light/dark), accent preset (default/green/blue/violet/red/orange/pink), and a motion on/off toggle. Applied as `.dark`, `[data-accent]`, and `[data-motion]` on <html> by an inline script in Layout.astro <head> before first paint."
         }
       ],
       "rules": [
         "Keep catalog utility first.",
-        "Never hardcode a hue. Ship only `--color-*` tokens (`accent`, `accent-vivid`, `accent-glow`, `foreground`, `surface`, `border`, `depth-*`), so a surface survives all six accent presets in both themes.",
+        "Never hardcode a hue. Ship only `--color-*` tokens (`accent`, `accent-vivid`, `accent-glow`, `foreground`, `surface`, `border`, `depth-*`), so a surface survives all seven accent presets in both themes.",
         "The accent is a signal — hero word, focus ring, active state — not a general palette. Neutrals carry the catalog.",
         "Every new color is authored twice: a light value in `@theme` in src/styles/tailwind.css and a dark value in src/styles/palettes/<preset>.css. Contrast floors: >=4.5:1 for small UI, >=3:1 for display type. Check the pairs against the CSS itself after touching a palette — the standalone audit script was removed as a second source of truth.",
         "Use real interface imagery when explaining product behavior.",
@@ -88,10 +88,15 @@
         "canonical": "hsl(142 66% 30.9%)",
         "dark": "hsl(142 58% 52%)",
         "presets": {
+          "default": {
+            "light": "hsl(0 0% 11.4%)",
+            "dark": "hsl(0 0% 95%)",
+            "default": true,
+            "note": "Монохром: акцент здесь — сами чернила, поэтому тема разворачивает картинку целиком. Тёмная бумага нейтральная."
+          },
           "green": {
             "light": "hsl(142 66% 30.9%)",
-            "dark": "hsl(142 58% 52%)",
-            "default": true
+            "dark": "hsl(142 58% 52%)"
           },
           "blue": {
             "light": "hsl(217 79% 45%)",
@@ -115,7 +120,7 @@
           }
         },
         "source": "The preset list itself lives in src/utils/accents.ts — one array feeding both the header dropdown and the mobile toggle. Never copy the swatch array into a component.",
-        "usage": "Focus rings, active states, and the homepage hero word. Green is the default preset. Held at >=4.5:1 on its own background in every preset/theme pair. The CSS is the check, not this note: read the authored values out of src/styles/tailwind.css and src/styles/palettes/*.css rather than trusting a written-down number. Twelve pairs matter — accent on its background, accent-foreground on accent, vivid at display scale, the accent-soft pair, subtle-foreground on bg-subtle, and the page→surface lightness step."
+        "usage": "Focus rings, active states, and the homepage hero word. Монохромный `default` — дефолтный пресет. Held at >=4.5:1 on its own background in every preset/theme pair. The CSS is the check, not this note: read the authored values out of src/styles/tailwind.css and src/styles/palettes/*.css rather than trusting a written-down number. Twelve pairs matter — accent on its background, accent-foreground on accent, vivid at display scale, the accent-soft pair, subtle-foreground on bg-subtle, and the page→surface lightness step."
       },
       "accentVivid": {
         "role": "accent",
@@ -150,7 +155,7 @@
         "displayName": "Depth Ramp",
         "canonical": "hsl(0 0% 84%)",
         "dark": "hsl(0 0% 23.5%)",
-        "usage": "Ступени тональной глубины. depth-100 несёт кольцо карточки каталога и подобран так, чтобы читаться и на surface, и на muted — альфа-модификатор на нём запрещён.",
+        "usage": "Ступени тональной глубины. depth-100 — тихая линия: разделители секций, кольца MDX-панелей, пагинация. Выводится так, чтобы читаться и на surface, и на muted; альфа-модификатор на нём запрещён. Кольца у карточки каталога больше нет — на сетке в четыре сотни карточек оно читалось рябью.",
         "tonalRamp": [
           "hsl(0 0% 84%)",
           "hsl(0 0% 76%)",

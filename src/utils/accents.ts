@@ -17,6 +17,10 @@ export interface AccentPreset {
 }
 
 export const ACCENT_PRESETS: AccentPreset[] = [
+	// Монохром идёт первым: это дефолт сайта. Образец у него не цветной — от
+	// чернил к среднему серому, чтобы кнопка пресета читалась как «без цвета»,
+	// а не как сломанная палитра.
+	{ value: "default", labelKey: "accent.default", label: "Дефолт", from: "hsl(0 0% 11.4%)", to: "hsl(0 0% 56.5%)" },
 	{ value: "green", labelKey: "accent.green", label: "Җаным Яшел", from: "hsl(142 76% 36%)", to: "hsl(142 71% 55%)" },
 	{ value: "blue", labelKey: "accent.blue", label: "Кадерле Зәнгәр", from: "hsl(217 88% 44%)", to: "hsl(213 92% 62%)" },
 	{ value: "violet", labelKey: "accent.violet", label: "Яна Шәмәха", from: "hsl(263 75% 50%)", to: "hsl(263 85% 68%)" },
@@ -27,4 +31,4 @@ export const ACCENT_PRESETS: AccentPreset[] = [
 
 export const ACCENT_VALUES = ACCENT_PRESETS.map((preset) => preset.value);
 
-export const DEFAULT_ACCENT = "green";
+export const DEFAULT_ACCENT = "default";

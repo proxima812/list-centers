@@ -146,21 +146,27 @@ The base palette is neutral and semantic. Light neutrals live in `@theme` in `sr
 
 ### Themes
 
-The site ships **light and dark** themes plus **six accent palettes**. Both are user
+The site ships **light and dark** themes plus **seven accent palettes**. Both are user
 choices, persisted in `localStorage` and applied by an inline script in `<head>` before
 first paint (`src/layouts/Layout.astro`).
 
 - Theme: `.dark` class on `<html>`, chosen via `light` / `dark` / `system`.
-- Accent: `data-accent` on `<html>` — `green` (default), `blue`, `violet`, `red`,
-  `orange`, `pink`.
+- Accent: `data-accent` on `<html>` — `default` (monochrome, the default), `green`,
+  `blue`, `violet`, `red`, `orange`, `pink`.
+
+`default` is the odd one out and deliberately so: its accent is the ink itself — near-black
+in light, near-white in dark — so the theme switch reverses the whole picture. A signal does
+not have to be a hue; contrast is a signal too, and the catalog reads well without colour.
+Its dark paper stays neutral, unlike `green`'s tint: a tint is a hue, and this preset has
+none by definition.
 
 The preset list lives in exactly one place, `src/utils/accents.ts`, and both the header
 dropdown and the mobile toggle read it. Adding a palette means editing that file plus
 adding `src/styles/palettes/<name>.css` — never a second copy of the swatch array.
 
-**One preset — one file.** `src/styles/palettes/` holds six files, and each describes its
+**One preset — one file.** `src/styles/palettes/` holds seven files, and each describes its
 preset whole: the accent in both themes, the dark neutral paper, and the shape register.
-Light neutrals are shared by all six and stay in `@theme` in `tailwind.css`. Previously a
+Light neutrals are shared by all seven and stay in `@theme` in `tailwind.css`. Previously a
 single preset was spread across three blocks at opposite ends of one file, and keeping
 them consistent was done by eye.
 
@@ -173,7 +179,7 @@ clear the contrast threshold on both a white and a near-black background.
 
 **In dark theme the accent also swaps the neutrals.** The same grey reads differently
 under each hue, so every preset ships its own dark paper. Light theme is shared by all
-six — there the accent changes nothing but the accent tokens.
+seven — there the accent changes nothing but the accent tokens.
 
 ### The Surface Ladder
 
@@ -233,9 +239,15 @@ above, `card on band >= ΔL 4`, `border-muted >= 1.28:1` against both `surface` 
 The old values cleared AA on the page and failed on `bg-muted` (`4.01`) and `bg-subtle`
 (`3.66`), which is precisely where the toolbar counter and the footer put them.
 
-`depth-100` carries the catalog card ring and is solved for that duty: it must read on
-`surface` and on `muted` at once. Do not put an alpha modifier on it. `ring-depth-100/70`
-measured `1.04-1.22:1` across all twelve combinations — a ring that was not there.
+`depth-100` is the quiet hairline: section dividers, MDX panel rings, pagination, filter
+group separators. It is derived so it reads on `surface` and on `muted` at once. Do not put
+an alpha modifier on it — `ring-depth-100/70` measured `1.04-1.22:1` across all twelve
+combinations, a line that was not there.
+
+It used to carry an accent ring on the catalog card as well. That ring is gone: first the
+arc stopped running, then the gradient flattened, and it still read as ripple across four
+hundred cards. A card is now separated by its own fill against the catalog band, and the
+hover lift does the signalling.
 
 ### Derived Steps
 

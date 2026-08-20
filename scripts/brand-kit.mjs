@@ -1,12 +1,12 @@
 /**
- * Собирает бренд-кит: одна HTML-страница со всеми шестью пресетами акцента в
+ * Собирает бренд-кит: одна HTML-страница со всеми семью пресетами акцента в
  * обеих темах, и печатает её в PDF через headless Chrome.
  *
  * Запуск: `bun run brand-kit` (положит brand-kit.pdf в корень проекта).
  *
  * Значения НЕ дублируются: скрипт читает `src/styles/tailwind.css` и
  * `src/styles/palettes/*.css` и переписывает их селекторы из `:root[...]` в
- * `[data-preset][data-scheme]`, чтобы двенадцать состояний уживались на одной
+ * `[data-preset][data-scheme]`, чтобы четырнадцать состояний уживались на одной
  * странице. Копия палитры в генераторе означала бы, что бренд-кит расходится с
  * сайтом ровно в тот день, когда кто-то поправит токен, — этот проект уже
  * ловил такое на скрипте контраст-аудита.
@@ -19,8 +19,9 @@ import { fileURLToPath } from "node:url";
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const styles = join(root, "src/styles");
 
-const PRESETS = ["green", "blue", "violet", "red", "orange", "pink"];
+const PRESETS = ["default", "green", "blue", "violet", "red", "orange", "pink"];
 const PRESET_LABELS = {
+	default: "Монохром",
 	green: "Җаным Яшел",
 	blue: "Кадерле Зәнгәр",
 	violet: "Яна Шәмәха",
