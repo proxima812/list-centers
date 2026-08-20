@@ -194,7 +194,7 @@ so every `bg-surface` panel on the page — `Box`, MDX, project cards — was wh
 | preset | background | muted | surface | surface-muted | subtle |
 | --- | --- | --- | --- | --- | --- |
 | light (all six) | 97.5% | 92.5% | 100% | 95% | 89% |
-| `green` | 7% | 11% | 16% | 19% | 22% |
+| `green` | 6.6% | 10.4% | 15.2% | derived | 21% |
 | `blue` | 0% | 4% | 8% | 12% | 16% |
 | `violet` | 0% | 2% | 5% | 9% | 14% |
 | `red` | 4% | 8% | 12% | 16% | 20% |
@@ -203,7 +203,22 @@ so every `bg-surface` panel on the page — `Box`, MDX, project cards — was wh
 
 Each preset keeps its character: `violet` the Vercel register on pure black, `blue` the
 louder Uber Base with pure-white ink, `red` the deepest paper, `orange` the lightest dark
-theme at `11%`, `pink` the middle register, `green` the soft charcoal base.
+theme at `11%`, `pink` the middle register, `green` the tinted base.
+
+**`green` is the one preset whose dark paper is not neutral.** Its surfaces carry the
+accent hue — `hsl(142 …)`, saturation falling from `14%` at the page to `5%` at the top of
+the depth ramp, so the tint reads on large fills without casting green on text. The
+percentages in the table above are HSL lightness and therefore lower than the other
+presets', but the *perceptual* lightness is unchanged: every token was solved to hold its
+former neutral's oklab `L*` within `0.05`, so the ladder, the `card on band` step, the
+derived tokens and every contrast floor carry over. Measured at the change:
+`foreground` `10.40:1` worst-case, `muted-foreground` `5.85:1`, `subtle-foreground`
+`4.58:1` against the `4.55` floor, `border-muted` `1.43:1` on surface, `depth-100`
+`1.51:1` on surface and `1.77:1` on `muted`.
+
+The `.dark` block in `tailwind.css` stays neutral on purpose. It is the fallback for a
+document whose `data-accent` is not set yet, and for any preset that forgets a token —
+a neutral is safe in that role, a tint would paint someone else's palette green.
 
 **The page → surface step is the main depth signal in dark, and it is deliberately larger
 than its light counterpart.** Light theme lets a shadow finish the job; dark theme has no
