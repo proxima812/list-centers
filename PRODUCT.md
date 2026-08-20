@@ -19,15 +19,15 @@ brand
 
 - Static Astro 7 site, deployed to Cloudflare Pages.
 - Public locales: Russian (`ru`, default, unprefixed) and English (`en`, under `/en/`).
-- Russian center entries are the source content in `src/data/centers_formatted` (389 entries).
-- English center entries live in `src/data/centers_i18n/en` (366 entries — translation coverage is partial).
+- Russian center entries are the source content in `src/data/centers_formatted` (420 entries).
+- English center entries live in `src/data/centers_i18n/en` (363 entries — translation coverage is partial).
 - UI strings live in `src/i18n/locales/ru.ts` and `src/i18n/locales/en.ts`.
-- Primary public surfaces: homepage, centers index, center detail pages, interactive map, sources, translations, policy, projects, thanks, and posts.
-- Secondary content: 3 posts, 11 projects, 7 thanks entries.
+- Primary public surfaces: homepage, centers index, center detail pages, stats, sources, translations, policy, projects, thanks, and posts.
+- Secondary content: 11 posts, 2 projects, 7 thanks entries.
 
 ## Brand Personality
 
-Useful, precise, compact, cultural, modern, and restrained. The design system is neutral by default with one signal accent, and the homepage carries a single controlled brand layer: a liquid-metal mark above a compact hero title and a short link list. The catalog itself remains quiet and factual. Presentation belongs to the visitor: light/dark/system theme, three accent presets (green default, blue, violet), and a motion on/off toggle, all in the header appearance menu.
+Useful, precise, compact, cultural, modern, and restrained. The design system is neutral by default with one signal accent, and the homepage carries a single controlled brand layer: a liquid-metal mark above a compact hero title and a short link list. The catalog itself remains quiet and factual. Presentation belongs to the visitor: light/dark/system theme, six accent presets (green default, blue, violet, red, orange, pink), and a motion on/off toggle, all in the header appearance menu.
 
 ## Anti-references
 

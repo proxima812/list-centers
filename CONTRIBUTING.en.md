@@ -207,7 +207,7 @@ The project follows [Conventional Commits](https://www.conventionalcommits.org/)
 ```
 
 Types used here: `feat`, `fix`, `docs`, `refactor`, `style`, `chore`.
-Common scopes: `centers`, `i18n`, `ui`, `map`, `projects`.
+Common scopes: `centers`, `i18n`, `ui`, `projects`.
 
 ```txt
 feat(centers): add center in Aktobe
@@ -366,7 +366,6 @@ The schema is defined with Zod in
 | `summary` | string | no | Short description |
 | `pubDate` | string | no | Date |
 | `location` | object | no | See below |
-| `geo` | object | no | Map coordinates |
 
 `location` fields (all optional; the object is `.strict()` too):
 
@@ -374,18 +373,6 @@ The schema is defined with Zod in
 - `region`
 - `city`
 - `flag`
-
-`geo` fields — needed only if the center should appear on the map:
-
-- `lat` — number, required
-- `lng` — number, required
-- `address` — string, optional
-- `mapUrl` — URL, optional
-- `precision` — `exact` | `city` | `region`, defaults to `exact`
-
-Add `geo` only when the coordinates are actually verified. Use
-`precision: city` or `region` when the exact address is unknown, so the map
-does not imply false precision.
 
 ## Categories and types
 

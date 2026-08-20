@@ -8,7 +8,7 @@ const t = useTranslations(currentLocale);
 
 const interestingHrefs = new Set(["/posts", "/projects", "/sabantye"]);
 const materialHrefs = new Set(["/translations", "/sources", "/policy"]);
-const otherHrefs = new Set(["/thanks", "/map"]);
+const otherHrefs = new Set(["/thanks"]);
 const topLevelLinks = links.filter(
 	(item) =>
 		!interestingHrefs.has(item.href) &&
@@ -22,18 +22,14 @@ const otherLinks = links.filter((item) => otherHrefs.has(item.href));
 // Печатная версия каталога живет только здесь, в выпадающем «Прочее», и не
 // заводится в `links`: оттуда она разошлась бы и в мобильное меню, и в
 // подвал — а это служебная страница на один клик перед печатью, не раздел
-// сайта. Ставим ее перед «Картой».
+// сайта.
 const printLink = {
 	href: "/centers/print",
 	label: "Печать .pdf",
 	labelKey: "nav.print",
 	target: undefined,
 };
-const otherDropdownItems = [
-	...otherLinks.filter((item) => item.href !== "/map"),
-	printLink,
-	...otherLinks.filter((item) => item.href === "/map"),
-];
+const otherDropdownItems = [...otherLinks, printLink];
 
 const currentPath = Astro.url.pathname.replace(/^\/(?:ru|en)(?=\/|$)/, "") || "/";
 const normalizePath = (path: string) => (path === "/" ? "/" : path.replace(/\/+$/, ""));

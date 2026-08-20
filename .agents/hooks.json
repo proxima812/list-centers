@@ -1,0 +1,30 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/python3 \"$(git rev-parse --show-toplevel)/.agents/hooks/session_start.py\"",
+            "timeout": 10,
+            "statusMessage": "Loading project guardrails"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash|apply_patch|Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/python3 \"$(git rev-parse --show-toplevel)/.agents/hooks/pre_tool_use_guard.py\"",
+            "timeout": 10,
+            "statusMessage": "Checking project edit guardrails"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -24,18 +24,23 @@ bun.lockb*
 # jetbrains setting folder
 .idea/
 
+# Агентский слой (.agents/, .claude/, .codex/, AGENTS.md, CLAUDE.md, docs/)
+# намеренно лежит в репозитории: правила проекта должны быть видны и Codex,
+# и Claude, и человеку. Ниже игнорируется только то, что генерируется локально.
 
-.codex/
-.claude/
-.agents/
+# локальные сессии дизайн-пикера impeccable, не артефакт проекта
+.impeccable/live/sessions/
+.impeccable/live/annotations/
+.impeccable/hook.cache.json
+
+# локальные handoff-заметки между агентами
+.agents/collab/
+
+# машинные настройки Claude Code, не общие для проекта
+.claude/settings.local.json
+
+# локальный кеш wrangler/miniflare
+.wrangler/
+
+# рабочие артефакты браузерных MCP-инструментов
 .playwright-mcp/
-
-AGENTS.md
-CLAUDE.md
-/docs/
-
-# promo video workspace (local only)
-/promo/
-
-# post-writing house rules (local only)
-/POST-RULES.md

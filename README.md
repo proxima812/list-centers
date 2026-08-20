@@ -13,7 +13,7 @@ Current public locale surface:
 
 ## Stack
 
-- Astro 6 static output.
+- Astro 7 static output.
 - MDX content collections.
 - Tailwind CSS v4 through `@tailwindcss/vite`.
 - Bun as the preferred package manager.

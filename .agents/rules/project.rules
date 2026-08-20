@@ -1,0 +1,22 @@
+# Project-local Codex rules. Rules apply to commands requested outside the sandbox.
+
+prefix_rule(
+    pattern = ["rm", "-rf"],
+    decision = "forbidden",
+    justification = "Avoid destructive deletes; remove only explicit, reviewed paths when requested.",
+    match = ["rm -rf dist", "rm -rf .claude"],
+)
+
+prefix_rule(
+    pattern = ["git", "reset", "--hard"],
+    decision = "forbidden",
+    justification = "Do not discard local work in this project.",
+    match = ["git reset --hard", "git reset --hard HEAD"],
+)
+
+prefix_rule(
+    pattern = ["bun", "run", "build"],
+    decision = "prompt",
+    justification = "Full Astro builds are intentionally not the default validation path.",
+    match = ["bun run build"],
+)

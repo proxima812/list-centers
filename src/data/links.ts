@@ -90,13 +90,4 @@ export const links: Link[] = [
 		size: "default",
 		variant: "ghost",
 	},
-	{
-		label: "Карта",
-		labelKey: "nav.map",
-		icon: "mdi:map-marker-radius",
-		class: "sm:px-4 sm:py-2 py-1.5 px-3 text-sm",
-		href: "/map",
-		size: "default",
-		variant: "disabled",
-	},
 ];

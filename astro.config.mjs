@@ -31,11 +31,10 @@ export default defineConfig({
       sitemap({
           filter: (page) => {
               const path = new URL(page).pathname.replace(/\/$/, "");
-              // Кроме /map и /saved исключаем noindex-страницу печати и
+              // Кроме /saved исключаем noindex-страницу печати и
               // 301-заглушки непереведённых EN-разделов: страницы с
               // редиректом/noindex в карте сайта — мусор для Search Console.
               const excluded = new Set([
-                  "/map",
                   "/saved",
                   "/en/saved",
                   "/centers/print",
@@ -132,7 +131,6 @@ export default defineConfig({
           workbox,
       }),
     ],
-
     prefetch: {
         defaultStrategy: "tap",
         prefetchAll: false,

@@ -252,9 +252,12 @@ other — a derived `muted` moves `blue`'s band from `L* 14.6` to `6.25`, erasin
 feasible global proportion at all while the inks stay authored. Six dark papers with
 deliberately different characters is the feature; the derivation serves it, not the reverse.
 
-`node scripts/audit-accents.mjs` reads both the authored `hsl()` values and these
-`color-mix()` formulas out of the CSS and resolves them the same way the browser does, so
-the percentages above live in exactly one place.
+The authored `hsl()` values and these `color-mix()` formulas live in exactly one place —
+the CSS. The percentages above are a reading of that source, not a second copy: when they
+disagree, the CSS wins and this table is what needs fixing. (A standalone contrast-audit
+script used to reproduce this arithmetic; it was removed as a second source of truth.
+Contrast is now checked against the CSS directly, via the impeccable design hook or by
+hand.)
 
 ### Brand Accent
 

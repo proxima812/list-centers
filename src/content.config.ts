@@ -98,16 +98,6 @@ function validateCenterLocation(
 	}
 }
 
-const CenterGeoSchema = z
-	.object({
-		lat: z.number().min(-90).max(90),
-		lng: z.number().min(-180).max(180),
-		address: z.string().min(1).optional(),
-		mapUrl: z.url().optional(),
-		precision: z.enum(["exact", "city", "region"]).default("exact"),
-	})
-	.strict();
-
 const CenterSchema = z
 	.object({
 		title: z.string().min(1),
@@ -124,7 +114,6 @@ const CenterSchema = z
 		source: z.url().optional(),
 		summary: z.string().optional(),
 		location: CenterLocationSchema.optional(),
-		geo: CenterGeoSchema.optional(),
 	})
 	.strict();
 
