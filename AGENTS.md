@@ -104,7 +104,7 @@ Third-party skills are pinned in `skills-lock.json` — update them with
 `bunx skills add`, never by hand-editing `SKILL.md`.
 
 Project skills are prefixed `tatarverse-`: `astro-content`, `posts`,
-`ui-tailwind`, `motion`, `i18n`, `page-weight`, `collab`. Third-party:
+`ui-tailwind`, `brand`, `motion`, `i18n`, `page-weight`, `collab`. Third-party:
 `impeccable`, `design-taste-frontend`, `high-end-visual-design`,
 `redesign-existing-projects`, `full-output-enforcement`.
 
