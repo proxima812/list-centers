@@ -25,6 +25,19 @@
           }
         ]
       }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|apply_patch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/python3 \"$(git rev-parse --show-toplevel)/.agents/hooks/posts_style_check.py\"",
+            "timeout": 10,
+            "statusMessage": "Checking post style rules"
+          }
+        ]
+      }
     ]
   }
 }

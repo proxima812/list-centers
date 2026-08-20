@@ -1,31 +1,25 @@
 #!/usr/bin/env python3
-import json
+"""Проектные ограничения на инструменты Codex.
+
+Раньше здесь стоял жёсткий deny на любую команду, где встречается `.claude/`.
+Это было верно, пока агентский слой был личной территорией Claude. Сейчас
+`.agents/`, `.claude/` и `.codex/` лежат в git и общие: `.claude/skills/`
+симлинкает те же каталоги, что читает Codex, и запрет мешал ему даже завести
+симлинк для нового скилла.
+
+Правило переехало из запрета в договорённость (AGENTS.md, Working Rules):
+скиллы правятся в `.agents/skills/`, `.claude/skills/` — симлинки на них.
+Файл оставлен как точка, куда вешать настоящие запреты, если они появятся.
+"""
 import sys
 
 
-def deny(reason: str) -> None:
-    print(json.dumps({
-        "hookSpecificOutput": {
-            "hookEventName": "PreToolUse",
-            "permissionDecision": "deny",
-            "permissionDecisionReason": reason,
-        }
-    }))
+def main() -> int:
+    # Ни одного запрета сейчас нет: PreToolUse пропускает вызов дальше,
+    # ничего не печатая. Пустой вывод = решение не принято, работает
+    # штатная логика разрешений.
+    return 0
 
 
-payload = json.load(sys.stdin)
-tool_input = payload.get("tool_input") or {}
-
-command = ""
-if isinstance(tool_input, dict):
-    command = str(tool_input.get("command") or tool_input.get("cmd") or tool_input)
-else:
-    command = str(tool_input)
-
-normalized = command.replace("\\", "/")
-
-if ".claude/" in normalized or normalized.endswith(".claude") or " .claude" in normalized:
-    deny("Project guardrail: do not touch .claude/.")
-    sys.exit(0)
-
-sys.exit(0)
+if __name__ == "__main__":
+    sys.exit(main())

@@ -1,5 +1,5 @@
 {
-  "description": "Impeccable design detector: immediate-tier checks after Edit/Write/MultiEdit on UI files, full-rule deep pass on Stop. Codex-зеркало этих же хуков — .codex/hooks.json.",
+  "description": "Два PostToolUse-хука: детектор дизайна impeccable на UI-файлах (плюс глубокий проход на Stop) и проверка хард-банов для постов. Codex-зеркало — .codex/hooks.json и .agents/hooks.json.",
   "enabledPlugins": {
     "impeccable@impeccable": false
   },
@@ -13,6 +13,17 @@
             "command": "[ ! -f \"${CLAUDE_PROJECT_DIR}/.claude/skills/impeccable/scripts/hook.mjs\" ] || node \"${CLAUDE_PROJECT_DIR}/.claude/skills/impeccable/scripts/hook.mjs\"",
             "timeout": 5,
             "statusMessage": "Checking UI changes"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/python3 \"${CLAUDE_PROJECT_DIR}/.agents/hooks/posts_style_check.py\"",
+            "timeout": 10,
+            "statusMessage": "Checking post style rules"
           }
         ]
       }
