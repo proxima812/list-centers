@@ -2,7 +2,7 @@
 import type { HTMLAttributes } from "astro/types";
 import { cn } from "@/utils/libs/cn";
 
-type Variant = "solid" | "outline" | "ghost" | "soft";
+type Variant = "solid" | "outline" | "ghost" | "soft" | "link";
 type Size = "sm" | "md" | "lg";
 type Shape = "rounded" | "pill" | "square";
 type IconPosition = "left" | "right";
@@ -182,6 +182,9 @@ const variantClasses: Record<Variant, string> = {
 	ghost:
 		"border border-transparent bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground",
 	soft: "border border-border-muted bg-muted text-foreground hover:border-border hover:bg-subtle",
+	// Ссылка внутри текста, а не кнопка: ни рамки, ни плашки, ни своей высоты —
+	// геометрию и цвет задаёт строка, в которой она стоит.
+	link: "border-0 bg-transparent p-0 text-current hover:bg-transparent",
 };
 
 const sizeClasses: Record<Size, string> = {
@@ -225,6 +228,10 @@ const {
 	...props
 } = Astro.props as Props;
 
+// У варианта `link` нет ни размера, ни формы: высота, паддинги, скругление и
+// `whitespace-nowrap` пришли бы из кнопочной шкалы и в потоке текста ломали бы
+// перенос длинных ссылок на узких экранах.
+const isInline = variant === "link";
 const socialName = resolveSocialName(social);
 const icon = socialIcons[socialName];
 // || вместо ??: title по умолчанию — пустая строка, и с ?? цепочка никогда
@@ -243,11 +250,13 @@ const iconColorStyle =
 	aria-label={computedLabel}
 	title={computedLabel}
 	class={cn(
-		"group inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-colors duration-200",
+		isInline
+			? "group inline-flex min-w-0 items-center transition-colors duration-200"
+			: "group inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-colors duration-200",
 		variantClasses[variant],
-		sizeClasses[size],
-		shapeClasses[shape],
-		iconOnly && iconOnlySizeClasses[size],
+		!isInline && sizeClasses[size],
+		!isInline && shapeClasses[shape],
+		!isInline && iconOnly && iconOnlySizeClasses[size],
 		fullWidth && "w-full",
 		className,
 	)}
