@@ -5,6 +5,21 @@
 `tatarverse.cc` is a static Astro site about Tatar, Bashkir, Tatar-Bashkir, and
 Crimean Tatar communities, centers, sources, and multilingual reference content.
 
+## Glossary
+
+Use these words in this sense, including when reporting back:
+
+| Word | Means |
+| --- | --- |
+| **you** | The agent doing the work right now — Claude Code or Codex. |
+| **the other agent** | The one you are not. Both work in this checkout on `main`; pull with `--rebase` before starting and before pushing. |
+| **the owner** | Kamil, who runs this project and reads your reports. Decisions about scope, deletions, and design are the owner's. |
+| **a contributor** | An outside person following `CONTRIBUTING.ru.md` / `CONTRIBUTING.en.md`. They submit verified center data and translations, not architecture. |
+| **a visitor** | Someone reading tatarverse.cc. Owns the presentation: theme, accent, motion toggle. |
+
+Say "the catalog" for the centers listing, "a card" for one center entry, and
+"a post" only for `src/data/posts` — not for center entries or docs.
+
 ## Stack
 
 - Astro 7 with static output (`output: "static"`, no SSR adapter).
@@ -53,6 +68,31 @@ the map was removed.
 - Use `rg` for search.
 - Do not edit `src/data/release.json` or `package.json` version by hand — use
   `bun run release:bump`.
+- **Pick up the traces.** After deleting or renaming a file, an export, a route,
+  or a constant, `rg` its name across the whole repo — including `.md` docs,
+  `.agents/skills/`, and hooks — and fix or remove every hit. An edit is not
+  finished while dead references survive. This rule is paid for: deleting the
+  accent-audit scripts left `DESIGN.md` pointing at them, and removing the map
+  left `CONTRIBUTING` documenting `geo` fields that no longer existed.
+- **`export *` does not bring a name into the re-exporting module's own scope.**
+  Moving a shared constant into a leaf module means the barrel that uses it now
+  needs an explicit `import` too. `astro check` passes; the build is what fails.
+
+## Surfaces
+
+A change is not done until it survives every surface it touches. The catalog
+card alone lives under all of these at once:
+
+| Surface | Check |
+| --- | --- |
+| Accent | Six presets via `[data-accent]` — `green`, `blue`, `violet`, `red`, `orange`, `pink`. Semantic tokens only, never literal hex. |
+| Theme | Light, dark, and system (`.dark`). Contrast holds in both. |
+| Motion | `[data-motion="off"]` and `prefers-reduced-motion`. Kill animation with `1ms`, not `animation: none` — `animationend` still has to fire. |
+| Locale | `ru` unprefixed and `en` under `/en/`. Routes with no EN version are listed in `ruOnlyRoutes` (`src/i18n/index.ts`). |
+| Print | `/centers/print` renders the catalog for paper; it has its own layout. |
+| Client filter | The toolbar filters cards by reading `data-*` off the DOM. Adding or removing a `data-` attribute on a card is a change to the filter contract — grep `src/scripts/centersToolbar.ts` before touching them. |
+
+Say which of these you checked and how. "Builds fine" is not a check.
 
 ## Skills
 
@@ -63,36 +103,37 @@ vendor build for Claude that sits next to the Codex build in `.agents/`.
 Third-party skills are pinned in `skills-lock.json` — update them with
 `bunx skills add`, never by hand-editing `SKILL.md`.
 
-Project skills are prefixed `tatarverse-`.
+Project skills are prefixed `tatarverse-`: `astro-content`, `posts`,
+`ui-tailwind`, `motion`, `i18n`, `page-weight`, `collab`. Third-party:
+`impeccable`, `design-taste-frontend`, `high-end-visual-design`,
+`redesign-existing-projects`, `full-output-enforcement`.
 
-| Skill | Use for |
+What each one is for is not repeated here. Every skill's `description` is
+injected into context anyway, so a second copy in this file only buys drift —
+it already had some. A description carries **trigger words**, not a summary of
+the skill body: it is paid for in every session, including the ones where the
+skill never fires. Keep new ones short and keyword-shaped.
+
+## Design System
+
+`DESIGN.md` is the human-readable design system (27 KB of reasoning);
+`.impeccable/design.json` is its machine sidecar. They must agree — when you
+change one, change the other. Both are authoritative over any aesthetic
+instinct a design skill brings in.
+
+Read them at the depth the task needs — loading 57 KB to restyle one button
+costs context that the work then does not have:
+
+| Task | Read |
 | --- | --- |
-| `tatarverse-astro-content` | Content, center data, i18n routes, SEO metadata, robots, sitemap. |
-| `tatarverse-posts` | Writing and editing `src/data/posts/*.mdx` — voice plus the hard bans below. |
-| `tatarverse-ui-tailwind` | Small UI edits: component styling, layout, responsive behavior, a11y. |
-| `tatarverse-motion` | CSS keyframe animation that survives `[data-motion="off"]` and reduced motion. |
-| `tatarverse-i18n` | Adding locale keys or languages, plus the dictionary completeness audit. |
-| `tatarverse-page-weight` | HTML/JS/CSS weight and gzip regressions in `dist` after a build. |
-| `tatarverse-collab` | Splitting a task between Claude and Codex; writes a handoff note. |
-| `impeccable` | Design work: audits, polish, layout, motion, live picker. Codex variant uses `$impeccable <command>` and `.agents/` script paths. |
-| `design-taste-frontend` | Landing/hero/brand-layer work that needs a design direction inferred, not a template. |
-| `high-end-visual-design` | Soft, premium visual register when a surface asks for it. |
-| `redesign-existing-projects` | Audit-first reworks of a surface that already exists. |
-| `full-output-enforcement` | Long exhaustive generations where truncation or `// ...` placeholders would break the file. |
+| Applying the system (a component, spacing, a state, a color from tokens) | `strategy.rules` and `narrative.donts` in `design.json`. The impeccable hook checks the rest after each edit. |
+| Changing the system (a token, the radius scale, a palette, the type ramp) | `DESIGN.md` in full, then update the sidecar. |
+| Judging whether something is off | Let the hook speak first; open `DESIGN.md` for the section it names. |
 
-`DESIGN.md` is the human-readable design system; `.impeccable/design.json` is
-its machine sidecar. They must agree — when you change one, change the other.
-Both are authoritative over any aesthetic instinct a design skill brings in.
-Three things here are the user's, and every new surface must survive all three:
-
-- **Accent** — six presets (`green`, `blue`, `violet`, `red`, `orange`,
-  `pink`) via `[data-accent]`. Single list: `src/utils/accents.ts`; palettes:
-  `src/styles/palettes/*.css`.
-- **Theme** — light / dark / system via `.dark`.
-- **Motion** — the `[data-motion="off"]` toggle plus `prefers-reduced-motion`.
-
-No literal hex and no raw Tailwind palettes — semantic tokens only. Read
-`strategy.rules` and `narrative.donts` in `design.json` before touching visuals.
+Single sources: accents in `src/utils/accents.ts`, palettes in
+`src/styles/palettes/*.css`, tokens in `src/styles/tailwind.css`. No literal
+hex and no raw Tailwind palettes — semantic tokens only. What every surface has
+to survive is in **Surfaces** above.
 
 ## Content And SEO
 

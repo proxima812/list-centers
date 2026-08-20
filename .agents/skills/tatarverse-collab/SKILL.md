@@ -1,6 +1,6 @@
 ---
 name: tatarverse-collab
-description: Используй, когда работу над tatarverse надо разделить между Claude Code и Codex - один ведёт UI/UX-направление и критерии приёмки, другой делает узкую реализацию в репозитории. Пишет handoff-заметку.
+description: 'Разделить работу между Claude Code и Codex, передать задачу второму агенту, handoff-заметка, кто что делает в tatarverse.'
 ---
 
 # tatarverse Collab

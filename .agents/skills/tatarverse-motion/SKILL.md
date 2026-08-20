@@ -1,6 +1,6 @@
 ---
 name: tatarverse-motion
-description: Используй для анимаций в tatarverse - появления, drawer-переходы, hover-состояния, кольцо карточки. Анимации здесь на CSS-кейфреймах, без JS-библиотек, и обязаны переживать пользовательский тумблер [data-motion="off"] и prefers-reduced-motion.
+description: 'Анимация в tatarverse: появление, drawer, hover, кейфреймы, переходы, reduced-motion, тумблер [data-motion="off"]. CSS без JS-библиотек.'
 ---
 
 # tatarverse Motion

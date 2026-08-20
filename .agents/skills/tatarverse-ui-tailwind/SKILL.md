@@ -1,6 +1,6 @@
 ---
 name: tatarverse-ui-tailwind
-description: Используй для точечных UI-правок tatarverse на Tailwind v4 - стилизация компонентов, лейаут, адаптив, доступность, визуальный QA. Не для контентных правок и не для широких редизайнов (для них - impeccable).
+description: 'Точечная UI-правка tatarverse на Tailwind v4: стилизация компонента, лейаут, отступы, адаптив, доступность, визуальный QA. Не для редизайна и аудита - для них impeccable.'
 ---
 
 # tatarverse UI Tailwind

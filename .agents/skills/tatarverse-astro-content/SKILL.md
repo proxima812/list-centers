@@ -1,6 +1,6 @@
 ---
 name: tatarverse-astro-content
-description: Используй для контента, данных и SEO tatarverse - MDX-центры, проекты, благодарности, i18n-маршруты, метаданные, канонические ссылки, robots, sitemap. Не для широких редизайнов UI и не для постов (для постов - tatarverse-posts).
+description: 'Контент, данные и SEO tatarverse: MDX-центры, проекты, благодарности, маршруты локалей, метаданные, канониклы, robots, sitemap, alternates. Не для UI-редизайнов и не для постов.'
 ---
 
 # tatarverse Astro Content

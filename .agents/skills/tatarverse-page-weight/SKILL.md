@@ -1,6 +1,6 @@
 ---
 name: tatarverse-page-weight
-description: Используй для проверки нагрузки Astro-сайта: размер HTML-страниц, JS/CSS bundle assets в dist, gzip-вес, тяжелые страницы и скрипты после bun run build.
+description: 'Вес и производительность сборки tatarverse: размер HTML, JS- и CSS-бандлы в dist, gzip, тяжёлые страницы, регресс веса после build.'
 ---
 
 # tatarverse Page Weight

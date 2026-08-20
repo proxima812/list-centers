@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-08-08T00:00:00.000Z",
+  "generatedAt": "2026-08-20T00:00:00.000Z",
   "title": "Design System: Tatarverse",
   "register": "brand",
   "summary": "Bilingual cultural-center catalog with a controlled homepage brand layer and a quiet neutral catalog layer, themed by a user-chosen accent across light and dark.",
@@ -25,7 +25,7 @@
         "Keep catalog utility first.",
         "Never hardcode a hue. Ship only `--color-*` tokens (`accent`, `accent-vivid`, `accent-glow`, `foreground`, `surface`, `border`, `depth-*`), so a surface survives all six accent presets in both themes.",
         "The accent is a signal — hero word, focus ring, active state — not a general palette. Neutrals carry the catalog.",
-        "Every new color is authored twice: a light value in `@theme` in src/styles/tailwind.css and a dark value in src/styles/palettes/<preset>.css. Contrast floors: >=4.5:1 for small UI, >=3:1 for display type. `node scripts/audit-accents.mjs` reads the CSS and checks all twelve pairs plus the surface ladder — run it after touching a palette.",
+        "Every new color is authored twice: a light value in `@theme` in src/styles/tailwind.css and a dark value in src/styles/palettes/<preset>.css. Contrast floors: >=4.5:1 for small UI, >=3:1 for display type. Check the pairs against the CSS itself after touching a palette — the standalone audit script was removed as a second source of truth.",
         "Use real interface imagery when explaining product behavior.",
         "Preserve locale routes, source links, stable slugs, and factual copy.",
         "Every animated component needs two escape paths, not one: `prefers-reduced-motion` and the user toggle `[data-motion=\"off\"]`. The toggle kills animation and transition globally, so never rely on `transitionend`/`animationend` firing without an explicit 1ms carve-out."
@@ -115,7 +115,7 @@
           }
         },
         "source": "The preset list itself lives in src/utils/accents.ts — one array feeding both the header dropdown and the mobile toggle. Never copy the swatch array into a component.",
-        "usage": "Focus rings, active states, and the homepage hero word. Green is the default preset. Held at >=4.5:1 on its own background in every preset/theme pair — the audit script is the check, not this note: it reads the CSS, so a retuned value is caught rather than assumed. `node scripts/audit-accents.mjs` re-checks all twelve pairs (accent on its background, accent-foreground on accent, vivid at display scale, accent-soft pair, subtle-foreground on bg-subtle, and the page→surface lightness step)."
+        "usage": "Focus rings, active states, and the homepage hero word. Green is the default preset. Held at >=4.5:1 on its own background in every preset/theme pair. The CSS is the check, not this note: read the authored values out of src/styles/tailwind.css and src/styles/palettes/*.css rather than trusting a written-down number. Twelve pairs matter — accent on its background, accent-foreground on accent, vivid at display scale, the accent-soft pair, subtle-foreground on bg-subtle, and the page→surface lightness step."
       },
       "accentVivid": {
         "role": "accent",
