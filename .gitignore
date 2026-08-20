@@ -44,3 +44,7 @@ bun.lockb*
 
 # рабочие артефакты браузерных MCP-инструментов
 .playwright-mcp/
+
+# бренд-кит: пересобирается из палитр командой `bun run brand-kit`
+/brand-kit.html
+/brand-kit.pdf

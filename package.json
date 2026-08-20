@@ -10,7 +10,8 @@
 		"cf:preview": "bun run build && wrangler pages dev ./dist",
 		"cf:deploy": "bun run build && bun run cf:deploy:dist",
 		"cf:deploy:dist": "CLOUDFLARE_ACCOUNT_ID=711d25ce64e87b4faeb50022b3e63631 wrangler pages deploy --branch main",
-		"release:bump": "node scripts/release-bump.js"
+		"release:bump": "node scripts/release-bump.js",
+		"brand-kit": "node scripts/brand-kit.mjs"
 	},
 	"dependencies": {
 		"@astrojs/check": "^0.9.9",
