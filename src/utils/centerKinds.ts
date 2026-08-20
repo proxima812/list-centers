@@ -21,7 +21,7 @@ export type CenterKind =
 	| "online";
 
 /** Display order for the breakdown tiles. */
-export const CENTER_KIND_ORDER: CenterKind[] = [
+const CENTER_KIND_ORDER: CenterKind[] = [
 	"centers",
 	"autonomies",
 	"communities",
@@ -39,7 +39,7 @@ export const CENTER_KIND_ICONS: Record<CenterKind, string> = {
 	online: "mdi:web",
 };
 
-export const classifyCenterKind = (title: string, type?: string): CenterKind => {
+const classifyCenterKind = (title: string, type?: string): CenterKind => {
 	const s = title.toLowerCase();
 
 	if (type === "Онлайн") return "online";

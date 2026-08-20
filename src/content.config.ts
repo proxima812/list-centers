@@ -2,7 +2,7 @@ import { glob } from "astro/loaders";
 import { z } from "astro/zod";
 import { defineCollection } from "astro:content";
 import { getMacroRegion } from "./data/geo/macroRegions";
-import { normalizeRuRegion, suggestRuRegion } from "./data/geo/ruRegions";
+import { normalizeRuRegion, RUSSIA, suggestRuRegion } from "./data/geo/ruRegions";
 
 const CENTER_CATEGORIES = [
 	"Татарский",
@@ -23,7 +23,6 @@ const CenterCategorySchema = z.enum(CENTER_CATEGORIES);
 const CenterTypeSchema = z.enum(CENTER_TYPES);
 const ProjectCategorySchema = z.enum(PROJECT_CATEGORIES);
 
-const RUSSIA = "Россия";
 // Строка-заглушка из старого импорта. Раньше её вырезал руками рендер
 // карточки, теперь она не проходит валидацию и до рендера не доезжает.
 const NO_DATA = /^нет данных\.?$/i;

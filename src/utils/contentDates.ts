@@ -130,7 +130,7 @@ function getGitCreatedDate(relativePath: string) {
 	return getGitDates().get(relativePath)?.createdDate;
 }
 
-export function getFileCreatedDate(filePath: string | undefined, fallback?: DateInput) {
+function getFileCreatedDate(filePath: string | undefined, fallback?: DateInput) {
 	const fallbackDate = toDate(fallback);
 	if (!filePath) return fallbackDate;
 
@@ -144,7 +144,7 @@ export function getFileCreatedDate(filePath: string | undefined, fallback?: Date
 	return getGitCreatedDate(relativePath) ?? statDate ?? fallbackDate;
 }
 
-export function getFileModifiedDate(filePath: string | undefined, fallback?: DateInput) {
+function getFileModifiedDate(filePath: string | undefined, fallback?: DateInput) {
 	const fallbackDate = toDate(fallback);
 	if (!filePath) return fallbackDate;
 

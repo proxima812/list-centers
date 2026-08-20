@@ -1,6 +1,6 @@
 ---
 import { normalizeCity, type CenterGeo } from "@/data/geo";
-import { countryFlagsByRu, getCountryLabel, getCountryLabels } from "@/data/worldCountries";
+import { countryFlagsByRu, getCountryLabel } from "@/data/worldCountries";
 import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
 import { formatCenterLinkLabel, type CenterLink } from "@/utils/centerLinks";
 import { getCenterMarkHue, getCenterPath } from "@/utils/centers";
@@ -47,12 +47,11 @@ const cleanFlag =
 	location?.flag?.trim() || (cleanCountry ? countryFlagsByRu[cleanCountry] : undefined);
 const displayCountry = cleanCountry ? getCountryLabel(cleanCountry, locale) : undefined;
 const countryKey = cleanCountry ?? "Прочее";
-const countryLabels = cleanCountry ? getCountryLabels(cleanCountry) : undefined;
 const displayTitle = title ?? "—";
 const displaySummary = summary?.trim();
 const displayLocation =
 	cleanFlag || cleanCity || displayCountry
-		? { flag: cleanFlag, city: cleanCity, country: displayCountry, countryLabels }
+		? { flag: cleanFlag, city: cleanCity, country: displayCountry }
 		: null;
 const formattedDate =
 	pubDate &&
@@ -144,19 +143,11 @@ const quickLinks = links ?? [];
 				{displayLocation.flag && (
 					<span class="shrink-0 text-base leading-none">{displayLocation.flag}</span>
 				)}
-				{/* {displayLocation.city && <span>{truncate(displayLocation.city.trim(), 16)}</span>} */}
 				{displayLocation.city && <span>{displayLocation.city}</span>}
-				{displayLocation.city && displayLocation.countryLabels && (
+				{displayLocation.city && displayLocation.country && (
 					<span aria-hidden="true">&#10625;</span>
 				)}
-				{displayLocation.countryLabels && (
-					<span
-						data-country-label={cleanCountry}
-						data-country-labels={JSON.stringify(displayLocation.countryLabels)}
-					>
-						{displayLocation.country}
-					</span>
-				)}
+				{displayLocation.country && <span>{displayLocation.country}</span>}
 			</p>
 		)
 	}

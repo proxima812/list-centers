@@ -1,4 +1,4 @@
-import { countryFlagsByRu, getCountryLabel, getCountryLabels } from "@/data/worldCountries";
+import { countryFlagsByRu, getCountryLabel } from "@/data/worldCountries";
 import {
 	FEDERAL_DISTRICTS,
 	MACRO_REGIONS,
@@ -42,8 +42,6 @@ export interface FacetOption {
 	label: string;
 	count: number;
 	flag?: string;
-	/** JSON с подписями страны на всех локалях — их подставляет переключатель языка. */
-	labels?: string;
 }
 
 export interface Facet {
@@ -115,7 +113,7 @@ function toOptions(
 	counts: Map<string, number>,
 	order: readonly string[] | undefined,
 	label: (value: string) => string,
-	decorate?: (value: string) => Pick<FacetOption, "flag" | "labels">,
+	decorate?: (value: string) => Pick<FacetOption, "flag">,
 ): FacetOption[] {
 	const entries = [...counts.entries()];
 
@@ -197,10 +195,7 @@ export function buildCenterFacets(
 				countBy(records, (record) => record.country),
 				undefined,
 				(value) => getCountryLabel(value, locale),
-				(value) => ({
-					flag: countryFlagsByRu[value],
-					labels: JSON.stringify(getCountryLabels(value)),
-				}),
+				(value) => ({ flag: countryFlagsByRu[value] }),
 			),
 		},
 		{

@@ -3,6 +3,7 @@ import {
 	getFederalDistrict,
 	getRuRegionLabel,
 	normalizeRuRegion,
+	RUSSIA,
 	suggestRuRegion,
 } from "./ruRegions";
 import { getMacroRegion } from "./macroRegions";
@@ -11,8 +12,6 @@ import { normalizeCity, normalizeForeignRegion } from "./places";
 export * from "./ruRegions";
 export * from "./macroRegions";
 export * from "./places";
-
-export const RUSSIA = "Россия";
 
 /**
  * Верхний уровень каталога. Раньше это было поле `type` («Регион РФ» /

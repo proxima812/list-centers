@@ -1,252 +1,59 @@
 ---
-export interface Props {
-  /**
-   * Yandex Metrika Counter ID (required).
-   */
-  counterId: number | string;
-
-  /**
-   * Technical parameter for SSR (Astro Hybrid/Server).
-   * Helps Yandex correctly identify robots and initial load.
-   * @default true
-   */
-  ssr?: boolean;
-
-  /**
-   * Enable Webvisor (Session Replay).
-   * @default false
-   */
-  webvisor?: boolean;
-
-  /**
-   * Enable Click Map.
-   * @default true
-   */
-  clickmap?: boolean;
-
-  /**
-   * Track external links.
-   * @default true
-   */
-  trackLinks?: boolean;
-
-  /**
-   * Accurate bounce rate.
-   * true (15s), false, or number (ms).
-   * @default true
-   */
-  accurateTrackBounce?: boolean | number;
-
-  /**
-   * E-commerce data collection.
-   * true (dataLayer), false, container name (string), or array.
-   * @default false
-   */
-  ecommerce?: boolean | string | any[];
-
-  /**
-   * Counter type. 1 for Yandex Advertising Network (RSYA), 0 for standard.
-   * @default 0
-   */
-  type?: number;
-
-  /**
-   * Track hash changes in URL (#hash).
-   * Useful for single-page sites with anchor navigation.
-   * @default false
-   */
-  trackHash?: boolean;
-
-  /**
-   * Send page title.
-   * Set to false if title contains private data.
-   * @default true
-   */
-  sendTitle?: boolean;
-
-  /**
-   * Record iframe content without counter.
-   * @default false
-   */
-  childIframe?: boolean;
-
-  /**
-   * List of trusted domains for iframe recording.
-   */
-  trustedDomains?: string[];
-
-  /**
-   * Visit parameters (Session params). Object or Array.
-   */
-  params?: Record<string, any> | any[];
-
-  /**
-   * User parameters (User params). Object.
-   */
-  userParams?: Record<string, any>;
-
-  /**
-   * Any additional parameters (for future Yandex updates).
-   * Note: 'defer' and 'triggerEvent' are controlled by the component.
-   */
-  config?: Record<string, any>;
-
-  /**
-   * Enable console debugging.
-   * @default false
-   */
-  debug?: boolean;
-
-  /**
-   * Enable lazy loading.
-   * The script will load only after the user interacts with the site (scroll, click)
-   * or after the specified timeout. Significantly improves Lighthouse/PageSpeed scores.
-   * @default false
-   */
-  lazy?: boolean;
-
-  /**
-   * Time in milliseconds to wait before forced loading in lazy mode.
-   * Only used if lazy={true}.
-   * @default 3500
-   */
-  timeout?: number;
+/**
+ * Счётчик Яндекс.Метрики. Включается через `config.site.analytics.yandexMetrika`
+ * в `src/config.ts`; вызывающий передаёт только `counterId` — см. Layout.astro.
+ *
+ * Раньше здесь лежал библиотечный компонент на 252 строки: ~20 опциональных
+ * пропсов (webvisor, ecommerce, trustedDomains, lazy, timeout…), три поля
+ * `any` и второй скрипт на `astro:page-load`. Событие даёт ClientRouter,
+ * которого в проекте нет, — тот скрипт не выполнялся никогда. Пропсы, кроме
+ * counterId, никто не передавал, а их значения по умолчанию совпадали с
+ * дефолтами самой Метрики. Осталось то, что действительно работает.
+ */
+interface Props {
+	counterId: number | string;
 }
 
-const {
-  counterId,
-  ssr = true,
-  webvisor = false,
-  clickmap = true,
-  trackLinks = true,
-  accurateTrackBounce = true,
-  ecommerce = false,
-  type = 0,
-  trackHash = false,
-  sendTitle = true,
-  childIframe = false,
-  trustedDomains,
-  params,
-  userParams,
-  config = {},
-  debug = false,
-  lazy = false,
-  timeout = 3500,
-} = Astro.props;
+const { counterId } = Astro.props as Props;
 
-// Constructing the config object.
+// Значения, отличные от дефолтов Метрики: карта кликов, внешние ссылки и
+// «точный показатель отказов» (15 секунд). Остальное — умолчания счётчика.
 const initConfig = {
-  ssr,
-  webvisor,
-  clickmap,
-  trackLinks,
-  accurateTrackBounce,
-  ecommerce,
-  type,
-  trackHash,
-  sendTitle,
-  childIframe,
-  trustedDomains,
-  params,
-  userParams,
-  ...config,
-  defer: true,
+	clickmap: true,
+	trackLinks: true,
+	accurateTrackBounce: true,
+	defer: true,
+	ssr: true,
 };
-
-const scriptSrc = `https://mc.yandex.ru/metrika/tag.js?id=${counterId}`;
 ---
 
-<!-- ym + init, without tag.js -->
-<script
-  is:inline
-  define:vars={{ counterId, initConfig, scriptSrc, debug, lazy, timeout }}
->
-  // Initialization queue
-  window.ym =
-    window.ym ||
-    function () {
-      (window.ym.a = window.ym.a || []).push(arguments);
-    };
-  window.ym.l = 1 * new Date();
+<script is:inline define:vars={{ counterId, initConfig }}>
+	// Очередь вызовов: init можно поставить до загрузки tag.js.
+	window.ym =
+		window.ym ||
+		function () {
+			(window.ym.a = window.ym.a || []).push(arguments);
+		};
+	window.ym.l = 1 * new Date();
+	ym(counterId, "init", initConfig);
 
-  // Save ID globally for helper functions
-  window._astro_ym_id = counterId;
+	if (!document.getElementById(`ym-script-${counterId}`)) {
+		const script = document.createElement("script");
+		script.async = true;
+		script.src = `https://mc.yandex.ru/metrika/tag.js?id=${counterId}`;
+		script.id = `ym-script-${counterId}`;
 
-  // Push config to the queue (it will apply when the script loads)
-  ym(counterId, "init", initConfig);
-
-  // SCRIPT LAZY LOADING FUNCTION
-  const loadScript = () => {
-    // Protection against double loading
-    if (document.getElementById(`ym-script-${counterId}`)) return;
-
-    const script = document.createElement("script");
-    script.async = true;
-    script.src = scriptSrc;
-    script.id = `ym-script-${counterId}`;
-
-    // Insert script into DOM
-    const firstScript = document.getElementsByTagName("script")[0];
-    firstScript.parentNode.insertBefore(script, firstScript);
-
-    if (debug) {
-      console.log(
-        `[astro-ym] Loaded Metrika script ${counterId} (lazy: ${lazy})`,
-      );
-    }
-  };
-
-  // EXECUTION LOGIC
-  if (lazy) {
-    // Lazy Mode: Wait for user interaction
-    const events = ["scroll", "mousemove", "touchstart", "click", "keydown"];
-    let loaded = false;
-
-    const run = () => {
-      if (loaded) return;
-      loaded = true;
-      // Use requestAnimationFrame for performance
-      requestAnimationFrame(loadScript);
-      // Clean up listeners to avoid memory leaks
-      events.forEach((evt) => window.removeEventListener(evt, run));
-    };
-
-    // Attach listeners (once: true means they run only once)
-    events.forEach((evt) =>
-      window.addEventListener(evt, run, { passive: true, once: true }),
-    );
-
-    // Fallback: Force load after timeout if no interaction occurs
-    setTimeout(run, timeout);
-  } else {
-    // Standard Mode: Load immediately
-    loadScript();
-  }
-</script>
-
-<!-- Astro Client Router Navigation Logic -->
-<script define:vars={{ counterId, debug }}>
-  document.addEventListener("astro:page-load", () => {
-    // Fires on Initial Load AND on View Transitions navigation
-    if (typeof window.ym === "function") {
-      window.ym(counterId, "hit", window.location.href, {
-        title: document.title,
-        referer: document.referrer,
-      });
-
-      if (debug) {
-        console.log(`[astro-ym] Hit sent: ${window.location.href}`);
-      }
-    }
-  });
+		const firstScript = document.getElementsByTagName("script")[0];
+		firstScript.parentNode.insertBefore(script, firstScript);
+	}
 </script>
 
 <noscript>
-  <div>
-    <img
-      src={`https://mc.yandex.ru/watch/${counterId}`}
-      style="position:absolute; left:-9999px;"
-      alt=""
-    />
-  </div>
+	<div>
+		<img
+			src={`https://mc.yandex.ru/watch/${counterId}`}
+			style="position:absolute; left:-9999px;"
+			alt=""
+		/>
+	</div>
 </noscript>

@@ -27,7 +27,7 @@ const IGNORE_FILES = new Set([
 	"saved.astro",
 ]);
 
-function normalizeSite(site: URL) {
+function withTrailingSlash(site: URL) {
 	return new URL(site.href.endsWith("/") ? site.href : `${site.href}/`);
 }
 
@@ -185,7 +185,7 @@ async function getMarkdownEntries(site: URL): Promise<LlmsEntry[]> {
 }
 
 async function getLlmsTxt(site: URL) {
-	const baseSite = normalizeSite(site);
+	const baseSite = withTrailingSlash(site);
 	const entries = await getPageEntries(baseSite);
 	const markdownEntries = await getMarkdownEntries(baseSite);
 

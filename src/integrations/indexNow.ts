@@ -21,7 +21,7 @@ function sleep(ms: number) {
 	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function normalizeSite(value: string) {
+function withoutTrailingSlash(value: string) {
 	return value.replace(/\/$/, "");
 }
 
@@ -122,7 +122,7 @@ export default function indexNow(options: IndexNowOptions = {}): AstroIntegratio
 
 		hooks: {
 			"astro:config:setup": ({ config }) => {
-				site = normalizeSite(options.siteUrl ?? config.site ?? "");
+				site = withoutTrailingSlash(options.siteUrl ?? config.site ?? "");
 			},
 
 			"astro:build:done": async ({ dir, logger }) => {
