@@ -21,8 +21,12 @@ const updatedAtLabel = new Intl.DateTimeFormat(locale, {
 	timeZone: "Asia/Almaty",
 }).format(new Date(release.updatedAt));
 
+// Подвал намеренно НЕ берёт токен `link`. Синий там — сигнал впустую: ссылками
+// в подвале является всё подряд, и целая колонка синего перетягивает внимание с
+// содержимого страницы. Сигнал кликабельности здесь несут позиция и список, а
+// не цвет, поэтому тут нейтральные чернила с приглушённым подчёркиванием.
 const baseStyle =
-	"text-link underline decoration-link-decoration underline-offset-4 transition hover:decoration-link";
+	"text-foreground underline decoration-current/40 underline-offset-4 transition hover:decoration-current";
 
 type FooterLink = {
 	href: string;
