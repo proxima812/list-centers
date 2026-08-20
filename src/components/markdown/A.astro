@@ -58,8 +58,11 @@ const socialByHost: Record<string, string> = {
 	"facebook.com": "facebook",
 };
 
+// Цвет несёт токен `link`, а не `foreground`: в тексте ссылка обязана
+// отличаться от текста. Подчёркивание на покое приглушено, на наведении
+// уходит в полный тон — сигнал усиливается, но не мигает сменой цвета.
 const baseLinkClass =
-	"inline-flex min-w-0 max-w-full flex-wrap items-center gap-1.5 align-baseline text-foreground underline decoration-current/40 decoration-2 underline-offset-3 transition-colors wrap-anywhere hover:text-primary";
+	"inline-flex min-w-0 max-w-full flex-wrap items-center gap-1.5 align-baseline text-link underline decoration-link-decoration decoration-2 underline-offset-3 transition-colors wrap-anywhere hover:decoration-link";
 const iconClass = "h-4 w-4 shrink-0 text-current opacity-70";
 
 const defaultView = (value: string): LinkView => ({

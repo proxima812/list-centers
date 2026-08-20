@@ -50,10 +50,8 @@
   --color-surface-foreground: hsl(0 0% 92%);
   --color-primary: hsl(0 0% 92%);
   --color-primary-foreground: hsl(0 0% 11%);
-  --color-link: hsl(0 0% 92%);
   --color-muted-foreground: hsl(0 0% 76%);
   --color-subtle-foreground: hsl(0 0% 71.5%);
-  --color-link-decoration: hsl(0 0% 50%);
 
   /* Ramp глубины развёрнут: в тёмной теме «глубже» значит светлее.
      depth-100 подобран так, чтобы работать кольцом карточки — он обязан
