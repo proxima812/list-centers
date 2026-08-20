@@ -12,16 +12,9 @@ const CENTER_CATEGORIES = [
 ] as const;
 
 const CENTER_TYPES = ["Регион РФ", "Зарубежный", "Онлайн"] as const;
-const PROJECT_CATEGORIES = [
-	"Общепит",
-	"Бизнес",
-	"Медиа",
-	"Образование",
-] as const;
 
 const CenterCategorySchema = z.enum(CENTER_CATEGORIES);
 const CenterTypeSchema = z.enum(CENTER_TYPES);
-const ProjectCategorySchema = z.enum(PROJECT_CATEGORIES);
 
 // Строка-заглушка из старого импорта. Раньше её вырезал руками рендер
 // карточки, теперь она не проходит валидацию и до рендера не доезжает.
@@ -143,23 +136,6 @@ const PostSchema = z
 		publishedDate: data.pubDate,
 	}));
 
-const ProjectSchema = z
-	.object({
-		title: z.string().min(1),
-		description: z.string().min(1),
-		category: ProjectCategorySchema,
-		location: z.string().min(1).optional(),
-		logo: z.string().min(1).optional(),
-		image: z.string().min(1).optional(),
-		instagram: z.url().optional(),
-		website: z.url().optional(),
-		orderLabel: z.string().min(1).optional(),
-		orderUrl: z.url().optional(),
-		tags: z.array(z.string()).default([]),
-		sortOrder: z.number().default(0),
-	})
-	.strict();
-
 const ThanksSchema = z
   .object({
     name: z.string().min(1).optional(),
@@ -194,14 +170,6 @@ const posts = defineCollection({
 	schema: PostSchema,
 });
 
-const projects = defineCollection({
-	loader: glob({
-		pattern: "**/*.{md,mdx}",
-		base: "./src/data/projects",
-	}),
-	schema: ProjectSchema,
-});
-
 const thanks = defineCollection({
 	loader: glob({
 		pattern: "**/*.{md,mdx}",
@@ -214,7 +182,6 @@ export const collections = {
 	centers,
 	centersEn,
 	posts,
-	projects,
 	thanks,
 };
 
@@ -223,6 +190,4 @@ export type CenterType = z.infer<typeof CenterTypeSchema>;
 export type CenterLocation = z.infer<typeof CenterLocationSchema>;
 export type CenterData = z.infer<typeof CenterSchema>;
 export type PostData = z.infer<typeof PostSchema>;
-export type ProjectCategory = z.infer<typeof ProjectCategorySchema>;
-export type ProjectData = z.infer<typeof ProjectSchema>;
 export type ThanksData = z.infer<typeof ThanksSchema>;

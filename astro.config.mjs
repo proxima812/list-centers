@@ -39,7 +39,6 @@ export default defineConfig({
                   "/en/saved",
                   "/centers/print",
                   "/en/posts",
-                  "/en/sabantye",
                   "/en/policy",
                   "/en/sources",
                   "/en/translations",

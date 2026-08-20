@@ -47,7 +47,6 @@ Defined in `src/content.config.ts`, all schemas are `.strict()`:
 | `centers` | `src/data/centers_formatted` | Russian source entries |
 | `centersEn` | `src/data/centers_i18n/en` | English translations |
 | `posts` | `src/data/posts` | Editorial notes |
-| `projects` | `src/data/projects` | Business/media/education projects |
 | `thanks` | `src/data/thanks` | Contributor credits |
 
 Geography is not part of the collection schema: `src/data/geo`
@@ -85,7 +84,7 @@ card alone lives under all of these at once:
 
 | Surface | Check |
 | --- | --- |
-| Accent | Six presets via `[data-accent]` — `green`, `blue`, `violet`, `red`, `orange`, `pink`. Semantic tokens only, never literal hex. |
+| Accent | Seven presets via `[data-accent]` — `default` (monochrome, the default), `green`, `blue`, `violet`, `red`, `orange`, `pink`. Semantic tokens only, never literal hex. |
 | Theme | Light, dark, and system (`.dark`). Contrast holds in both. |
 | Motion | `[data-motion="off"]` and `prefers-reduced-motion`. Kill animation with `1ms`, not `animation: none` — `animationend` still has to fire. |
 | Locale | `ru` unprefixed and `en` under `/en/`. Routes with no EN version are listed in `ruOnlyRoutes` (`src/i18n/index.ts`). |

@@ -6,16 +6,14 @@ import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
 const currentLocale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(currentLocale);
 
-const interestingHrefs = new Set(["/posts", "/projects", "/sabantye"]);
 const materialHrefs = new Set(["/translations", "/sources", "/policy"]);
-const otherHrefs = new Set(["/thanks"]);
+// «Посты» переехали сюда из дропдауна «Интересное»: тот держал посты,
+// проекты и сабантуй, а после удаления двух последних остался бы
+// выпадающим списком из одного пункта.
+const otherHrefs = new Set(["/posts", "/thanks"]);
 const topLevelLinks = links.filter(
-	(item) =>
-		!interestingHrefs.has(item.href) &&
-		!materialHrefs.has(item.href) &&
-		!otherHrefs.has(item.href),
+	(item) => !materialHrefs.has(item.href) && !otherHrefs.has(item.href),
 );
-const interestingLinks = links.filter((item) => interestingHrefs.has(item.href));
 const materialLinks = links.filter((item) => materialHrefs.has(item.href));
 const otherLinks = links.filter((item) => otherHrefs.has(item.href));
 
@@ -43,7 +41,6 @@ const isActivePath = (href: string) => {
 };
 
 const dropdowns = [
-	{ id: "interesting", labelKey: "menu.interesting", items: interestingLinks },
 	{ id: "materials", labelKey: "menu.materials", items: materialLinks },
 	{ id: "other", labelKey: "menu.other", items: otherDropdownItems },
 ].filter((dropdown) => dropdown.items.length > 0);

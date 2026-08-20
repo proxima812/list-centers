@@ -52,10 +52,8 @@ const translatedCenterIds = new Set(
  *   раздел EN, а не на 404.
  */
 const ruOnlyRoutes: Array<{ pattern: RegExp; switcher: "stay" | "hub" }> = [
-	{ pattern: /^(posts|sabantye|saved)$/, switcher: "stay" },
+	{ pattern: /^(posts|saved)$/, switcher: "stay" },
 	{ pattern: /^posts\/.+/, switcher: "hub" },
-	{ pattern: /^sabantye\/.+/, switcher: "hub" },
-	{ pattern: /^projects(\/.*)?$/, switcher: "hub" },
 	{ pattern: /^centers\/print$/, switcher: "hub" },
 	{ pattern: /^(policy|sources|translations|thanks)$/, switcher: "hub" },
 ];

@@ -209,7 +209,7 @@ git push --force-with-lease
 ```
 
 Типы, которые применяются здесь: `feat`, `fix`, `docs`, `refactor`, `style`,
-`chore`. Области — обычно `centers`, `i18n`, `ui`, `projects`.
+`chore`. Области — обычно `centers`, `i18n`, `ui`.
 
 ```txt
 feat(centers): добавлен центр в Актобе
@@ -407,8 +407,6 @@ location:
 
 - `posts/` — редакционные посты. Обязательны `title`, `description`,
   `pubDate`, `author`, `category`; `tags` — массив, `ogImage` — необязательно.
-- `projects/` — проекты и бизнесы. Обязательны `title`, `description`,
-  `category` из набора `Общепит`, `Бизнес`, `Медиа`, `Образование`.
 - `thanks/` — благодарности. Все поля необязательные: `name`, `instagram`,
   `telegram`, `social`, `sortOrder`.
 

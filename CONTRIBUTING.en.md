@@ -207,7 +207,7 @@ The project follows [Conventional Commits](https://www.conventionalcommits.org/)
 ```
 
 Types used here: `feat`, `fix`, `docs`, `refactor`, `style`, `chore`.
-Common scopes: `centers`, `i18n`, `ui`, `projects`.
+Common scopes: `centers`, `i18n`, `ui`.
 
 ```txt
 feat(centers): add center in Aktobe
@@ -407,9 +407,6 @@ Besides centers, `src/data/` holds collections with their own schemas
 
 - `posts/` — editorial posts. `title`, `description`, `pubDate`, `author`, and
   `category` are required; `tags` is an array and `ogImage` is optional.
-- `projects/` — projects and businesses. `title`, `description`, and
-  `category` are required, with `category` one of `Общепит`, `Бизнес`,
-  `Медиа`, `Образование`.
 - `thanks/` — credits. All fields optional: `name`, `instagram`, `telegram`,
   `social`, `sortOrder`.
 
