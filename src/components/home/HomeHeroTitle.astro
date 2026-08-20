@@ -11,15 +11,21 @@ const solidClass = "font-black tracking-tight md:tracking-[-1.4px]";
 // подчеркиваниями вместо пробелов.
 const heroLines = [
 	{ key: "home.hero.1", className: `${solidClass} text-foreground` },
-	{ key: "home.hero.2", className: `${solidClass} hero-accent motion-safe:animate-hero-pulse` },
+	{
+		key: "home.hero.2",
+		className: `${solidClass} hero-accent motion-safe:animate-hero-pulse`,
+	},
 	{ key: "home.hero.3", className: `${solidClass} text-foreground/90` },
 ] as const;
 
-// Небольшой сдвиг фаз, чтобы слова не мерцали синхронно.
+// Вторая строка тише первой: крайние слова приглушены, среднее держит вес.
+// Тон — `muted-foreground`, а не палитровый `zinc-400`: последний не переживает
+// смену темы и на светлой бумаге давал 2.3:1, то есть слово в заголовке
+// практически пропадало.
 const heroLines2 = [
-	{ key: "home.hero.5", className: `${solidClass} hero-drift hero-drift--dim` },
-	{ key: "home.hero.6", className: `${solidClass} hero-drift hero-drift--strong` },
-	{ key: "home.hero.7", className: `${solidClass} hero-drift hero-drift--dim` },
+	{ key: "home.hero.5", className: `${solidClass} text-muted-foreground` },
+	{ key: "home.hero.6", className: `${solidClass} text-foreground` },
+	{ key: "home.hero.7", className: `${solidClass} text-muted-foreground` },
 ] as const;
 
 const titleClass = "uppercase inline-block";
@@ -27,7 +33,7 @@ const titleClass = "uppercase inline-block";
 
 <h1 class="relative select-none text-center text-3xl sm:text-5xl md:text-6xl lg:text-7xl">
 	<div
-		class="flex flex-wrap items-center justify-center md:gap-0 gap-x-2 md:space-x-3.5 md:space-y-2"
+		class="flex flex-wrap items-baseline justify-center gap-x-2 gap-y-2 md:gap-x-3.5"
 	>
 		{
 			heroLines.map(({ key, className }) => (
@@ -36,21 +42,17 @@ const titleClass = "uppercase inline-block";
 		}
 	</div>
 	<div
-		class="flex flex-wrap items-center justify-center md:gap-0 gap-x-2 md:space-x-3.5 md:space-y-2"
+		class="flex flex-wrap items-baseline justify-center gap-x-2 gap-y-2 md:gap-x-3.5"
 	>
 		{
-			heroLines2.map(({ key, className }, index) => (
-				<span class:list={[titleClass, className]} style={`--drift-delay: ${-2 - index * 4}s`}>
-					{t(key)}
-				</span>
+			heroLines2.map(({ key, className }) => (
+				<span class:list={[titleClass, className]}>{t(key)}</span>
 			))
 		}
 	</div>
 </h1>
 
 <style>
-	/* Акцентная строка. Оттенки выводятся из --color-accent, поэтому смена
-	   палитры перекрашивает герой целиком, включая ореол hero-pulse. */
 	.hero-accent {
 		color: transparent;
 		background-clip: text;
@@ -61,46 +63,5 @@ const titleClass = "uppercase inline-block";
 			color-mix(in oklab, var(--color-accent-glow) 70%, var(--color-accent-vivid)),
 			var(--color-accent-vivid)
 		);
-	}
-
-	/* Тихий дрейф второй строки: узкий диапазон вокруг foreground, движение
-	   еле заметно и не спорит с акцентом. */
-	.hero-drift {
-		color: transparent;
-		background-clip: text;
-		background-image: linear-gradient(
-			90deg,
-			color-mix(in oklab, var(--color-foreground) 60%, var(--color-background)),
-			var(--color-foreground),
-			color-mix(in oklab, var(--color-foreground) 75%, var(--color-background)),
-			var(--color-foreground),
-			color-mix(in oklab, var(--color-foreground) 60%, var(--color-background))
-		);
-		background-size: 220% 100%;
-		background-position: 0% 50%;
-	}
-
-	.hero-drift--dim {
-		opacity: 0.55;
-	}
-
-	.hero-drift--strong {
-		opacity: 0.95;
-	}
-
-	/* Движется только «Культура.» — средняя, самая яркая из трёх. «Язык.» и
-	   «Люди.» получают тот же градиент неподвижным: три дрейфующих слова
-	   рядом читались как мерцание строки, а не как акцент на одном слове.
-	   Позиция 50% вместо 0%, чтобы у статичных слов градиент стоял по центру,
-	   а не обрезанным краем. */
-	.hero-drift--dim {
-		background-position: 50% 50%;
-	}
-
-	@media (prefers-reduced-motion: no-preference) {
-		.hero-drift--strong {
-			animation: var(--animate-hero-gray-drift);
-			animation-delay: var(--drift-delay, 0s);
-		}
 	}
 </style>
