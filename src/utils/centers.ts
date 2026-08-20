@@ -100,3 +100,20 @@ export const createCenterRouteIdMap = (
 		}),
 	);
 };
+
+/**
+ * Порядок каталога: свежие карточки сверху, без `pubDate` — в конец.
+ *
+ * Живёт здесь, а не в роутах, потому что русская и английская страницы
+ * каталога сортируют одинаково, и раньше это была дословная копия в двух
+ * файлах. Сортирует копию: `getCollection()` отдаёт закешированный массив,
+ * и сортировка на месте меняла бы порядок для всех остальных потребителей.
+ */
+export const sortCentersByPubDate = <T extends CollectionEntry<"centers" | "centersEn">>(
+	entries: T[],
+): T[] =>
+	[...entries].sort(
+		(a, b) =>
+			(b.data.pubDate ? new Date(b.data.pubDate).getTime() : 0) -
+			(a.data.pubDate ? new Date(a.data.pubDate).getTime() : 0),
+	);

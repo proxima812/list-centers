@@ -1,29 +1,29 @@
 ---
+/**
+ * Страница каталога центров целиком — от <Layout> до сетки карточек.
+ *
+ * Русский и английский каталоги отличаются только тем, откуда берутся
+ * карточки и есть ли у страницы RSS с markdown-двойником. Всё остальное —
+ * заголовок, мета, ключевые слова, тулбар — было дословной копией в двух
+ * роутах. Роуты теперь отвечают только за данные, разметка живёт здесь.
+ */
 import ListCards from "@/components/centers/ListCards.astro";
 import ListHeroTitle from "@/components/centers/ListHeroTitle.astro";
 import { getLocaleFromUrl, useTranslations } from "@/i18n";
 import Layout from "@/layouts/Layout.astro";
-import type { GetStaticPathsOptions, Page } from "astro";
 import { getCollection, type CollectionEntry } from "astro:content";
 
-export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
-	const cards = (await getCollection("centers")).sort((a, b) => {
-		return (
-			(b.data.pubDate ? new Date(b.data.pubDate).getTime() : 0) -
-			(a.data.pubDate ? new Date(a.data.pubDate).getTime() : 0)
-		);
-	});
-
-	return paginate(cards, { pageSize: Math.max(cards.length, 1) });
-}
-
 interface Props {
-	page: Page<CollectionEntry<"centers">>;
+	cards: CollectionEntry<"centers" | "centersEn">[];
+	/** Только у русской страницы: RSS и markdown-двойник существуют лишь по-русски. */
+	rssURL?: string;
+	markdownURL?: string;
 }
 
-const { page } = Astro.props as Props;
+const { cards, rssURL, markdownURL } = Astro.props as Props;
 const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
+
 // Цифры остались только в мете: сама плитка переехала на /stats.
 // Считаем их по русской коллекции — она единственный источник географии.
 const sourceCenters = await getCollection("centers");
@@ -43,8 +43,8 @@ const seoStats = {
 <Layout
 	title={t("list.title")}
 	description={t("list.description", seoStats)}
-	rssURL="/centers/rss.xml"
-	markdownURL="/centers.md"
+	rssURL={rssURL}
+	markdownURL={markdownURL}
 	keywords={[
 		"ТБК",
 		"татары",
@@ -63,5 +63,5 @@ const seoStats = {
 	]}
 >
 	<ListHeroTitle />
-	<ListCards cards={page.data} />
+	<ListCards cards={cards} />
 </Layout>

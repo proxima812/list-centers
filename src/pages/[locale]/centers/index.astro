@@ -1,0 +1,38 @@
+---
+import CentersCatalog from "@/components/centers/CentersCatalog.astro";
+import { defaultLocale, locales } from "@/i18n";
+import { sortCentersByPubDate } from "@/utils/centers";
+import { getCollection, type CollectionEntry } from "astro:content";
+
+// Карточки собираются здесь, а не в теле страницы: getStaticPaths всё равно
+// обязан пройти по локалям, и данные логично отдать пропсом оттуда же.
+// `paginate` не нужен — тулбар фильтрует по DOM, каталог всегда одна страница.
+export async function getStaticPaths() {
+	return await Promise.all(
+		locales
+			.filter((locale) => locale !== defaultLocale)
+			.map(async (locale) => {
+				const localizedCards =
+					locale === "en" ? await getCollection("centersEn") : await getCollection("centers");
+				// Пустой перевод не должен отдавать пустой каталог: откатываемся
+				// на русские карточки, чтобы страница осталась содержательной.
+				const cards = (
+					localizedCards.length > 0 ? localizedCards : await getCollection("centers")
+				) as CollectionEntry<"centers" | "centersEn">[];
+
+				return {
+					params: { locale },
+					props: { cards: sortCentersByPubDate(cards) },
+				};
+			}),
+	);
+}
+
+interface Props {
+	cards: CollectionEntry<"centers" | "centersEn">[];
+}
+
+const { cards } = Astro.props as Props;
+---
+
+<CentersCatalog cards={cards} />
