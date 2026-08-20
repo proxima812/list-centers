@@ -88,8 +88,17 @@ const titleClass = "uppercase inline-block";
 		opacity: 0.95;
 	}
 
+	/* Движется только «Культура.» — средняя, самая яркая из трёх. «Язык.» и
+	   «Люди.» получают тот же градиент неподвижным: три дрейфующих слова
+	   рядом читались как мерцание строки, а не как акцент на одном слове.
+	   Позиция 50% вместо 0%, чтобы у статичных слов градиент стоял по центру,
+	   а не обрезанным краем. */
+	.hero-drift--dim {
+		background-position: 50% 50%;
+	}
+
 	@media (prefers-reduced-motion: no-preference) {
-		.hero-drift {
+		.hero-drift--strong {
 			animation: var(--animate-hero-gray-drift);
 			animation-delay: var(--drift-delay, 0s);
 		}

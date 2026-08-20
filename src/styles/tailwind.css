@@ -195,14 +195,24 @@
   /* Мягкое неоновое «дыхание»: ореол вокруг букв плавно ярче/тусклее.
      drop-shadow (не text-shadow) — работает по форме клипнутого градиентом
      текста. Цвет тянется из акцента, иначе ореол не переживёт смену темы. */
+  /* Дыхание акцентного слова героя. Амплитуда задана переменными, потому что
+     тёмная тема теперь дефолтная: на светлой бумаге ореол еле виден и ему
+     нужен размах, на тёмной тот же размах превращает слово в мигающую
+     вывеску. Значения для тёмной — ниже, в `.dark`. */
   @keyframes hero-pulse {
     0%,
     100% {
-      filter: drop-shadow(0 0 2px color-mix(in oklab, var(--color-accent-glow) 25%, transparent));
+      filter: drop-shadow(
+        0 0 var(--hero-pulse-min-blur, 2px)
+          color-mix(in oklab, var(--color-accent-glow) var(--hero-pulse-min, 25%), transparent)
+      );
     }
 
     50% {
-      filter: drop-shadow(0 0 10px color-mix(in oklab, var(--color-accent-glow) 65%, transparent));
+      filter: drop-shadow(
+        0 0 var(--hero-pulse-max-blur, 10px)
+          color-mix(in oklab, var(--color-accent-glow) var(--hero-pulse-max, 65%), transparent)
+      );
     }
   }
 
@@ -277,6 +287,15 @@
 
 .dark {
   color-scheme: dark;
+
+  /* Тёмная тема — дефолт сайта, и герой в ней виден сразу. Ореол вокруг
+     акцентного слова прижат: на тёмной бумаге свечение читается втрое
+     сильнее, чем на светлой, и прежние 25→65% превращали «своих» в
+     мигающую вывеску. Движение остаётся, громкость уходит. */
+  --hero-pulse-min: 12%;
+  --hero-pulse-max: 30%;
+  --hero-pulse-min-blur: 1px;
+  --hero-pulse-max-blur: 5px;
 
   /* Лестница: background 7% → muted 11% → surface 16% → surface-muted 19% → subtle 22%.
      Шаг background→surface — главный носитель глубины в тёмной теме и
@@ -506,38 +525,21 @@
    отрицательный слой всплывает поверх её заливки, а не уходит за неё.
    Маска снимает вопрос: ободок и так не залезает внутрь.
 
-   Кольцо горит всегда, дуга бежит постоянно. Платить за это на четырёх
-   сотнях карточек разом не приходится по той же причине, по которой
-   ::before нельзя было увести за фон: `content-visibility: auto`
-   пропускает содержимое карточек за экраном, а генерируемый контент —
-   это содержимое. Перерисовываются только те карточки, что сейчас в
-   окне, — на практике меньше десятка.
+   Дуга неподвижна. Раньше она бежала по кругу шесть секунд на оборот, и
+   кольцо было анимацией; теперь угол зафиксирован на 135deg — свет падает
+   сверху слева, как у теней в светлой теме, и градиент читается как форма,
+   а не как недогрузившаяся анимация.
 
-   Громкость при этом разведена. В покое дуга идёт по тихой заливке в 8%
-   акцента, и четыре сотни колец не превращаются в ковёр; под курсором
-   тот же градиент берёт полный акцент и `accent-glow`. Сигнал остаётся
-   сигналом, а рамка в покое читается как форма, а не как выделение.
+   Громкость разведена. В покое дуга идёт по тихой заливке в 8% акцента, и
+   четыре сотни колец не превращаются в ковёр; под курсором тот же градиент
+   берёт полный акцент и `accent-glow`. Сигнал остаётся сигналом.
 
    Фокус кольцо не трогает: на него есть единый рецепт сайта (outline
    акцентом), и два кольца разом читались бы как ошибка.
 
-   При `[data-motion="off"]` кольца нет вовсе — это исключение из общего
-   правила тумблера, который обычно только останавливает движение и
-   оставляет цвет. Здесь остановить нечего: смысл кольца — бегущая дуга,
-   а замерший на случайном угле градиент читается не как решение, а как
-   недогрузившаяся анимация. */
-@property --card-ring-angle {
-  syntax: "<angle>";
-  inherits: false;
-  initial-value: 0deg;
-}
-
-@keyframes card-ring-spin {
-  to {
-    --card-ring-angle: 360deg;
-  }
-}
-
+   Тумблер анимаций и `prefers-reduced-motion` кольцо больше не убирают:
+   двигаться в нём нечему, а статичная рамка — это цвет и форма, которые
+   тумблер по общему правилу оставляет на месте. */
 @utility card-ring {
   position: relative;
 
@@ -551,14 +553,13 @@
     corner-shape: inherit;
     pointer-events: none;
     background: conic-gradient(
-      from var(--card-ring-angle),
+      from 135deg,
       var(--color-accent) 0deg,
       color-mix(in oklab, var(--color-accent) 32%, transparent) 60deg,
       color-mix(in oklab, var(--color-accent) 8%, transparent) 150deg,
       color-mix(in oklab, var(--color-accent) 8%, transparent) 290deg,
       var(--color-accent) 360deg
     );
-    animation: card-ring-spin 6s linear infinite;
     -webkit-mask:
       linear-gradient(#000 0 0) content-box,
       linear-gradient(#000 0 0);
@@ -571,7 +572,7 @@
 
   &:hover::before {
     background: conic-gradient(
-      from var(--card-ring-angle),
+      from 135deg,
       var(--color-accent-glow) 0deg,
       var(--color-accent) 55deg,
       color-mix(in oklab, var(--color-accent) 20%, transparent) 150deg,
@@ -580,17 +581,6 @@
     );
   }
 
-  /* Тумблер анимаций и системная просьба о меньшем движении убирают кольцо
-     целиком, а не останавливают дугу: без движения оно теряет смысл. */
-  [data-motion="off"] &::before {
-    display: none;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    &::before {
-      display: none;
-    }
-  }
 }
 
 /* ─── Подъём над плоскостью ───────────────────────────────────────────────
@@ -610,6 +600,46 @@
      содержимым, которое перекроет хайрлайн.
    overlay-lift — то, что висит над страницей (меню, поповеры). Здесь inset
      нужен: он очерчивает верхнюю грань панели и в тёмной теме заменяет тень. */
+/* Главная кнопка главной страницы. Градиент выводится из акцента, поэтому он
+   свой у каждого из шести пресетов, а правило одно.
+
+   Второй конец не `accent-vivid`: тот дисплейный, ему по WCAG хватает 3:1, и
+   на нём `accent-foreground` падал до 3.35:1 в зелёном. Вместо этого акцент
+   уводится от собственного текста: в светлой теме углубляется тенью, в
+   тёмной — подсвечивается. Худшая точка градиента 4.81:1 при пороге 4.5,
+   проверено по всем шести пресетам в обеих темах. */
+@utility btn-gradient {
+  background-image: linear-gradient(
+    135deg,
+    var(--color-accent),
+    color-mix(in oklab, var(--color-accent) 88%, var(--color-shade))
+  );
+
+  &:hover {
+    background-image: linear-gradient(
+      135deg,
+      color-mix(in oklab, var(--color-accent) 92%, var(--color-shade)),
+      color-mix(in oklab, var(--color-accent) 80%, var(--color-shade))
+    );
+  }
+
+  @variant dark {
+    background-image: linear-gradient(
+      135deg,
+      var(--color-accent),
+      color-mix(in oklab, var(--color-accent) 88%, var(--color-lift))
+    );
+
+    &:hover {
+      background-image: linear-gradient(
+        135deg,
+        color-mix(in oklab, var(--color-accent) 92%, var(--color-lift)),
+        color-mix(in oklab, var(--color-accent) 80%, var(--color-lift))
+      );
+    }
+  }
+}
+
 @utility surface-lift {
   box-shadow:
     0 1px 2px 0 color-mix(in oklab, var(--color-shade) 6%, transparent),

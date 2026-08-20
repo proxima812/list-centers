@@ -58,12 +58,12 @@ const yandexMetrika = config.site.analytics.yandexMetrika;
 	class="subpixel-antialiased transition-colors duration-300 ease-linear motion-safe:scroll-smooth"
 >
 	<head>
-		{/* Запасной вариант без JS: фон светлой темы (hsl(0 0% 97.5%), как в
-		    pwaSettings). Тег объявлен ДО инлайн-скрипта намеренно: скрипт
+		{/* Запасной вариант без JS: фон тёмной темы зелёного пресета
+		    (hsl(142 14% 6.6%), как в pwaSettings) — дефолт теперь тёмный. Тег объявлен ДО инлайн-скрипта намеренно: скрипт
 		    находит его через querySelector и переписывает. Если объявить ниже,
 		    на момент выполнения скрипта тега еще нет в DOM, и в <head>
 		    оказываются два theme-color. */}
-		<meta name="theme-color" content="#f9f9f9" />
+		<meta name="theme-color" content="#0e1310" />
 
 		{/* Тема применяется до первой отрисовки — иначе на каждой навигации
 		    будет вспышка светлой темы. Скрипт намеренно синхронный и лежит
@@ -82,7 +82,7 @@ const yandexMetrika = config.site.analytics.yandexMetrika;
 						return null;
 					}
 				};
-				const theme = read("theme") ?? "system";
+				const theme = read("theme") ?? "dark";
 				const accent = read("accent") ?? "green";
 				const motion = read("motion") ?? "on";
 				const dark =

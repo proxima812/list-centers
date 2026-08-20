@@ -5,7 +5,7 @@ import { Icon } from "astro-icon/components";
 import type { HTMLAttributes } from "astro/types";
 
 interface Props extends HTMLAttributes<"a"> {
-	variant?: "default" | "outline" | "ghost" | "disabled";
+	variant?: "default" | "gradient" | "outline" | "ghost" | "disabled";
 	size?: "default" | "xs";
 	label?: string;
 	labelKey?: string;
@@ -33,6 +33,13 @@ const baseClass =
 
 const variants = {
 	default: "bg-primary text-primary-foreground hover:bg-primary/80",
+	// Градиент собран из акцента, поэтому кнопка своя у каждого из шести
+	// пресетов и не требует шести правил. Второй конец — не accent-vivid: тот
+	// дисплейный, ему хватает 3:1, и белый текст на нём падал до 3.35:1 в
+	// зелёном. Здесь акцент углубляется собственной тенью в светлой теме и
+	// подсвечивается в тёмной — обе стороны уходят от текста, а не к нему.
+	// Худшая точка градиента 4.81:1 против порога 4.5.
+	gradient: "btn-gradient text-accent-foreground",
 	outline: "bg-transparent text-primary/80 ring ring-primary/10 ring-inset hover:bg-primary/5",
 	ghost: "bg-transparent text-muted-foreground",
 	disabled: "bg-transparent text-muted-foreground",

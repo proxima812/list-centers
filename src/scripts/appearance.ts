@@ -43,7 +43,9 @@ const writeStorage = (key: string, value: string) => {
 
 const readTheme = () => {
 	const value = readStorage(THEME_KEY);
-	return THEMES.includes(value) ? value : "system";
+	// Дефолт — тёмная, а не системная: тёмная бумага с тинтом акцента это
+	// основной вид сайта, и первый заход должен показывать именно его.
+	return THEMES.includes(value) ? value : "dark";
 };
 
 const readAccent = () => {
@@ -150,7 +152,7 @@ export function initAppearance() {
 
 		const themeOption = target.closest<HTMLElement>("[data-theme-option]");
 		if (themeOption) {
-			setTheme(themeOption.dataset.themeOption ?? "system");
+			setTheme(themeOption.dataset.themeOption ?? "dark");
 			return;
 		}
 
