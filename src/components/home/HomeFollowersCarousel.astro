@@ -1,28 +1,5 @@
 ---
-import followersSource from "@/data/instagram_followers_340.txt?raw";
-
-type Follower = {
-	handle: string;
-	name?: string;
-};
-
-const followers = followersSource
-	.split("\n")
-	.map((line) => line.trim())
-	.filter(Boolean)
-	.map<Follower | undefined>((line) => {
-		const match = line.match(/^\d+\.\s+(@[^\s—]+)(?:\s+—\s+(.+))?$/);
-
-		if (!match) return undefined;
-
-		const [, handle, name] = match;
-
-		return {
-			handle,
-			name: name?.trim(),
-		};
-	})
-	.filter((follower): follower is Follower => Boolean(follower));
+import { followers } from "@/data/inst_follows";
 
 const rows = Array.from({ length: 5 }, (_, rowIndex) => {
 	const rowFollowers = followers.filter((_, index) => index % 5 === rowIndex);

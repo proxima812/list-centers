@@ -25,35 +25,48 @@ const ogLocales: Record<AppLocale, string> = {
 	en: "en_US",
 };
 
-// `saved` не редакционная страница: содержимое у нее из localStorage браузера,
-// и заводить вторую копию каркаса ради заголовка — лишний маршрут в карте сайта
-// и лишний повод для расхождения. Рендерится в дефолтной локали, отсюда русские
-// строки.
-const unlocalizedPathnames = new Set(["posts", "sabantye", "saved"]);
-
-// EN-покрытие маршрутов частичное: посты, проекты и печать существуют только
-// по-русски, а из центров переведена лишь часть. Слепая локализация таких путей
-// давала ссылки на несуществующие /en/-страницы (404). Набор переведенных
-// центров берем из имен файлов centers_i18n/en — они совпадают с route id.
+// EN-покрытие маршрутов частичное: посты, проекты, сабантуй и печать
+// существуют только по-русски, а из центров переведена лишь часть. Слепая
+// локализация таких путей давала ссылки на несуществующие /en/-страницы (404).
+// Набор переведенных центров берем из имен файлов centers_i18n/en — они
+// совпадают с route id.
 const translatedCenterIds = new Set(
 	Object.keys(import.meta.glob("../data/centers_i18n/en/*.mdx")).map((path) =>
 		path.slice(path.lastIndexOf("/") + 1).replace(/\.mdx$/, ""),
 	),
 );
 
-const ruOnlyPathPatterns = [
-	/^posts\/.+/,
-	/^projects(\/.*)?$/,
-	/^sabantye\/.+/,
-	/^centers\/print$/,
-	// Эти страницы существуют только по-русски; /en/-адреса — 301 на них.
-	/^(policy|sources|translations|thanks)$/,
+/**
+ * Единственная таблица маршрутов без EN-версии. Раньше их было две -
+ * `unlocalizedPathnames` (Set) и `ruOnlyPathPatterns` (массив регулярок), -
+ * и различались они только поведением языкового переключателя. Добавляя
+ * маршрут, приходилось угадывать, в какой из наборов его класть.
+ *
+ * `switcher` отвечает ровно на этот вопрос - куда ведет переключатель языка:
+ *
+ * - `stay` — страница одна на обе локали (лента постов, сабантуй, личный
+ *   список сохраненного): остаемся на том же адресе вместе с `?query` и
+ *   `#hash`. Второй копии каркаса ради заголовка не заводим.
+ * - `hub` — EN-адреса либо нет вовсе, либо он существует только как
+ *   301-заглушка в `src/pages/[locale]/`: уводим на ближайший существующий
+ *   раздел EN, а не на 404.
+ */
+const ruOnlyRoutes: Array<{ pattern: RegExp; switcher: "stay" | "hub" }> = [
+	{ pattern: /^(posts|sabantye|saved)$/, switcher: "stay" },
+	{ pattern: /^posts\/.+/, switcher: "hub" },
+	{ pattern: /^sabantye\/.+/, switcher: "hub" },
+	{ pattern: /^projects(\/.*)?$/, switcher: "hub" },
+	{ pattern: /^centers\/print$/, switcher: "hub" },
+	{ pattern: /^(policy|sources|translations|thanks)$/, switcher: "hub" },
 ];
+
+function findRuOnlyRoute(relativePath: string) {
+	return ruOnlyRoutes.find((route) => route.pattern.test(relativePath));
+}
 
 export function hasLocalizedRoute(locale: AppLocale, relativePath: string): boolean {
 	if (locale === defaultLocale) return true;
-	if (unlocalizedPathnames.has(relativePath)) return false;
-	if (ruOnlyPathPatterns.some((pattern) => pattern.test(relativePath))) return false;
+	if (findRuOnlyRoute(relativePath)) return false;
 
 	const centerId = relativePath.match(/^centers\/([^/.]+)$/)?.[1];
 	if (centerId && !translatedCenterIds.has(centerId)) return false;
@@ -119,7 +132,7 @@ export function getSwitcherHref(locale: AppLocale, url: URL): string {
 		return getRelativeLocaleUrl(locale, "");
 	}
 
-	if (unlocalizedPathnames.has(currentPath)) {
+	if (findRuOnlyRoute(currentPath)?.switcher === "stay") {
 		return `/${currentPath}/${url.search}${url.hash}`;
 	}
 

@@ -3,7 +3,7 @@ import type { AstroIntegration } from "astro";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { config } from "../../main.config";
+import { config } from "../config";
 import { getPostId } from "../utils/posts";
 
 type LlmsEntry = {
@@ -230,7 +230,7 @@ export const GET: APIRoute = async ({ site }) => {
 	});
 };
 
-// Настройки контента читаются из main.config, а не из вызова llmsTxt():
+// Настройки контента читаются из src/config, а не из вызова llmsTxt():
 // хук интеграции и внедрённый роут — два разных экземпляра модуля (один
 // исполняется в Node на конфиге, второй в графе Vite при рендере), поэтому
 // сохранённые в хуке опции до GET не доезжают — см. robotsTxt.ts.

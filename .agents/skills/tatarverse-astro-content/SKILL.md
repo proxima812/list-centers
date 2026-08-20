@@ -12,7 +12,8 @@ description: Используй для контента, данных и SEO tat
   `src/data/centers_i18n/en` (переводы).
 - Схемы коллекций - `src/content.config.ts`, все `.strict()`.
 - Строки интерфейса - `src/i18n/locales/*` (см. скилл `tatarverse-i18n`).
-- Общие настройки сайта - `main.config.ts` (реэкспорт через `src/config.ts`).
+- Общие настройки сайта - `src/config.ts` (импорт через `@/config`, а из
+  `astro.config.mjs` и интеграций - относительным путём).
 - SEO-хелперы - `src/components/layout/SEO.astro`.
 - Генераторы `robots.txt`, `llms.txt`, `ai.txt`, IndexNow, markdown-двойники -
   `src/integrations/`.

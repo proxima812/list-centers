@@ -152,8 +152,8 @@ const metaChipClass =
 	const template = document.querySelector<HTMLTemplateElement>("[data-saved-card]");
 
 	if (grid && empty && summary && template) {
-		// Страница одна на обе локали и рендерится в дефолтной (см.
-		// unlocalizedPathnames в src/i18n) — отсюда и русские строки, и русская
+		// Страница одна на обе локали и рендерится в дефолтной (см. ruOnlyRoutes
+		// со switcher: "stay" в src/i18n) — отсюда и русские строки, и русская
 		// страна в снимке, и русский формат даты.
 		const dateFormat = new Intl.DateTimeFormat("ru", { month: "short", year: "numeric" });
 

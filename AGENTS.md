@@ -16,8 +16,12 @@ Crimean Tatar communities, centers, sources, and multilingual reference content.
 - Deploy: Cloudflare Pages via `wrangler` (`bun run cf:deploy`).
 - Main source folders: `src/pages`, `src/components`, `src/layouts`, `src/data`,
   `src/i18n`, `src/styles`, `src/utils`, `src/integrations`.
-- Site-wide settings live in `main.config.ts`; collection schemas in
+- Site-wide settings live in `src/config.ts`; collection schemas in
   `src/content.config.ts`.
+- Components are imported directly by path through the `@/*` alias — there is
+  no barrel file.
+- Cloudflare Pages settings (project name, build output dir) live only in
+  `wrangler.jsonc`; the account id only in the `cf:deploy:dist` script.
 
 ## Content Collections
 
@@ -75,7 +79,6 @@ Project skills are prefixed `tatarverse-`.
 | `high-end-visual-design` | Soft, premium visual register when a surface asks for it. |
 | `redesign-existing-projects` | Audit-first reworks of a surface that already exists. |
 | `full-output-enforcement` | Long exhaustive generations where truncation or `// ...` placeholders would break the file. |
-| `find-skills` | Discovering and installing new skills from the open ecosystem. |
 
 `DESIGN.md` is the human-readable design system; `.impeccable/design.json` is
 its machine sidecar. They must agree — when you change one, change the other.

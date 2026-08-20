@@ -2,7 +2,7 @@ import { createCenterRouteIdMap, getCenterPath } from "@/utils/centers";
 import rss from "@astrojs/rss";
 import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
-import { config } from "main.config";
+import { config } from "@/config";
 
 export const GET: APIRoute = async ({ site: astroSite }) => {
 	const centers = await getCollection("centers");

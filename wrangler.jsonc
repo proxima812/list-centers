@@ -1,4 +1,9 @@
 {
+	// Имя проекта и каталог сборки живут только здесь: раньше они дублировались
+	// флагами `--project-name tatarverse ./dist` в npm-скриптах.
+	// `account_id` сюда положить нельзя - для Pages-проекта wrangler считает
+	// это поле неподдерживаемым и падает с ошибкой валидации. Он передаётся
+	// переменной CLOUDFLARE_ACCOUNT_ID в скрипте `cf:deploy:dist`, ровно один раз.
 	"name": "tatarverse",
 	"compatibility_date": "2026-05-17",
 	"pages_build_output_dir": "./dist",

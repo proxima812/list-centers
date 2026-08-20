@@ -6,7 +6,7 @@ import AstroPWA from "@vite-pwa/astro";
 import icon from "astro-icon";
 import metaTags from "astro-meta-tags";
 import { defineConfig } from "astro/config";
-import { config } from "./main.config.ts";
+import { config } from "./src/config.ts";
 import aiTxt from "./src/integrations/aiTxt.ts";
 import { buildHomeMarkdown } from "./src/integrations/homeMarkdown.ts";
 import indexNow from "./src/integrations/indexNow.ts";

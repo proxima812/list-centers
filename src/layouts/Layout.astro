@@ -1,8 +1,12 @@
 ---
-import { BackToTop, Container, Footer, Header, SEO } from "@/components";
+import BackToTop from "@/components/navigation/BackToTop.astro";
+import Container from "@/components/layout/Container.astro";
+import Footer from "@/components/layout/Footer.astro";
+import Header from "@/components/layout/Header.astro";
+import SEO from "@/components/layout/SEO.astro";
 import { getLocaleFromUrl, getOgLocale } from "@/i18n";
 import YandexMetrika from "@/components/layout/YandexMetrika.astro";
-import { config } from "main.config";
+import { config } from "@/config";
 
 import "@/styles/tailwind.css";
 import { cn } from "@/utils/libs/cn";

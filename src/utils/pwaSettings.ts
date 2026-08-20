@@ -1,4 +1,4 @@
-import { config } from "../../main.config.ts";
+import { config } from "../config.ts";
 
 export const includeAssets = [
 	"favicon.svg",
