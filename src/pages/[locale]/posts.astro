@@ -1,13 +1,5 @@
 ---
-import { defaultLocale, locales } from "@/i18n";
+export { secondaryLocalePaths as getStaticPaths } from "@/i18n/routes";
 
-export function getStaticPaths() {
-	return locales
-		.filter((locale) => locale !== defaultLocale)
-		.map((locale) => ({ params: { locale } }));
-}
-
-// Перевода нет: лента постов одна на обе локали и живет по /posts/.
-// Заглушка нужна только для старых внешних ссылок на /en/posts/.
 return Astro.redirect("/posts/", 301);
 ---

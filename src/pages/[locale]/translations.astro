@@ -1,13 +1,5 @@
 ---
-import { defaultLocale, locales } from "@/i18n";
+export { secondaryLocalePaths as getStaticPaths } from "@/i18n/routes";
 
-export function getStaticPaths() {
-	return locales
-		.filter((locale) => locale !== defaultLocale)
-		.map((locale) => ({ params: { locale } }));
-}
-
-// Перевода нет: раньше здесь рендерился русский MDX с lang="en" —
-// дубликат для поисковиков и русский текст под английским синтезатором.
 return Astro.redirect("/translations/", 301);
 ---

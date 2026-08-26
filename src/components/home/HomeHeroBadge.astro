@@ -1,5 +1,7 @@
 ---
 import release from "@/data/release.json";
+import { latestCenter } from "@/domain/center/order";
+import { siteLinks } from "@/domain/site/links";
 import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
 import {
 	createCenterRouteIdMap,
@@ -13,35 +15,19 @@ import { getCollection } from "astro:content";
 const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
 
-// Бейдж крутит три новости проекта: свежий пост, свежий центр и версию сайта.
-// Все три тянутся из данных, поэтому подпись не нужно вести руками.
 const posts = await getCollection("posts");
 const latestPost = posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())[0];
 
-// У центров нет pubDate ни в одном файле, зато есть сквозной id `tbk-N`:
-// номер и есть порядок добавления, поэтому «последний» — это максимальный N.
-// Если дата когда-нибудь появится, она важнее номера.
 const centers = await getCollection("centers");
 const centerRouteIds = createCenterRouteIdMap(centers);
-const centerNumber = (id: string) => Number(id.match(/^tbk-(\d+)$/)?.[1] ?? -1);
-const latestCenter = [...centers].sort((a, b) => {
-	const byDate =
-		(b.data.pubDate ? new Date(b.data.pubDate).getTime() : 0) -
-		(a.data.pubDate ? new Date(a.data.pubDate).getTime() : 0);
+const newestCenter = latestCenter(centers);
 
-	return byDate !== 0 ? byDate : centerNumber(b.id) - centerNumber(a.id);
-})[0];
-
-// Заголовок центра берем из перевода, если он есть: коллекция `centers` —
-// русская, и на /en иначе всплыло бы русское название.
 const centerTranslations = getCenterTranslationCollection(locale);
 const localizedCenter = centerTranslations
-	? (await getCollection(centerTranslations)).find((entry) => entry.id === latestCenter?.id)
+	? (await getCollection(centerTranslations)).find((entry) => entry.id === newestCenter?.id)
 	: undefined;
-const latestCenterTitle = localizedCenter?.data.title ?? latestCenter?.data.title;
+const newestCenterTitle = localizedCenter?.data.title ?? newestCenter?.data.title;
 
-// У каждого поста есть своя страница (src/pages/posts/[id].astro); в ленте
-// она же открывается drawer'ом, но ссылка ведет на настоящий маршрут.
 const items = [
 	latestPost && {
 		icon: "tabler:news",
@@ -49,21 +35,19 @@ const items = [
 		href: localizePath(locale, getPostPath(latestPost.id)),
 		external: false,
 	},
-	latestCenter && {
+	newestCenter && {
 		icon: "tabler:map-pin",
-		label: t("home.badge.center", { title: latestCenterTitle ?? "" }),
+		label: t("home.badge.center", { title: newestCenterTitle ?? "" }),
 		href: localizePath(
 			locale,
-			getCenterPath(centerRouteIds.get(latestCenter.id) ?? latestCenter.id),
+			getCenterPath(centerRouteIds.get(newestCenter.id) ?? newestCenter.id),
 		),
 		external: false,
 	},
 	{
 		icon: "tabler:sparkles",
 		label: t("home.badge.release", { version: release.version }),
-		// Своей страницы релизов у сайта нет — версия ведет туда же, куда ссылка
-		// на репозиторий в футере.
-		href: "https://github.com/proxima812/tatarverse/releases",
+		href: siteLinks.releases,
 		external: true,
 	},
 ].filter(Boolean) as {
@@ -95,10 +79,6 @@ const items = [
 </div>
 
 <style>
-	/* Появление — первая из двух моторик бейджа: он выезжает раньше героя и
-	   дальше стоит тихо. Стартовое состояние живет только внутри keyframes:
-	   при `[data-motion="off"]` анимация снимается целиком, и плашка обязана
-	   остаться видимой, а не залипнуть на opacity: 0. */
 	@media (prefers-reduced-motion: no-preference) {
 		.hero-badge {
 			animation: hero-badge-in 500ms cubic-bezier(0.32, 0.72, 0, 1) both;
@@ -117,12 +97,6 @@ const items = [
 		}
 	}
 
-	/* Смена новостей: следующая приходит снизу, ушедшая уходит вверх — как
-	   на heroui.com. Позиция у всех одна (absolute inset-0), поэтому высота
-	   плашки не скачет от длины подписи.
-
-	   Скрытые карточки помечены `inert`, а не `display: none`: они выпадают
-	   из фокуса и из чтения скринридером, но остаются в потоке для перехода. */
 	.hero-badge-item {
 		will-change: transform, opacity;
 	}
@@ -165,8 +139,6 @@ const items = [
 			current = next;
 		};
 
-		// Ротацию гасят оба тумблера моушена, вкладка в фоне и наведение курсора:
-		// подпись не должна убегать, пока ее читают или пытаются кликнуть.
 		const canRotate = () =>
 			!reduceMotion.matches &&
 			document.documentElement.dataset.motion !== "off" &&
@@ -174,8 +146,6 @@ const items = [
 			!hovered &&
 			!focused;
 
-		// Только таймер, без ожидания transitionend: при выключенных анимациях
-		// событие не приходит вовсе, и ротация встала бы на первой же карточке.
 		const stop = () => {
 			if (timer) {
 				window.clearInterval(timer);
@@ -190,8 +160,6 @@ const items = [
 			}
 		};
 
-		// Слушаем сами плашки, а не контейнер: контейнер тянется на всю ширину
-		// героя, и пауза срабатывала бы от курсора где угодно на этой строке.
 		items.forEach((item) => {
 			item.addEventListener("pointerenter", () => {
 				hovered = true;
@@ -204,9 +172,6 @@ const items = [
 			});
 		});
 
-		// Флаг, а не голые stop/start: visibilitychange и MutationObserver
-		// зовут start() напрямую, и без флага возврат на вкладку возобновлял
-		// бы ротацию под сфокусированной ссылкой, выбрасывая фокус в body.
 		root.addEventListener("focusin", () => {
 			focused = true;
 			stop();

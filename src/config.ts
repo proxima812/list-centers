@@ -56,25 +56,10 @@ export const config = {
     },
     verifications: [
       { name_verification: "yandex-verification", content: "ef2c55e1bcb7f431" },
-      { name_verification: "p:domain_verify", content: "" },
       {
         name_verification: "google-site-verification",
         content: "ax8dybdaENiWae9wwuPwxMC0GOluT8W9v0yDpIM1AKo",
       },
-      { name_verification: "msvalidate.01", content: "" },
-      { name_verification: "facebook-domain-verification", content: "" },
-      { name_verification: "baidu-site-verification", content: "" },
-      { name_verification: "apple-site-verification", content: "" },
-      { name_verification: "norton-safeweb-site-verification", content: "" },
-      { name_verification: "twitter-site-verification", content: "" },
-      { name_verification: "linkedin-site-verification", content: "" },
-      { name_verification: "adobe-site-verification", content: "" },
-      { name_verification: "mail.ru-verification", content: "" },
-      { name_verification: "tumblr-site-verification", content: "" },
-      { name_verification: "shopify-site-verification", content: "" },
-      { name_verification: "weebly-site-verification", content: "" },
-      { name_verification: "whatsapp-site-verification", content: "" },
-      { name_verification: "stripe-site-verification", content: "" },
     ],
     analytics: {
       yandexMetrika: {

@@ -1,31 +1,9 @@
-/**
- * Движок каталога: поиск, фасеты, активные фильтры.
- *
- * Фасеты обобщены. Раньше имя каждой группы («country», «type», «category»,
- * «region») было вписано в тип `FilterState`, в карту query-параметров, в
- * `groupElements` и в четыре ветки `applyFilters` — добавление пятой оси
- * означало правку в восьми местах. Теперь набор осей читается из разметки:
- * группа объявляет себя `data-filter-group`, и остальное следует.
- *
- * Три вещи, которых раньше не было и без которых иерархия не читается:
- *
- * 1. Счётчики живые. До этого они приезжали с сервера один раз, и после
- *    выбора «Казахстан» рядом с «Пермский край» продолжала висеть цифра 17.
- * 2. Опции с нулём скрываются. Это же делает и всю работу по согласованию
- *    уровней: выбрал Украину — регионы и города других стран обнулились и
- *    ушли сами, отдельного дерева в состоянии не нужно.
- * 3. Секции появляются по условию (`data-filter-gate`): город не показывают,
- *    пока не выбрана страна или регион, иначе это список на 122 строки.
- *
- * Выбор внутри группы один. Раньше он был множественным, и «СНГ» вместе с
- * «Азией» складывались в сумму двух веток дерева — набор, у которого нет
- * общих потомков, так что следующий уровень после него показывать нечего.
- */
+
+import { normalizeSearchText, uniqueTerms } from "@/domain/center/searchText";
 
 type FacetKey = string;
 type FilterState = Record<FacetKey, Set<string>>;
 
-/** Условие показа секции фильтров. */
 type FilterGate = "always" | "world" | "ru" | "country" | "region" | "city";
 
 type CenterScope = "" | "ru" | "abroad" | "online";
@@ -39,8 +17,6 @@ type ExpandableFilterButton = HTMLButtonElement & {
 	};
 };
 
-// Карточка больше не `<a>`: внутри неё живут быстрые ссылки, а вложенные
-// ссылки невалидны. Ищем по data-атрибуту, а не по тегу.
 type FilterableCard = HTMLElement & {
 	dataset: DOMStringMap & {
 		searchId?: string;
@@ -102,29 +78,13 @@ type FuseConstructor = new (
 ) => FuseInstance;
 
 const SCOPE_QUERY_KEY = "scope";
-/**
- * Кто под кем стоит в дереве географии.
- *
- * Нужно для двух вещей, и обе — про то, чтобы родителя нельзя было запереть
- * собственным потомком. Во-первых, счётчик страны считается без учёта города:
- * иначе, выбрав Киев, пользователь видит у Казахстана ноль (Киева там нет),
- * чип прячется, и переключить страну можно только сняв сначала город.
- * Во-вторых, смена родителя обнуляет потомков: выбрал другую страну — город
- * прежней страны уходит сам, а не остаётся висеть в активных фильтрах.
- */
 const FACET_CHILDREN: Record<string, string[]> = {
 	macro: ["country", "region", "city"],
 	okrug: ["region", "city"],
 	country: ["region", "city"],
 	region: ["city"],
 };
-/** Всё, что зависит от корня: смена scope обнуляет географию целиком. */
 const GEO_FACETS = ["macro", "okrug", "country", "region", "city"];
-/**
- * Обратная совместимость со ссылками, сохранёнными до появления scope: там
- * лежал `?type=Регион+РФ`. Поле `type` в карточках осталось, но фильтром быть
- * перестало — старая ссылка переводится в новый корень дерева.
- */
 const LEGACY_TYPE_TO_SCOPE: Record<string, CenterScope> = {
 	"Регион РФ": "ru",
 	Зарубежный: "abroad",
@@ -162,7 +122,6 @@ export function initCardsToolbar() {
 		cardsGridElement.querySelectorAll<FilterableCard>(":scope > [data-search-id]"),
 	);
 
-	// Набор осей объявляет разметка, а не этот файл.
 	const groupElements = Array.from(
 		document.querySelectorAll<HTMLElement>("[data-filter-group]"),
 	);
@@ -175,17 +134,6 @@ export function initCardsToolbar() {
 		document.querySelectorAll<HTMLButtonElement>("[data-scope-value]"),
 	);
 	const scopeAllButton = document.querySelector<HTMLButtonElement>("[data-scope-all]");
-
-	const normalize = (value: string) =>
-		value
-			.toLowerCase()
-			.normalize("NFKD")
-			.replace(/\p{Diacritic}/gu, "")
-			.replace(/[ё]/g, "е")
-			.replace(/[“”«»"']/g, "")
-			.trim();
-	const uniqueTerms = (terms: string[]) =>
-		Array.from(new Set(terms.map((term) => term.trim()).filter((term) => term.length > 1)));
 
 	const cardsIndex: CardIndexItem[] = cards.map((card, order) => {
 		const id = card.dataset.searchId ?? String(order);
@@ -215,7 +163,7 @@ export function initCardsToolbar() {
 			city,
 			terms: uniqueTerms([title, city, country, region, category]),
 			order,
-			searchText: normalize(
+			searchText: normalizeSearchText(
 				`${title} ${summary} ${city} ${country} ${type} ${category} ${region}`,
 			),
 		};
@@ -232,8 +180,6 @@ export function initCardsToolbar() {
 	let searchTimer = 0;
 	let blurTimer = 0;
 	let filterFrame = 0;
-	// Поиск физически переставляет карточки в гриде; после очистки запроса
-	// их нужно один раз вернуть в исходный порядок.
 	let gridReordered = false;
 	let activeSuggestionIndex = -1;
 	let currentSuggestionValues: string[] = [];
@@ -288,16 +234,10 @@ export function initCardsToolbar() {
 		for (const key of facetKeys) {
 			const validValues = getValidValues(key);
 			state[key].clear();
-			// Выбор в группе один, поэтому из ссылки берём первое валидное
-			// значение: старая ссылка с двумя странами не должна воскрешать
-			// мультивыбор.
 			const value = params.getAll(key).find((candidate) => validValues.has(candidate));
 			if (value) state[key].add(value);
 		}
 
-		// Подсказки не открываем: при загрузке по ссылке с ?q= инпут не в
-		// фокусе, и закрыть дропдаун было бы нечем. Фокус в поле сам вызовет
-		// updateSuggestions.
 	}
 
 	function writeStateToUrl() {
@@ -318,10 +258,6 @@ export function initCardsToolbar() {
 		window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
 	}
 
-	// `scroll-behavior: auto` из `[data-motion="off"]` не помогает: явный
-	// `behavior: "smooth"` в scrollTo/scrollIntoView перебивает CSS-свойство.
-	// Поэтому тумблер приходится читать руками — иначе он гасит весь сайт,
-	// кроме доводки каталога.
 	function getScrollBehavior(): ScrollBehavior {
 		const motionOff = document.documentElement.dataset.motion === "off";
 		return motionOff || prefersReducedMotion.matches ? "auto" : "smooth";
@@ -345,9 +281,6 @@ export function initCardsToolbar() {
 			filtersBadge.textContent = String(total);
 			filtersBadge.classList.toggle("hidden", total === 0);
 		}
-		// Счётчик — постоянный якорь каталога: сколько всего центров видно
-		// уже при загрузке. Поэтому бар не прячем, прячем только сброс,
-		// когда сбрасывать нечего.
 		const hasAnything = total > 0 || hasSearchQuery;
 		filtersResetButtons.forEach((button) => {
 			button.hidden = !hasAnything;
@@ -440,7 +373,6 @@ export function initCardsToolbar() {
 	}
 
 	function clearSearchQuery() {
-		// Иначе отложенный дебаунс-таймер воскресит только что стёртый запрос.
 		window.clearTimeout(searchTimer);
 		searchQuery = "";
 		if (searchInput) {
@@ -460,14 +392,6 @@ export function initCardsToolbar() {
 		return !searchMatchIds || searchMatchIds.has(item.id);
 	}
 
-	/**
-	 * Совпадение по всем осям, кроме `skipKey`.
-	 *
-	 * Пропуск собственной оси — это и есть правило подсчёта фасетов: цифра
-	 * рядом со «Свердловской областью» должна показывать, сколько карточек
-	 * останется, если её выбрать, а не сколько их при уже выбранном другом
-	 * регионе (там всегда ноль).
-	 */
 	function matchesExcept(item: CardIndexItem, skipKeys: readonly FacetKey[] | null) {
 		if (!matchesScope(item) || !matchesSearch(item)) return false;
 		for (const key of facetKeys) {
@@ -490,11 +414,6 @@ export function initCardsToolbar() {
 		return counts;
 	}
 
-	/**
-	 * Счётчики корня считаются без географии вообще: она вся под ним, и
-	 * «Зарубеж 194» не должно превращаться в «Зарубеж 0» только потому, что
-	 * сейчас выбран Пермский край.
-	 */
 	function countScopes() {
 		const counts = new Map<string, number>();
 		for (const item of cardsIndex) {
@@ -519,24 +438,12 @@ export function initCardsToolbar() {
 				return scope === "ru";
 			case "world":
 				return scope !== "ru" && scope !== "online";
-			// 42 зарубежные страны плоским списком — ровно та проблема, ради
-			// которой заведены макрорегионы. Под «Все» страна ждёт выбора
-			// корзины; под «Зарубеж» пользователь уже сузил каталог сам, и
-			// порог «показать ещё» там честно работает.
 			case "country":
 				return scope === "abroad" || (state.macro?.size ?? 0) > 0;
-			// Регион имеет смысл, только когда география уже сужена: список из
-			// 79 регионов вперемешку с казахстанскими областями не читается, а
-			// «Казахстан + Пермский край» — кликабельная комбинация, дающая
-			// ноль. Сузить может любой из трёх уровней выше — корень «Россия»,
-			// федеральный округ или страна.
 			case "region":
 				return (
 					scope === "ru" || (state.okrug?.size ?? 0) > 0 || (state.country?.size ?? 0) > 0
 				);
-			// Тот самый случай из постановки: Киев — город, Украина — страна,
-			// и город показывается только внутри своей страны или своего
-			// региона.
 			case "city":
 				return (state.region?.size ?? 0) > 0 || (state.country?.size ?? 0) > 0;
 			default:
@@ -544,11 +451,6 @@ export function initCardsToolbar() {
 		}
 	}
 
-	/**
-	 * Выбранные значения, которые обнулились после изменения родителя.
-	 * Выбрал Украину, потом переключил на Казахстан — Киев остаётся активным и
-	 * схлопывает выдачу в ноль, хотя его чип уже скрыт.
-	 */
 	function pruneEmptySelections() {
 		let pruned = false;
 		for (const key of facetKeys) {
@@ -587,8 +489,6 @@ export function initCardsToolbar() {
 				chip.toggleAttribute("data-active", isActive);
 				chip.setAttribute("aria-pressed", String(isActive));
 
-				// Активный чип виден всегда, даже если оказался за порогом:
-				// иначе снять фильтр можно было бы только через токен наверху.
 				if (count === 0 && !isActive) {
 					chip.hidden = true;
 					continue;
@@ -612,8 +512,6 @@ export function initCardsToolbar() {
 					: (moreButton.dataset.showMore ?? "").replace("__COUNT__", String(hidden));
 			}
 
-			// Секция без опций — это пустая рамка с одной кнопкой «все»,
-			// поэтому прячем её целиком, а не только её содержимое.
 			section.hidden = !isSectionVisible(gate, key) || shown === 0;
 		}
 
@@ -643,14 +541,6 @@ export function initCardsToolbar() {
 		}
 	}
 
-	/**
-	 * Внутри группы выбор один.
-	 *
-	 * Мультивыбор здесь читался как «СНГ и Азия одновременно» — сумма двух
-	 * веток дерева, у которой нет ни одного общего потомка, и следующий
-	 * уровень после неё показывать нечего. Повторный клик по активному
-	 * значению снимает его и возвращает группу в «все».
-	 */
 	function toggleChip(groupName: FacetKey, value: string) {
 		const groupState = state[groupName];
 		if (!groupState) return;
@@ -659,8 +549,6 @@ export function initCardsToolbar() {
 		groupState.clear();
 		if (!wasActive) groupState.add(value);
 
-		// Сменил страну — город прежней страны уходит вместе с ней. Иначе он
-		// остался бы активным токеном, который тихо схлопывает выдачу в ноль.
 		clearDescendants(groupName);
 		pruneEmptySelections();
 		scheduleApplyFilters(true);
@@ -674,8 +562,6 @@ export function initCardsToolbar() {
 
 	function setScope(next: CenterScope) {
 		scope = scope === next ? "" : next;
-		// Корень обнуляет географию целиком: федеральных округов не бывает в
-		// зарубежье, а стран — внутри России.
 		for (const key of GEO_FACETS) state[key]?.clear();
 		scheduleApplyFilters(true);
 	}
@@ -707,11 +593,6 @@ export function initCardsToolbar() {
 		return searchItemsPromise;
 	}
 
-	/**
-	 * Поисковый индекс приезжает отдельным JSON и знает только текст. Ключи
-	 * фасетов остаются от карточки в DOM: индекс их не переопределяет, иначе
-	 * фильтр разъехался бы с разметкой.
-	 */
 	function mergeWithCard(item: SearchIndexItem): CardIndexItem | null {
 		const indexed = cardById.get(item.id);
 		if (!indexed) return null;
@@ -750,7 +631,7 @@ export function initCardsToolbar() {
 	}
 
 	async function getSearchResults(query: string): Promise<SearchResult[]> {
-		const normalizedQuery = normalize(query);
+		const normalizedQuery = normalizeSearchText(query);
 		if (!normalizedQuery) {
 			return cardsIndex.map((item) => ({ item, score: 0 }));
 		}
@@ -830,14 +711,14 @@ export function initCardsToolbar() {
 			return;
 		}
 
-		const normalizedQuery = normalize(query);
+		const normalizedQuery = normalizeSearchText(query);
 		const suggestionsSet = new Set<string>();
 
 		const searchResults = await getSearchResults(query);
 		if (query !== searchQuery.trim()) return;
 
 		searchResults.slice(0, 8).forEach(({ item }) => {
-			const matchingTerm = item.terms.find((term) => normalize(term).includes(normalizedQuery));
+			const matchingTerm = item.terms.find((term) => normalizeSearchText(term).includes(normalizedQuery));
 			suggestionsSet.add(matchingTerm ?? item.title);
 		});
 
@@ -883,8 +764,6 @@ export function initCardsToolbar() {
 		const searchOrder = new Map(rankedResults.map((result, index) => [result.item.id, index]));
 		searchMatchIds = query ? new Set(rankedResults.map((result) => result.item.id)) : null;
 
-		// Пересчёт после поиска: запрос сужает выдачу так же, как фильтр, и
-		// выбранное значение могло обнулиться вместе с ним.
 		pruneEmptySelections();
 
 		let visible = 0;
@@ -929,11 +808,6 @@ export function initCardsToolbar() {
 		filtersPanel.classList.toggle("hidden", !isHidden);
 		filtersToggle.setAttribute("aria-expanded", String(isHidden));
 
-		// Кнопка живёт в липкой панели и едет вместе со скроллом, а сами
-		// фильтры остались в потоке. Без доводки тап в глубине каталога
-		// раскрыл бы их за экраном. Целимся не в саму секцию, а под нижнюю
-		// кромку липкой панели — её высота меняется вместе с активными
-		// фильтрами, поэтому берём фактическую, а не константу.
 		if (isHidden && !isDesktopLayout.matches && filtersShell) {
 			const barBottom = stickyBar?.getBoundingClientRect().bottom ?? 0;
 			const target =
@@ -1006,8 +880,6 @@ export function initCardsToolbar() {
 	});
 
 	searchInput?.addEventListener("focus", () => {
-		// Быстрый рефокус не должен дать отложенному blur-таймеру погасить
-		// только что открытые подсказки.
 		window.clearTimeout(blurTimer);
 		void updateSuggestions();
 	});

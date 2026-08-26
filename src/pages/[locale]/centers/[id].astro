@@ -1,42 +1,39 @@
 ---
-import { defaultLocale, locales } from "@/i18n";
-import { createCenterRouteIdMap } from "@/utils/centers";
+import { getCenterTranslationCollection, createCenterRouteIdMap } from "@/utils/centers";
+import { secondaryLocales } from "@/i18n/routes";
 import { getCollection } from "astro:content";
 import CenterPage from "../../centers/[id].astro";
 
 export async function getStaticPaths() {
 	const entries = await getCollection("centers");
 	const routeIds = createCenterRouteIdMap(entries);
-	const translationEntriesByLocale = new Map(
+
+	const translationsByLocale = new Map(
 		await Promise.all(
-			locales
-				.filter((locale) => locale !== defaultLocale)
-				.map(async (locale) => {
-					const translatedEntries =
-						locale === "en"
-							? await getCollection("centersEn")
-							: [];
-					return [
-						locale,
-						new Map(translatedEntries.map((entry) => [entry.id, entry])),
-					] as const;
-				}),
+			secondaryLocales().map(async (locale) => {
+				const collection = getCenterTranslationCollection(locale);
+				const translated = collection ? await getCollection(collection) : [];
+
+				return [locale, new Map(translated.map((entry) => [entry.id, entry]))] as const;
+			}),
 		),
 	);
 
-	return locales
-		.filter((locale) => locale !== defaultLocale)
-		.flatMap((locale) =>
-			entries.flatMap((entry) => {
-				const localizedEntry = translationEntriesByLocale.get(locale)?.get(entry.id);
-				if (!localizedEntry) return [];
+	// Локализованная страница центра существует только там, где есть перевод:
+	// подставлять русский текст под /en/ нельзя — canonical и hreflang врут.
+	return secondaryLocales().flatMap((locale) =>
+		entries.flatMap((entry) => {
+			const localizedEntry = translationsByLocale.get(locale)?.get(entry.id);
+			if (!localizedEntry) return [];
 
-				return [{
+			return [
+				{
 					params: { locale, id: routeIds.get(entry.id) ?? entry.id },
 					props: { entry, localizedEntry },
-				}];
-			}),
-		);
+				},
+			];
+		}),
+	);
 }
 ---
 

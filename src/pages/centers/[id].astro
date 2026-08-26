@@ -10,6 +10,7 @@ import Layout from "@/layouts/Layout.astro";
 import { Icon } from "astro-icon/components";
 import { getCollection, render, type CollectionEntry } from "astro:content";
 
+import { byRecency } from "@/domain/center/order";
 import { getCountryLabel } from "@/data/worldCountries";
 import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
 import { getCenterLinks } from "@/utils/centerLinks";
@@ -37,12 +38,7 @@ const data = contentEntry.data;
 const { Content } = await render(contentEntry);
 const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
-const centerEntries = (await getCollection("centers")).sort((a, b) => {
-	return (
-		(b.data.pubDate ? new Date(b.data.pubDate).getTime() : 0) -
-		(a.data.pubDate ? new Date(a.data.pubDate).getTime() : 0)
-	);
-});
+const centerEntries = byRecency(await getCollection("centers"));
 const routeIds = createCenterRouteIdMap(centerEntries);
 const englishEntries = await getCollection("centersEn");
 const englishEntryById = new Map(englishEntries.map((centerEntry) => [centerEntry.id, centerEntry]));
@@ -68,8 +64,6 @@ const { publishedDate, modifiedDate } = getContentDates({
 });
 const routeId = routeIds.get(entry.id) ?? entry.id;
 const canonicalURL = localizePath(locale, getCenterPath(routeId));
-// Markdown-двойник от @dualmark/astro генерируется только из русской
-// коллекции `centers`, поэтому на английском маршруте альтернейта нет.
 const markdownURL = locale === "ru" ? `${getCenterPath(routeId)}.md` : undefined;
 const hasEnglishTranslation = englishEntryById.has(entry.id);
 const alternateLinks = [
@@ -86,8 +80,6 @@ const nextEntry =
 		? centerEntries[currentIndex + 1]
 		: null;
 
-// Страна в справке раньше бралась сырой из данных, то есть на английской
-// версии страницы оставалась русской. `getCountryLabel` уже локализует ее.
 const localizedCountry = country ? getCountryLabel(country, locale) : null;
 const placeLine = [flag, localizedCountry ?? country].filter(Boolean).join(" ");
 const cityLine = city ?? null;
@@ -112,8 +104,6 @@ const sourceLabel = (() => {
 	}
 })();
 
-// Иконка на каждой строке справки — украшение: пара «метка — значение» и так
-// себя объясняет, а четыре разных пиктограммы подряд только шумят.
 const facts = [
 	placeLine ? { label: t("detail.country"), value: placeLine } : null,
 	cityLine ? { label: t("detail.city"), value: cityLine } : null,
@@ -121,8 +111,6 @@ const facts = [
 	formattedDate ? { label: t("content.published"), value: formattedDate } : null,
 ].filter((fact): fact is { label: string; value: string } => Boolean(fact));
 
-// Категория и тип — таксономия, она уходит в надзаголовок. В справке остается
-// география, дата и источник, поэтому ничего не дублируется.
 const headerBadges = [category, type].filter((value): value is string => Boolean(value));
 const descriptionDetails = [...new Set((locale === "en"
 	? [city, region, localizedCountry]
@@ -215,15 +203,6 @@ const jsonLd = {
 			<CopyPageMenu class="max-w-full justify-self-start sm:justify-self-end" />
 		</nav>
 
-		{/*
-			Страница держалась на трех декоративных градиентных волосках шириной
-			`calc(100% - 180px)` — магическое число и чистое украшение, — а тело
-			лежало в панели с кольцом, внутри которой сидела вторая панель с
-			кольцом. Разделение теперь делают отступы и мера колонки.
-
-			Ось одна — левая. Раньше шапка была центрирована, а проза под ней
-			прижата влево, и страница дважды меняла выравнивание на одном экране.
-		*/}
 		<header class="flex w-full min-w-0 flex-col gap-4">
 			{
 				headerBadges.length > 0 && (
@@ -289,11 +268,6 @@ const jsonLd = {
 									</dd>
 								</div>
 							))}
-							{/*
-								Ссылка на источник раньше лежала внутри условия `facts.length > 0`:
-								у центра с источником, но без страны, города, региона и даты она
-								не выводилась вовсе.
-							*/}
 							{sourceUrl && (
 								<div class="flex items-baseline justify-between gap-4 py-2.5">
 									<dt class="shrink-0 text-xs uppercase text-subtle-foreground">

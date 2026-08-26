@@ -1,5 +1,8 @@
 ---
+import { pressMentions } from "@/data/press";
 import release from "@/data/release.json";
+import { byRecency } from "@/domain/center/order";
+import { externalLinkProps, siteLinks } from "@/domain/site/links";
 import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
 import {
 	createCenterRouteIdMap,
@@ -15,10 +18,12 @@ import LogoMark from "./LogoMark.astro";
 const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
 const policyHref = localizePath(locale, "/policy");
-const repositoryHref = "https://github.com/proxima812/tatarverse";
-const codeLicenseHref = `${repositoryHref}/blob/main/LICENSE`;
-const contentLicenseHref = `${repositoryHref}/blob/main/CONTENT-LICENSE.md`;
-const suggestChangeHref = `${repositoryHref}/issues/new`;
+const {
+	repository: repositoryHref,
+	codeLicense: codeLicenseHref,
+	contentLicense: contentLicenseHref,
+	suggestChange: suggestChangeHref,
+} = siteLinks;
 const updatedAtLabel = new Intl.DateTimeFormat(locale, {
 	day: "numeric",
 	month: "long",
@@ -29,24 +34,10 @@ const updatedAtLabel = new Intl.DateTimeFormat(locale, {
 	timeZone: "Asia/Almaty",
 }).format(new Date(release.updatedAt));
 
-// Последние 5 центров: та же логика, что у HomeHeroBadge — у центров нет
-// сквозного pubDate, зато есть id `tbk-N`, номер которого и есть порядок
-// добавления. Дата, если она есть, важнее номера.
 const allCenters = await getCollection("centers");
 const centerRouteIds = createCenterRouteIdMap(allCenters);
-const centerNumber = (id: string) => Number(id.match(/^tbk-(\d+)$/)?.[1] ?? -1);
-const recentCenters = [...allCenters]
-	.sort((a, b) => {
-		const byDate =
-			(b.data.pubDate ? new Date(b.data.pubDate).getTime() : 0) -
-			(a.data.pubDate ? new Date(a.data.pubDate).getTime() : 0);
+const recentCenters = byRecency(allCenters).slice(0, 5);
 
-		return byDate !== 0 ? byDate : centerNumber(b.id) - centerNumber(a.id);
-	})
-	.slice(0, 5);
-
-// Заголовок центра берем из перевода, если он есть: коллекция `centers` —
-// русская, и на /en иначе всплыло бы русское название.
 const centerTranslationCollection = getCenterTranslationCollection(locale);
 const translatedCenters = centerTranslationCollection
 	? await getCollection(centerTranslationCollection)
@@ -59,21 +50,8 @@ const recentPosts = (await getCollection("posts"))
 	.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
 	.slice(0, 4);
 
-// Подвал намеренно НЕ берёт токен `link`. Синий там — сигнал впустую: ссылками
-// в подвале является всё подряд, и целая колонка синего перетягивает внимание с
-// содержимого страницы. Сигнал кликабельности здесь несут позиция и список, а
-// не цвет, поэтому тут нейтральные чернила с приглушённым подчёркиванием.
-//
-// Подвал темный на обеих темах, но не одним и тем же способом: на светлой
-// бумаге он берет готовый темный `foreground`, а на темной должен быть темнее
-// самой темной темы — готового токена под это нет, поэтому лестница продлена
-// на месте через oklch(from ...) в <style> ниже: светлота `background`
-// умножается на 0.6, без единого литерального цвета. `light-dark()` выбирает
-// ветку по `color-scheme`, который уже объявлен на `:root`/`.dark` в
-// tailwind.css. Ссылки без подчеркивания: сигнал кликабельности несут список
-// и позиция, а не декорация.
 const baseStyle =
-	"text-[var(--footer-fg)] transition hover:opacity-70";
+	"text-[var(--footer-fg-muted)] transition-colors hover:text-[var(--footer-fg)]";
 
 type FooterLink = {
 	href: string;
@@ -83,12 +61,16 @@ type FooterLink = {
 	props?: Record<string, string>;
 };
 
-const externalProps = {
-	target: "_blank",
-	rel: "noreferrer noopener",
+type FooterSection = {
+	id: string;
+	title: string;
+	links: FooterLink[];
+	clamp?: boolean;
 };
 
-const footerSections: Array<{ id: string; title: string; links: FooterLink[] }> = [
+const externalProps = externalLinkProps;
+
+const footerSections: FooterSection[] = [
 	{
 		id: "navigation",
 		title: t("footer.navigation.title"),
@@ -130,19 +112,27 @@ const footerSections: Array<{ id: string; title: string; links: FooterLink[] }> 
 		],
 	},
 	{
+		id: "about",
+		title: t("footer.about.title"),
+		links: pressMentions.map((mention) => ({
+			href: mention.href,
+			label: t("footer.about.press", { outlet: mention.outlet }),
+			props: externalProps,
+		})),
+	},
+	{
 		id: "added",
 		title: t("footer.added.title"),
+		clamp: true,
 		links: recentCenters.map((entry) => ({
-			href: localizePath(
-				locale,
-				getCenterPath(centerRouteIds.get(entry.id) ?? entry.id),
-			),
+			href: localizePath(locale, getCenterPath(centerRouteIds.get(entry.id) ?? entry.id)),
 			label: centerTitle(entry),
 		})),
 	},
 	{
 		id: "posts",
 		title: t("footer.posts.title"),
+		clamp: true,
 		links: recentPosts.map((entry) => ({
 			href: localizePath(locale, getPostPath(entry.id)),
 			label: entry.data.title,
@@ -205,9 +195,16 @@ const footerSections: Array<{ id: string; title: string; links: FooterLink[] }> 
 		],
 	},
 ];
+
+const sectionById = new Map(footerSections.map((section) => [section.id, section]));
+const footerColumns: FooterSection[][] = [
+	["navigation", "materials", "about"],
+	["posts", "added"],
+	["contacts", "open-source"],
+].map((ids) => ids.map((id) => sectionById.get(id)).filter((s): s is FooterSection => !!s));
 ---
 
-<footer class="site-footer mt-auto py-10 text-sm sm:text-xs">
+<footer class="site-footer rounded-t-[60px] mt-auto pt-15 pb-10 text-sm sm:text-xs">
 	<Container container class="max-w-7xl">
 		<div class="grid gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,2.5fr)]">
 			<div class="space-y-3">
@@ -224,38 +221,47 @@ const footerSections: Array<{ id: string; title: string; links: FooterLink[] }> 
 
 			<nav aria-label={t("footer.links")} class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
 				{
-					footerSections.map((section) => (
-						<section aria-labelledby={`footer-${section.id}`}>
-							<p
-								id={`footer-${section.id}`}
-								class="mb-3 text-lg font-bold text-[var(--footer-fg)]"
-							>
-								{section.title}
-							</p>
-							<ul class="space-y-2 text-base">
-								{section.links.map((link) => (
-									<li>
-										<a
-											href={link.href}
-											class={`inline-flex min-h-6 min-w-0 max-w-full items-center gap-1.5 ${baseStyle}`}
-											{...link.props}
-										>
-											{link.icon && (
-												<Icon name={link.icon} class="size-4 shrink-0" aria-hidden="true" />
-											)}
-											<span
-												class:list={[
-													"min-w-0",
-													link.nowrap ? "whitespace-nowrap" : "wrap-anywhere",
-												]}
-											>
-												{link.label}
-											</span>
-										</a>
-									</li>
-								))}
-							</ul>
-						</section>
+					footerColumns.map((column) => (
+						<div class="space-y-8">
+							{column.map((section) => (
+								<section aria-labelledby={`footer-${section.id}`}>
+									<p
+										id={`footer-${section.id}`}
+										class="mb-3 text-base font-semibold text-[var(--footer-fg)]"
+									>
+										{section.title}
+									</p>
+									<ul class="space-y-2 text-sm">
+										{section.links.map((link) => (
+											<li>
+												<a
+													href={link.href}
+													class={`inline-flex min-h-6 min-w-0 max-w-full items-start gap-1.5 ${baseStyle}`}
+													{...link.props}
+												>
+													{link.icon && (
+														<Icon
+															name={link.icon}
+															class="size-4 shrink-0 translate-y-0.5"
+															aria-hidden="true"
+														/>
+													)}
+													<span
+														class:list={[
+															"min-w-0",
+															link.nowrap ? "whitespace-nowrap" : "wrap-anywhere",
+															section.clamp && "line-clamp-2",
+														]}
+													>
+														{link.label}
+													</span>
+												</a>
+											</li>
+										))}
+									</ul>
+								</section>
+							))}
+						</div>
 					))
 				}
 			</nav>
@@ -269,29 +275,24 @@ const footerSections: Array<{ id: string; title: string; links: FooterLink[] }> 
 				&copy; tatarverse.cc {new Date().getFullYear()} · {t("footer.legalNote")}
 			</p>
 			<div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
-				<p>v{release.version} · {t("footer.updated", { date: updatedAtLabel })}</p>
 				<a
 					href={repositoryHref}
-					class={`inline-flex min-w-0 max-w-full items-center gap-1.5 text-base ${baseStyle}`}
+					class={`inline-flex min-w-0 max-w-full text-sm items-center gap-1.5 text-base ${baseStyle}`}
 					{...externalProps}
 				>
 					<Icon name="mdi:github" class="size-4" aria-hidden="true" />
 					<span class="min-w-0 wrap-anywhere">{t("footer.openSource.short")}</span>
 				</a>
+
+				<p class="text-sm text-muted-foreground">
+					v{release.version} · {t("footer.updated", { date: updatedAtLabel })}
+				</p>
 			</div>
 		</div>
 	</Container>
 </footer>
 
 <style>
-	/*
-	 * Тёмный на обеих темах, но по-разному: на светлой странице подвал берёт
-	 * готовый тёмный `foreground`, на тёмной странице готового токена "темнее
-	 * фона" нет, поэтому лестница продлена относительным цветом — светлота
-	 * `background` умножается на 0.6. `light-dark()` читает уже объявленный
-	 * `color-scheme` (:root/.dark в tailwind.css), поэтому ветка выбирается
-	 * сама, без класса .dark на самом подвале.
-	 */
 	.site-footer {
 		--footer-bg: light-dark(
 			var(--color-foreground),

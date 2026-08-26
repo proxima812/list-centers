@@ -2,6 +2,7 @@
 import CatalogStats from "@/components/centers/CatalogStats.astro";
 import { MACRO_REGIONS, getMacroRegion, type MacroRegion } from "@/data/geo";
 import { countryFlagsByRu, getCountryLabel, worldCountriesRu } from "@/data/worldCountries";
+import { catalogStats, countByCountry, withoutCountry } from "@/domain/center/stats";
 import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
 import Layout from "@/layouts/Layout.astro";
 import { getCenterKindBreakdown } from "@/utils/centerKinds";
@@ -10,28 +11,11 @@ import { getCollection } from "astro:content";
 const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
 
-// География каталога живет только в русской коллекции — переводы ее не
-// формируют (см. комментарий в src/content.config.ts). Поэтому и счетчики,
-// и разбивка по странам считаются здесь, а локализуются только подписи.
 const centers = await getCollection("centers");
 
-const countByCountry = new Map<string, number>();
-for (const center of centers) {
-	const country = center.data.location?.country;
-	if (!country) continue;
-	countByCountry.set(country, (countByCountry.get(country) ?? 0) + 1);
-}
-
-const regionsCount = new Set(
-	centers.map((center) => center.data.location?.region).filter(Boolean),
-).size;
-const withoutCountry = centers.filter((center) => !center.data.location?.country).length;
-
-const seoStats = {
-	count: centers.length,
-	countries: countByCountry.size,
-	regions: regionsCount,
-};
+const countryCounts = countByCountry(centers);
+const seoStats = catalogStats(centers);
+const missingCountry = withoutCountry(centers);
 
 interface CountryRow {
 	country: string;
@@ -44,22 +28,19 @@ const toRow = (country: string): CountryRow => ({
 	country,
 	label: getCountryLabel(country, locale),
 	flag: countryFlagsByRu[country] ?? "",
-	count: countByCountry.get(country) ?? 0,
+	count: countryCounts.get(country) ?? 0,
 });
 
-// Страна из карточки может не значиться в справочнике `worldCountriesRu`
-// (схема требует только макрорегион), поэтому источник списка — сам каталог,
-// а справочник добавляет к нему нули.
-const knownCountries = new Set([...countByCountry.keys(), ...worldCountriesRu]);
+const knownCountries = new Set([...countryCounts.keys(), ...worldCountriesRu]);
 
 const groups = MACRO_REGIONS.map((macro: MacroRegion) => {
 	const inMacro = [...knownCountries].filter((country) => getMacroRegion(country) === macro);
 	const present = inMacro
-		.filter((country) => countByCountry.has(country))
+		.filter((country) => countryCounts.has(country))
 		.map(toRow)
 		.sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, locale));
 	const missing = inMacro
-		.filter((country) => !countByCountry.has(country))
+		.filter((country) => !countryCounts.has(country))
 		.map(toRow)
 		.sort((a, b) => a.label.localeCompare(b.label, locale));
 
@@ -84,8 +65,8 @@ const centersHref = localizePath(locale, "/centers");
 		"статистика ТБК",
 		"татарские центры по странам",
 		`центров: ${centers.length}`,
-		`стран: ${countByCountry.size}`,
-		`регионов: ${regionsCount}`,
+		`стран: ${seoStats.countries}`,
+		`регионов: ${seoStats.regions}`,
 		"где нет татарских центров",
 		"география татарской диаспоры",
 	]}
@@ -119,10 +100,10 @@ const centersHref = localizePath(locale, "/centers");
 		<p class="mt-2 text-sm leading-6 text-muted-foreground">
 			{t("stats.byCountry.hint")}
 			{
-				withoutCountry > 0 && (
+				missingCountry > 0 && (
 					<>
 						{" "}
-						{t("stats.withoutCountry", { count: withoutCountry })}
+						{t("stats.withoutCountry", { count: missingCountry })}
 					</>
 				)
 			}

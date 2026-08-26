@@ -5,6 +5,7 @@ import MotionToggle from "./MotionToggle.astro";
 import SavedLink from "./SavedLink.astro";
 import ThemeToggle from "./ThemeToggle.astro";
 import { links } from "@/data/links";
+import { siteLinks } from "@/domain/site/links";
 import {
 	getLocaleFromUrl,
 	getSwitcherHref,
@@ -22,9 +23,6 @@ const languageItems = locales.map((locale) => ({
 	short: localeLabels[locale].short,
 	href: getSwitcherHref(locale, Astro.url),
 }));
-// Группируем по href, а не по индексам: срезы уже однажды разъехались с
-// порядком в links (политика попадала в «Материалы», источники — в «Правовую
-// информацию»).
 const materialHrefs = new Set(["/posts", "/translations", "/sources"]);
 const legalHrefs = new Set(["/policy"]);
 const mainLinks = links.slice(0, 1);
@@ -33,9 +31,11 @@ const policyLinks = links.filter((item) => legalHrefs.has(item.href));
 const otherLinks = links
 	.slice(1)
 	.filter((item) => !materialHrefs.has(item.href) && !legalHrefs.has(item.href));
-const codeLicenseHref = "https://github.com/proxima812/tatarverse/blob/main/LICENSE";
-const contentLicenseHref = "https://github.com/proxima812/tatarverse/blob/main/CONTENT-LICENSE.md";
-const developerHref = "https://github.com/proxima812";
+const {
+	codeLicense: codeLicenseHref,
+	contentLicense: contentLicenseHref,
+	developer: developerHref,
+} = siteLinks;
 
 const sectionTitleClass =
 	"mb-4 max-w-full px-4 text-xs font-semibold uppercase tracking-tight text-muted-foreground";
@@ -138,9 +138,6 @@ const isActivePath = (href: string) => {
 							/>
 						))
 					}
-					{/* В шапке «Сохраненные» стоят до палитры; на мобильном шапка
-					    свернута в это меню, поэтому ссылка идет сюда, к каталогу —
-					    рядом с тем, откуда карточки в нее и попадают. */}
 					<SavedLink withLabel />
 				</section>
 
@@ -297,9 +294,6 @@ const isActivePath = (href: string) => {
 
 		if (!toggle || !list || !backdrop) return;
 
-		// В разметке drawer лежит внутри <header>, поэтому пометить хедер как
-		// inert было бы нельзя, не отключив заодно сам drawer. Переносим оба
-		// оверлея в <body>: они и так `fixed`, от родителя ничего не зависит.
 		document.body.append(backdrop, list);
 
 		let lockedScrollY = 0;
@@ -323,8 +317,6 @@ const isActivePath = (href: string) => {
 			document.body.style.left = "";
 			document.body.style.right = "";
 			document.body.style.width = "";
-			// instant, иначе scroll-smooth на <html> «провозит» страницу от нуля
-			// до прежней позиции при каждом закрытии меню.
 			window.scrollTo({ top: lockedScrollY, behavior: "instant" });
 		};
 
@@ -332,14 +324,10 @@ const isActivePath = (href: string) => {
 			'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 		const getFocusable = (): HTMLElement[] =>
-			// offsetParent отсекает скрытые элементы: пока drawer сдвинут за экран,
-			// он не скрыт, но внутри могут быть `hidden`-блоки.
 			Array.from(list.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
 				(el) => el.offsetParent !== null,
 			);
 
-		// Контент под drawer'ом на время открытия убирается и от скринридеров,
-		// и из таб-порядка. `inert` делает и то, и другое одним атрибутом.
 		const backgroundRegions = (): HTMLElement[] =>
 			Array.from(document.body.children).filter(
 				(el): el is HTMLElement =>
@@ -362,8 +350,6 @@ const isActivePath = (href: string) => {
 				region.inert = isOpen;
 			}
 
-			// `translate-x-full`/`opacity-0` — состояние покоя закрытого меню:
-			// снимаем на открытии, возвращаем после проигранной анимации выхода.
 			if (isOpen) {
 				list.classList.remove("translate-x-full");
 				backdrop.classList.remove("opacity-0");
@@ -371,8 +357,6 @@ const isActivePath = (href: string) => {
 				getFocusable()[0]?.focus();
 			} else {
 				unlockBody();
-				// Фокус мог остаться на ссылке внутри закрывающегося drawer'а —
-				// возвращаем его на кнопку, иначе он улетает на <body>.
 				if (list.contains(document.activeElement)) {
 					toggle.focus();
 				}
@@ -413,8 +397,6 @@ const isActivePath = (href: string) => {
 			toggle.focus();
 		});
 
-		// Слушатель на самом drawer'е, а не на document: иначе несколько
-		// экземпляров меню навесили бы по хендлеру каждый.
 		list.addEventListener("keydown", (event) => {
 			if (event.key === "Escape") {
 				setOpen(false);
@@ -425,8 +407,6 @@ const isActivePath = (href: string) => {
 
 			if (event.key !== "Tab") return;
 
-			// Замыкаем таб-порядок внутри drawer'а: с последнего элемента —
-			// на первый, и наоборот по Shift+Tab.
 			const focusable = getFocusable();
 
 			if (focusable.length === 0) return;

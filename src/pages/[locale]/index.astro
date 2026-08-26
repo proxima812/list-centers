@@ -1,12 +1,6 @@
 ---
 import HomePage from "../index.astro";
-import { defaultLocale, locales } from "@/i18n";
-
-export function getStaticPaths() {
-	return locales
-		.filter((locale) => locale !== defaultLocale)
-		.map((locale) => ({ params: { locale } }));
-}
+export { secondaryLocalePaths as getStaticPaths } from "@/i18n/routes";
 ---
 
 <HomePage />

@@ -1,21 +1,16 @@
 ---
-import HomeFollowersCarousel from "@/components/home/HomeFollowersCarousel.astro";
 import HomeHeroBadge from "@/components/home/HomeHeroBadge.astro";
 import HomeHeroTitle from "@/components/home/HomeHeroTitle.astro";
 import HomeLinks from "@/components/home/HomeLinks.astro";
 import HomeSections from "@/components/home/HomeSections.astro";
+import { catalogStats } from "@/domain/center/stats";
 import { getLocaleFromUrl, useTranslations } from "@/i18n";
 import Layout from "@/layouts/Layout.astro";
 import { getCollection } from "astro:content";
 
-const allCenters = await getCollection("centers");
-const centers = allCenters.length;
-const countriesCount = new Set(
-	allCenters.map((center) => center.data.location?.country).filter(Boolean),
-).size;
-const regionsCount = new Set(
-	allCenters.map((center) => center.data.location?.region).filter(Boolean),
-).size;
+const { count: centers, countries: countriesCount, regions: regionsCount } = catalogStats(
+	await getCollection("centers"),
+);
 const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
 ---
@@ -47,7 +42,6 @@ const t = useTranslations(locale);
 			<HomeLinks />
 		</div>
 
-		<!-- <HomeFollowersCarousel /> -->
 
 		<HomeSections />
 	</main>

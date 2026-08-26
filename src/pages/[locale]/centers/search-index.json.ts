@@ -1,14 +1,11 @@
-import { defaultLocale, isAppLocale, locales } from "@/i18n";
+import { defaultLocale, isAppLocale } from "@/i18n";
+import { secondaryLocalePaths } from "@/i18n/routes";
 import { getCenterSearchIndex } from "@/utils/centersSearchIndex";
 import type { APIRoute } from "astro";
 
 export const prerender = true;
 
-export function getStaticPaths() {
-	return locales
-		.filter((locale) => locale !== defaultLocale)
-		.map((locale) => ({ params: { locale } }));
-}
+export const getStaticPaths = secondaryLocalePaths;
 
 export const GET: APIRoute = async ({ params }) => {
 	const locale = isAppLocale(params.locale) ? params.locale : defaultLocale;

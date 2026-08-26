@@ -1,13 +1,9 @@
 ---
 import CentersCatalog from "@/components/centers/CentersCatalog.astro";
-import { sortCentersByPubDate } from "@/utils/centers";
+import { byRecency } from "@/domain/center/order";
 import { getCollection } from "astro:content";
 
-// Обычная страница, без `paginate`. Раньше роут назывался `[...page].astro` и
-// звал `paginate(cards, { pageSize: Math.max(cards.length, 1) })` — то есть
-// пагинацию ровно в одну страницу: тулбар фильтрует карточки по DOM, и все они
-// обязаны быть в документе. Имя файла обещало пагинацию, которой нет.
-const cards = sortCentersByPubDate(await getCollection("centers"));
+const cards = byRecency(await getCollection("centers"));
 ---
 
 <CentersCatalog cards={cards} rssURL="/centers/rss.xml" markdownURL="/centers.md" />
