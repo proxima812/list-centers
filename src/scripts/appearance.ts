@@ -1,15 +1,23 @@
+import {
+	APPEARANCE_GROUPS,
+	APPEARANCE_GROUP_ATTR,
+	APPEARANCE_VALUE_ATTR,
+	appearanceOptionSelector,
+	isAppearanceGroup,
+	type AppearanceGroup,
+} from "@/dom/appearanceAttributes";
+import { APPEARANCE_SPECS } from "@/domain/site/appearance";
 
-import { ACCENT_VALUES, DEFAULT_ACCENT } from "@/utils/accents";
-
-const THEME_KEY = "theme";
-const ACCENT_KEY = "accent";
-const MOTION_KEY = "motion";
-const THEMES = ["system", "light", "dark"];
-const ACCENTS = ACCENT_VALUES;
-const MOTIONS = ["on", "off"];
+/**
+ * Тема, палитра и анимация: чтение, применение и сохранение.
+ *
+ * Три настройки устроены одинаково, поэтому и обрабатываются одинаково —
+ * таблицей `APPEARANCE_SPECS`, а не тремя парами read/apply и цепочкой
+ * тернарников при разборе нажатия.
+ */
 
 const root = document.documentElement;
-const media = matchMedia("(prefers-color-scheme: dark)");
+const darkMedia = matchMedia("(prefers-color-scheme: dark)");
 
 let initialized = false;
 
@@ -17,6 +25,7 @@ const readStorage = (key: string) => {
 	try {
 		return localStorage.getItem(key) ?? "";
 	} catch {
+		// Приватный режим и заблокированные куки: оформление просто не запомнится.
 		return "";
 	}
 };
@@ -24,34 +33,21 @@ const readStorage = (key: string) => {
 const writeStorage = (key: string, value: string) => {
 	try {
 		localStorage.setItem(key, value);
-	} catch {
-	}
+	} catch {}
 };
 
-const readTheme = () => {
-	const value = readStorage(THEME_KEY);
-	return THEMES.includes(value) ? value : "dark";
-};
+function readValue(group: AppearanceGroup): string {
+	const spec = APPEARANCE_SPECS[group];
+	const stored = readStorage(spec.storageKey);
 
-const readAccent = () => {
-	const value = readStorage(ACCENT_KEY);
-	return ACCENTS.includes(value) ? value : DEFAULT_ACCENT;
-};
+	return spec.options.some((option) => option.value === stored) ? stored : spec.fallback;
+}
 
-const readMotion = () => {
-	const value = readStorage(MOTION_KEY);
-	return MOTIONS.includes(value) ? value : "on";
-};
-
-const syncGroup = (attr: string, value: string) => {
-	for (const button of document.querySelectorAll<HTMLElement>(`[${attr}]`)) {
-		const isActive = button.getAttribute(attr) === value;
-		button.setAttribute("aria-checked", String(isActive));
-		button.tabIndex = isActive ? 0 : -1;
-	}
-};
-
-const syncThemeColor = () => {
+/**
+ * `<meta name="theme-color">` подхватывает фон текущей палитры: иначе на
+ * мобильных строка браузера остаётся от прежней темы.
+ */
+function syncThemeColor() {
 	const background = getComputedStyle(root).getPropertyValue("--color-background").trim();
 	if (!background) return;
 
@@ -65,42 +61,37 @@ const syncThemeColor = () => {
 		document.head.append(meta);
 	}
 	meta.content = background;
-};
+}
 
-const applyTheme = (theme: string) => {
-	root.dataset.theme = theme;
-	root.classList.toggle("dark", theme === "dark" || (theme === "system" && media.matches));
-	syncGroup("data-theme-option", theme);
-	syncThemeColor();
-};
+function syncButtons(group: AppearanceGroup, value: string) {
+	for (const button of document.querySelectorAll<HTMLElement>(
+		appearanceOptionSelector(group),
+	)) {
+		const isActive = button.getAttribute(APPEARANCE_VALUE_ATTR) === value;
+		button.setAttribute("aria-checked", String(isActive));
+		// Roving tabindex: в radiogroup с клавиатуры доступен только выбранный.
+		button.tabIndex = isActive ? 0 : -1;
+	}
+}
 
-const applyAccent = (accent: string) => {
-	root.dataset.accent = accent;
-	syncGroup("data-accent-option", accent);
-	syncThemeColor();
-};
+function apply(group: AppearanceGroup, value: string) {
+	root.dataset[group] = value;
 
-const applyMotion = (motion: string) => {
-	root.dataset.motion = motion;
-	syncGroup("data-motion-option", motion);
-};
+	if (group === "theme") {
+		root.classList.toggle("dark", value === "dark" || (value === "system" && darkMedia.matches));
+	}
 
-const setMotion = (motion: string) => {
-	writeStorage(MOTION_KEY, motion);
-	applyMotion(motion);
-};
+	syncButtons(group, value);
+	// Анимация на цвет фона не влияет — лишний пересчёт стилей ни к чему.
+	if (group !== "motion") syncThemeColor();
+}
 
-const setTheme = (theme: string) => {
-	writeStorage(THEME_KEY, theme);
-	applyTheme(theme);
-};
+function set(group: AppearanceGroup, value: string) {
+	writeStorage(APPEARANCE_SPECS[group].storageKey, value);
+	apply(group, value);
+}
 
-const setAccent = (accent: string) => {
-	writeStorage(ACCENT_KEY, accent);
-	applyAccent(accent);
-};
-
-const closeAllMenus = (except?: Element) => {
+function closeMenus(except?: Element) {
 	for (const menu of document.querySelectorAll<HTMLElement>("[data-appearance-menu]")) {
 		if (menu === except) continue;
 
@@ -111,35 +102,27 @@ const closeAllMenus = (except?: Element) => {
 		panel.hidden = true;
 		trigger.setAttribute("aria-expanded", "false");
 	}
+}
+
+const groupOf = (element: Element | null): AppearanceGroup | null => {
+	const value = element?.getAttribute(APPEARANCE_GROUP_ATTR) ?? null;
+	return isAppearanceGroup(value) ? value : null;
 };
 
 export function initAppearance() {
 	if (initialized) return;
 	initialized = true;
 
-	applyTheme(readTheme());
-	applyAccent(readAccent());
-	applyMotion(readMotion());
+	for (const group of APPEARANCE_GROUPS) apply(group, readValue(group));
 
 	document.addEventListener("click", (event) => {
 		const target = event.target;
 		if (!(target instanceof Element)) return;
 
-		const themeOption = target.closest<HTMLElement>("[data-theme-option]");
-		if (themeOption) {
-			setTheme(themeOption.dataset.themeOption ?? "dark");
-			return;
-		}
-
-		const accentOption = target.closest<HTMLElement>("[data-accent-option]");
-		if (accentOption) {
-			setAccent(accentOption.dataset.accentOption ?? DEFAULT_ACCENT);
-			return;
-		}
-
-		const motionOption = target.closest<HTMLElement>("[data-motion-option]");
-		if (motionOption) {
-			setMotion(motionOption.dataset.motionOption ?? "on");
+		const option = target.closest<HTMLElement>(`[${APPEARANCE_GROUP_ATTR}]`);
+		const group = groupOf(option);
+		if (option && group) {
+			set(group, option.getAttribute(APPEARANCE_VALUE_ATTR) ?? APPEARANCE_SPECS[group].fallback);
 			return;
 		}
 
@@ -150,13 +133,13 @@ export function initAppearance() {
 			if (!panel) return;
 
 			const willOpen = panel.hidden;
-			closeAllMenus(menu ?? undefined);
+			closeMenus(menu ?? undefined);
 			panel.hidden = !willOpen;
 			trigger.setAttribute("aria-expanded", String(willOpen));
 			return;
 		}
 
-		if (!target.closest("[data-appearance-menu]")) closeAllMenus();
+		if (!target.closest("[data-appearance-menu]")) closeMenus();
 	});
 
 	document.addEventListener("keydown", (event) => {
@@ -165,7 +148,7 @@ export function initAppearance() {
 				"[data-appearance-trigger][aria-expanded='true']",
 			);
 			if (open) {
-				closeAllMenus();
+				closeMenus();
 				open.focus();
 			}
 			return;
@@ -177,42 +160,34 @@ export function initAppearance() {
 				: event.key === "ArrowLeft" || event.key === "ArrowUp"
 					? -1
 					: 0;
-
 		if (step === 0) return;
 
 		const target = event.target;
 		if (!(target instanceof HTMLElement)) return;
 
-		const group = target.closest<HTMLElement>("[role='radiogroup']");
-		const attr = target.dataset.themeOption
-			? "data-theme-option"
-			: target.dataset.accentOption
-				? "data-accent-option"
-				: target.dataset.motionOption
-					? "data-motion-option"
-					: null;
+		const group = groupOf(target);
+		const radiogroup = target.closest<HTMLElement>("[role='radiogroup']");
+		if (!group || !radiogroup) return;
 
-		if (!group || !attr) return;
-
-		const buttons = [...group.querySelectorAll<HTMLElement>(`[${attr}]`)];
+		const buttons = [...radiogroup.querySelectorAll<HTMLElement>(`[${APPEARANCE_VALUE_ATTR}]`)];
 		const next = buttons[(buttons.indexOf(target) + step + buttons.length) % buttons.length];
 		if (!next) return;
 
 		event.preventDefault();
-		const value = next.getAttribute(attr) ?? "";
-		if (attr === "data-theme-option") setTheme(value);
-		else if (attr === "data-accent-option") setAccent(value);
-		else setMotion(value);
+		set(group, next.getAttribute(APPEARANCE_VALUE_ATTR) ?? "");
 		next.focus();
 	});
 
-	media.addEventListener("change", () => {
-		if (readTheme() === "system") applyTheme("system");
+	darkMedia.addEventListener("change", () => {
+		if (readValue("theme") === "system") apply("theme", "system");
 	});
 
+	// Настройку могли поменять в соседней вкладке.
 	window.addEventListener("storage", (event) => {
-		if (event.key === null || event.key === THEME_KEY) applyTheme(readTheme());
-		if (event.key === null || event.key === ACCENT_KEY) applyAccent(readAccent());
-		if (event.key === null || event.key === MOTION_KEY) applyMotion(readMotion());
+		for (const group of APPEARANCE_GROUPS) {
+			if (event.key === null || event.key === APPEARANCE_SPECS[group].storageKey) {
+				apply(group, readValue(group));
+			}
+		}
 	});
 }

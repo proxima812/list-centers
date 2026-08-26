@@ -1,0 +1,78 @@
+---
+import { appearanceOption, type AppearanceGroup } from "@/dom/appearanceAttributes";
+import { APPEARANCE_SPECS } from "@/domain/site/appearance";
+import { getLocaleFromUrl, useTranslations } from "@/i18n";
+import { cn } from "@/utils/libs/cn";
+import { Icon } from "astro-icon/components";
+
+/**
+ * Компактная пилюля-переключатель оформления.
+ *
+ * Один компонент на тему, палитру и анимацию: раньше это были три файла с
+ * дословно одинаковой обёрткой radiogroup, одинаковым классом кнопки и
+ * одинаковым <script>, отличавшиеся только списком вариантов.
+ */
+
+interface Props {
+	group: AppearanceGroup;
+	class?: string;
+	/** Без рамки и на 4px ниже — вариант для шапки рядом с меню оформления. */
+	bare?: boolean;
+}
+
+const { group, class: className, bare = false } = Astro.props as Props;
+const spec = APPEARANCE_SPECS[group];
+const locale = getLocaleFromUrl(Astro.url);
+const t = useTranslations(locale);
+
+const buttonClass =
+	"inline-flex size-8 cursor-pointer items-center justify-center rounded-full text-subtle-foreground transition-colors hover:text-foreground aria-checked:bg-accent aria-checked:text-accent-foreground";
+// У палитры кружок сам несёт цвет, поэтому заливка активного варианта мягче.
+const swatchButtonClass =
+	"inline-flex size-8 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-muted aria-checked:bg-muted";
+---
+
+<div
+	class={cn(
+		"inline-flex h-9 items-center gap-0.5 rounded-full border border-border-muted p-0.5",
+		bare && "h-8 border-transparent p-0",
+		className,
+	)}
+	role="radiogroup"
+	aria-label={t(spec.switcherLabelKey)}
+>
+	{
+		spec.options.map((option) => {
+			const label = t(option.labelKey, undefined, option.label);
+
+			return (
+				<button
+					type="button"
+					class={option.swatch ? swatchButtonClass : buttonClass}
+					{...appearanceOption(group, option.value)}
+					role="radio"
+					aria-label={label}
+					title={label}
+					aria-checked="false"
+					tabindex="-1"
+				>
+					{option.swatch ? (
+						<span
+							class="size-4 rounded-full ring-1 ring-inset ring-shade/20"
+							style={`background-image:linear-gradient(135deg, ${option.swatch.from}, ${option.swatch.to})`}
+							aria-hidden="true"
+						/>
+					) : (
+						<Icon name={option.icon ?? ""} class="size-4" aria-hidden="true" />
+					)}
+				</button>
+			);
+		})
+	}
+</div>
+
+<script>
+	import { initAppearance } from "@/scripts/appearance";
+
+	initAppearance();
+</script>

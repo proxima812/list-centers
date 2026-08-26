@@ -1,9 +1,7 @@
 ---
 import ButtonLink from "../ui/ButtonLink.astro";
-import AccentToggle from "./AccentToggle.astro";
-import MotionToggle from "./MotionToggle.astro";
+import OptionGroup from "./OptionGroup.astro";
 import SavedLink from "./SavedLink.astro";
-import ThemeToggle from "./ThemeToggle.astro";
 import { links } from "@/data/links";
 import { siteLinks } from "@/domain/site/links";
 import {
@@ -246,9 +244,9 @@ const isActivePath = (href: string) => {
 						{t("theme.switcher")}
 					</h2>
 					<div class="flex flex-wrap items-center gap-2 px-4">
-						<ThemeToggle />
-						<AccentToggle />
-						<MotionToggle />
+						<OptionGroup group="theme" />
+						<OptionGroup group="accent" />
+						<OptionGroup group="motion" />
 					</div>
 				</section>
 
