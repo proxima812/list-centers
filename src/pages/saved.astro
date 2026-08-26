@@ -1,4 +1,5 @@
 ---
+import CardItem from "@/components/ui/CardItem.astro";
 import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
 import Layout from "@/layouts/Layout.astro";
 import { Icon } from "astro-icon/components";
@@ -6,9 +7,6 @@ import { Icon } from "astro-icon/components";
 const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
 const catalogHref = localizePath(locale, "/centers");
-
-const metaChipClass =
-	"inline-flex min-w-0 items-center rounded-micro corner-squircle bg-surface-muted px-2 py-1";
 ---
 
 <Layout
@@ -69,11 +67,9 @@ const metaChipClass =
 	<section data-saved-grid hidden class="grid min-w-0 grid-cols-1 gap-6 md:grid-cols-2"></section>
 
 	<template data-saved-card>
-		<article
-			data-search-id
-			class="group relative flex h-full min-w-0 flex-col gap-3 rounded-catalog corner-squircle bg-surface p-6 text-surface-foreground transition duration-300 ease-out hover:surface-lift has-[[data-card-link]:focus-visible]:outline-2 has-[[data-card-link]:focus-visible]:outline-offset-2 has-[[data-card-link]:focus-visible]:outline-accent"
-		>
+		<CardItem id="" template>
 			<button
+				slot="action"
 				type="button"
 				data-saved-delete
 				class="absolute right-3 top-3 z-10 inline-flex cursor-pointer items-center gap-1 rounded-full bg-destructive/10 px-2.5 py-1 text-xs font-medium text-destructive transition-colors hover:bg-destructive/20"
@@ -81,45 +77,12 @@ const metaChipClass =
 				<Icon name="tabler:trash" class="size-3.5 shrink-0" aria-hidden="true" />
 				<span>{t("saved.delete")}</span>
 			</button>
-			<p
-				data-saved-location
-				class="flex min-w-0 flex-wrap items-center gap-1.5 pr-24 text-xs text-muted-foreground"
-			>
-				<span data-saved-flag class="shrink-0 text-base leading-none"></span>
-				<span data-saved-city></span>
-				<span data-saved-separator aria-hidden="true">&#10625;</span>
-				<span data-saved-country></span>
-			</p>
-			<div class="flex min-w-0 items-center gap-3">
-				<span
-					data-saved-mark
-					class="center-mark size-9 shrink-0 rounded-full transition-transform duration-300 ease-out group-hover:scale-110"
-					aria-hidden="true"></span>
-				<h2 data-saved-heading class="min-w-0 wrap-anywhere font-bold leading-snug tracking-tight">
-					<a
-						data-card-link
-						data-saved-title
-						href="#"
-						class="text-surface-foreground no-underline before:absolute before:inset-0 before:rounded-catalog before:content-[''] focus-visible:outline-hidden"
-					>
-					</a>
-				</h2>
-			</div>
-			<p data-saved-summary-text class="line-clamp-2 text-sm leading-6 text-muted-foreground"></p>
-			<p
-				class="mt-auto flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 pt-1 text-xs text-muted-foreground"
-			>
-				<span data-saved-category class={`${metaChipClass} font-semibold text-surface-foreground`}
-				></span>
-				<span data-saved-type class={metaChipClass}></span>
-				<span data-saved-date class="ml-auto shrink-0 tabular-nums text-subtle-foreground"></span>
-			</p>
-		</article>
+		</CardItem>
 	</template>
 </Layout>
 
 <script>
-	import { CARD_ATTR, closestCard, readCard } from "@/dom/cardAttributes";
+	import { CARD_ATTR, CARD_PART, closestCard, readCard } from "@/dom/cardAttributes";
 	import { clearSaved, onSavedChange, readSaved, removeSaved } from "@/scripts/savedCenters";
 	import { getCenterMarkHue } from "@/utils/centers";
 
@@ -138,8 +101,9 @@ const metaChipClass =
 			remove: summary.dataset.remove ?? "",
 		};
 
-		const setText = (root: ParentNode, selector: string, value: string) => {
-			const node = root.querySelector<HTMLElement>(selector);
+		/** Пустую часть прячем: иначе остаются висящие разделители и чипы. */
+		const fill = (root: ParentNode, part: keyof typeof CARD_PART, value: string) => {
+			const node = root.querySelector<HTMLElement>(`[${CARD_PART[part]}]`);
 			if (!node) return;
 
 			node.textContent = value;
@@ -166,40 +130,42 @@ const metaChipClass =
 			for (const item of list) {
 				const node = template.content.cloneNode(true) as DocumentFragment;
 				const article = node.querySelector<HTMLElement>(`[${CARD_ATTR.id}]`);
-				const link = node.querySelector<HTMLAnchorElement>("[data-saved-title]");
-				const deleteButton = node.querySelector<HTMLElement>("[data-saved-delete]");
+				const link = node.querySelector<HTMLAnchorElement>(`[${CARD_PART.link}]`);
 				if (!article || !link) continue;
 
 				article.setAttribute(CARD_ATTR.id, item.id);
 
-				const mark = node.querySelector<HTMLElement>("[data-saved-mark]");
-				mark?.style.setProperty("--mark-hue", String(getCenterMarkHue(item.id)));
+				node
+					.querySelector<HTMLElement>(`[${CARD_PART.mark}]`)
+					?.style.setProperty("--mark-hue", String(getCenterMarkHue(item.id)));
 
 				link.href = item.href;
 				link.textContent = item.title;
 
+				const deleteButton = node.querySelector<HTMLElement>("[data-saved-delete]");
 				if (deleteButton) {
 					const label = item.title ? `${strings.remove}: ${item.title}` : strings.remove;
 					deleteButton.setAttribute("aria-label", label);
 					deleteButton.setAttribute("title", label);
 				}
 
-				setText(node, "[data-saved-flag]", item.flag);
-				setText(node, "[data-saved-city]", item.city);
-				setText(node, "[data-saved-country]", item.country);
-				setText(node, "[data-saved-summary-text]", item.summary);
-				setText(node, "[data-saved-category]", item.category);
-				setText(node, "[data-saved-type]", item.type);
-				setText(node, "[data-saved-date]", formatDate(item.pubDate));
+				fill(node, "flag", item.flag);
+				fill(node, "city", item.city);
+				fill(node, "country", item.country);
+				fill(node, "summary", item.summary);
+				fill(node, "category", item.category);
+				fill(node, "type", item.type);
+				fill(node, "date", formatDate(item.pubDate));
 
-				const separator = node.querySelector<HTMLElement>("[data-saved-separator]");
+				const separator = node.querySelector<HTMLElement>(`[${CARD_PART.separator}]`);
 				if (separator) separator.hidden = !(item.city && item.country);
 
 				const hasLocation = Boolean(item.flag || item.city || item.country);
-				const location = node.querySelector<HTMLElement>("[data-saved-location]");
+				const location = node.querySelector<HTMLElement>(`[${CARD_PART.location}]`);
 				if (location) location.hidden = !hasLocation;
 
-				const heading = node.querySelector<HTMLElement>("[data-saved-heading]");
+				// Без строки расположения заголовок сам обходит кнопку удаления.
+				const heading = node.querySelector<HTMLElement>(`[${CARD_PART.heading}]`);
 				if (heading) heading.classList.toggle("pr-24", !hasLocation);
 
 				fragment.append(node);

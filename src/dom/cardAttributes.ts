@@ -76,3 +76,36 @@ export function readCard(element: Element): CardFields {
 /** Ближайшая карточка вверх по дереву — общий способ для всех обработчиков. */
 export const closestCard = (element: Element): HTMLElement | null =>
 	element.closest<HTMLElement>(`[${CARD_ATTR.id}]`);
+
+/**
+ * Части карточки, которые заполняются на клиенте.
+ *
+ * Нужны странице `/saved`: она клонирует `CardItem`, отрендеренный в
+ * `<template>`, и подставляет в него сохранённые значения. Раньше у `/saved`
+ * была своя копия всей разметки карточки с собственными хуками
+ * `data-saved-*` — правка дизайна карточки до неё не доходила.
+ */
+export const CARD_PART = {
+	location: "data-card-location",
+	flag: "data-card-flag",
+	city: "data-card-city",
+	separator: "data-card-separator",
+	country: "data-card-country",
+	mark: "data-card-mark",
+	heading: "data-card-heading",
+	link: "data-card-link",
+	summary: "data-card-summary",
+	category: "data-card-category",
+	type: "data-card-type",
+	date: "data-card-date",
+} as const;
+
+export type CardPart = keyof typeof CARD_PART;
+
+/**
+ * Хук ставится только в заготовке. В каталоге 420 карточек, и одиннадцать
+ * лишних атрибутов на каждой — вес страницы без единого потребителя:
+ * фильтры читают поля с самого `<article>`, а не с его частей.
+ */
+export const cardPart = (part: CardPart, enabled: boolean) =>
+	enabled ? { [CARD_PART[part]]: "" } : {};

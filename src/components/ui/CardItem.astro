@@ -1,5 +1,5 @@
 ---
-import { cardDataset } from "@/dom/cardAttributes";
+import { cardDataset, cardPart } from "@/dom/cardAttributes";
 import { normalizeCity, type CenterGeo } from "@/data/geo";
 import { countryFlagsByRu, getCountryLabel } from "@/data/worldCountries";
 import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
@@ -26,10 +26,28 @@ interface Props {
 	geo?: CenterGeo;
 	pubDate?: string;
 	links?: CenterLink[];
+	/**
+	 * Режим заготовки для `<template>` на `/saved`: все необязательные блоки
+	 * рендерятся пустыми, чтобы клиенту было куда подставить значения.
+	 * Иначе пришлось бы держать вторую копию разметки карточки.
+	 */
+	template?: boolean;
 }
 
-const { id, routeId, title, summary, type, category, location, region, geo, pubDate, links } =
-	Astro.props as Props;
+const {
+	id,
+	routeId,
+	title,
+	summary,
+	type,
+	category,
+	location,
+	region,
+	geo,
+	pubDate,
+	links,
+	template = false,
+} = Astro.props as Props;
 const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
 const centerPath = getCenterPath(routeId ?? id);
@@ -86,36 +104,52 @@ const dataset = cardDataset({
 	{...dataset}
 	class="group relative flex h-full min-w-0 flex-col gap-3 rounded-catalog corner-squircle bg-surface p-6 text-surface-foreground transition duration-300 ease-out hover:surface-lift has-[[data-card-link]:focus-visible]:outline-2 has-[[data-card-link]:focus-visible]:outline-offset-2 has-[[data-card-link]:focus-visible]:outline-accent"
 >
-	<SaveCenterButton title={displayTitle} />
+	<slot name="action"><SaveCenterButton title={displayTitle} /></slot>
 
 	{
-		displayLocation && (
-			<p class="flex min-w-0 flex-wrap items-center gap-1.5 pr-9 text-xs text-muted-foreground">
-				{displayLocation.flag && (
-					<span class="shrink-0 text-base leading-none">{displayLocation.flag}</span>
+		(template || displayLocation) && (
+			<p
+				{...cardPart("location", template)}
+				class:list={[
+					"flex min-w-0 flex-wrap items-center gap-1.5 text-xs text-muted-foreground",
+					template ? "pr-24" : "pr-9",
+				]}
+			>
+				{(template || displayLocation?.flag) && (
+					<span {...cardPart("flag", template)} class="shrink-0 text-base leading-none">
+						{displayLocation?.flag}
+					</span>
 				)}
-				{displayLocation.city && <span>{displayLocation.city}</span>}
-				{displayLocation.city && displayLocation.country && (
-					<span aria-hidden="true">&#10625;</span>
+				{(template || displayLocation?.city) && (
+					<span {...cardPart("city", template)}>{displayLocation?.city}</span>
 				)}
-				{displayLocation.country && <span>{displayLocation.country}</span>}
+				{(template || (displayLocation?.city && displayLocation?.country)) && (
+					<span {...cardPart("separator", template)} aria-hidden="true">
+						&#10625;
+					</span>
+				)}
+				{(template || displayLocation?.country) && (
+					<span {...cardPart("country", template)}>{displayLocation?.country}</span>
+				)}
 			</p>
 		)
 	}
 	<div class="flex min-w-0 items-center gap-3">
 		<span
+			{...cardPart("mark", template)}
 			class="center-mark size-9 shrink-0 rounded-full transition-transform duration-300 ease-out group-hover:scale-110"
-			style={`--mark-hue:${getCenterMarkHue(id)}`}
+			style={template ? undefined : `--mark-hue:${getCenterMarkHue(id)}`}
 			aria-hidden="true"></span>
 		<h2
+			{...cardPart("heading", template)}
 			class:list={[
 				"min-w-0 wrap-anywhere font-bold leading-snug tracking-tight",
-				!displayLocation && "pr-9",
+				!template && !displayLocation && "pr-9",
 			]}
 		>
 			<a
 				data-card-link
-				href={localizePath(locale, centerPath)}
+				href={template ? "#" : localizePath(locale, centerPath)}
 				class="text-surface-foreground no-underline before:absolute before:inset-0 before:rounded-catalog before:content-[''] focus-visible:outline-hidden"
 			>
 				{displayTitle}
@@ -124,45 +158,61 @@ const dataset = cardDataset({
 	</div>
 
 	{
-		displaySummary && (
-			<p class="line-clamp-2 text-sm leading-6 text-muted-foreground">{displaySummary}</p>
+		(template || displaySummary) && (
+			<p {...cardPart("summary", template)} class="line-clamp-2 text-sm leading-6 text-muted-foreground">
+				{displaySummary}
+			</p>
 		)
 	}
 	<p
 		class="mt-auto flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 pt-1 text-xs text-muted-foreground"
 	>
 		{
-			category && (
-				<span class={`${metaChipClass} font-semibold text-surface-foreground`}>
+			(template || category) && (
+				<span
+					{...cardPart("category", template)}
+					class={`${metaChipClass} font-semibold text-surface-foreground`}
+				>
 					{category}
 				</span>
 			)
 		}
-		{type && <span class={metaChipClass}>{type}</span>}
+		{(template || type) && (
+			<span {...cardPart("type", template)} class={metaChipClass}>
+				{type}
+			</span>
+		)}
 		{
-			formattedDate && (
-				<span class="ml-auto shrink-0 tabular-nums text-subtle-foreground">
+			(template || formattedDate) && (
+				<span
+					{...cardPart("date", template)}
+					class="ml-auto shrink-0 tabular-nums text-subtle-foreground"
+				>
 					{formattedDate}
 				</span>
 			)
 		}
 	</p>
-	<div class="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1.5 pt-1">
-		{
-			quickLinks.map((link) => (
-				<a href={link.href} target="_blank" rel="noopener noreferrer" class={quickLinkClass}>
-					<Icon name={link.icon} class="size-3.5 shrink-0" aria-hidden="true" />
-					<span class="min-w-0 truncate">{formatCenterLinkLabel(link.href)}</span>
-					<span class="sr-only">
-						{" "}
-						— {link.label}: {displayTitle}
-					</span>
-				</a>
-			))
-		}
-		<span class={viewButtonClass} aria-hidden="true">
-			<span>{t("card.details")}</span>
-			<Icon name="mdi:arrow-right" class="size-3.5 shrink-0" />
-		</span>
-	</div>
+	{
+		/* У сохранённой карточки нет ни быстрых ссылок, ни кнопки «Подробнее»:
+		   в localStorage их не кладут, а вся карточка и так ведёт на центр. */
+		!template && (
+			<div class="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1.5 pt-1">
+				{quickLinks.map((link) => (
+					<a href={link.href} target="_blank" rel="noopener noreferrer" class={quickLinkClass}>
+						<Icon name={link.icon} class="size-3.5 shrink-0" aria-hidden="true" />
+						<span class="min-w-0 truncate">{formatCenterLinkLabel(link.href)}</span>
+						<span class="sr-only">
+							{" "}
+							— {link.label}: {displayTitle}
+						</span>
+					</a>
+				))}
+				<span class={viewButtonClass} aria-hidden="true">
+					<span>{t("card.details")}</span>
+					<Icon name="mdi:arrow-right" class="size-3.5 shrink-0" />
+				</span>
+			</div>
+		)
+	}
 </article>
