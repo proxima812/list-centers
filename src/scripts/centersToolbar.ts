@@ -1,140 +1,87 @@
-
 import { CARD_ATTR, isFacetField, readCard } from "@/dom/cardAttributes";
 import { normalizeSearchText, uniqueTerms } from "@/domain/center/searchText";
+import { createCatalogFilter } from "@/features/catalog/filterState";
+import { readCatalogQuery, writeCatalogQuery } from "@/features/catalog/query";
+import { createCenterSearch } from "@/features/catalog/search";
+import { createSearchSuggestions } from "@/features/catalog/suggestions";
+import type {
+	CardIndexItem,
+	CenterScope,
+	FacetKey,
+	FilterGate,
+} from "@/features/catalog/types";
 
-type FacetKey = string;
-type FilterState = Record<FacetKey, Set<string>>;
+/**
+ * Вид каталога: читает разметку, слушает события, показывает результат.
+ *
+ * Решения принимаются не здесь. Что показать — считает `filterState`, в каком
+ * порядке — `search`, что положить в адрес — `query`, как вести себя списку
+ * подсказок — `suggestions`. Этот файл переводит их ответы в DOM и обратно.
+ */
 
-type FilterGate = "always" | "world" | "ru" | "country" | "region" | "city";
+const SEARCH_DEBOUNCE_MS = 150;
+/** Клик по подсказке приходит после blur — даём ему успеть. */
+const SUGGESTION_BLUR_DELAY_MS = 120;
+const MIN_SUGGESTION_QUERY = 2;
+const MAX_SUGGESTIONS = 6;
+const SUGGESTION_SOURCE_LIMIT = 8;
 
-type CenterScope = "" | "ru" | "abroad" | "online";
-
-type ExpandableFilterButton = HTMLButtonElement & {
-	dataset: DOMStringMap & {
-		filterMore?: string;
-		expanded?: string;
-		showMore?: string;
-		showLess?: string;
-	};
-};
-
-// Контракт карточки объявлен в @/dom/cardAttributes, здесь только псевдоним.
-type FilterableCard = HTMLElement;
-
-type CardIndexItem = {
-	id: string;
-	element: FilterableCard;
-	scope: CenterScope;
-	facets: Record<FacetKey, string>;
-	title: string;
-	summary: string;
-	city: string;
-	country: string;
-	region: string;
-	type: string;
-	category: string;
-	searchText: string;
-	terms: string[];
-	order: number;
-};
-
-type SearchIndexItem = Omit<CardIndexItem, "element" | "facets" | "scope">;
-
-type SearchResult = {
-	item: CardIndexItem;
-	score: number;
-};
-
-type FuseResult = {
-	item: SearchIndexItem;
-	score?: number;
-};
-
-type FuseInstance = {
-	search: (query: string) => FuseResult[];
-};
-
-type FuseConstructor = new (
-	items: SearchIndexItem[],
-	options: {
-		includeScore: boolean;
-		ignoreLocation: boolean;
-		threshold: number;
-		minMatchCharLength: number;
-		keys: { name: keyof SearchIndexItem; weight: number }[];
-	},
-) => FuseInstance;
-
-const SCOPE_QUERY_KEY = "scope";
-const FACET_CHILDREN: Record<string, string[]> = {
-	macro: ["country", "region", "city"],
-	okrug: ["region", "city"],
-	country: ["region", "city"],
-	region: ["city"],
-};
-const GEO_FACETS = ["macro", "okrug", "country", "region", "city"];
-const LEGACY_TYPE_TO_SCOPE: Record<string, CenterScope> = {
-	"Регион РФ": "ru",
-	Зарубежный: "abroad",
-	Онлайн: "online",
-};
+const TOKEN_CLASS =
+	"group inline-flex max-w-full items-center gap-1.5 rounded-full bg-primary px-2.5 py-1 text-sm font-medium text-primary-foreground transition hover:bg-primary/85";
 
 export function initCardsToolbar() {
-	const cardsGrid = document.getElementById("cards-grid");
-	const noResults = document.getElementById("no-results");
+	const gridElement = document.getElementById("cards-grid");
+	const noResultsElement = document.getElementById("no-results");
+	if (!gridElement || !noResultsElement) return;
+
+	// Связываем после проверки: внутрь замыканий сужение типа не проходит.
+	const cardsGrid = gridElement;
+	const noResults = noResultsElement;
+
 	const searchForm = document.querySelector<HTMLFormElement>("[data-search-form]");
 	const searchInput = document.querySelector<HTMLInputElement>("[data-toolbar-search]");
-	const suggestions = document.querySelector<HTMLUListElement>("[data-search-suggestions]");
+	const suggestionList = document.querySelector<HTMLUListElement>("[data-search-suggestions]");
 	const searchSubmit = document.querySelector<HTMLButtonElement>("[data-search-submit]");
+	const searchClear = document.querySelector<HTMLButtonElement>("[data-search-clear]");
 	const filtersToggle = document.querySelector<HTMLButtonElement>("[data-filters-toggle]");
 	const filtersShell = document.querySelector<HTMLElement>("[data-filters-shell]");
-	const stickyBar = document.querySelector<HTMLElement>("[data-catalog-bar]");
 	const filtersPanel = document.getElementById("filters-panel");
 	const filtersBadge = document.querySelector<HTMLElement>("[data-filters-badge]");
 	const filtersResetButtons =
 		document.querySelectorAll<HTMLButtonElement>("[data-filters-reset]");
-	const searchClear = document.querySelector<HTMLButtonElement>("[data-search-clear]");
+	const stickyBar = document.querySelector<HTMLElement>("[data-catalog-bar]");
 	const activeFiltersBar = document.querySelector<HTMLElement>("[data-active-filters-bar]");
 	const activeFiltersTokens = document.querySelector<HTMLElement>(
 		"[data-active-filters-tokens]",
 	);
 	const resultsCount = document.querySelector<HTMLElement>("[data-results-count]");
-
-	if (!cardsGrid || !noResults) {
-		return;
-	}
-
-	const cardsGridElement = cardsGrid;
-	const noResultsElement = noResults;
-	const cards = Array.from(
-		cardsGridElement.querySelectorAll<FilterableCard>(`:scope > [${CARD_ATTR.id}]`),
-	);
-
+	const sections = Array.from(document.querySelectorAll<HTMLElement>("[data-filter-section]"));
 	const groupElements = Array.from(
 		document.querySelectorAll<HTMLElement>("[data-filter-group]"),
 	);
-	const facetKeys: FacetKey[] = groupElements
-		.map((group) => group.dataset.filterGroup ?? "")
-		.filter(Boolean);
-	const sections = Array.from(document.querySelectorAll<HTMLElement>("[data-filter-section]"));
 	const scopeGroup = document.querySelector<HTMLElement>("[data-scope-group]");
 	const scopeButtons = Array.from(
 		document.querySelectorAll<HTMLButtonElement>("[data-scope-value]"),
 	);
 	const scopeAllButton = document.querySelector<HTMLButtonElement>("[data-scope-all]");
 
-	const cardsIndex: CardIndexItem[] = cards.map((card, order) => {
-		const fields = readCard(card);
+	const facetKeys: FacetKey[] = groupElements
+		.map((group) => group.dataset.filterGroup ?? "")
+		.filter(Boolean);
+
+	// --- разметка -> модель -------------------------------------------------
+
+	const cards: CardIndexItem[] = Array.from(
+		cardsGrid.querySelectorAll<HTMLElement>(`:scope > [${CARD_ATTR.id}]`),
+	).map((element, order) => {
+		const fields = readCard(element);
 		const { country, type, category, region, title, summary, city } = fields;
-		const id = fields.id || String(order);
 		const facets: Record<FacetKey, string> = {};
-		for (const key of facetKeys) {
-			facets[key] = isFacetField(key) ? fields[key] : "";
-		}
+		for (const key of facetKeys) facets[key] = isFacetField(key) ? fields[key] : "";
 
 		return {
-			id,
-			element: card,
+			id: fields.id || String(order),
+			element,
 			scope: fields.scope as CenterScope,
 			facets,
 			country,
@@ -144,325 +91,64 @@ export function initCardsToolbar() {
 			title,
 			summary,
 			city,
-			terms: uniqueTerms([title, city, country, region, category]),
 			order,
+			terms: uniqueTerms([title, city, country, region, category]),
 			searchText: normalizeSearchText(
 				`${title} ${summary} ${city} ${country} ${type} ${category} ${region}`,
 			),
 		};
 	});
-	const cardById = new Map(cardsIndex.map((item) => [item.id, item]));
-	const searchIndexUrl = searchForm?.dataset.searchIndexUrl;
 
-	const state: FilterState = Object.fromEntries(
-		facetKeys.map((key) => [key, new Set<string>()]),
-	);
-	let scope: CenterScope = "";
+	const filter = createCatalogFilter(cards, facetKeys);
+	const search = createCenterSearch(cards, searchForm?.dataset.searchIndexUrl);
 
 	let searchQuery = "";
 	let searchTimer = 0;
 	let blurTimer = 0;
 	let filterFrame = 0;
+	/** Поиск переставляет карточки; после сброса порядок надо вернуть один раз. */
 	let gridReordered = false;
-	let activeSuggestionIndex = -1;
-	let currentSuggestionValues: string[] = [];
-	let searchItemsPromise: Promise<SearchIndexItem[]> | null = null;
-	let fusePromise: Promise<FuseInstance> | null = null;
-	let searchMatchIds: Set<string> | null = null;
 
 	const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 	const isDesktopLayout = window.matchMedia("(min-width: 1024px)");
 
-	function getGroupChips(groupName: FacetKey): HTMLButtonElement[] {
-		return Array.from(
-			document.querySelectorAll<HTMLButtonElement>(`[data-filter-chip="${groupName}"]`),
+	// --- доступ к разметке фильтров ----------------------------------------
+
+	const groupChips = (key: FacetKey) =>
+		Array.from(document.querySelectorAll<HTMLButtonElement>(`[data-filter-chip="${key}"]`));
+	const allChip = (key: FacetKey) =>
+		document.querySelector<HTMLButtonElement>(`[data-filter-all="${key}"]`);
+	const moreButton = (key: FacetKey) =>
+		document.querySelector<HTMLButtonElement>(`[data-filter-more="${key}"]`);
+	const groupLimit = (key: FacetKey) =>
+		Number(
+			groupElements.find((element) => element.dataset.filterGroup === key)?.dataset
+				.filterLimit ?? 0,
 		);
-	}
+	const allowedValues = (key: FacetKey) =>
+		new Set(groupChips(key).map((chip) => chip.dataset.filterValue ?? "").filter(Boolean));
 
-	function getAllChip(groupName: FacetKey): HTMLButtonElement | null {
-		return document.querySelector<HTMLButtonElement>(`[data-filter-all="${groupName}"]`);
-	}
+	// --- рендер -------------------------------------------------------------
 
-	function getMoreButton(groupName: FacetKey): ExpandableFilterButton | null {
-		return document.querySelector<ExpandableFilterButton>(`[data-filter-more="${groupName}"]`);
-	}
-
-	function getGroupLimit(groupName: FacetKey): number {
-		const group = groupElements.find((element) => element.dataset.filterGroup === groupName);
-		return Number(group?.dataset.filterLimit ?? 0);
-	}
-
-	function getValidValues(groupName: FacetKey): Set<string> {
-		return new Set(
-			getGroupChips(groupName)
-				.map((chip) => chip.dataset.filterValue ?? "")
-				.filter(Boolean),
-		);
-	}
-
-	function readStateFromUrl() {
-		const params = new URLSearchParams(window.location.search);
-		searchQuery = params.get("q") ?? "";
-		if (searchInput) {
-			searchInput.value = searchQuery;
-		}
-
-		const scopeParam = params.get(SCOPE_QUERY_KEY) ?? "";
-		const legacyType = params.get("type") ?? "";
-		const nextScope = (scopeParam || LEGACY_TYPE_TO_SCOPE[legacyType] || "") as CenterScope;
-		scope = scopeButtons.some((button) => button.dataset.scopeValue === nextScope)
-			? nextScope
-			: "";
-
-		for (const key of facetKeys) {
-			const validValues = getValidValues(key);
-			state[key].clear();
-			const value = params.getAll(key).find((candidate) => validValues.has(candidate));
-			if (value) state[key].add(value);
-		}
-
-	}
-
-	function writeStateToUrl() {
-		const url = new URL(window.location.href);
-		const query = searchQuery.trim();
-
-		url.searchParams.delete("q");
-		url.searchParams.delete(SCOPE_QUERY_KEY);
-		url.searchParams.delete("type");
-		for (const key of facetKeys) url.searchParams.delete(key);
-
-		if (query) url.searchParams.set("q", query);
-		if (scope) url.searchParams.set(SCOPE_QUERY_KEY, scope);
-		for (const key of facetKeys) {
-			for (const value of state[key]) url.searchParams.append(key, value);
-		}
-
-		window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
-	}
-
-	function getScrollBehavior(): ScrollBehavior {
+	function scrollBehavior(): ScrollBehavior {
 		const motionOff = document.documentElement.dataset.motion === "off";
 		return motionOff || prefersReducedMotion.matches ? "auto" : "smooth";
-	}
-
-	function scrollToCards() {
-		if (isDesktopLayout.matches) return;
-		cardsGridElement.scrollIntoView({ behavior: getScrollBehavior(), block: "start" });
-	}
-
-	function countActiveFilters() {
-		return (
-			facetKeys.reduce((total, key) => total + state[key].size, 0) + (scope ? 1 : 0)
-		);
-	}
-
-	function updateFiltersBadge() {
-		const total = countActiveFilters();
-		const hasSearchQuery = searchQuery.trim().length > 0;
-		if (filtersBadge) {
-			filtersBadge.textContent = String(total);
-			filtersBadge.classList.toggle("hidden", total === 0);
-		}
-		const hasAnything = total > 0 || hasSearchQuery;
-		filtersResetButtons.forEach((button) => {
-			button.hidden = !hasAnything;
-		});
-	}
-
-	function syncSearchActions() {
-		if (searchSubmit) {
-			searchSubmit.disabled = !searchInput?.value.trim();
-		}
-	}
-
-	function updateSearchClear() {
-		if (searchClear) {
-			searchClear.hidden = searchQuery.trim().length === 0;
-		}
-		syncSearchActions();
-	}
-
-	function updateResultsCount(visible: number) {
-		if (!resultsCount) return;
-		const template = resultsCount.dataset.resultsTemplate ?? "{count}";
-		resultsCount.textContent = template.replace("__COUNT__", String(visible));
-	}
-
-	function getChipMeta(groupName: FacetKey, value: string) {
-		const chip = getGroupChips(groupName).find(
-			(item) => (item.dataset.filterValue ?? "") === value,
-		);
-		if (!chip) return { label: value, flag: "" };
-		const labelEl = chip.querySelector<HTMLElement>("[data-chip-label]");
-		const flagEl = chip.querySelector<HTMLElement>(".leading-none");
-		return {
-			label: labelEl?.textContent?.trim() || value,
-			flag: flagEl?.textContent?.trim() ?? "",
-		};
-	}
-
-	function createToken(label: string, onRemove: () => void, flag = "") {
-		const removeLabel = activeFiltersBar?.dataset.removeLabel ?? "";
-		const token = document.createElement("button");
-		token.type = "button";
-		token.setAttribute("aria-label", removeLabel ? `${removeLabel}: ${label}` : label);
-		token.className =
-			"group inline-flex max-w-full items-center gap-1.5 rounded-full bg-primary px-2.5 py-1 text-sm font-medium text-primary-foreground transition hover:bg-primary/85";
-
-		if (flag) {
-			const flagEl = document.createElement("span");
-			flagEl.className = "text-sm leading-none";
-			flagEl.textContent = flag;
-			token.append(flagEl);
-		}
-
-		const labelEl = document.createElement("span");
-		labelEl.className = "min-w-0 truncate";
-		labelEl.textContent = label;
-		token.append(labelEl);
-
-		const closeEl = document.createElement("span");
-		closeEl.setAttribute("aria-hidden", "true");
-		closeEl.className = "text-base leading-none opacity-80 transition group-hover:opacity-100";
-		closeEl.textContent = "×";
-		token.append(closeEl);
-
-		token.addEventListener("click", onRemove);
-		return token;
-	}
-
-	function renderActiveFilters() {
-		if (!activeFiltersTokens) return;
-		activeFiltersTokens.replaceChildren();
-
-		if (scope) {
-			const button = scopeButtons.find((item) => item.dataset.scopeValue === scope);
-			const label = button?.querySelector("span")?.textContent?.trim() ?? scope;
-			activeFiltersTokens.append(createToken(label, () => setScope("")));
-		}
-
-		for (const key of facetKeys) {
-			for (const value of state[key]) {
-				const { label, flag } = getChipMeta(key, value);
-				activeFiltersTokens.append(createToken(label, () => toggleChip(key, value), flag));
-			}
-		}
-
-		const query = searchQuery.trim();
-		if (query) {
-			activeFiltersTokens.append(createToken(`«${query}»`, clearSearchQuery));
-		}
-	}
-
-	function clearSearchQuery() {
-		window.clearTimeout(searchTimer);
-		searchQuery = "";
-		if (searchInput) {
-			searchInput.value = "";
-			searchInput.focus();
-		}
-		updateSearchClear();
-		hideSuggestions();
-		scheduleApplyFilters(false);
-	}
-
-	function matchesScope(item: CardIndexItem) {
-		return !scope || item.scope === scope;
-	}
-
-	function matchesSearch(item: CardIndexItem) {
-		return !searchMatchIds || searchMatchIds.has(item.id);
-	}
-
-	function matchesExcept(item: CardIndexItem, skipKeys: readonly FacetKey[] | null) {
-		if (!matchesScope(item) || !matchesSearch(item)) return false;
-		for (const key of facetKeys) {
-			if (skipKeys?.includes(key)) continue;
-			const selected = state[key];
-			if (selected.size > 0 && !selected.has(item.facets[key])) return false;
-		}
-		return true;
-	}
-
-	function countFacet(groupName: FacetKey) {
-		const skip = [groupName, ...(FACET_CHILDREN[groupName] ?? [])];
-		const counts = new Map<string, number>();
-		for (const item of cardsIndex) {
-			if (!matchesExcept(item, skip)) continue;
-			const value = item.facets[groupName];
-			if (!value) continue;
-			counts.set(value, (counts.get(value) ?? 0) + 1);
-		}
-		return counts;
-	}
-
-	function countScopes() {
-		const counts = new Map<string, number>();
-		for (const item of cardsIndex) {
-			if (!matchesSearch(item)) continue;
-			let matches = true;
-			for (const key of facetKeys) {
-				if (GEO_FACETS.includes(key)) continue;
-				const selected = state[key];
-				if (selected.size > 0 && !selected.has(item.facets[key])) {
-					matches = false;
-					break;
-				}
-			}
-			if (matches) counts.set(item.scope, (counts.get(item.scope) ?? 0) + 1);
-		}
-		return counts;
-	}
-
-	function isSectionVisible(gate: FilterGate, key: FacetKey) {
-		switch (gate) {
-			case "ru":
-				return scope === "ru";
-			case "world":
-				return scope !== "ru" && scope !== "online";
-			case "country":
-				return scope === "abroad" || (state.macro?.size ?? 0) > 0;
-			case "region":
-				return (
-					scope === "ru" || (state.okrug?.size ?? 0) > 0 || (state.country?.size ?? 0) > 0
-				);
-			case "city":
-				return (state.region?.size ?? 0) > 0 || (state.country?.size ?? 0) > 0;
-			default:
-				return key.length > 0;
-		}
-	}
-
-	function pruneEmptySelections() {
-		let pruned = false;
-		for (const key of facetKeys) {
-			if (state[key].size === 0) continue;
-			const counts = countFacet(key);
-			for (const value of [...state[key]]) {
-				if ((counts.get(value) ?? 0) === 0) {
-					state[key].delete(value);
-					pruned = true;
-				}
-			}
-		}
-		return pruned;
 	}
 
 	function renderFacets() {
 		for (const section of sections) {
 			const key = section.dataset.filterSection ?? "";
 			const gate = (section.dataset.filterGate ?? "always") as FilterGate;
-			const counts = countFacet(key);
-			const selected = state[key] ?? new Set<string>();
-			const limit = getGroupLimit(key);
-			const moreButton = getMoreButton(key);
-			const isExpanded = moreButton?.dataset.expanded === "true";
+			const counts = filter.countFacet(key);
+			const selected = filter.selected(key);
+			const limit = groupLimit(key);
+			const more = moreButton(key);
+			const isExpanded = more?.dataset.expanded === "true";
 
 			let shown = 0;
 			let hidden = 0;
 
-			for (const chip of getGroupChips(key)) {
+			for (const chip of groupChips(key)) {
 				const value = chip.dataset.filterValue ?? "";
 				const count = counts.get(value) ?? 0;
 				const isActive = selected.has(value);
@@ -483,244 +169,157 @@ export function initCardsToolbar() {
 				else shown += 1;
 			}
 
-			const allChip = getAllChip(key);
 			const isAllActive = selected.size === 0;
-			allChip?.toggleAttribute("data-active", isAllActive);
-			allChip?.setAttribute("aria-pressed", String(isAllActive));
+			allChip(key)?.toggleAttribute("data-active", isAllActive);
+			allChip(key)?.setAttribute("aria-pressed", String(isAllActive));
 
-			if (moreButton) {
-				moreButton.hidden = hidden === 0 && !isExpanded;
-				moreButton.textContent = isExpanded
-					? (moreButton.dataset.showLess ?? "")
-					: (moreButton.dataset.showMore ?? "").replace("__COUNT__", String(hidden));
+			if (more) {
+				more.hidden = hidden === 0 && !isExpanded;
+				more.textContent = isExpanded
+					? (more.dataset.showLess ?? "")
+					: (more.dataset.showMore ?? "").replace("__COUNT__", String(hidden));
 			}
 
-			section.hidden = !isSectionVisible(gate, key) || shown === 0;
+			section.hidden = !filter.isSectionVisible(gate, key) || shown === 0;
 		}
 
-		const scopeCounts = countScopes();
+		const scopeCounts = filter.countScopes();
 		let scopeTotal = 0;
+
 		for (const button of scopeButtons) {
 			const value = button.dataset.scopeValue ?? "";
-			const isActive = scope === value;
+			const isActive = filter.scope === value;
 			const count = scopeCounts.get(value) ?? 0;
 			scopeTotal += count;
+
 			button.toggleAttribute("data-active", isActive);
 			button.setAttribute("aria-pressed", String(isActive));
 			button.hidden = count === 0 && !isActive;
 			const countEl = button.querySelector<HTMLElement>("[data-scope-count]");
 			if (countEl) countEl.textContent = String(count);
 		}
+
 		const scopeAllCount = scopeAllButton?.querySelector<HTMLElement>("[data-scope-count]");
 		if (scopeAllCount) scopeAllCount.textContent = String(scopeTotal);
-		scopeAllButton?.toggleAttribute("data-active", scope === "");
-		scopeAllButton?.setAttribute("aria-pressed", String(scope === ""));
+		scopeAllButton?.toggleAttribute("data-active", filter.scope === "");
+		scopeAllButton?.setAttribute("aria-pressed", String(filter.scope === ""));
 		scopeGroup?.toggleAttribute("hidden", scopeButtons.length === 0);
 	}
 
-	function clearDescendants(groupName: FacetKey) {
-		for (const child of FACET_CHILDREN[groupName] ?? []) {
-			state[child]?.clear();
+	function createToken(label: string, onRemove: () => void, flag = "") {
+		const removeLabel = activeFiltersBar?.dataset.removeLabel ?? "";
+		const token = document.createElement("button");
+		token.type = "button";
+		token.setAttribute("aria-label", removeLabel ? `${removeLabel}: ${label}` : label);
+		token.className = TOKEN_CLASS;
+
+		if (flag) {
+			const flagEl = document.createElement("span");
+			flagEl.className = "text-sm leading-none";
+			flagEl.textContent = flag;
+			token.append(flagEl);
 		}
+
+		const labelEl = document.createElement("span");
+		labelEl.className = "min-w-0 truncate";
+		labelEl.textContent = label;
+		token.append(labelEl);
+
+		const closeEl = document.createElement("span");
+		closeEl.setAttribute("aria-hidden", "true");
+		closeEl.className = "text-base leading-none opacity-80 transition group-hover:opacity-100";
+		closeEl.textContent = "×";
+		token.append(closeEl);
+
+		token.addEventListener("click", onRemove);
+
+		return token;
 	}
 
-	function toggleChip(groupName: FacetKey, value: string) {
-		const groupState = state[groupName];
-		if (!groupState) return;
+	function chipMeta(key: FacetKey, value: string) {
+		const chip = groupChips(key).find((item) => (item.dataset.filterValue ?? "") === value);
+		if (!chip) return { label: value, flag: "" };
 
-		const wasActive = groupState.has(value);
-		groupState.clear();
-		if (!wasActive) groupState.add(value);
-
-		clearDescendants(groupName);
-		pruneEmptySelections();
-		scheduleApplyFilters(true);
+		return {
+			label: chip.querySelector<HTMLElement>("[data-chip-label]")?.textContent?.trim() || value,
+			flag: chip.querySelector<HTMLElement>(".leading-none")?.textContent?.trim() ?? "",
+		};
 	}
 
-	function resetGroup(groupName: FacetKey) {
-		state[groupName]?.clear();
-		clearDescendants(groupName);
-		scheduleApplyFilters(true);
-	}
+	function renderActiveFilters() {
+		if (!activeFiltersTokens) return;
+		activeFiltersTokens.replaceChildren();
 
-	function setScope(next: CenterScope) {
-		scope = scope === next ? "" : next;
-		for (const key of GEO_FACETS) state[key]?.clear();
-		scheduleApplyFilters(true);
-	}
-
-	function resetFilters() {
-		window.clearTimeout(searchTimer);
-		for (const key of facetKeys) state[key].clear();
-		scope = "";
-		searchQuery = "";
-		if (searchInput) searchInput.value = "";
-		hideSuggestions();
-		scheduleApplyFilters(true);
-	}
-
-	function getFallbackSearchItems(): SearchIndexItem[] {
-		return cardsIndex.map(({ element: _element, facets: _facets, scope: _scope, ...item }) => item);
-	}
-
-	async function loadSearchItems(): Promise<SearchIndexItem[]> {
-		if (!searchIndexUrl) return getFallbackSearchItems();
-		if (!searchItemsPromise) {
-			searchItemsPromise = fetch(searchIndexUrl)
-				.then((response) => {
-					if (!response.ok) throw new Error(`Search index failed: ${response.status}`);
-					return response.json() as Promise<SearchIndexItem[]>;
-				})
-				.catch(() => getFallbackSearchItems());
-		}
-		return searchItemsPromise;
-	}
-
-	function mergeWithCard(item: SearchIndexItem): CardIndexItem | null {
-		const indexed = cardById.get(item.id);
-		if (!indexed) return null;
-		return { ...indexed, ...item, facets: indexed.facets, scope: indexed.scope, element: indexed.element };
-	}
-
-	function withCardElements(items: SearchIndexItem[]): CardIndexItem[] {
-		return items
-			.map(mergeWithCard)
-			.filter((item): item is CardIndexItem => Boolean(item));
-	}
-
-	async function loadFuse() {
-		if (!fusePromise) {
-			fusePromise = Promise.all([import("fuse.js"), loadSearchItems()]).then(
-				([{ default: Fuse }, items]) => {
-					const FuseCtor = Fuse as FuseConstructor;
-					return new FuseCtor(items, {
-						includeScore: true,
-						ignoreLocation: true,
-						threshold: 0.32,
-						minMatchCharLength: 2,
-						keys: [
-							{ name: "title", weight: 0.42 },
-							{ name: "city", weight: 0.2 },
-							{ name: "country", weight: 0.14 },
-							{ name: "region", weight: 0.12 },
-							{ name: "category", weight: 0.06 },
-							{ name: "summary", weight: 0.03 },
-						],
-					});
-				},
+		if (filter.scope) {
+			const button = scopeButtons.find(
+				(item) => item.dataset.scopeValue === filter.scope,
 			);
+			const label = button?.querySelector("span")?.textContent?.trim() ?? filter.scope;
+			activeFiltersTokens.append(createToken(label, () => changeScope("")));
 		}
-		return fusePromise;
+
+		for (const key of facetKeys) {
+			for (const value of filter.selected(key)) {
+				const { label, flag } = chipMeta(key, value);
+				activeFiltersTokens.append(
+					createToken(label, () => toggleChip(key, value), flag),
+				);
+			}
+		}
+
+		const query = searchQuery.trim();
+		if (query) activeFiltersTokens.append(createToken(`«${query}»`, clearSearchQuery));
 	}
 
-	async function getSearchResults(query: string): Promise<SearchResult[]> {
-		const normalizedQuery = normalizeSearchText(query);
-		if (!normalizedQuery) {
-			return cardsIndex.map((item) => ({ item, score: 0 }));
+	function renderBadge() {
+		const total = filter.activeCount();
+		if (filtersBadge) {
+			filtersBadge.textContent = String(total);
+			filtersBadge.classList.toggle("hidden", total === 0);
 		}
 
-		const searchItems = await loadSearchItems();
-		const exactMatches = withCardElements(searchItems)
-			.filter((item) => item.searchText.includes(normalizedQuery))
-			.map((item) => ({ item, score: 0.01 }));
-		if (exactMatches.length > 0) {
-			return exactMatches.sort((a, b) => a.item.order - b.item.order);
-		}
-
-		const fuse = await loadFuse();
-		const resultMap = new Map<FilterableCard, SearchResult>();
-
-		fuse
-			.search(query)
-			.map((result) => {
-				const item = mergeWithCard(result.item);
-				return item ? { item, score: result.score ?? 1 } : null;
-			})
-			.filter((result): result is SearchResult => Boolean(result))
-			.forEach((result) => {
-				resultMap.set(result.item.element, result);
-			});
-
-		return Array.from(resultMap.values()).sort(
-			(a, b) => a.score - b.score || a.item.order - b.item.order,
-		);
-	}
-
-	function hideSuggestions() {
-		if (!suggestions || !searchInput) return;
-		suggestions.classList.add("hidden");
-		suggestions.replaceChildren();
-		searchInput.setAttribute("aria-expanded", "false");
-		searchInput.removeAttribute("aria-activedescendant");
-		activeSuggestionIndex = -1;
-		currentSuggestionValues = [];
-	}
-
-	function renderSuggestions(values: string[]) {
-		if (!suggestions || !searchInput) return;
-
-		currentSuggestionValues = values;
-		activeSuggestionIndex = -1;
-		suggestions.replaceChildren();
-
-		if (values.length === 0) {
-			hideSuggestions();
-			return;
-		}
-
-		values.forEach((value, index) => {
-			const option = document.createElement("li");
-			option.id = `search-suggestion-${index}`;
-			option.role = "option";
-			option.dataset.searchSuggestion = value;
-			option.className =
-				"cursor-pointer rounded-control px-3 py-2 text-surface-foreground transition hover:bg-muted aria-selected:bg-muted";
-			option.textContent = value;
-			option.addEventListener("mousedown", (event) => {
-				event.preventDefault();
-				commitSuggestion(value);
-			});
-			suggestions.append(option);
+		const hasAnything = total > 0 || searchQuery.trim().length > 0;
+		filtersResetButtons.forEach((button) => {
+			button.hidden = !hasAnything;
 		});
-
-		suggestions.classList.remove("hidden");
-		searchInput.setAttribute("aria-expanded", "true");
 	}
+
+	function syncSearchActions() {
+		if (searchSubmit) searchSubmit.disabled = !searchInput?.value.trim();
+		if (searchClear) searchClear.hidden = searchQuery.trim().length === 0;
+	}
+
+	function renderResultsCount(visible: number) {
+		if (!resultsCount) return;
+		const template = resultsCount.dataset.resultsTemplate ?? "{count}";
+		resultsCount.textContent = template.replace("__COUNT__", String(visible));
+	}
+
+	// --- подсказки ----------------------------------------------------------
+
+	const suggestions = createSearchSuggestions(suggestionList, searchInput, commitSuggestion);
 
 	async function updateSuggestions() {
 		const query = searchQuery.trim();
-		if (!query || query.length < 2) {
-			hideSuggestions();
+		if (query.length < MIN_SUGGESTION_QUERY) {
+			suggestions.hide();
 			return;
 		}
 
-		const normalizedQuery = normalizeSearchText(query);
-		const suggestionsSet = new Set<string>();
-
-		const searchResults = await getSearchResults(query);
+		const needle = normalizeSearchText(query);
+		const results = await search.run(query);
+		// Пока ждали, посетитель мог дописать запрос — эта выдача уже неактуальна.
 		if (query !== searchQuery.trim()) return;
 
-		searchResults.slice(0, 8).forEach(({ item }) => {
-			const matchingTerm = item.terms.find((term) => normalizeSearchText(term).includes(normalizedQuery));
-			suggestionsSet.add(matchingTerm ?? item.title);
-		});
+		const values = new Set<string>();
+		for (const { item } of results.slice(0, SUGGESTION_SOURCE_LIMIT)) {
+			const term = item.terms.find((candidate) =>
+				normalizeSearchText(candidate).includes(needle),
+			);
+			values.add(term ?? item.title);
+		}
 
-		renderSuggestions(Array.from(suggestionsSet).slice(0, 6));
-	}
-
-	function setActiveSuggestion(nextIndex: number) {
-		if (!suggestions || !searchInput || currentSuggestionValues.length === 0) return;
-
-		const maxIndex = currentSuggestionValues.length - 1;
-		activeSuggestionIndex = nextIndex < 0 ? maxIndex : nextIndex > maxIndex ? 0 : nextIndex;
-
-		Array.from(suggestions.children).forEach((child, index) => {
-			child.setAttribute("aria-selected", String(index === activeSuggestionIndex));
-		});
-		searchInput.setAttribute(
-			"aria-activedescendant",
-			`search-suggestion-${activeSuggestionIndex}`,
-		);
+		suggestions.show([...values].slice(0, MAX_SUGGESTIONS));
 	}
 
 	function commitSuggestion(value: string) {
@@ -728,64 +327,116 @@ export function initCardsToolbar() {
 		searchQuery = value;
 		if (searchInput) searchInput.value = value;
 		syncSearchActions();
-		hideSuggestions();
-		scheduleApplyFilters(true);
+		suggestions.hide();
+		schedule(true);
 	}
 
-	function toggleOverflow(groupName: FacetKey) {
-		const moreButton = getMoreButton(groupName);
-		if (!moreButton) return;
-		moreButton.dataset.expanded = String(moreButton.dataset.expanded !== "true");
+	// --- действия -----------------------------------------------------------
+
+	function toggleChip(key: FacetKey, value: string) {
+		filter.toggle(key, value);
+		filter.pruneEmpty();
+		schedule(true);
+	}
+
+	function changeScope(next: CenterScope) {
+		filter.setScope(next);
+		schedule(true);
+	}
+
+	function resetFilters() {
+		window.clearTimeout(searchTimer);
+		filter.reset();
+		searchQuery = "";
+		if (searchInput) searchInput.value = "";
+		suggestions.hide();
+		schedule(true);
+	}
+
+	function clearSearchQuery() {
+		window.clearTimeout(searchTimer);
+		searchQuery = "";
+		if (searchInput) {
+			searchInput.value = "";
+			searchInput.focus();
+		}
+		syncSearchActions();
+		suggestions.hide();
+		schedule(false);
+	}
+
+	function toggleOverflow(key: FacetKey) {
+		const more = moreButton(key);
+		if (!more) return;
+
+		more.dataset.expanded = String(more.dataset.expanded !== "true");
 		renderFacets();
 	}
 
-	async function applyFilters(shouldScrollToCards = false) {
+	async function apply(shouldScroll = false) {
 		const query = searchQuery.trim();
-		const rankedResults = await getSearchResults(query);
+		const ranked = await search.run(query);
 		if (query !== searchQuery.trim()) return;
 
-		const searchOrder = new Map(rankedResults.map((result, index) => [result.item.id, index]));
-		searchMatchIds = query ? new Set(rankedResults.map((result) => result.item.id)) : null;
+		const rank = new Map(ranked.map((result, index) => [result.item.id, index]));
+		filter.limitTo(query ? new Set(ranked.map((result) => result.item.id)) : null);
+		filter.pruneEmpty();
 
-		pruneEmptySelections();
-
-		let visible = 0;
-		const orderedIndex = query
-			? [...cardsIndex].sort((a, b) => {
-					const left = searchOrder.get(a.id) ?? Number.MAX_SAFE_INTEGER;
-					const right = searchOrder.get(b.id) ?? Number.MAX_SAFE_INTEGER;
+		const ordered = query
+			? [...cards].sort((a, b) => {
+					const left = rank.get(a.id) ?? Number.MAX_SAFE_INTEGER;
+					const right = rank.get(b.id) ?? Number.MAX_SAFE_INTEGER;
 					return left - right || a.order - b.order;
 				})
-			: cardsIndex;
+			: cards;
 
-		const shouldReorderGrid = Boolean(query) || gridReordered;
-		orderedIndex.forEach((item) => {
-			const show = matchesExcept(item, null);
+		// Переставляем узлы только когда порядок действительно менялся:
+		// иначе каждый клик по фильтру дёргал бы весь грид.
+		const shouldReorder = Boolean(query) || gridReordered;
+		let visible = 0;
+
+		for (const item of ordered) {
+			const show = filter.matches(item);
 			item.element.hidden = !show;
-			if (shouldReorderGrid) cardsGridElement.append(item.element);
+			if (shouldReorder) cardsGrid.append(item.element);
 			if (show) visible += 1;
-		});
+		}
 		gridReordered = Boolean(query);
 
 		renderFacets();
-		noResultsElement.hidden = visible > 0;
-		updateFiltersBadge();
-		updateResultsCount(visible);
-		updateSearchClear();
+		noResults.hidden = visible > 0;
+		renderBadge();
+		renderResultsCount(visible);
+		syncSearchActions();
 		renderActiveFilters();
-		writeStateToUrl();
-		if (shouldScrollToCards) scrollToCards();
+
+		window.history.replaceState(
+			null,
+			"",
+			writeCatalogQuery(
+				window.location.href,
+				{ ...filter.snapshot(), search: searchQuery },
+				facetKeys,
+			),
+		);
+
+		if (shouldScroll && !isDesktopLayout.matches) {
+			cardsGrid.scrollIntoView({ behavior: scrollBehavior(), block: "start" });
+		}
 	}
 
-	function scheduleApplyFilters(shouldScrollToCards = false) {
+	function schedule(shouldScroll = false) {
 		window.cancelAnimationFrame(filterFrame);
 		filterFrame = window.requestAnimationFrame(() => {
-			void applyFilters(shouldScrollToCards);
+			void apply(shouldScroll);
 		});
 	}
 
+	// --- события ------------------------------------------------------------
+
 	filtersToggle?.addEventListener("click", () => {
 		if (!filtersPanel) return;
+
 		const isHidden = filtersPanel.classList.contains("hidden");
 		filtersShell?.classList.toggle("hidden", !isHidden);
 		filtersPanel.classList.toggle("hidden", !isHidden);
@@ -793,31 +444,32 @@ export function initCardsToolbar() {
 
 		if (isHidden && !isDesktopLayout.matches && filtersShell) {
 			const barBottom = stickyBar?.getBoundingClientRect().bottom ?? 0;
-			const target =
-				filtersShell.getBoundingClientRect().top + window.scrollY - barBottom - 8;
-			window.scrollTo({ top: Math.max(target, 0), behavior: getScrollBehavior() });
+			const target = filtersShell.getBoundingClientRect().top + window.scrollY - barBottom - 8;
+			window.scrollTo({ top: Math.max(target, 0), behavior: scrollBehavior() });
 		}
 	});
 
-	filtersResetButtons.forEach((button) => {
-		button.addEventListener("click", resetFilters);
-	});
-
+	filtersResetButtons.forEach((button) => button.addEventListener("click", resetFilters));
 	searchClear?.addEventListener("click", clearSearchQuery);
+
 	searchForm?.addEventListener("submit", (event) => {
 		event.preventDefault();
 		if (!searchInput?.value.trim()) return;
 
 		window.clearTimeout(searchTimer);
 		searchQuery = searchInput.value;
-		hideSuggestions();
-		scheduleApplyFilters(true);
+		suggestions.hide();
+		schedule(true);
 	});
 
 	for (const key of facetKeys) {
-		getAllChip(key)?.addEventListener("click", () => resetGroup(key));
-		getMoreButton(key)?.addEventListener("click", () => toggleOverflow(key));
-		for (const chip of getGroupChips(key)) {
+		allChip(key)?.addEventListener("click", () => {
+			filter.resetGroup(key);
+			schedule(true);
+		});
+		moreButton(key)?.addEventListener("click", () => toggleOverflow(key));
+
+		for (const chip of groupChips(key)) {
 			chip.addEventListener("click", () => {
 				const value = chip.dataset.filterValue ?? "";
 				if (value) toggleChip(key, value);
@@ -826,40 +478,41 @@ export function initCardsToolbar() {
 	}
 
 	for (const button of scopeButtons) {
-		button.addEventListener("click", () => setScope(button.dataset.scopeValue as CenterScope));
+		button.addEventListener("click", () =>
+			changeScope(button.dataset.scopeValue as CenterScope),
+		);
 	}
-	scopeAllButton?.addEventListener("click", () => setScope(""));
+	scopeAllButton?.addEventListener("click", () => changeScope(""));
 
 	searchInput?.addEventListener("input", (event) => {
 		const value = (event.target as HTMLInputElement).value;
-		syncSearchActions();
-		if (searchClear) {
-			searchClear.hidden = value.trim().length === 0;
-		}
+		if (searchSubmit) searchSubmit.disabled = !value.trim();
+		if (searchClear) searchClear.hidden = value.trim().length === 0;
+
 		window.clearTimeout(searchTimer);
 		searchTimer = window.setTimeout(() => {
 			searchQuery = value;
 			void updateSuggestions();
-			scheduleApplyFilters(false);
-		}, 150);
+			schedule(false);
+		}, SEARCH_DEBOUNCE_MS);
 	});
 
 	searchInput?.addEventListener("keydown", (event) => {
-		if (event.key === "ArrowDown") {
-			event.preventDefault();
-			setActiveSuggestion(activeSuggestionIndex + 1);
+		if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+			if (suggestions.move(event.key === "ArrowDown" ? 1 : -1)) event.preventDefault();
+			return;
 		}
-		if (event.key === "ArrowUp") {
-			event.preventDefault();
-			setActiveSuggestion(activeSuggestionIndex - 1);
+
+		if (event.key === "Enter") {
+			const active = suggestions.active();
+			if (active !== null) {
+				event.preventDefault();
+				commitSuggestion(active);
+			}
+			return;
 		}
-		if (event.key === "Enter" && activeSuggestionIndex >= 0) {
-			event.preventDefault();
-			commitSuggestion(currentSuggestionValues[activeSuggestionIndex] ?? "");
-		}
-		if (event.key === "Escape") {
-			hideSuggestions();
-		}
+
+		if (event.key === "Escape") suggestions.hide();
 	});
 
 	searchInput?.addEventListener("focus", () => {
@@ -867,10 +520,21 @@ export function initCardsToolbar() {
 		void updateSuggestions();
 	});
 	searchInput?.addEventListener("blur", () => {
-		blurTimer = window.setTimeout(hideSuggestions, 120);
+		blurTimer = window.setTimeout(() => suggestions.hide(), SUGGESTION_BLUR_DELAY_MS);
 	});
 
-	readStateFromUrl();
+	// --- запуск -------------------------------------------------------------
+
+	const initial = readCatalogQuery(
+		window.location.search,
+		facetKeys,
+		allowedValues,
+		(scope) => scopeButtons.some((button) => button.dataset.scopeValue === scope),
+	);
+	searchQuery = initial.search;
+	if (searchInput) searchInput.value = searchQuery;
+	filter.restore(initial);
+
 	renderFacets();
-	void applyFilters();
+	void apply();
 }
