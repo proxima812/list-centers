@@ -1,4 +1,5 @@
 ---
+import { pageSchema } from "@/seo/schema";
 import {
 	config,
 	type SeoKeywords,
@@ -107,100 +108,22 @@ const modifiedTime = formatDateToISO(dateModified) || publishedTime;
 const isArticle = type === "article";
 const shouldIndex = indexRobots !== false;
 
-const schemaLogo = config.site.OG.logo
-	? {
-			"@type": "ImageObject",
-			url: toAbsoluteURL(config.site.OG.logo, siteURL),
-		}
-	: undefined;
-
-const schemaPublisher = {
-	"@type": "Organization",
-	name: config.site.OG.organizationName || siteName,
-	url: siteURL.href,
-	...(schemaLogo && { logo: schemaLogo }),
-};
-
-const websiteSchema = {
-	"@context": "https://schema.org",
-	"@type": "WebSite",
-	name: siteName,
-	alternateName: ["tatarverse.cc", "ТБК", "Татары, башкиры и крымские татары"],
-	description: config.site.OG.description,
-	inLanguage: mainLocale,
-	url: siteURL.href,
-	publisher: schemaPublisher,
-	about: [
-		{ "@type": "Thing", name: "Татары" },
-		{ "@type": "Thing", name: "Башкиры" },
-		{ "@type": "Thing", name: "Крымские татары" },
-		{ "@type": "Thing", name: "Татарские и башкирские культурные центры" },
-	],
-	potentialAction: {
-		"@type": "SearchAction",
-		target: {
-			"@type": "EntryPoint",
-			urlTemplate: new URL("/centers?q={search_term_string}", siteURL).href,
-		},
-		"query-input": "required name=search_term_string",
-	},
-};
-
-const schemaItem = isArticle
-	? {
-			"@context": "https://schema.org",
-			"@type": "BlogPosting",
-			headline: mainTitle,
-			description: mainDescription,
-			keywords: mainKeywords,
-			inLanguage: mainLocale,
-			...(shouldIndex
-				? {
-						url: formatCanonicalURL(resolvedCanonicalURL),
-						mainEntityOfPage: formatCanonicalURL(resolvedCanonicalURL),
-					}
-				: {}),
-			image: [mainOGImage],
-			author: {
-				"@type": "Person",
-				name: mainAuthor,
-				url: siteURL.href,
-			},
-			publisher: schemaPublisher,
-			...(publishedTime && { datePublished: publishedTime }),
-			...(modifiedTime && { dateModified: modifiedTime }),
-		}
-	: {
-			"@context": "https://schema.org",
-			"@type": "WebPage",
-			name: mainTitle,
-			description: mainDescription,
-			keywords: mainKeywords,
-			inLanguage: mainLocale,
-			...(shouldIndex ? { url: formatCanonicalURL(resolvedCanonicalURL) } : {}),
-			image: [mainOGImage],
-			isPartOf: {
-				"@id": `${siteURL.href}#website`,
-			},
-			about: [
-				{ "@type": "Thing", name: "ТБК" },
-				{ "@type": "Thing", name: "Татары" },
-				{ "@type": "Thing", name: "Башкиры" },
-				{ "@type": "Thing", name: "Крымские татары" },
-			],
-			author: {
-				"@type": "Person",
-				name: mainAuthor,
-				url: siteURL.href,
-			},
-		};
-
-const schemaGraph = isArticle
-	? schemaItem
-	: {
-			"@context": "https://schema.org",
-			"@graph": [{ ...websiteSchema, "@id": `${siteURL.href}#website` }, schemaItem],
-		};
+const schemaGraph = pageSchema({
+	title: mainTitle,
+	description: mainDescription,
+	keywords: mainKeywords,
+	locale: mainLocale,
+	siteName,
+	author: mainAuthor,
+	image: mainOGImage,
+	canonicalURL: formatCanonicalURL(resolvedCanonicalURL),
+	siteURL,
+	logoURL: config.site.OG.logo ? toAbsoluteURL(config.site.OG.logo, siteURL) : undefined,
+	isArticle,
+	shouldIndex,
+	publishedTime,
+	modifiedTime,
+});
 
 const enabledVerifications = config.site.verifications.filter(
 	(verification: SiteVerification) => verification.name_verification && verification.content,

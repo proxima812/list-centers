@@ -30,7 +30,16 @@ Say "the catalog" for the centers listing, "a card" for one center entry, and
 - Bun is the preferred package manager.
 - Deploy: Cloudflare Pages via `wrangler` (`bun run cf:deploy`).
 - Main source folders: `src/pages`, `src/components`, `src/layouts`, `src/data`,
-  `src/i18n`, `src/styles`, `src/utils`, `src/integrations`.
+  `src/i18n`, `src/styles`, `src/utils`, `src/integrations`, plus four that hold
+  logic pulled out of pages and components:
+  - `src/domain` — правила предметной области без DOM и без сети: порядок
+    центров, нормализация поиска, статистика каталога, ссылки проекта,
+    таблица переключателей оформления.
+  - `src/dom` — объявления `data-*`-контрактов между разметкой и клиентскими
+    скриптами (`cardAttributes`, `appearanceAttributes`).
+  - `src/features` — клиентские фичи, разложенные по ответственности
+    (`catalog`: состояние фильтров, URL, поиск, подсказки).
+  - `src/seo` — сборка графа schema.org.
 - Site-wide settings live in `src/config.ts`; collection schemas in
   `src/content.config.ts`.
 - Components are imported directly by path through the `@/*` alias — there is
@@ -89,7 +98,7 @@ card alone lives under all of these at once:
 | Motion | `[data-motion="off"]` and `prefers-reduced-motion`. Kill animation with `1ms`, not `animation: none` — `animationend` still has to fire. |
 | Locale | `ru` unprefixed and `en` under `/en/`. Routes with no EN version are listed in `ruOnlyRoutes` (`src/i18n/index.ts`). |
 | Print | `/centers/print` renders the catalog for paper; it has its own layout. |
-| Client filter | The toolbar filters cards by reading `data-*` off the DOM. Adding or removing a `data-` attribute on a card is a change to the filter contract — grep `src/scripts/centersToolbar.ts` before touching them. |
+| Client filter | Тулбар фильтрует карточки по `data-*`. Имена атрибутов объявлены один раз в `src/dom/cardAttributes.ts`: пиши через `cardDataset`, читай через `readCard`. Менять контракт — там же, расхождение станет ошибкой типов, а не багом в рантайме. |
 
 Say which of these you checked and how. "Builds fine" is not a check.
 

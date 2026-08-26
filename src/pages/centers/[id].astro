@@ -10,7 +10,10 @@ import Layout from "@/layouts/Layout.astro";
 import { Icon } from "astro-icon/components";
 import { getCollection, render, type CollectionEntry } from "astro:content";
 
+import { centerDescription } from "@/domain/center/description";
+import { centerJsonLd } from "@/domain/center/jsonLd";
 import { byRecency } from "@/domain/center/order";
+import { relatedByCountry, relatedCenters } from "@/domain/center/related";
 import { getCountryLabel } from "@/data/worldCountries";
 import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
 import { getCenterLinks } from "@/utils/centerLinks";
@@ -112,74 +115,28 @@ const facts = [
 ].filter((fact): fact is { label: string; value: string } => Boolean(fact));
 
 const headerBadges = [category, type].filter((value): value is string => Boolean(value));
-const descriptionDetails = [...new Set((locale === "en"
-	? [city, region, localizedCountry]
-	: [city, region, localizedCountry, category, type]
-).filter((value): value is string => Boolean(value)))];
-const descriptionSuffix = locale === "en"
-	? ". Contacts and verified sources: tatarverse."
-	: ". Контакты и проверенные источники: tatarverse.";
-const maxDescriptionLength = 160;
-const maxContextLength = 32;
-const descriptionContext = descriptionDetails.reduce((context, detail) => {
-	const candidate = `${context ? `${context}, ` : ": "}${detail}`;
-	return candidate.length <= maxContextLength ? candidate : context;
-}, "");
-const maxHeadlineLength = maxDescriptionLength - descriptionContext.length - descriptionSuffix.length;
-const headlineTailLength = Math.min(56, Math.floor(maxHeadlineLength / 2));
-const descriptionHeadline = title.length <= maxHeadlineLength
-	? title
-	: `${title.slice(0, maxHeadlineLength - headlineTailLength - 3).trimEnd()}...${title.slice(-headlineTailLength).trimStart()}`;
-const fallbackDescription = `${descriptionHeadline}${descriptionContext}${descriptionSuffix}`;
-const pageDescription = (() => {
-	if (summary) return summary;
-	return fallbackDescription;
-})();
-
-const ruCountry = clean(entry.data.location?.country);
-const ruCategory = clean(entry.data.category);
-const relatedIds = centerEntries
-	.filter((centerEntry) => centerEntry.id !== entry.id)
-	.filter((centerEntry) =>
-		ruCountry
-			? centerEntry.data.location?.country === ruCountry
-			: ruCategory
-				? centerEntry.data.category === ruCategory
-				: false,
-	)
-	.slice(0, 4)
-	.map((centerEntry) => centerEntry.id);
-
-const localeEntries = locale === "en" ? englishEntries : centerEntries;
-const localeEntryById = new Map(
-	localeEntries.map((centerEntry) => [centerEntry.id, centerEntry]),
+const pageDescription = centerDescription(
+	{ title, summary, city, region, country: localizedCountry, category, type },
+	locale,
 );
-const relatedEntries = relatedIds
-	.map((id) => localeEntryById.get(id) ?? centerEntries.find((e) => e.id === id))
-	.filter((centerEntry): centerEntry is NonNullable<typeof centerEntry> =>
-		Boolean(centerEntry),
-	);
-const relatedTitle = ruCountry
+
+const relatedEntries = relatedCenters(
+	entry,
+	centerEntries,
+	new Map((locale === "en" ? englishEntries : centerEntries).map((item) => [item.id, item])),
+);
+const relatedTitle = relatedByCountry(entry)
 	? t("detail.related", { country: localizedCountry ?? country ?? "" })
 	: t("detail.relatedCategory");
 
-const jsonLd = {
-	"@context": "https://schema.org",
-	"@type": "Organization",
+const jsonLd = centerJsonLd({
 	name: title,
-	...(summary ? { description: summary } : {}),
+	description: summary,
 	url: sourceUrl ?? canonicalURL,
-	...(country || city
-		? {
-				address: {
-					"@type": "PostalAddress",
-					...(country ? { addressCountry: country } : {}),
-					...(region ? { addressRegion: region } : {}),
-					...(city ? { addressLocality: city } : {}),
-				},
-			}
-		: {}),
-};
+	country,
+	region,
+	city,
+});
 ---
 
 <Layout
