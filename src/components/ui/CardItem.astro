@@ -1,4 +1,5 @@
 ---
+import { cardDataset } from "@/dom/cardAttributes";
 import { normalizeCity, type CenterGeo } from "@/data/geo";
 import { countryFlagsByRu, getCountryLabel } from "@/data/worldCountries";
 import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
@@ -60,23 +61,29 @@ const quickLinkClass =
 const viewButtonClass =
 	"ml-auto inline-flex shrink-0 items-center gap-1 rounded-full corner-squircle bg-surface-muted px-2.5 py-1 text-xs font-medium text-muted-foreground transition-colors duration-300 ease-out group-hover:bg-accent group-hover:text-accent-foreground";
 const quickLinks = links ?? [];
+
+// Единственное место, где карточка объявляет свой DOM-контракт. Имена
+// атрибутов — в @/dom/cardAttributes, там же их читают фильтры и /saved.
+const dataset = cardDataset({
+	id,
+	scope: geo?.scope ?? "",
+	macro: geo?.macro ?? "",
+	okrug: geo?.okrug ?? "",
+	country: countryKey,
+	region: cleanRegion,
+	city: cleanCity ?? "",
+	type: type ?? "",
+	category: category ?? "",
+	title: displayTitle,
+	summary: summary ?? "",
+	flag: cleanFlag ?? "",
+	pubDate: pubDate ?? "",
+	href: centerPath,
+});
 ---
 
 <article
-	data-type={type ?? ""}
-	data-category={category ?? ""}
-	data-country={countryKey}
-	data-search-id={id}
-	data-title={displayTitle}
-	data-summary={summary ?? ""}
-	data-city={cleanCity ?? ""}
-	data-region={cleanRegion}
-	data-macro={geo?.macro ?? ""}
-	data-okrug={geo?.okrug ?? ""}
-	data-scope={geo?.scope ?? ""}
-	data-flag={cleanFlag ?? ""}
-	data-pub-date={pubDate ?? ""}
-	data-href={centerPath}
+	{...dataset}
 	class="group relative flex h-full min-w-0 flex-col gap-3 rounded-catalog corner-squircle bg-surface p-6 text-surface-foreground transition duration-300 ease-out hover:surface-lift has-[[data-card-link]:focus-visible]:outline-2 has-[[data-card-link]:focus-visible]:outline-offset-2 has-[[data-card-link]:focus-visible]:outline-accent"
 >
 	<SaveCenterButton title={displayTitle} />

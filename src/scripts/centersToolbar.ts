@@ -1,4 +1,5 @@
 
+import { CARD_ATTR, isFacetField, readCard } from "@/dom/cardAttributes";
 import { normalizeSearchText, uniqueTerms } from "@/domain/center/searchText";
 
 type FacetKey = string;
@@ -17,21 +18,8 @@ type ExpandableFilterButton = HTMLButtonElement & {
 	};
 };
 
-type FilterableCard = HTMLElement & {
-	dataset: DOMStringMap & {
-		searchId?: string;
-		scope?: string;
-		macro?: string;
-		okrug?: string;
-		country?: string;
-		region?: string;
-		city?: string;
-		type?: string;
-		category?: string;
-		title?: string;
-		summary?: string;
-	};
-};
+// Контракт карточки объявлен в @/dom/cardAttributes, здесь только псевдоним.
+type FilterableCard = HTMLElement;
 
 type CardIndexItem = {
 	id: string;
@@ -119,7 +107,7 @@ export function initCardsToolbar() {
 	const cardsGridElement = cardsGrid;
 	const noResultsElement = noResults;
 	const cards = Array.from(
-		cardsGridElement.querySelectorAll<FilterableCard>(":scope > [data-search-id]"),
+		cardsGridElement.querySelectorAll<FilterableCard>(`:scope > [${CARD_ATTR.id}]`),
 	);
 
 	const groupElements = Array.from(
@@ -136,23 +124,18 @@ export function initCardsToolbar() {
 	const scopeAllButton = document.querySelector<HTMLButtonElement>("[data-scope-all]");
 
 	const cardsIndex: CardIndexItem[] = cards.map((card, order) => {
-		const id = card.dataset.searchId ?? String(order);
-		const country = card.dataset.country ?? "";
-		const type = card.dataset.type ?? "";
-		const category = card.dataset.category ?? "";
-		const region = card.dataset.region ?? "";
-		const title = card.dataset.title ?? "";
-		const summary = card.dataset.summary ?? "";
-		const city = card.dataset.city ?? "";
+		const fields = readCard(card);
+		const { country, type, category, region, title, summary, city } = fields;
+		const id = fields.id || String(order);
 		const facets: Record<FacetKey, string> = {};
 		for (const key of facetKeys) {
-			facets[key] = card.dataset[key] ?? "";
+			facets[key] = isFacetField(key) ? fields[key] : "";
 		}
 
 		return {
 			id,
 			element: card,
-			scope: (card.dataset.scope ?? "") as CenterScope,
+			scope: fields.scope as CenterScope,
 			facets,
 			country,
 			type,

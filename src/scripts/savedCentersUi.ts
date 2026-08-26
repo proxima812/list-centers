@@ -1,30 +1,22 @@
-
+import { closestCard, readCard } from "@/dom/cardAttributes";
 import { onSavedChange, readSaved, toggleSaved, type SavedCenter } from "@/scripts/savedCenters";
 
 let initialized = false;
 
 function readCardSnapshot(button: HTMLElement): Omit<SavedCenter, "savedAt"> | null {
-	const card = button.closest<HTMLElement>("[data-search-id]");
-	const id = card?.dataset.searchId;
-	if (!card || !id) return null;
+	const card = closestCard(button);
+	if (!card) return null;
 
-	return {
-		id,
-		href: card.dataset.href ?? "",
-		title: card.dataset.title ?? "",
-		summary: card.dataset.summary ?? "",
-		type: card.dataset.type ?? "",
-		category: card.dataset.category ?? "",
-		city: card.dataset.city ?? "",
-		country: card.dataset.country ?? "",
-		flag: card.dataset.flag ?? "",
-		pubDate: card.dataset.pubDate ?? "",
-	};
+	const { id, href, title, summary, type, category, city, country, flag, pubDate } =
+		readCard(card);
+
+	return id ? { id, href, title, summary, type, category, city, country, flag, pubDate } : null;
 }
 
 function syncButtons(savedIds: Set<string>) {
 	for (const button of document.querySelectorAll<HTMLElement>("[data-save-center]")) {
-		const id = button.closest<HTMLElement>("[data-search-id]")?.dataset.searchId;
+		const card = closestCard(button);
+		const id = card && readCard(card).id;
 		if (!id) continue;
 
 		const active = savedIds.has(id);

@@ -119,6 +119,7 @@ const metaChipClass =
 </Layout>
 
 <script>
+	import { CARD_ATTR, closestCard, readCard } from "@/dom/cardAttributes";
 	import { clearSaved, onSavedChange, readSaved, removeSaved } from "@/scripts/savedCenters";
 	import { getCenterMarkHue } from "@/utils/centers";
 
@@ -164,12 +165,12 @@ const metaChipClass =
 
 			for (const item of list) {
 				const node = template.content.cloneNode(true) as DocumentFragment;
-				const article = node.querySelector<HTMLElement>("[data-search-id]");
+				const article = node.querySelector<HTMLElement>(`[${CARD_ATTR.id}]`);
 				const link = node.querySelector<HTMLAnchorElement>("[data-saved-title]");
 				const deleteButton = node.querySelector<HTMLElement>("[data-saved-delete]");
 				if (!article || !link) continue;
 
-				article.dataset.searchId = item.id;
+				article.setAttribute(CARD_ATTR.id, item.id);
 
 				const mark = node.querySelector<HTMLElement>("[data-saved-mark]");
 				mark?.style.setProperty("--mark-hue", String(getCenterMarkHue(item.id)));
@@ -222,7 +223,8 @@ const metaChipClass =
 
 			event.preventDefault();
 
-			const id = button.closest<HTMLElement>("[data-search-id]")?.dataset.searchId;
+			const card = closestCard(button);
+			const id = card && readCard(card).id;
 			if (id) removeSaved(id);
 		});
 
