@@ -25,32 +25,12 @@ const ogLocales: Record<AppLocale, string> = {
 	en: "en_US",
 };
 
-// EN-покрытие маршрутов частичное: посты, проекты, сабантуй и печать
-// существуют только по-русски, а из центров переведена лишь часть. Слепая
-// локализация таких путей давала ссылки на несуществующие /en/-страницы (404).
-// Набор переведенных центров берем из имен файлов centers_i18n/en — они
-// совпадают с route id.
 const translatedCenterIds = new Set(
 	Object.keys(import.meta.glob("../data/centers_i18n/en/*.mdx")).map((path) =>
 		path.slice(path.lastIndexOf("/") + 1).replace(/\.mdx$/, ""),
 	),
 );
 
-/**
- * Единственная таблица маршрутов без EN-версии. Раньше их было две -
- * `unlocalizedPathnames` (Set) и `ruOnlyPathPatterns` (массив регулярок), -
- * и различались они только поведением языкового переключателя. Добавляя
- * маршрут, приходилось угадывать, в какой из наборов его класть.
- *
- * `switcher` отвечает ровно на этот вопрос - куда ведет переключатель языка:
- *
- * - `stay` — страница одна на обе локали (лента постов, сабантуй, личный
- *   список сохраненного): остаемся на том же адресе вместе с `?query` и
- *   `#hash`. Второй копии каркаса ради заголовка не заводим.
- * - `hub` — EN-адреса либо нет вовсе, либо он существует только как
- *   301-заглушка в `src/pages/[locale]/`: уводим на ближайший существующий
- *   раздел EN, а не на 404.
- */
 const ruOnlyRoutes: Array<{ pattern: RegExp; switcher: "stay" | "hub" }> = [
 	{ pattern: /^(posts|saved)$/, switcher: "stay" },
 	{ pattern: /^posts\/.+/, switcher: "hub" },
@@ -110,9 +90,6 @@ export function localizePath(locale: AppLocale, href: string): string {
 	return hash ? `${localized}#${hash}` : localized;
 }
 
-// Для страницы без перевода переключатель ведет не на 404, а на ближайший
-// существующий раздел целевой локали: /en/centers/ для непереведенного центра,
-// /en/ для поста или проекта.
 function nearestLocalizedHub(locale: AppLocale, relativePath: string): string {
 	const segments = relativePath.split("/").slice(0, -1);
 	while (segments.length > 0) {

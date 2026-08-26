@@ -1,13 +1,3 @@
-/**
- * Быстрые ссылки для карточки центра.
- *
- * У коллекции `centers` во фронтматтере есть только `source`, а живые контакты
- * лежат в теле файла под «## Ссылки» — там сайт, соцсети и мессенджеры вперемешку
- * с человеческими подписями («Официальный сайт — kazankultur.org»). Карточке
- * нужен не список, а по одной ссылке на площадку: сайт, Instagram, Telegram и
- * так далее. Разбор строго по секции «## Ссылки» — «## Источники» это ссылки на
- * статьи о центре, а не сам центр.
- */
 
 export type CenterLinkKind =
 	| "website"
@@ -21,14 +11,12 @@ export type CenterLinkKind =
 export interface CenterLink {
 	kind: CenterLinkKind;
 	label: string;
-	/** Имя иконки для astro-icon. */
 	icon: string;
 	href: string;
 }
 
 type Platform = { kind: CenterLinkKind; label: string; icon: string; pattern: RegExp };
 
-/** Порядок задаёт и приоритет разбора, и порядок вывода в карточке. */
 const PLATFORMS: Platform[] = [
 	{
 		kind: "instagram",
@@ -76,17 +64,6 @@ function classify(href: string): Omit<CenterLink, "href"> | null {
 	return { kind: "website", label: "Сайт", icon: "mdi:web" };
 }
 
-/**
- * Подпись ссылки — сам адрес, а не название площадки.
- *
- * «Instagram» на карточке не отвечает на вопрос, чей это аккаунт, а
- * `instagram.com/tatarartschool` отвечает. Протокол и `www.` выбрасываются:
- * они одинаковы у всех и только съедают ширину, которой в карточке и так нет.
- *
- * Длинный адрес режется с хвоста, а не сворачивается до домена: у соцсетей
- * именно хвост несёт имя аккаунта, и `t.me` вместо `t.me/tatar_congress` —
- * это подпись, по которой нельзя отличить одну ссылку от другой.
- */
 export function formatCenterLinkLabel(href: string, maxLength = 26): string {
 	let url: URL;
 
@@ -101,8 +78,6 @@ export function formatCenterLinkLabel(href: string, maxLength = 26): string {
 	const full = `${host}${tail}`;
 
 	if (full.length <= maxLength) return full;
-	// Хост оставляем целиком даже когда он сам длиннее порога: обрезанное
-	// доменное имя не читается вообще.
 	return `${full.slice(0, Math.max(host.length, maxLength - 1))}…`;
 }
 
@@ -116,10 +91,6 @@ function extractSection(body: string): string {
 	return nextHeading === -1 ? rest : rest.slice(0, nextHeading + 1);
 }
 
-/**
- * Возвращает по одной ссылке на площадку. `source` из фронтматтера — запасной
- * вариант: у части центров секции «## Ссылки» нет вовсе.
- */
 export function getCenterLinks(body: string | undefined, source?: string): CenterLink[] {
 	const found = new Map<CenterLinkKind, CenterLink>();
 
@@ -135,7 +106,6 @@ export function getCenterLinks(body: string | undefined, source?: string): Cente
 
 	if (source) collect(source);
 
-	// Сайт первым: это «домашний» адрес центра, соцсети — производные от него.
 	const order: CenterLinkKind[] = ["website", ...PLATFORMS.map((platform) => platform.kind)];
 
 	return order

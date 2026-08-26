@@ -1,22 +1,5 @@
-// Название страны живёт здесь, в лист-модуле, а не в `geo/index.ts`: его
-// импортирует и content.config.ts, которому нельзя тянуть весь барель гео.
 export const RUSSIA = "Россия";
 
-// Канонический справочник субъектов РФ.
-//
-// Нужен по двум причинам. Первая — фильтр «Регион» строится по значению
-// `location.region` из frontmatter, и любое расхождение в написании создаёт
-// вторую строку в панели: до нормализации Югра существовала одновременно через
-// дефис и через тире, а Башкортостан был расколот на шесть узлов районами.
-// Вторая — `federalDistrict` даёт промежуточный уровень: 69 живых регионов
-// схлопываются в восемь округов, и свёрнутая панель показывает восемь строк
-// вместо семидесяти.
-//
-// `aliases` — это не синонимы «на будущее», а зафиксированные написания,
-// которые реально встречались в данных или которые редактор напишет по
-// привычке («г. Москва», «Республика Удмуртия»). Схема коллекции резолвит
-// `region` через этот справочник и роняет билд на неизвестном значении, так
-// что список алиасов — единственное место, где расширяется словарь.
 
 export const FEDERAL_DISTRICTS = [
 	"Центральный",
@@ -32,17 +15,13 @@ export const FEDERAL_DISTRICTS = [
 export type FederalDistrict = (typeof FEDERAL_DISTRICTS)[number];
 
 export interface RuRegion {
-	/** Каноническое имя. Оно же ключ фильтра и значение в frontmatter. */
 	name: string;
 	federalDistrict: FederalDistrict;
-	/** Короткая подпись для чипа, если каноническое имя не влезает в колонку. */
 	short?: string;
-	/** Написания, которые резолвятся в каноническое имя. */
 	aliases?: string[];
 }
 
 export const RU_REGIONS: RuRegion[] = [
-	// Центральный
 	{ name: "Москва", federalDistrict: "Центральный", aliases: ["г. Москва", "город Москва"] },
 	{ name: "Белгородская область", federalDistrict: "Центральный" },
 	{ name: "Брянская область", federalDistrict: "Центральный" },
@@ -62,7 +41,6 @@ export const RU_REGIONS: RuRegion[] = [
 	{ name: "Тульская область", federalDistrict: "Центральный" },
 	{ name: "Ярославская область", federalDistrict: "Центральный" },
 
-	// Северо-Западный
 	{
 		name: "Санкт-Петербург",
 		federalDistrict: "Северо-Западный",
@@ -83,7 +61,6 @@ export const RU_REGIONS: RuRegion[] = [
 		short: "Ненецкий АО",
 	},
 
-	// Приволжский
 	{
 		name: "Республика Башкортостан",
 		federalDistrict: "Приволжский",
@@ -119,7 +96,6 @@ export const RU_REGIONS: RuRegion[] = [
 	{ name: "Саратовская область", federalDistrict: "Приволжский" },
 	{ name: "Ульяновская область", federalDistrict: "Приволжский" },
 
-	// Уральский
 	{ name: "Курганская область", federalDistrict: "Уральский" },
 	{ name: "Свердловская область", federalDistrict: "Уральский" },
 	{ name: "Тюменская область", federalDistrict: "Уральский" },
@@ -128,8 +104,6 @@ export const RU_REGIONS: RuRegion[] = [
 		name: "Ханты-Мансийский автономный округ — Югра",
 		federalDistrict: "Уральский",
 		short: "ХМАО — Югра",
-		// Дефис против тире — тот самый дубль, из-за которого округ был двумя
-		// разными фильтрами.
 		aliases: [
 			"Ханты-Мансийский автономный округ - Югра",
 			"Ханты-Мансийский автономный округ – Югра",
@@ -145,7 +119,6 @@ export const RU_REGIONS: RuRegion[] = [
 		aliases: ["ЯНАО"],
 	},
 
-	// Сибирский
 	{ name: "Республика Алтай", federalDistrict: "Сибирский", short: "Алтай" },
 	{
 		name: "Республика Тыва",
@@ -166,7 +139,6 @@ export const RU_REGIONS: RuRegion[] = [
 	{ name: "Омская область", federalDistrict: "Сибирский" },
 	{ name: "Томская область", federalDistrict: "Сибирский" },
 
-	// Дальневосточный
 	{ name: "Республика Бурятия", federalDistrict: "Дальневосточный", short: "Бурятия" },
 	{
 		name: "Республика Саха (Якутия)",
@@ -178,7 +150,6 @@ export const RU_REGIONS: RuRegion[] = [
 	{
 		name: "Камчатский край",
 		federalDistrict: "Дальневосточный",
-		// Область упразднена в 2007 году, в данных встречалась.
 		aliases: ["Камчатская область"],
 	},
 	{ name: "Приморский край", federalDistrict: "Дальневосточный" },
@@ -197,7 +168,6 @@ export const RU_REGIONS: RuRegion[] = [
 		short: "Чукотка",
 	},
 
-	// Южный
 	{ name: "Республика Адыгея", federalDistrict: "Южный", short: "Адыгея" },
 	{ name: "Республика Калмыкия", federalDistrict: "Южный", short: "Калмыкия" },
 	{ name: "Республика Крым", federalDistrict: "Южный", short: "Крым", aliases: ["Крым"] },
@@ -207,7 +177,6 @@ export const RU_REGIONS: RuRegion[] = [
 	{ name: "Волгоградская область", federalDistrict: "Южный" },
 	{ name: "Ростовская область", federalDistrict: "Южный" },
 
-	// Северо-Кавказский
 	{ name: "Республика Дагестан", federalDistrict: "Северо-Кавказский", short: "Дагестан" },
 	{ name: "Республика Ингушетия", federalDistrict: "Северо-Кавказский", short: "Ингушетия" },
 	{
@@ -237,9 +206,6 @@ export const RU_REGIONS: RuRegion[] = [
 const REGION_BY_KEY = new Map<string, RuRegion>();
 
 function keyOf(value: string): string {
-	// Тире, дефис и неразрывный пробел в названиях субъектов пишут вразнобой,
-	// поэтому ключ их не различает — иначе `aliases` пришлось бы наполнять
-	// комбинаторикой знаков препинания.
 	return value
 		.toLowerCase()
 		.replace(/ё/g, "е")
@@ -256,13 +222,11 @@ for (const region of RU_REGIONS) {
 	}
 }
 
-/** Каноническая запись субъекта по любому известному написанию. */
 export function findRuRegion(value: string | undefined): RuRegion | undefined {
 	if (!value) return undefined;
 	return REGION_BY_KEY.get(keyOf(value));
 }
 
-/** Каноническое имя субъекта или `undefined`, если написание неизвестно. */
 export function normalizeRuRegion(value: string | undefined): string | undefined {
 	return findRuRegion(value)?.name;
 }
@@ -276,10 +240,6 @@ export function getFederalDistrict(region: string | undefined): FederalDistrict 
 	return findRuRegion(region)?.federalDistrict;
 }
 
-/**
- * Ближайшее по написанию каноническое имя. Нужно только для сообщения об
- * ошибке валидации: подсказать редактору, что он имел в виду.
- */
 export function suggestRuRegion(value: string): string | undefined {
 	const key = keyOf(value);
 	let best: { name: string; score: number } | undefined;

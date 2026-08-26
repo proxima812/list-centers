@@ -21,9 +21,6 @@ const IGNORE_FILES = new Set([
 	"llms.txt.ts",
 	"robots.txt.ts",
 	"sitemap.xml.ts",
-	// Личный список из localStorage конкретного браузера: в статическом HTML
-	// он всегда пуст, читать модели там нечего. Страница отдаёт noindex и
-	// закрыта в robots.txt — здесь то же решение.
 	"saved.astro",
 ]);
 
@@ -142,15 +139,7 @@ function renderSection(title: string, entries: LlmsEntry[]) {
 	];
 }
 
-/**
- * Markdown-двойники постов, которые генерирует @dualmark/astro. Без этой
- * секции они существуют, но найти их снаружи неоткуда: в sitemap их нет
- * (там только HTML), а Link-заголовок на статике отдаёт CDN, а не Astro.
- */
 async function getMarkdownEntries(site: URL): Promise<LlmsEntry[]> {
-	// Динамический импорт: этот же файл грузится как интеграция в Node при
-	// разборе astro.config, где виртуального модуля astro:content ещё нет и
-	// статический импорт роняет конфиг. До GET доезжает только граф Vite.
 	const { getCollection } = await import("astro:content");
 	const posts = await getCollection("posts");
 
@@ -230,10 +219,6 @@ export const GET: APIRoute = async ({ site }) => {
 	});
 };
 
-// Настройки контента читаются из src/config, а не из вызова llmsTxt():
-// хук интеграции и внедрённый роут — два разных экземпляра модуля (один
-// исполняется в Node на конфиге, второй в графе Vite при рендере), поэтому
-// сохранённые в хуке опции до GET не доезжают — см. robotsTxt.ts.
 export interface LlmsTxtOptions {
 	enabled?: boolean;
 }

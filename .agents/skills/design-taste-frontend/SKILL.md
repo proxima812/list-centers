@@ -587,8 +587,9 @@ The brief and brand decide. This skill enforces only:
 ### 8.C Default Mode
 Respect `prefers-color-scheme` unless the brand insists. Add a manual toggle if either mode would lose key brand expression.
 
-### 8.D Test in Both Modes Before Finishing
-Open the page in both modes during development. Do not ship a page you've only seen in one mode.
+### 8.D Testing Both Modes
+Only open the page in both modes when the user explicitly asks for a check —
+otherwise apply the token strategy correctly and move on.
 
 ---
 
@@ -888,7 +889,7 @@ stack: ["react", "next", "tailwind", "motion"]
 ### 12.D Block-Library Discipline
 * One block per file. No multi-block files.
 * Every block must work standalone (drop it into a page, it renders).
-* Every block must pass the Pre-Flight Check (Section 14).
+* If a Pre-Flight Check is requested (Section 14), every block must pass it.
 * Blocks that depend on a design system from Section 2.A live under `blocks/<category>/<name>--<system>.md` (e.g. `feature/bento-grid--material.md`).
 
 ---
@@ -909,9 +910,12 @@ If the brief is one of the above, **say so explicitly**, point to the right tool
 
 ## 14. FINAL PRE-FLIGHT CHECK
 
-Run this matrix before outputting code. This is the last filter.
+Skip this by default. Only run this matrix when the user explicitly asks for a
+full/pre-flight/thorough check — otherwise the rules above already applied
+while generating are enough, and re-auditing every box on every delivery is
+wasted effort.
 
-**THIS IS NOT OPTIONAL. Run every box. If any box fails, the output is not done.**
+**When asked for a full check: run every box. If any box fails, say so.**
 
 - [ ] **Brief inference** declared (Section 0.B one-liner)?
 - [ ] **Dial values** explicit and reasoned from the brief, not silently using baseline?
@@ -976,7 +980,7 @@ Run this matrix before outputting code. This is the last filter.
 - [ ] **Core Web Vitals** plausibly hit (LCP < 2.5s, INP < 200ms, CLS < 0.1)?
 - [ ] **One design system** per project (no Material + shadcn mixed)?
 
-If a single checkbox cannot be honestly ticked, the page is not done. Fix it before delivering.
+If run and a checkbox cannot be honestly ticked, fix it.
 
 ---
 

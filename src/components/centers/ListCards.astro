@@ -15,27 +15,12 @@ interface Props {
 const { cards } = Astro.props as Props;
 const locale = getLocaleFromUrl(Astro.url);
 
-// География — из русской коллекции для всех локалей. Переводы карточек хранят
-// подписи вроде `region: Saint Petersburg`, и часть карточек географии не
-// имеет вовсе: раньше английская страница строила фильтры по своему набору
-// значений и часть каталога выпадала из фасетов. Ключ фильтра обязан быть один
-// на все языки — иначе фасет не находит собственные карточки.
 const geoById = buildGeoIndex(await getCollection("centers"));
 const records = buildFacetRecords(cards, geoById);
 const facets = buildCenterFacets(records, locale);
 const geoByCardId = new Map(records.map((record) => [record.id, record]));
 ---
 
-{/*
-	Панель поиска живет вне грида: у sticky-элемента внутри грида containing
-	block — его грид-область, и в строке высотой с сам элемент запаса хода нет.
-	Снаружи она липнет вдоль всей страницы, а в потоке все равно стоит перед
-	фильтрами, поэтому на мобильном панель фильтров по-прежнему раскрывается
-	под своей кнопкой, а не над ней.
-
-	Шапка сайта sticky только до lg (`lg:static`), поэтому на мобильном
-	отступаем на ее высоту, а на десктопе прижимаемся к нулю.
-*/}
 <div class="not-container bg-catalog px-5 pt-8 pb-12 sm:px-8 lg:px-12 lg:pt-10">
 	<div
 		data-catalog-bar

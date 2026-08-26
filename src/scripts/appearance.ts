@@ -1,12 +1,3 @@
-/**
- * Тема и акцент. Первичное применение делает инлайн-скрипт в <head>
- * (Layout.astro) — до первой отрисовки, иначе вспышка светлой темы. Здесь
- * только реакция на пользователя.
- *
- * Модуль общий для всех переключателей: и dropdown в шапке, и инлайновые
- * группы в мобильном меню. Слушатели навешаны на document, поэтому
- * количество экземпляров на странице не имеет значения.
- */
 
 import { ACCENT_VALUES, DEFAULT_ACCENT } from "@/utils/accents";
 
@@ -22,9 +13,6 @@ const media = matchMedia("(prefers-color-scheme: dark)");
 
 let initialized = false;
 
-// В Safari с «Блокировать все куки» само обращение к localStorage бросает
-// SecurityError, а в старом приватном режиме iOS setItem — QuotaExceededError.
-// Переключатели обязаны работать хотя бы в пределах вкладки и без хранилища.
 const readStorage = (key: string) => {
 	try {
 		return localStorage.getItem(key) ?? "";
@@ -37,14 +25,11 @@ const writeStorage = (key: string, value: string) => {
 	try {
 		localStorage.setItem(key, value);
 	} catch {
-		// Хранилище недоступно — выбор живёт до конца вкладки.
 	}
 };
 
 const readTheme = () => {
 	const value = readStorage(THEME_KEY);
-	// Дефолт — тёмная, а не системная: тёмная бумага с тинтом акцента это
-	// основной вид сайта, и первый заход должен показывать именно его.
 	return THEMES.includes(value) ? value : "dark";
 };
 
@@ -66,17 +51,10 @@ const syncGroup = (attr: string, value: string) => {
 	}
 };
 
-// Цвет адресной строки берётся из вычисленного --color-background, а не из
-// таблицы в JS. Иначе он был бы третьей копией палитры и разъезжался бы с CSS:
-// раньше здесь стоял фиксированный #141414, который совпадал только с green, а
-// у blue и violet страница чёрная — полоса браузера была светлее страницы на
-// 19 единиц перцептивной светлоты. Фон зависит и от темы, и от акцента, поэтому
-// звать нужно из обоих applyTheme/applyAccent.
 const syncThemeColor = () => {
 	const background = getComputedStyle(root).getPropertyValue("--color-background").trim();
 	if (!background) return;
 
-	// Тег должен остаться ровно один: PWA-плагин вставляет свой, статический.
 	const metas = document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]');
 	for (let i = 1; i < metas.length; i += 1) metas[i].remove();
 
@@ -102,9 +80,6 @@ const applyAccent = (accent: string) => {
 	syncThemeColor();
 };
 
-// Флаг живёт на <html>, а не на классе конкретных блоков: по нему гасятся все
-// CSS-анимации разом (правило в tailwind.css), а острова вроде LiquidMetalMark
-// читают его через MutationObserver и размонтируют WebGL.
 const applyMotion = (motion: string) => {
 	root.dataset.motion = motion;
 	syncGroup("data-motion-option", motion);
@@ -181,7 +156,6 @@ export function initAppearance() {
 			return;
 		}
 
-		// Клик мимо любого меню — закрываем всё открытое.
 		if (!target.closest("[data-appearance-menu]")) closeAllMenus();
 	});
 
@@ -209,8 +183,6 @@ export function initAppearance() {
 		const target = event.target;
 		if (!(target instanceof HTMLElement)) return;
 
-		// Стрелки переключают внутри одной radiogroup — ожидаемая
-		// клавиатурная семантика: Tab входит в группу, стрелки ходят по ней.
 		const group = target.closest<HTMLElement>("[role='radiogroup']");
 		const attr = target.dataset.themeOption
 			? "data-theme-option"
@@ -234,13 +206,10 @@ export function initAppearance() {
 		next.focus();
 	});
 
-	// В режиме «системная» тема должна следовать за ОС на лету.
 	media.addEventListener("change", () => {
 		if (readTheme() === "system") applyTheme("system");
 	});
 
-	// Тему могли поменять в соседней вкладке. key === null — это
-	// localStorage.clear() оттуда же: пересинхронизируем всё.
 	window.addEventListener("storage", (event) => {
 		if (event.key === null || event.key === THEME_KEY) applyTheme(readTheme());
 		if (event.key === null || event.key === ACCENT_KEY) applyAccent(readAccent());

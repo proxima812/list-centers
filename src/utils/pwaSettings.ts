@@ -50,11 +50,6 @@ export const manifest = {
 	name: config.site.OG.title,
 	short_name: "tatarverse",
 	description: config.site.OG.description,
-	// Манифест — одно статическое значение на все шесть акцентов и обе темы,
-	// поэтому здесь дефолтный вид: тёмная бумага пресета green, тонированная
-	// в hue 142 (--color-background тёмной темы). Значение должно совпадать с
-	// запасным theme-color в Layout.astro — иначе установленное приложение и
-	// первый кадр сайта откроются разным цветом.
 	theme_color: "#0e1310",
 	background_color: "#0e1310",
 	display: "standalone",

@@ -5,22 +5,23 @@ import { Icon } from "astro-icon/components";
 
 interface Props {
 	class?: string;
+	bare?: boolean;
 }
 
-// Вкл/выкл всей моушен-части сайта: CSS-анимации гасятся правилом на
-// [data-motion="off"] в tailwind.css, а шейдерная марка в герое подменяется
-// однотонной версией под текущую палитру.
+
+
+
 const items = [
 	{ value: "on", labelKey: "motion.on", label: "Animations on", icon: "tabler:wave-sine" },
 	{ value: "off", labelKey: "motion.off", label: "Animations off", icon: "tabler:wave-square" },
 ];
 
-// Та же пилюля, что у ThemeToggle в мобильном меню: рядом с AppearanceMenu
-// нужен контрол одной высоты (h-9) и с той же рамкой.
+
+
 const buttonClass =
 	"inline-flex size-8 cursor-pointer items-center justify-center rounded-full text-subtle-foreground transition-colors hover:text-foreground aria-checked:bg-accent aria-checked:text-accent-foreground";
 
-const { class: className } = Astro.props;
+const { class: className, bare = false } = Astro.props;
 const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
 ---
@@ -28,6 +29,7 @@ const t = useTranslations(locale);
 <div
 	class={cn(
 		"inline-flex h-9 items-center gap-0.5 rounded-full border border-border-muted p-0.5",
+		bare && "h-8 border-transparent p-0",
 		className,
 	)}
 	role="radiogroup"

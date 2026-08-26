@@ -3,9 +3,6 @@ import type { AstroIntegration } from "astro";
 import { fileURLToPath } from "node:url";
 import { config } from "../config";
 
-// Настройки читаются из src/config и констант ниже, а не из вызова aiTxt():
-// хук интеграции и внедрённый роут — два разных экземпляра модуля, поэтому
-// сохранённые в хуке опции до GET не доезжают — см. robotsTxt.ts.
 export interface AiTxtOptions {
 	enabled?: boolean;
 }

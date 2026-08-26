@@ -1,23 +1,10 @@
 ---
-/**
- * Счётчик Яндекс.Метрики. Включается через `config.site.analytics.yandexMetrika`
- * в `src/config.ts`; вызывающий передаёт только `counterId` — см. Layout.astro.
- *
- * Раньше здесь лежал библиотечный компонент на 252 строки: ~20 опциональных
- * пропсов (webvisor, ecommerce, trustedDomains, lazy, timeout…), три поля
- * `any` и второй скрипт на `astro:page-load`. Событие даёт ClientRouter,
- * которого в проекте нет, — тот скрипт не выполнялся никогда. Пропсы, кроме
- * counterId, никто не передавал, а их значения по умолчанию совпадали с
- * дефолтами самой Метрики. Осталось то, что действительно работает.
- */
 interface Props {
 	counterId: number | string;
 }
 
 const { counterId } = Astro.props as Props;
 
-// Значения, отличные от дефолтов Метрики: карта кликов, внешние ссылки и
-// «точный показатель отказов» (15 секунд). Остальное — умолчания счётчика.
 const initConfig = {
 	clickmap: true,
 	trackLinks: true,
@@ -28,7 +15,6 @@ const initConfig = {
 ---
 
 <script is:inline define:vars={{ counterId, initConfig }}>
-	// Очередь вызовов: init можно поставить до загрузки tag.js.
 	window.ym =
 		window.ym ||
 		function () {

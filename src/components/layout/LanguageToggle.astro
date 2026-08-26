@@ -1,4 +1,5 @@
 ---
+import { cn } from "@/utils/libs/cn";
 import {
 	getLocaleFromUrl,
 	getSwitcherHref,
@@ -15,6 +16,11 @@ type LanguageItem = {
 	href: string;
 };
 
+interface Props {
+	bare?: boolean;
+}
+
+const { bare = false } = Astro.props as Props;
 const currentLocale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(currentLocale);
 const items = locales.map((locale) => ({
@@ -24,8 +30,10 @@ const items = locales.map((locale) => ({
 	href: getSwitcherHref(locale, Astro.url),
 })) satisfies readonly LanguageItem[];
 
-const triggerClass =
-	"inline-flex h-8 min-w-14 items-center justify-between gap-2 rounded-full sm:border border-border-muted bg-background/70 backdrop-blur-md px-3 tracking-tight text-xs font-medium text-subtle-foreground transition-colors hover:text-foreground";
+const triggerClass = cn(
+	"inline-flex h-8 min-w-14 items-center justify-between gap-2 rounded-full sm:border border-border-muted bg-background/70 backdrop-blur-md px-3 tracking-tight text-xs font-medium text-subtle-foreground transition-colors hover:text-foreground",
+	bare && "sm:border-transparent bg-transparent backdrop-blur-none hover:bg-subtle",
+);
 
 const buttonClass =
 	"inline-flex h-8 w-full items-center justify-between rounded-full px-3 tracking-tight text-xs font-medium text-subtle-foreground transition-colors hover:bg-muted hover:text-foreground aria-checked:bg-muted aria-checked:text-foreground";
@@ -150,8 +158,8 @@ const buttonClass =
 
 			if (menu.hidden) return;
 
-			// Ходим от сфокусированного пункта, а не от aria-checked: чекнутый
-			// индекс статичен, и стрелки «залипали» бы на одной опции.
+			
+			
 			const focusedIndex = options.findIndex((option) => option === document.activeElement);
 			const activeIndex =
 				focusedIndex >= 0

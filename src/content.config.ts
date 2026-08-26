@@ -16,8 +16,6 @@ const CENTER_TYPES = ["Регион РФ", "Зарубежный", "Онлайн
 const CenterCategorySchema = z.enum(CENTER_CATEGORIES);
 const CenterTypeSchema = z.enum(CENTER_TYPES);
 
-// Строка-заглушка из старого импорта. Раньше её вырезал руками рендер
-// карточки, теперь она не проходит валидацию и до рендера не доезжает.
 const NO_DATA = /^нет данных\.?$/i;
 
 const CenterLocationSchema = z
@@ -26,24 +24,10 @@ const CenterLocationSchema = z
 		city: z.string().optional(),
 		country: z.string().optional(),
 		region: z.string().optional(),
-		/**
-		 * Районный уровень. Заведён отдельным полем, потому что раньше районы
-		 * жили внутри `region` («Баймакский район, Республика Башкортостан») и
-		 * раскалывали субъект на несколько независимых фильтров.
-		 */
 		district: z.string().optional(),
 	})
 	.strict();
 
-/**
- * Жёсткая проверка географии для русской коллекции — источника фасетов.
- *
- * Фильтр «Регион» строится по значению `region`, поэтому любая опечатка не
- * ломает страницу, а тихо добавляет в панель лишнюю строку с одной карточкой.
- * Отловить это глазами невозможно: до нормализации в каталоге одновременно
- * жили Югра через дефис и через тире, «Республика Удмуртия» и «Камчатская
- * область». Дешевле уронить сборку.
- */
 function validateCenterLocation(
 	location: z.infer<typeof CenterLocationSchema> | undefined,
 	ctx: z.RefinementCtx,
@@ -93,8 +77,6 @@ function validateCenterLocation(
 const CenterSchema = z
 	.object({
 		title: z.string().min(1),
-		// Строка, но обязательно разбираемая new Date(): битая дата давала NaN
-		// в компараторах сортировки каталога, и порядок молча ломался.
 		pubDate: z
 			.string()
 			.refine((value) => !Number.isNaN(new Date(value).getTime()), {
@@ -109,13 +91,6 @@ const CenterSchema = z
 	})
 	.strict();
 
-/**
- * Русская коллекция — единственный источник географии каталога, поэтому
- * валидация висит только на ней. Переводы (`centersEn`) хранят локализованные
- * подписи вроде `country: Russia`, `region: Saint Petersburg`; гонять их через
- * справочник субъектов бессмысленно, а фасеты они всё равно не формируют —
- * география берётся из русской карточки по общему id.
- */
 const SourceCenterSchema = CenterSchema.superRefine((data, ctx) => {
 	validateCenterLocation(data.location, ctx);
 });

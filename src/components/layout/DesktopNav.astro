@@ -7,9 +7,6 @@ const currentLocale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(currentLocale);
 
 const materialHrefs = new Set(["/translations", "/sources", "/policy"]);
-// «Посты» переехали сюда из дропдауна «Интересное»: тот держал посты,
-// проекты и сабантуй, а после удаления двух последних остался бы
-// выпадающим списком из одного пункта.
 const otherHrefs = new Set(["/posts", "/thanks"]);
 const topLevelLinks = links.filter(
 	(item) => !materialHrefs.has(item.href) && !otherHrefs.has(item.href),
@@ -17,10 +14,6 @@ const topLevelLinks = links.filter(
 const materialLinks = links.filter((item) => materialHrefs.has(item.href));
 const otherLinks = links.filter((item) => otherHrefs.has(item.href));
 
-// Печатная версия каталога живет только здесь, в выпадающем «Прочее», и не
-// заводится в `links`: оттуда она разошлась бы и в мобильное меню, и в
-// подвал — а это служебная страница на один клик перед печатью, не раздел
-// сайта.
 const printLink = {
 	href: "/centers/print",
 	label: "Печать .pdf",
@@ -48,9 +41,6 @@ const dropdowns = [
 const triggerClass =
 	"inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-control px-3 text-sm font-medium transition-colors hover:bg-muted";
 
-// Активная страница помечается чертой снизу в цвете акцента: цвет тянется из
-// --color-accent, поэтому линия сама меняется вместе с пресетом темы
-// (зеленый / синий / фиолетовый).
 const activeUnderlineClass =
 	"relative after:absolute after:-bottom-0.5 after:h-0.5 after:rounded-full after:bg-accent after:content-['']";
 

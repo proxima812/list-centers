@@ -12,26 +12,11 @@ const { title, class: className } = Astro.props as Props;
 const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
 
-// Подпись всегда называет карточку: в списке кнопок скринридера три с
-// половиной сотни одинаковых «Сохранить» неотличимы друг от друга.
 const suffix = title ? `: ${title}` : "";
 const saveLabel = `${t("saved.save")}${suffix}`;
 const removeLabel = `${t("saved.remove")}${suffix}`;
 ---
 
-{
-	/*
-	Кнопка лежит над растянутой ссылкой карточки по z (как быстрые ссылки
-	внизу), иначе клик по закладке уводил бы на страницу центра.
-
-	Разметка отдается в состоянии «не сохранено» и без aria-pressed=true:
-	хранилище читается только на клиенте, а статический HTML один на всех.
-	Реальное состояние проставляет initSavedCenters сразу после гидрации.
-
-	Своего кольца у кнопки нет — на карточке ровно одно кольцо на уровень
-	вложенности; в покое это просто иконка, форму ей дает только ховер.
-	*/
-}
 <button
 	type="button"
 	data-save-center
@@ -50,9 +35,6 @@ const removeLabel = `${t("saved.remove")}${suffix}`;
 </button>
 
 <style>
-	/* Две иконки вместо подмены пути: контурная и залитая закладка у tabler —
-	   разные глифы, и переключение классом не дает браузеру анимировать
-	   заливку. Показываем нужное, второе снимаем из потока. */
 	.save-center-on,
 	[aria-pressed="true"] .save-center-off {
 		display: none;
@@ -62,9 +44,6 @@ const removeLabel = `${t("saved.remove")}${suffix}`;
 		display: block;
 	}
 
-	/* Единственная моторика — короткий толчок в момент сохранения. Он живет на
-	   :active, а не на смене состояния: `[data-motion="off"]` глушит
-	   transition целиком, и состояние кнопки не должно его ждать. */
 	.save-center:active {
 		transform: scale(0.88);
 	}

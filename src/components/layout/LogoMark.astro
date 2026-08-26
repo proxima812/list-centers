@@ -7,9 +7,7 @@ interface Props {
 const { size = 32, class: className } = Astro.props;
 ---
 
-{/* Марка — сам flower.svg, но не картинкой, а маской: в файле фигура залита
-    черным, а здесь нужен цвет, который следует за темой и акцентом. Маска
-    вырезает форму из градиента, поэтому вся раскраска живет в токенах. */}
+
 <span
 	aria-hidden="true"
 	class:list={["logo-mark pointer-events-none inline-block shrink-0", className]}
@@ -20,43 +18,10 @@ const { size = 32, class: className } = Astro.props;
 		height: var(--mark-size);
 		width: var(--mark-size);
 
-		/* Три ступени одного акцента: vivid → glow → mark-tint. Все три меняются
-		   вместе с темой и пресетом, так что перелив остается в палитре. */
-		background-image: linear-gradient(
-			115deg,
-			var(--color-accent-vivid) 0%,
-			var(--color-accent-glow) 25%,
-			var(--color-mark-tint) 50%,
-			var(--color-accent-glow) 75%,
-			var(--color-accent-vivid) 100%
-		);
-		background-size: 300% 300%;
-		background-position: 50% 50%;
+		
+		background-color: var(--color-accent);
 
 		mask: url("/flower.svg") center / contain no-repeat;
 		-webkit-mask: url("/flower.svg") center / contain no-repeat;
-
-		animation: mark-shimmer 9s ease-in-out infinite;
-	}
-
-	/* Сдвиг градиента, а не фильтр: блик проезжает по лепесткам, форма и
-	   контраст не трогаются. Позиция по умолчанию — середина, поэтому с
-	   выключенными анимациями марка замирает на осмысленном кадре. */
-	@keyframes mark-shimmer {
-		0%,
-		100% {
-			background-position: 0% 50%;
-		}
-
-		50% {
-			background-position: 100% 50%;
-		}
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.logo-mark {
-			animation: none;
-			background-position: 50% 50%;
-		}
 	}
 </style>

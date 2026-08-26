@@ -17,8 +17,6 @@ export async function getStaticPaths() {
 		params: { id: getPostId(post.id) },
 		props: {
 			post,
-			// Лента отсортирована от новых к старым, поэтому «предыдущий» —
-			// это следующий элемент массива.
 			newerPost: index > 0 ? posts[index - 1] : null,
 			olderPost: index < posts.length - 1 ? posts[index + 1] : null,
 		},
@@ -100,8 +98,6 @@ const neighbours = [
 			<div
 				class="prose prose-sm min-w-0 max-w-none sm:prose-base prose-a:font-medium prose-a:text-link prose-a:decoration-link-decoration prose-a:underline-offset-4"
 			>
-				{/* h1 из MDX пропускается: заголовок первого уровня на странице
-				    уже есть, он собран из frontmatter. */}
 				<Content components={{ ...markdownComponents, h1: SkipNode }} />
 			</div>
 

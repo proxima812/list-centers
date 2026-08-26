@@ -1,14 +1,4 @@
 ---
-// «Сохраненные» — личный список карточек каталога.
-//
-// Страница статическая, как и весь сайт: сервер о списке ничего не знает и
-// знать не может. Разметка здесь — это пустой каркас плюс <template> карточки;
-// содержимое подставляет скрипт из localStorage. Поэтому indexRobots=false:
-// у поисковика эта страница всегда пустая, и индексировать в ней нечего.
-//
-// Карточка в шаблоне повторяет CardItem, но без быстрых ссылок на сайт и
-// соцсети: их нет в снимке. Тянуть ради них весь каталог в память браузера —
-// несоразмерная цена, а до контактов один клик по самой карточке.
 import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
 import Layout from "@/layouts/Layout.astro";
 import { Icon } from "astro-icon/components";
@@ -34,8 +24,6 @@ const metaChipClass =
 		<p class="max-w-3xl text-base leading-7 text-muted-foreground">{t("saved.heroIntro")}</p>
 
 		<div class="flex flex-wrap items-center gap-3 pt-2">
-			{/* Строки для скрипта едут на data-атрибутах: словарь остается на
-			    сборке, в бандл браузера он не попадает. */}
 			<p
 				data-saved-summary
 				data-count={t("saved.count", { count: "{count}" })}
@@ -46,8 +34,6 @@ const metaChipClass =
 				aria-live="polite"
 			>
 			</p>
-			{/* Очистка появляется только когда есть что чистить: кнопка, которая
-			    ничего не делает, на пустой странице читается как поломка. */}
 			<button
 				type="button"
 				data-saved-clear
@@ -87,14 +73,6 @@ const metaChipClass =
 			data-search-id
 			class="group relative flex h-full min-w-0 flex-col gap-3 rounded-catalog corner-squircle bg-surface p-6 text-surface-foreground transition duration-300 ease-out hover:surface-lift has-[[data-card-link]:focus-visible]:outline-2 has-[[data-card-link]:focus-visible]:outline-offset-2 has-[[data-card-link]:focus-visible]:outline-accent"
 		>
-			{/*
-				Закладки на этой карточке нет: здесь все сохранено по
-				определению, и переключатель показывал бы состояние, которое не
-				меняется. Вместо него — прямое действие: убрать из списка.
-				Единственное место на сайте, где destructive стоит на кнопке, а
-				не на предупреждении, поэтому заливка тихая (10%), а красным
-				горят только текст с иконкой.
-			*/}
 			<button
 				type="button"
 				data-saved-delete
@@ -112,7 +90,6 @@ const metaChipClass =
 				<span data-saved-separator aria-hidden="true">&#10625;</span>
 				<span data-saved-country></span>
 			</p>
-			{/* Метка каталожной карточки: оттенок ставит скрипт, см. ниже. */}
 			<div class="flex min-w-0 items-center gap-3">
 				<span
 					data-saved-mark
@@ -152,13 +129,8 @@ const metaChipClass =
 	const template = document.querySelector<HTMLTemplateElement>("[data-saved-card]");
 
 	if (grid && empty && summary && template) {
-		// Страница одна на обе локали и рендерится в дефолтной (см. ruOnlyRoutes
-		// со switcher: "stay" в src/i18n) — отсюда и русские строки, и русская
-		// страна в снимке, и русский формат даты.
 		const dateFormat = new Intl.DateTimeFormat("ru", { month: "short", year: "numeric" });
 
-		// Локализованные строки приходят из разметки, а не дублируются в
-		// скрипте: словарь живет на сборке, в браузер он не едет.
 		const strings = {
 			count: summary.dataset.count ?? "",
 			confirm: summary.dataset.confirm ?? "",
@@ -197,14 +169,8 @@ const metaChipClass =
 				const deleteButton = node.querySelector<HTMLElement>("[data-saved-delete]");
 				if (!article || !link) continue;
 
-				// id остается на карточке: по нему кнопка удаления понимает, что
-				// именно убирать, и он же нужен, если карточка снова попадет под
-				// общую логику сохранения.
 				article.dataset.searchId = item.id;
 
-				// Оттенок метки считается из id прямо здесь, а не лежит в снимке:
-				// в localStorage уже есть записи, сделанные до появления метки, и
-				// хранимое поле оставило бы их серыми навсегда.
 				const mark = node.querySelector<HTMLElement>("[data-saved-mark]");
 				mark?.style.setProperty("--mark-hue", String(getCenterMarkHue(item.id)));
 
@@ -212,8 +178,6 @@ const metaChipClass =
 				link.textContent = item.title;
 
 				if (deleteButton) {
-					// Подпись называет карточку: в списке кнопок скринридера
-					// десяток одинаковых «Удалить» неотличим.
 					const label = item.title ? `${strings.remove}: ${item.title}` : strings.remove;
 					deleteButton.setAttribute("aria-label", label);
 					deleteButton.setAttribute("title", label);
@@ -234,8 +198,6 @@ const metaChipClass =
 				const location = node.querySelector<HTMLElement>("[data-saved-location]");
 				if (location) location.hidden = !hasLocation;
 
-				// Место под кнопку освобождает строка локации. Если ее нет,
-				// первым идет заголовок — и подъезжает прямо под «Удалить».
 				const heading = node.querySelector<HTMLElement>("[data-saved-heading]");
 				if (heading) heading.classList.toggle("pr-24", !hasLocation);
 
@@ -251,8 +213,6 @@ const metaChipClass =
 			clearSaved();
 		});
 
-		// Делегируем на сетку: карточки пересоздаются на каждой перерисовке, и
-		// слушатель на каждой кнопке пришлось бы вешать заново.
 		grid.addEventListener("click", (event) => {
 			const target = event.target;
 			if (!(target instanceof Element)) return;
@@ -260,15 +220,12 @@ const metaChipClass =
 			const button = target.closest<HTMLElement>("[data-saved-delete]");
 			if (!button) return;
 
-			// Карточка целиком — ссылка на страницу центра.
 			event.preventDefault();
 
 			const id = button.closest<HTMLElement>("[data-search-id]")?.dataset.searchId;
 			if (id) removeSaved(id);
 		});
 
-		// Перерисовка по любому изменению хранилища: закладка на самой карточке
-		// снимает ее из списка, и карточка обязана исчезнуть сразу.
 		onSavedChange(render);
 		render();
 	}

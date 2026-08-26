@@ -58,23 +58,11 @@ const yandexMetrika = config.site.analytics.yandexMetrika;
 	class="subpixel-antialiased transition-colors duration-300 ease-linear motion-safe:scroll-smooth"
 >
 	<head>
-		{/* Запасной вариант без JS: фон тёмной темы зелёного пресета
-		    (hsl(142 14% 6.6%), как в pwaSettings) — дефолт теперь тёмный. Тег объявлен ДО инлайн-скрипта намеренно: скрипт
-		    находит его через querySelector и переписывает. Если объявить ниже,
-		    на момент выполнения скрипта тега еще нет в DOM, и в <head>
-		    оказываются два theme-color. */}
 		<meta name="theme-color" content="#0e1310" />
 
-		{/* Тема применяется до первой отрисовки — иначе на каждой навигации
-		    будет вспышка светлой темы. Скрипт намеренно синхронный и лежит
-		    выше любых стилей и разметки. Переключатель (ThemeToggle) только
-		    пишет в localStorage и повторяет эти же две строки. */}
 		<script is:inline>
 			(() => {
 				const root = document.documentElement;
-				// В Safari с «Блокировать все куки» само обращение к localStorage
-				// бросает SecurityError — без try/catch скрипт умирал бы целиком
-				// и атрибуты темы/акцента/моушена не выставлялись вовсе.
 				const read = (key) => {
 					try {
 						return localStorage.getItem(key);
@@ -94,20 +82,12 @@ const yandexMetrika = config.site.analytics.yandexMetrika;
 				root.dataset.motion = motion;
 				root.classList.toggle("dark", dark);
 
-				// Фон страницы зависит и от темы, и от акцента: каждый пресет
-				// несет свою темную «бумагу». Поэтому цвет адресной строки
-				// читается из вычисленного токена, а не из константы. Здесь, в
-				// <head>, стилей может еще не быть — тогда добираем на
-				// DOMContentLoaded. Дальше за тег отвечает appearance.ts.
 				const syncThemeColor = () => {
 					const background = getComputedStyle(root)
 						.getPropertyValue("--color-background")
 						.trim();
 					if (!background) return;
 
-					// Плагин PWA вставляет собственный theme-color из манифеста —
-					// одно статическое значение, которое не знает ни про тему, ни
-					// про акцент. Тег должен остаться ровно один, наш.
 					const metas = document.querySelectorAll('meta[name="theme-color"]');
 					for (let i = 1; i < metas.length; i += 1) metas[i].remove();
 
@@ -120,9 +100,6 @@ const yandexMetrika = config.site.analytics.yandexMetrika;
 					meta.content = background;
 				};
 
-				// Дважды: сейчас — чтобы адресная строка была верной до первой
-				// отрисовки, и на DOMContentLoaded — когда <head> разобрана
-				// целиком и стал виден тег от PWA.
 				syncThemeColor();
 				document.addEventListener("DOMContentLoaded", syncThemeColor, { once: true });
 			})();

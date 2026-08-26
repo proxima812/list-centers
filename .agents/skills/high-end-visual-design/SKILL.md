@@ -84,7 +84,8 @@ When generating UI code, follow this exact sequence:
 5. **[OUTPUT]** Deliver flawless, pixel-perfect React/Tailwind/HTML code. Do not include basic, generic fallbacks.
 
 ## 8. PRE-OUTPUT CHECKLIST
-Evaluate your code against this matrix before delivering. This is the last filter.
+Skip by default. Only evaluate code against this matrix when the user
+explicitly asks for a full check.
 - [ ] No banned fonts, icons, borders, shadows, layouts, or motion patterns from Section 2 are present
 - [ ] A Vibe Archetype and Layout Archetype from Section 3 were consciously selected and applied
 - [ ] All major cards and containers use the Double-Bezel nested architecture (outer shell + inner core)

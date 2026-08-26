@@ -4,8 +4,6 @@ import { Icon } from "astro-icon/components";
 
 const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
-// Без этого атрибута centersToolbar.ts не знает, откуда брать индекс, и
-// откатывается на DOM-снимок — без районов и локализованных терминов.
 const searchIndexUrl =
 	locale === defaultLocale
 		? "/centers/search-index.json"

@@ -57,9 +57,6 @@ function getDirtyFiles() {
 			const filePath = record.length > 3 ? record.slice(3) : record;
 			if (filePath) dirtyFilesCache.add(filePath);
 
-			// При rename/copy формат -z иной: `XY new\0orig\0` — следующий
-			// NUL-блок это исходный путь без префикса статуса. Помечаем оба и
-			// не даём slice(3) откусить начало настоящего пути.
 			if (/[RC]/.test(status)) {
 				const original = records[i + 1];
 				if (original) dirtyFilesCache.add(original);
@@ -76,9 +73,6 @@ function getGitDates() {
 
 	gitDatesCache = new Map();
 
-	// На shallow clone (CI) история усечена: createdDate у всех файлов
-	// схлопывается в дату граничного коммита, а fallback на birthtime — это
-	// время чекаута. Даты будут неверными — предупреждаем явно.
 	try {
 		const shallow = execFileSync("git", ["rev-parse", "--is-shallow-repository"], {
 			cwd: projectRoot,
@@ -138,9 +132,6 @@ function getFileCreatedDate(filePath: string | undefined, fallback?: DateInput) 
 	const absolutePath = toAbsolutePath(filePath);
 	const statDate = fs.existsSync(absolutePath) ? fs.statSync(absolutePath).birthtime : undefined;
 
-	// В отличие от modified, dirty-статус здесь не важен: правка файла не
-	// меняет дату его создания, а у нового некоммиченного файла git-даты нет
-	// и так — сработает fallback на birthtime.
 	return getGitCreatedDate(relativePath) ?? statDate ?? fallbackDate;
 }
 

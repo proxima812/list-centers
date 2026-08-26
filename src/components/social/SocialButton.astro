@@ -182,8 +182,6 @@ const variantClasses: Record<Variant, string> = {
 	ghost:
 		"border border-transparent bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground",
 	soft: "border border-border-muted bg-muted text-foreground hover:border-border hover:bg-subtle",
-	// Ссылка внутри текста, а не кнопка: ни рамки, ни плашки, ни своей высоты —
-	// геометрию и цвет задаёт строка, в которой она стоит.
 	link: "border-0 bg-transparent p-0 text-current hover:bg-transparent",
 };
 
@@ -228,14 +226,9 @@ const {
 	...props
 } = Astro.props as Props;
 
-// У варианта `link` нет ни размера, ни формы: высота, паддинги, скругление и
-// `whitespace-nowrap` пришли бы из кнопочной шкалы и в потоке текста ломали бы
-// перенос длинных ссылок на узких экранах.
 const isInline = variant === "link";
 const socialName = resolveSocialName(social);
 const icon = socialIcons[socialName];
-// || вместо ??: title по умолчанию — пустая строка, и с ?? цепочка никогда
-// не доходила до icon.label, оставляя icon-only ссылки без доступного имени.
 const computedLabel = ariaLabel || aria_label || title || icon.label;
 const linkTarget = target ?? (external ? "_blank" : undefined);
 const linkRel = rel ?? (external ? "noreferrer noopener" : undefined);

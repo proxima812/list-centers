@@ -1,20 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
 
-/**
- * Markdown-двойник главной страницы для @dualmark/astro (`/index.md`).
- *
- * Почему текст собирается здесь, а не внутри `staticPages[].render`:
- * пакет сериализует функцию через `render.toString()` и кладёт результат
- * отдельным модулем в `node_modules/.dualmark-generated/`. В этот момент
- * теряются и замыкания, и импорты — причём `astro.config.mjs` к моменту
- * вызова уже прошёл через Vite, поэтому даже `await import(...)` внутри
- * `render` превращается в `__vite_ssr_dynamic_import__` и падает на сборке.
- *
- * Значит, `render` обязан вернуть готовый литерал. Цифры каталога поэтому
- * считаем тут, на этапе чтения конфига, прямо с диска — обычным Node, без
- * `astro:content`.
- */
 
 const CENTERS_DIR = path.resolve("src/data/centers_formatted");
 
@@ -30,8 +16,6 @@ function readCenterCounts(): CenterCounts {
 	try {
 		files = fs.readdirSync(CENTERS_DIR).filter((name) => name.endsWith(".mdx"));
 	} catch {
-		// Каталога нет (например, частичный чекаут) — отдаём нули, но не роняем
-		// сборку: markdown-двойник главной важнее точных цифр в нём.
 		return { centers: 0, countries: 0, regions: 0 };
 	}
 
@@ -43,8 +27,6 @@ function readCenterCounts(): CenterCounts {
 		const frontmatter = source.match(/^---\s*\n([\s\S]*?)\n---/)?.[1];
 		if (!frontmatter) continue;
 
-		// `location` — единственный вложенный блок в этих карточках, поэтому
-		// хватает построчного разбора вместо полноценного YAML-парсера.
 		const location = frontmatter.match(/^location:\s*\n((?:[ \t]+.*\n?)*)/m)?.[1];
 		if (!location) continue;
 

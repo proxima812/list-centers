@@ -1,19 +1,8 @@
-/**
- * Живая часть «Сохранённых»: кнопка-закладка на карточках и счётчик в шапке.
- *
- * Один делегированный слушатель на document вместо слушателя на каждой из 340
- * кнопок каталога, и одна синхронизация состояния по событию хранилища —
- * поэтому карточка, снятая на /saved, гаснет и в шапке, и в другой вкладке.
- */
 
 import { onSavedChange, readSaved, toggleSaved, type SavedCenter } from "@/scripts/savedCenters";
 
 let initialized = false;
 
-/**
- * Снимок собирается с карточки, а не из атрибутов кнопки: те же строки уже
- * лежат на `<article data-search-id>` ради поиска и фильтров.
- */
 function readCardSnapshot(button: HTMLElement): Omit<SavedCenter, "savedAt"> | null {
 	const card = button.closest<HTMLElement>("[data-search-id]");
 	const id = card?.dataset.searchId;
@@ -49,13 +38,9 @@ function syncButtons(savedIds: Set<string>) {
 	}
 }
 
-/**
- * Счётчик рисуется как «(N)» и целиком исчезает на нуле: пустые скобки рядом с
- * закладкой читаются как сломанная разметка, а не как «ничего не сохранено».
- */
 function syncCounters(count: number) {
 	for (const node of document.querySelectorAll<HTMLElement>("[data-saved-count]")) {
-		node.textContent = `(${count})`;
+		node.textContent = count > 99 ? "99+" : String(count);
 		node.hidden = count === 0;
 	}
 }
@@ -77,8 +62,8 @@ export function initSavedCenters() {
 		const button = target.closest<HTMLElement>("[data-save-center]");
 		if (!button) return;
 
-		// Карточка целиком — ссылка на страницу центра (растянутый
-		// псевдоэлемент), поэтому клик по закладке обязан остановиться здесь.
+		
+		
 		event.preventDefault();
 		event.stopPropagation();
 

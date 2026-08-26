@@ -4,15 +4,10 @@ import { Icon } from "astro-icon/components";
 
 const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
-// Печатная версия каталога существует только на русском, поэтому в
-// англоязычной ветке ссылки нет — иначе она уводила бы на другой язык.
 const showPrintLink = locale === "ru";
 const statsHref = localizePath(locale, "/stats");
 ---
 
-{/* Цифры каталога переехали на /stats: в шапке списка они были справкой,
-    которую все равно нельзя было развернуть, и занимали фолд перед тулбаром.
-    Здесь остается ссылка на них — тем же тихим регистром, что и печать. */}
 <section class="not-container pt-8 pb-10 lg:pt-12">
 	<div class="mx-auto max-w-7xl min-w-0 px-6 sm:px-12">
 		<div class="mx-auto flex min-w-0 max-w-5xl flex-col items-center space-y-6 text-center">

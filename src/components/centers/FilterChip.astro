@@ -1,23 +1,4 @@
 ---
-// Одна разметка, два режима. На мобильном фильтры лежат лентой под поиском —
-// там чип честно работает. В десктопном aside шириной 20rem чипо-облако
-// переносилось рвано, а длинные страны и регионы резались `truncate` на
-// середине слова, поэтому с lg то же самое становится строкой: метка слева,
-// счетчик справа.
-//
-// Заливка акцентом во всю ширину строки на два десятка строк превращается в
-// ковер, поэтому активное состояние на десктопе берет тихую заливку
-// `accent-soft`. Сигнал остается акцентным, громкость падает.
-//
-// Ховер раньше был `bg-muted` — ровно фон каталога, то есть невидимый.
-//
-// Заливки в покое у неактивного фильтра нет. Два десятка залитых строк подряд
-// — это ровно тот же ковер, что и акцент во всю ширину: рябит, а разобрать по
-// нему все равно нечего, потому что все строки одинаковые. Форму строке дает
-// ширина колонки, а заливка осталась там, где несет смысл: ховер и активное.
-// На мобильном лента переносится, соседние чипы стоят вплотную, и без своей
-// поверхности строка «Россия 195 Казахстан 54» слипается — там тихая заливка
-// в покое остается.
 
 interface Props {
 	group: string;
@@ -25,7 +6,6 @@ interface Props {
 	value?: string;
 	count?: number;
 	flag?: string;
-	/** Кнопка «все …»: сбрасывает группу, а не выбирает значение. */
 	all?: boolean;
 }
 
@@ -33,9 +13,6 @@ const { group, label, value, count, flag, all = false } = Astro.props as Props;
 
 const chipClass =
 	"group flex min-w-0 max-w-fit cursor-pointer items-center gap-1.5 rounded-full bg-surface-muted px-2.5 py-1.5 text-sm font-medium text-muted-foreground transition not-data-[active]:hover:bg-subtle hover:text-foreground data-[active]:bg-accent data-[active]:text-accent-foreground lg:w-full lg:max-w-none lg:rounded-micro lg:corner-squircle lg:bg-transparent lg:px-2 lg:not-data-[active]:hover:bg-surface-muted lg:data-[active]:bg-accent-soft lg:data-[active]:font-semibold lg:data-[active]:text-accent-soft-foreground";
-// Счетчик — не вложенная пилюля с собственным фоном, а просто число: внутри
-// чипа это была капсула в капсуле. В активном состоянии наследует цвет
-// строки, каким бы он ни был в текущем режиме.
 const countClass =
 	"shrink-0 text-xs tabular-nums text-subtle-foreground group-data-[active]:text-current lg:ml-auto lg:pl-2";
 ---

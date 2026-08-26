@@ -21,11 +21,6 @@ export interface Props {
 	YM?: boolean;
 	canonicalURL?: string | URL;
 	rssURL?: string | URL;
-	/**
-	 * Markdown-версия страницы, которую генерирует dualmark (`/posts/slug.md`).
-	 * Отдаётся тегом в <head>, а не заголовком Link: сайт статический, поэтому
-	 * middleware пакета на проде не выполняется — см. astro.config.mjs.
-	 */
 	markdownURL?: string | URL;
 	alternates?: Array<{
 		hreflang: string;
@@ -335,7 +330,6 @@ const enabledVerifications = config.site.verifications.filter(
 <link rel="mask-icon" href="/favicon.svg" color={config.site.theme.colors.maskIcon} />
 <meta name="theme-color" content={config.site.theme.colors.theme} />
 
-{/* < — защита от разрыва тега, если в данные попадет "</script>" */}
 <script
 	is:inline
 	type="application/ld+json"

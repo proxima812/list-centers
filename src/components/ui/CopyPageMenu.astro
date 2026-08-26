@@ -137,8 +137,6 @@ const aiPlatforms = [
 		let resetTimer: ReturnType<typeof setTimeout> | null = null;
 
 		copyBtn.addEventListener("click", async () => {
-			// Галочка «скопировано» — только при успехе; при отказе clipboard
-			// (нет разрешения, не-secure контекст) ложную обратную связь не даем.
 			try {
 				await navigator.clipboard.writeText(window.location.href);
 			} catch {

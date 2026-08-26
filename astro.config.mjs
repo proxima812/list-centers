@@ -14,7 +14,6 @@ import llmsTxt from "./src/integrations/llmsTxt.ts";
 import robotsTxt from "./src/integrations/robotsTxt.ts";
 import { includeAssets, manifest, workbox } from "./src/utils/pwaSettings.ts";
 
-
 export default defineConfig({
     site: config.site.url,
     i18n: {
@@ -25,15 +24,9 @@ export default defineConfig({
         },
     },
     integrations: [
-      // `/saved` — личный список из localStorage конкретного браузера. Для
-      // робота он всегда пустой каркас, поэтому его нет ни в карте сайта, ни в
-      // обходе (Disallow ниже), а сама страница отдаёт noindex.
       sitemap({
           filter: (page) => {
               const path = new URL(page).pathname.replace(/\/$/, "");
-              // Кроме /saved исключаем noindex-страницу печати и
-              // 301-заглушки непереведённых EN-разделов: страницы с
-              // редиректом/noindex в карте сайта — мусор для Search Console.
               const excluded = new Set([
                   "/saved",
                   "/en/saved",
@@ -66,11 +59,6 @@ export default defineConfig({
                           "Редакционные заметки tatarverse о культуре, языке и сообществах.",
                   },
               },
-              // Каталог центров — основной контент сайта. Конвертер `docs`, а
-              // не `blog`: у карточки нет автора и даты публикации, зато есть
-              // структурированное тело (контакты, ссылки, источники).
-              // Маршрут совпадает с id: все карточки лежат как `tbk-N`, и
-              // createCenterRouteIdMap отображает такие id сами на себя.
               centers: {
                   converter: "docs",
                   route: "centers",
@@ -82,17 +70,6 @@ export default defineConfig({
                   },
               },
           },
-          // Главная не входит ни в одну коллекцию, поэтому её markdown-двойник
-          // (`/index.md`) описывается тут явно. Без него проверка `md.fetch`
-          // из AEO Spec отдаёт 404 на корне сайта.
-          //
-          // `render` собран через `new Function`, а не написан стрелкой,
-          // намеренно: пакет сериализует функцию через `render.toString()` в
-          // отдельный модуль, а `astro.config.mjs` к тому моменту уже прошёл
-          // через Vite. Любое замыкание там теряется, а `import()` внутри тела
-          // превращается в `__vite_ssr_dynamic_import__` и роняет сборку.
-          // Функция, созданная в рантайме, до Vite не доезжает и отдаёт
-          // готовый литерал — см. src/integrations/homeMarkdown.ts.
           staticPages: [
               {
                   pattern: "/",
@@ -104,10 +81,6 @@ export default defineConfig({
           llmsTxt: {
               enabled: false,
           },
-          // Сайт статический (output: "static"), поэтому middleware пакета на
-          // проде не выполняется — он ставит заголовок Link на рантайме,
-          // которого нет. Тот же альтернейт отдаётся тегом в <head> через
-          // SEO.astro и заголовком из public/_headers на стороне Cloudflare.
           middleware: {
               injectLinkHeader: false,
           },
@@ -148,6 +121,5 @@ export default defineConfig({
     devToolbar: {
         enabled: true,
     },
-    // redirects: {},
     output: "static",
 });

@@ -1,15 +1,4 @@
 ---
-// Печатная версия каталога: одна страница, черным по белому, без шапки,
-// футера, тем и анимаций. Layout сюда намеренно не подключен — он ставит
-// на <html> data-theme/data-accent и тянет Header/Footer/BackToTop, а
-// печатному листу все это только мешает. Темная тема в проекте включается
-// классом `.dark` (см. @custom-variant в tailwind.css), поэтому без скрипта
-// Layout страница всегда светлая и токены можно использовать как обычно.
-// Акцент здесь не используется сознательно: страница — про бумагу, поэтому
-// вся экранная часть тоже монохромная, на нейтральных токенах
-// foreground/background/border. По той же причине радиусы остаются сырыми
-// (rounded-2xl, а не rounded-control): бумага не должна ехать вместе с
-// экранным пресетом.
 import { config } from "@/config";
 import { createCenterRouteIdMap, getCenterPath } from "@/utils/centers";
 import { getCollection } from "astro:content";
@@ -34,18 +23,12 @@ const groups = new Map<string, PrintEntry[]>();
 
 for (const center of centers) {
 	const country = center.data.location?.country ?? UNKNOWN_COUNTRY;
-	// Город и регион часто дублируют друг друга («Казань» / «Казань»),
-	// на бумаге такое повторение читается как опечатка.
 	const place = [center.data.location?.city, center.data.location?.region]
 		.filter(Boolean)
 		.filter((value, index, list) => list.indexOf(value) === index)
 		.join(", ");
 	const kind = [center.data.category, center.data.type].filter(Boolean).join(" · ");
 
-	// Печатается только адрес карточки на сайте, без ссылки на первоисточник:
-	// у большинства центров источник — один и тот же каталог конгресса, и на
-	// бумаге это 399 повторов одной строки. Карточка ведет и к контактам,
-	// и к самому источнику.
 	const entry: PrintEntry = {
 		title: center.data.title,
 		place,
@@ -65,8 +48,6 @@ for (const entries of groups.values()) {
 	entries.sort((a, b) => a.place.localeCompare(b.place, "ru") || a.title.localeCompare(b.title, "ru"));
 }
 
-// Страны по количеству центров: Россия оказывается первой сама собой,
-// а страна с двумя карточками не открывает распечатку.
 const countries = [...groups.entries()].sort(
 	(a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0], "ru"),
 );
@@ -223,8 +204,6 @@ const printedAt = new Date().toLocaleDateString("ru-RU", {
 			}
 
 			@media print {
-				/* Карточка центра и заголовок страны не должны разрываться между
-				   листами: на бумаге такой разрыв читается как две разные записи. */
 				li {
 					break-inside: avoid;
 				}

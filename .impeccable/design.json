@@ -10,7 +10,7 @@
       "layers": [
         {
           "name": "Brand layer",
-          "purpose": "Homepage identity moments: liquid-metal mark, heavy uppercase hero title, accent-tinted hero word, compact animated stats, and search screenshot imagery."
+          "purpose": "Homepage identity moments: logo mark, heavy uppercase hero title, accent-tinted hero word, compact animated stats, and search screenshot imagery."
         },
         {
           "name": "Catalog layer",
@@ -32,7 +32,7 @@
       ]
     },
     "colorMeta": {
-      "source": "src/styles/tailwind.css несёт светлые нейтрали в @theme; тёмную «бумагу» и акцент каждого пресета — src/styles/palettes/<name>.css. `canonical` ниже — светлое значение, `dark` — нейтральный фолбэк из блока .dark в tailwind.css, который работает, пока data-accent не проставлен. Все шесть пресетов переопределяют тёмные нейтрали целиком, и у green они тонированы в hue 142 — совпадения с этим фолбэком у него больше нет.",
+      "source": "src/styles/tailwind.css несёт светлые нейтрали в @theme и тёмные в .dark; src/styles/palettes/<name>.css — только акцент пресета в обеих темах. `canonical` ниже — светлое значение, `dark` — акцентный фолбэк из блока .dark в tailwind.css, который работает, пока data-accent не проставлен. Все шесть пресетов переопределяют тёмные нейтрали целиком, и у green они тонированы в hue 142 — совпадения с этим фолбэком у него больше нет.",
       "background": {
         "role": "neutral",
         "displayName": "Page Plane",
@@ -92,7 +92,7 @@
             "light": "hsl(0 0% 11.4%)",
             "dark": "hsl(0 0% 95%)",
             "default": true,
-            "note": "Монохром: акцент здесь — сами чернила, поэтому тема разворачивает картинку целиком. Тёмная бумага нейтральная."
+            "note": "Монохром: акцент здесь — сами чернила, поэтому тема разворачивает картинку целиком."
           },
           "green": {
             "light": "hsl(142 66% 30.9%)",
@@ -202,7 +202,7 @@
       "card": "rounded-card — 24px — panels, sections, ordinary cards, marketing blocks",
       "catalog": "rounded-catalog — 32px — center cards and other large catalog surfaces",
       "full": "rounded-full stays raw: a pill is not a step on the scale and must not move with the preset, or toggles and avatars stop being circles",
-      "followsAccent": "Radius is part of the accent preset, not a constant — the same way data-accent already swaps the dark neutrals. Three shape registers serve six presets, because the hue already tells them apart. default (green, orange): 8/16/24/32 — the values above. medium (violet, pink): 8/12/18/24. small (blue, red): 6/8/12/16. The scale is shared by light and dark: contrast depends on the background, shape does not. Steps compress non-uniformly — large radii give up proportionally more, since a flat multiplier would flatten `micro` to a square corner while barely touching `catalog`.",
+      "followsAccent": "No. Radius is a constant of the system, not part of the preset: one scale 8/16/24/32 in @theme serves all seven presets in both themes. Palette files declare no --radius-* at all. The three former shape registers (default 8/16/24/32, medium 8/12/18/24, small 6/8/12/16) were removed — picking a colour must not silently rebuild the geometry of every card and button. Contrast depends on the background, shape does not.",
       "exceptions": "src/pages/centers/print.astro keeps raw radii — paper must not shift with a screen preset.",
       "plugin": "@toolwind/corner-shape"
     },
@@ -303,51 +303,16 @@
           "surface-muted": 95,
           "subtle": 89
         },
-        "green": {
-          "note": "Единственный пресет с тонированной тёмной бумагой: hue 142, насыщенность 14% у страницы → 11% у subtle. Проценты — светлота HSL и потому ниже, чем у нейтральных пресетов; перцептивная светлота (oklab L*) сохранена от прежней нейтрали с точностью 0.05, поэтому лестница и все пороги контраста прежние.",
-          "background": 6.6,
-          "muted": 10.4,
-          "surface": 15.2,
-          "surface-muted": "derived",
-          "subtle": 21
-        },
-        "blue": {
-          "background": 0,
-          "muted": 4,
-          "surface": 8,
-          "surface-muted": 12,
-          "subtle": 16
-        },
-        "violet": {
+        "dark": {
+          "note": "Одна тёмная лестница на все семь пресетов — бывший регистр violet (Vercel): чистый чёрный холст, скупо приподнятые поверхности, тихие границы, чернила 93%, а не белые. Персональных лестниц у пресетов больше нет: палитра меняет только акцент.",
           "background": 0,
           "muted": 2,
           "surface": 5,
           "surface-muted": 9,
           "subtle": 14
-        },
-        "red": {
-          "background": 4,
-          "muted": 8,
-          "surface": 12,
-          "surface-muted": 16,
-          "subtle": 20
-        },
-        "orange": {
-          "background": 11,
-          "muted": 15.5,
-          "surface": 20,
-          "surface-muted": 24,
-          "subtle": 28
-        },
-        "pink": {
-          "background": 6,
-          "muted": 10.5,
-          "surface": 15,
-          "surface-muted": 19,
-          "subtle": 23
         }
       },
-      "constraints": "Значения решены численно: порядок лестницы, карточка-на-полосе >= ΔL 4, border-muted >= 1.28:1 к surface и background, border >= 1.5:1, muted-foreground и subtle-foreground >= 4.55:1 против всех пяти заливок своей палитры."
+      "constraints": "Значения решены численно: порядок лестницы, карточка-на-полосе >= ΔL 4, border-muted >= 1.28:1 к surface и background, border >= 1.5:1, muted-foreground и subtle-foreground >= 4.55:1 против всех пяти заливок общей лестницы."
     },
     "derivedSteps": {
       "rationale": "Приём HeroUI v3: ступень вычисляется как подмешивание собственной подложки к её же чернилам. Отказ вида «граница стала невидимой» становится структурно невозможным. Проценты решены под наши пороги — у HeroUI 78%/92% дают ΔL 2.6-3.7 там, где нам нужно 4.",
@@ -357,17 +322,17 @@
         "border": "surface 80% + surface-foreground",
         "depth-100": "surface 84% + surface-foreground"
       },
-      "authored": "muted, subtle и оба ink остаются авторскими по палитрам: единый процент сплющил бы пресеты друг в друга — выводимый muted увёл бы полосу blue с L* 14.6 на 6.25.",
+      "authored": "background, muted, surface и subtle авторские, но единые на все семь пресетов (тёмная лестница 0/2/5/14 — бывший регистр violet); surface-muted и оба border выводятся из surface.",
       "verified": "Худшие случаи в браузере по 12 комбинациям: border-muted 1.28, border 1.51, depth-100 на surface 1.35, на полосе 1.23, ΔL surface-muted 3.4."
     }
   },
   "components": [
     {
-      "name": "Liquid-Metal Mark",
+      "name": "Logo Mark",
       "kind": "brand-mark",
-      "refersTo": "LIquidMetal",
-      "description": "Compact homepage identity object. It stays decorative, centered, and separate from catalog component language.",
-      "usage": "Homepage only."
+      "refersTo": "LogoMark",
+      "description": "flower.svg used as a CSS mask and filled with a flat --color-accent. Static: no gradient, no shimmer animation. Accent is the only thing that changes it.",
+      "usage": "Header and footer logotype."
     },
     {
       "name": "Hero Title",
@@ -444,7 +409,7 @@
   ],
   "narrative": {
     "northStar": "A Catalog With A Signal",
-    "overview": "Tatarverse pairs a memorable homepage identity with a quiet, practical catalog. The homepage may use the liquid-metal mark, heavy uppercase hero type, an accent-tinted hero phrase, compact animated stats, and real interface imagery. Catalog surfaces remain neutral, factual, and easy to scan. Presentation is the user's: three accent presets, light/dark, and a motion toggle, so no surface may assume one fixed hue or one fixed theme.",
+    "overview": "Tatarverse pairs a memorable homepage identity with a quiet, practical catalog. The homepage may use the logo mark, heavy uppercase hero type, an accent-tinted hero phrase, compact animated stats, and real interface imagery. Catalog surfaces remain neutral, factual, and easy to scan. Presentation is the user's: three accent presets, light/dark, and a motion toggle, so no surface may assume one fixed hue or one fixed theme.",
     "keyCharacteristics": [
       "Two-layer system: homepage brand layer plus catalog utility layer.",
       "Neutral semantic tokens carry most interface structure; both themes are authored, never derived.",

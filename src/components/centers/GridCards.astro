@@ -7,7 +7,6 @@ import CardItem from "../ui/CardItem.astro";
 
 interface Props {
 	cards: CollectionEntry<"centers" | "centersEn">[];
-	/** Нормализованная география по id карточки — источник ключей для фильтров. */
 	geoByCardId?: Map<string, CenterGeo>;
 }
 

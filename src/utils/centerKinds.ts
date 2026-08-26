@@ -1,17 +1,5 @@
 import type { CollectionEntry } from "astro:content";
 
-/**
- * Organization "kind" derived from the entry title and type.
- *
- * The catalog is not only "centers": it also holds national-cultural
- * autonomies, associations, diasporas/землячества and online initiatives.
- * We classify each entry into one mutually-exclusive kind so the homepage
- * counter can show the real composition. This is display-only — it does not
- * add a schema field or a catalog filter.
- *
- * Priority matters: a title like «Общественная организация "Центр ..."»
- * contains both "обществ" and "центр", so the more specific bucket wins.
- */
 export type CenterKind =
 	| "centers"
 	| "autonomies"
@@ -20,7 +8,6 @@ export type CenterKind =
 	| "diasporas"
 	| "online";
 
-/** Display order for the breakdown tiles. */
 const CENTER_KIND_ORDER: CenterKind[] = [
 	"centers",
 	"autonomies",
@@ -55,10 +42,6 @@ export interface CenterKindBucket {
 	count: number;
 }
 
-/**
- * Returns the non-empty kind buckets in display order. Counts sum to the
- * total number of centers, so the breakdown stays consistent with the total.
- */
 export const getCenterKindBreakdown = (
 	entries: CollectionEntry<"centers">[],
 ): CenterKindBucket[] => {

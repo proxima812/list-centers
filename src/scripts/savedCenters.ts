@@ -1,19 +1,3 @@
-/**
- * Сохранённые карточки центров: хранилище и синхронизация UI.
- *
- * Данных на сервере нет и не будет — сайт статический, — поэтому список живёт
- * в localStorage браузера. Храним не только id, но снимок карточки: страница
- * /saved рисуется сразу из хранилища, без запроса к каталогу и без ожидания
- * сети. Каталог из 340 карточек грузить ради десяти сохранённых незачем.
- *
- * Снимок берётся с data-атрибутов `<article data-search-id>` (см. CardItem):
- * они там уже есть для поиска и фильтров, второй копии тех же строк в разметке
- * не заводим.
- *
- * Модуль общий для всех поверхностей — кнопки на карточках, счётчик в шапке,
- * список на /saved. Слушатели навешаны на document/window, поэтому сколько раз
- * его импортировали на странице, значения не имеет.
- */
 
 const STORAGE_KEY = "saved-centers";
 const CHANGE_EVENT = "saved-centers:change";
@@ -27,11 +11,9 @@ export type SavedCenter = {
 	type: string;
 	category: string;
 	city: string;
-	/** Русское название страны: /saved существует только в дефолтной локали. */
 	country: string;
 	flag: string;
 	pubDate: string;
-	/** Метка времени сохранения: список показывается свежим сверху. */
 	savedAt: number;
 };
 
@@ -40,12 +22,6 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 
 const asString = (value: unknown) => (typeof value === "string" ? value : "");
 
-/**
- * Читаем защищённо: localStorage бросает в приватном режиме Safari и при
- * запрещённых сторонних данных, а содержимое могло остаться от старой версии
- * формата или быть испорчено руками. Любая проблема — пустой список, а не
- * пустая страница.
- */
 export function readSaved(): SavedCenter[] {
 	let raw: string | null = null;
 
@@ -86,8 +62,6 @@ function writeSaved(list: SavedCenter[]) {
 	try {
 		localStorage.setItem(STORAGE_KEY, JSON.stringify(list.slice(0, LIMIT)));
 	} catch {
-		// Квота кончилась или запись запрещена. Молча: пользователь нажал на
-		// закладку, а не запустил операцию, ради которой стоит ронять страницу.
 	}
 
 	notify();
@@ -109,7 +83,6 @@ export function clearSaved() {
 	writeSaved([]);
 }
 
-/** Возвращает новое состояние: true — карточка сохранена, false — снята. */
 export function toggleSaved(entry: Omit<SavedCenter, "savedAt">): boolean {
 	const list = readSaved();
 	const existing = list.findIndex((item) => item.id === entry.id);
@@ -120,7 +93,6 @@ export function toggleSaved(entry: Omit<SavedCenter, "savedAt">): boolean {
 		return false;
 	}
 
-	// Свежее сверху: список читается как история, а не как случайный порядок.
 	writeSaved([{ ...entry, savedAt: Date.now() }, ...list]);
 	return true;
 }
@@ -129,11 +101,6 @@ function notify() {
 	document.dispatchEvent(new CustomEvent(CHANGE_EVENT));
 }
 
-/**
- * Подписка на изменения. `storage` прилетает только из других вкладок, свои
- * правки приходят через CustomEvent — поэтому слушаем оба источника, иначе
- * счётчик в шапке разъедется между вкладками.
- */
 export function onSavedChange(handler: () => void) {
 	document.addEventListener(CHANGE_EVENT, handler);
 	window.addEventListener("storage", (event) => {

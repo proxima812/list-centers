@@ -6,6 +6,7 @@ import { Icon } from "astro-icon/components";
 
 interface Props {
 	class?: string;
+	bare?: boolean;
 }
 
 const themes = [
@@ -19,13 +20,13 @@ const accents = ACCENT_PRESETS;
 const groupLabelClass =
 	"px-2 pb-1 text-xs font-medium uppercase tracking-wide text-subtle-foreground";
 
-// Строки, а не сетка: названия палитр («Кадерле Зәнгәр») не влезают в треть
-// панели и обрезаются. Активное состояние — подложка muted и галочка
-// акцентом, а не заливка акцентом на всю ячейку: она перекрывала образец.
+
+
+
 const optionClass =
 	"flex w-full cursor-pointer items-center gap-2.5 rounded-control px-2 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground aria-checked:bg-muted aria-checked:font-medium aria-checked:text-foreground";
 
-const { class: className } = Astro.props;
+const { class: className, bare = false } = Astro.props;
 const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
 ---
@@ -34,7 +35,10 @@ const t = useTranslations(locale);
 	<button
 		type="button"
 		data-appearance-trigger
-		class="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-full border border-border-muted pl-1.5 pr-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+		class={cn(
+			"inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-full border border-border-muted pl-1.5 pr-2 text-sm font-medium text-foreground transition-colors hover:bg-muted",
+			bare && "h-8 border-transparent hover:bg-subtle",
+		)}
 		aria-haspopup="true"
 		aria-expanded="false"
 		aria-controls="appearance-panel"
@@ -121,8 +125,7 @@ const t = useTranslations(locale);
 </div>
 
 <style>
-	/* Точка на кнопке показывает текущую палитру и живет на токенах, а не на
-	   литералах: тем же градиентом залито слово в герое. */
+	
 	.appearance-dot {
 		background-image: linear-gradient(
 			135deg,
@@ -136,8 +139,7 @@ const t = useTranslations(locale);
 		transform: rotate(180deg);
 	}
 
-	/* Галочка появляется у выбранной строки. Отдельное правило, а не
-	   `aria-checked:` на самой иконке: aria-checked стоит на кнопке. */
+	
 	[aria-checked="true"] .aria-checked-visible {
 		opacity: 1;
 	}

@@ -157,18 +157,23 @@ first paint (`src/layouts/Layout.astro`).
 `default` is the odd one out and deliberately so: its accent is the ink itself — near-black
 in light, near-white in dark — so the theme switch reverses the whole picture. A signal does
 not have to be a hue; contrast is a signal too, and the catalog reads well without colour.
-Its dark paper stays neutral, unlike `green`'s tint: a tint is a hue, and this preset has
-none by definition.
+Its dark paper is the shared one, like everyone else's — a preset carries no paper of its
+own.
 
 The preset list lives in exactly one place, `src/utils/accents.ts`, and both the header
 dropdown and the mobile toggle read it. Adding a palette means editing that file plus
 adding `src/styles/palettes/<name>.css` — never a second copy of the swatch array.
 
-**One preset — one file.** `src/styles/palettes/` holds seven files, and each describes its
-preset whole: the accent in both themes, the dark neutral paper, and the shape register.
-Light neutrals are shared by all seven and stay in `@theme` in `tailwind.css`. Previously a
-single preset was spread across three blocks at opposite ends of one file, and keeping
-them consistent was done by eye.
+**A preset is colour and nothing but colour.** `src/styles/palettes/` holds seven files,
+and each holds exactly two blocks — the accent tokens in light and in dark. The neutral
+paper, the borders, the ink and the depth ramp live in `tailwind.css` (light neutrals in
+`@theme`, dark ones in `.dark`), and so does the radius scale. Switching palette repaints
+the interface; it does not change its shape, its depth or its contrast.
+
+This used to be otherwise: every preset shipped its own dark surface ladder and its own
+shape register, so the seven palettes read as seven different sites rather than seven
+colours of one. Removing that removed the class of bug it caused — a ladder solved once is
+solved for all seven, instead of seven ladders each drifting on its own.
 
 Selectors inside a palette file start with `:root` on purpose, not for looks: `(0,2,0)` and
 `(0,3,0)` beat the `(0,1,0)` of `:root` from `@theme` and of `.dark`. That makes `@import`
@@ -177,9 +182,8 @@ order irrelevant, so palette files can be listed in any sequence.
 **Light and dark values of an accent are deliberately different** — a single hue cannot
 clear the contrast threshold on both a white and a near-black background.
 
-**In dark theme the accent also swaps the neutrals.** The same grey reads differently
-under each hue, so every preset ships its own dark paper. Light theme is shared by all
-seven — there the accent changes nothing but the accent tokens.
+**Neither theme's neutrals depend on the accent.** Light and dark paper are both shared by
+all seven presets; the accent changes nothing but the accent tokens.
 
 ### The Surface Ladder
 
@@ -197,40 +201,25 @@ so every `bg-surface` panel on the page — `Box`, MDX, project cards — was wh
     dark:   background  <  muted  <  surface  <  surface-muted  <  subtle
     light:  surface  >  background  >  surface-muted  >  muted  >  subtle
 
-| preset | background | muted | surface | surface-muted | subtle |
+| theme | background | muted | surface | surface-muted | subtle |
 | --- | --- | --- | --- | --- | --- |
-| light (all six) | 97.5% | 92.5% | 100% | 95% | 89% |
-| `green` | 6.6% | 10.4% | 15.2% | derived | 21% |
-| `blue` | 0% | 4% | 8% | 12% | 16% |
-| `violet` | 0% | 2% | 5% | 9% | 14% |
-| `red` | 4% | 8% | 12% | 16% | 20% |
-| `orange` | 11% | 15.5% | 20% | 24% | 28% |
-| `pink` | 6% | 10.5% | 15% | 19% | 23% |
+| light (all seven) | 97.5% | 92.5% | 100% | 95% | 89% |
+| dark (all seven) | 0% | 2% | 5% | 9% | 14% |
 
-Each preset keeps its character: `violet` the Vercel register on pure black, `blue` the
-louder Uber Base with pure-white ink, `red` the deepest paper, `orange` the lightest dark
-theme at `11%`, `pink` the middle register, `green` the tinted base.
+One ladder per theme, no per-preset variants. The dark one is the former `violet`
+register — the Vercel read: pure black canvas, surfaces raised sparingly, quiet borders,
+ink that is not white (`93%`). It was picked over the louder registers because it is the
+one that survives every hue sitting on top of it: an accent is a signal, and a signal
+needs quiet paper, not paper competing with it.
 
-**`green` is the one preset whose dark paper is not neutral.** Its surfaces carry the
-accent hue — `hsl(142 …)`, saturation falling from `14%` at the page to `5%` at the top of
-the depth ramp, so the tint reads on large fills without casting green on text. The
-percentages in the table above are HSL lightness and therefore lower than the other
-presets', but the *perceptual* lightness is unchanged: every token was solved to hold its
-former neutral's oklab `L*` within `0.05`, so the ladder, the `card on band` step, the
-derived tokens and every contrast floor carry over. Measured at the change:
-`foreground` `10.40:1` worst-case, `muted-foreground` `5.85:1`, `subtle-foreground`
-`4.58:1` against the `4.55` floor, `border-muted` `1.43:1` on surface, `depth-100`
-`1.51:1` on surface and `1.77:1` on `muted`.
-
-The `.dark` block in `tailwind.css` stays neutral on purpose. It is the fallback for a
-document whose `data-accent` is not set yet, and for any preset that forgets a token —
-a neutral is safe in that role, a tint would paint someone else's palette green.
+`surface-muted` and both border tokens are derived from `surface` in `@theme`, so the
+whole ladder moves together and only four values are ever authored.
 
 **The page → surface step is the main depth signal in dark, and it is deliberately larger
 than its light counterpart.** Light theme lets a shadow finish the job; dark theme has no
-usable shadow, so the step has to carry it alone. All six dark palettes clear `+9` in
-oklch `L`. Near white the scale is compressed and `surface → background` is only `ΔL 1.9` —
-that is fine, because light theme still has a shadow and a border to finish the job.
+usable shadow, so the step has to carry it alone. Near white the scale is compressed and
+`surface → background` is only `ΔL 1.9` — that is fine, because light theme still has a
+shadow and a border to finish the job.
 
 Every value is solved numerically, not chosen by eye. The constraints: the ladder order
 above, `card on band >= ΔL 4`, `border-muted >= 1.28:1` against both `surface` and
@@ -374,31 +363,18 @@ The visual language uses squircle geometry through `@toolwind/corner-shape` and 
 MDX and utility panels take `rounded-control` plus a thin border or ring, and `shadow-2xs`
 only when separation is needed.
 
-### Radius Follows The Accent
+### Radius Is A Constant
 
-Radius is part of the preset, not a constant. `data-accent` already swaps the entire dark
-neutral palette (the Vercel / Uber Base registers above), and corner shape rides the same
-register — this is how HeroUI themes work, where a theme carries `--heroui-radius-*`
-alongside its colors. The scale is shared by light and dark: contrast depends on the
-background, shape does not.
+Radius does **not** follow the accent. One scale — `8 / 16 / 24 / 32` for
+`micro / control / card / catalog` — lives in `@theme` and serves all seven presets, in
+both themes: contrast depends on the background, shape does not, and neither depends on
+which colour the visitor picked.
 
-There are **three shape registers for six presets** — the hue already tells them apart,
-and six different geometries would turn the scale into a set of accidents. The default
-register lives in `@theme`; the two others sit in the palette files that use them, so a
-preset is still described by exactly one file.
-
-| register | presets | micro | control | card | catalog |
-| --- | --- | --- | --- | --- | --- |
-| default | `green`, `orange` | 8 | 16 | 24 | 32 |
-| medium | `violet`, `pink` | 8 | 12 | 18 | 24 |
-| small | `blue`, `red` | 6 | 8 | 12 | 16 |
-
-`red` joins the small register on purpose: it is the loudest accent in the set, and the
-strict shape balances it.
-
-The steps compress **non-uniformly** — large radii give up proportionally more. A flat
-multiplier would push `micro` down to `4px`, indistinguishable from a square corner, while
-barely touching `catalog`, which is exactly where the change in shape is legible.
+Presets used to carry three different shape registers (`8/16/24/32`, `8/12/18/24`,
+`6/8/12/16`). It made choosing a colour silently rebuild the geometry of every card,
+button and chip on the page, which is not what a colour picker promises. Palette files no
+longer declare `--radius-*` at all; if a component needs a different corner it asks for a
+different step of the one scale.
 
 The print stylesheet (`src/pages/centers/print.astro`) keeps raw radii on purpose: paper
 should not shift with a screen preset.
@@ -455,15 +431,17 @@ off, OS reduced-motion.
 
 ## 7. Components
 
-### Liquid-Metal Mark
+### Logo Mark
 
-The homepage mark is a compact identity object. It should stay centered, decorative, and non-blocking. It is not a reusable card or icon style for the catalog.
+The mark is `flower.svg` used as a CSS mask, not as an image: the file is filled black and
+the colour comes from a token, so the shape follows theme and accent for free.
 
-Its shader is tinted by `--color-mark-tint`, not by `--color-accent-vivid`: LiquidMetal
-darkens the input color with its own contours and highlights, so the tint token is a
-lightened sibling of `vivid` in every theme × accent pair. The token must stay a plain
-`hsl()` — the mark script reads it as a string and parses the computed color into hex,
-and a `color-mix()` would compute to `oklab()`, which that parser cannot read.
+It is **one flat fill of `--color-accent`, and it does not move.** The gradient sweep and
+the nine-second shimmer are gone — a permanently animating logo reads as a separate effect
+competing with the identity it is supposed to be, and it was the only decoration on the
+site that never stopped. Changing the accent changes the mark; nothing else does.
+`--color-mark-tint` existed only to feed that gradient and has been removed from every
+palette.
 
 ### Hero Title
 

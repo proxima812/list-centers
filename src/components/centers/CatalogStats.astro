@@ -7,7 +7,6 @@ interface Props {
 	count: number;
 	countries: number;
 	regions: number;
-	/** Optional kind composition. When present, tiles are merged into one grid. */
 	buckets?: CenterKindBucket[];
 	class?: string;
 }
@@ -33,18 +32,11 @@ const items = [
 	})),
 ];
 
-// Подписи не переносятся, поэтому колонка обязана вмещать самую длинную из
-// них целиком: на узких экранах это одна колонка, дальше — две и три.
 const gridClass = hasBuckets
 	? "grid w-full max-w-5xl grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2 lg:grid-cols-3"
 	: "grid w-full max-w-lg grid-cols-3 gap-x-6 gap-y-3";
 ---
 
-{/* Цифры каталога — справка, а не управление. Никаких поверхностей, колец и
-    ховеров: заливка + ring читались как кнопки, и в них кликали. Крупное
-    число + тихая подпись — это уже статистика. `flex-row-reverse` внутри:
-    в разметке `dt` идет перед `dd`, как и положено в `dl`, а видеть первым
-    нужно число. Колонки грида равной ширины, содержимое центрировано. */}
 <dl class:list={["cursor-default select-text", gridClass, className]}>
 	{
 		items.map((item) => (

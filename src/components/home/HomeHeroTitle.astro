@@ -6,9 +6,9 @@ const t = useTranslations(locale);
 
 const solidClass = "font-black tracking-tight md:tracking-[-1.4px]";
 
-// Градиенты собраны в <style> ниже, а не в arbitrary-классах: они тянутся из
-// токенов темы и в записи Tailwind превратились бы в нечитаемую строку с
-// подчеркиваниями вместо пробелов.
+
+
+
 const heroLines = [
 	{ key: "home.hero.1", className: `${solidClass} text-foreground` },
 	{
@@ -18,10 +18,10 @@ const heroLines = [
 	{ key: "home.hero.3", className: `${solidClass} text-foreground/90` },
 ] as const;
 
-// Вторая строка тише первой: крайние слова приглушены, среднее держит вес.
-// Тон — `muted-foreground`, а не палитровый `zinc-400`: последний не переживает
-// смену темы и на светлой бумаге давал 2.3:1, то есть слово в заголовке
-// практически пропадало.
+
+
+
+
 const heroLines2 = [
 	{ key: "home.hero.5", className: `${solidClass} text-muted-foreground` },
 	{ key: "home.hero.6", className: `${solidClass} text-foreground` },
@@ -32,18 +32,14 @@ const titleClass = "uppercase inline-block";
 ---
 
 <h1 class="relative select-none text-center text-3xl sm:text-5xl md:text-6xl lg:text-7xl">
-	<div
-		class="flex flex-wrap items-baseline justify-center gap-x-2 gap-y-2 md:gap-x-3.5"
-	>
+	<div class="flex flex-wrap items-baseline justify-center gap-x-2 gap-y-2 md:gap-x-3.5">
 		{
 			heroLines.map(({ key, className }) => (
 				<span class:list={[titleClass, className]}>{t(key)}</span>
 			))
 		}
 	</div>
-	<div
-		class="flex flex-wrap items-baseline justify-center gap-x-2 gap-y-2 md:gap-x-3.5"
-	>
+	<div class="flex flex-wrap items-baseline justify-center gap-x-2 gap-y-2 md:gap-x-3.5">
 		{
 			heroLines2.map(({ key, className }) => (
 				<span class:list={[titleClass, className]}>{t(key)}</span>
