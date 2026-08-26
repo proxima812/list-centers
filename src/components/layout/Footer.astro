@@ -1,7 +1,14 @@
 ---
 import release from "@/data/release.json";
 import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
+import {
+	createCenterRouteIdMap,
+	getCenterPath,
+	getCenterTranslationCollection,
+} from "@/utils/centers";
+import { getPostPath } from "@/utils/posts";
 import { Icon } from "astro-icon/components";
+import { getCollection } from "astro:content";
 import Container from "./Container.astro";
 import LogoMark from "./LogoMark.astro";
 
@@ -22,12 +29,51 @@ const updatedAtLabel = new Intl.DateTimeFormat(locale, {
 	timeZone: "Asia/Almaty",
 }).format(new Date(release.updatedAt));
 
+// Последние 5 центров: та же логика, что у HomeHeroBadge — у центров нет
+// сквозного pubDate, зато есть id `tbk-N`, номер которого и есть порядок
+// добавления. Дата, если она есть, важнее номера.
+const allCenters = await getCollection("centers");
+const centerRouteIds = createCenterRouteIdMap(allCenters);
+const centerNumber = (id: string) => Number(id.match(/^tbk-(\d+)$/)?.[1] ?? -1);
+const recentCenters = [...allCenters]
+	.sort((a, b) => {
+		const byDate =
+			(b.data.pubDate ? new Date(b.data.pubDate).getTime() : 0) -
+			(a.data.pubDate ? new Date(a.data.pubDate).getTime() : 0);
+
+		return byDate !== 0 ? byDate : centerNumber(b.id) - centerNumber(a.id);
+	})
+	.slice(0, 5);
+
+// Заголовок центра берем из перевода, если он есть: коллекция `centers` —
+// русская, и на /en иначе всплыло бы русское название.
+const centerTranslationCollection = getCenterTranslationCollection(locale);
+const translatedCenters = centerTranslationCollection
+	? await getCollection(centerTranslationCollection)
+	: [];
+const centerTitle = (entry: (typeof allCenters)[number]) =>
+	translatedCenters.find((translation) => translation.id === entry.id)?.data.title ??
+	entry.data.title;
+
+const recentPosts = (await getCollection("posts"))
+	.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+	.slice(0, 4);
+
 // Подвал намеренно НЕ берёт токен `link`. Синий там — сигнал впустую: ссылками
 // в подвале является всё подряд, и целая колонка синего перетягивает внимание с
 // содержимого страницы. Сигнал кликабельности здесь несут позиция и список, а
 // не цвет, поэтому тут нейтральные чернила с приглушённым подчёркиванием.
+//
+// Подвал темный на обеих темах, но не одним и тем же способом: на светлой
+// бумаге он берет готовый темный `foreground`, а на темной должен быть темнее
+// самой темной темы — готового токена под это нет, поэтому лестница продлена
+// на месте через oklch(from ...) в <style> ниже: светлота `background`
+// умножается на 0.6, без единого литерального цвета. `light-dark()` выбирает
+// ветку по `color-scheme`, который уже объявлен на `:root`/`.dark` в
+// tailwind.css. Ссылки без подчеркивания: сигнал кликабельности несут список
+// и позиция, а не декорация.
 const baseStyle =
-	"text-foreground underline decoration-current/40 underline-offset-4 transition hover:decoration-current";
+	"text-[var(--footer-fg)] transition hover:opacity-70";
 
 type FooterLink = {
 	href: string;
@@ -84,6 +130,25 @@ const footerSections: Array<{ id: string; title: string; links: FooterLink[] }> 
 		],
 	},
 	{
+		id: "added",
+		title: t("footer.added.title"),
+		links: recentCenters.map((entry) => ({
+			href: localizePath(
+				locale,
+				getCenterPath(centerRouteIds.get(entry.id) ?? entry.id),
+			),
+			label: centerTitle(entry),
+		})),
+	},
+	{
+		id: "posts",
+		title: t("footer.posts.title"),
+		links: recentPosts.map((entry) => ({
+			href: localizePath(locale, getPostPath(entry.id)),
+			label: entry.data.title,
+		})),
+	},
+	{
 		id: "open-source",
 		title: t("footer.openSource.title"),
 		links: [
@@ -109,63 +174,65 @@ const footerSections: Array<{ id: string; title: string; links: FooterLink[] }> 
 			},
 		],
 	},
-];
-
-// Framer держит контакты не колонкой ссылок, а рядом иконок рядом с копирайтом:
-// это тот же список, но без колонки — четвертая колонка на mobile ломала
-// баланс сетки, а подпись "Связь" рядом с тремя другими смысловыми разделами
-// читалась слабее, чем узнаваемые иконки соцсетей.
-const socialLinks: FooterLink[] = [
 	{
-		href: "mailto:kamil.mirikhan@gmail.com",
-		label: "почта",
-		icon: "mdi:email-outline",
-	},
-	{
-		href: "https://www.instagram.com/the_tatarverse/",
-		label: "@the_tatarverse",
-		icon: "mdi:instagram",
-		props: externalProps,
-	},
-	{
-		href: "https://t.me/the_tatarverse",
-		label: "@the_tatarverse (Telegram)",
-		icon: "mdi:telegram",
-		props: externalProps,
-	},
-	{
-		href: "https://t.me/isembez",
-		label: "@isembez",
-		icon: "mdi:telegram",
-		props: externalProps,
+		id: "contacts",
+		title: t("footer.contacts.title"),
+		links: [
+			{
+				href: "mailto:kamil.mirikhan@gmail.com",
+				label: "почта",
+				icon: "mdi:email-outline",
+				nowrap: true,
+			},
+			{
+				href: "https://www.instagram.com/the_tatarverse/",
+				label: "@the_tatarverse",
+				icon: "mdi:instagram",
+				props: externalProps,
+			},
+			{
+				href: "https://t.me/the_tatarverse",
+				label: "@the_tatarverse",
+				icon: "mdi:telegram",
+				props: externalProps,
+			},
+			{
+				href: "https://t.me/isembez",
+				label: "@isembez",
+				icon: "mdi:telegram",
+				props: externalProps,
+			},
+		],
 	},
 ];
 ---
 
-<footer class="mt-auto overflow-hidden border-t border-border-muted pt-10 text-sm text-subtle-foreground sm:text-xs">
+<footer class="site-footer mt-auto py-10 text-sm sm:text-xs">
 	<Container container class="max-w-7xl">
 		<div class="grid gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,2.5fr)]">
 			<div class="space-y-3">
 				<a
 					href={localizePath(locale, "/")}
-					class="inline-flex items-center gap-1.5 text-foreground no-underline"
+					class="inline-flex items-center gap-1.5 text-[var(--footer-fg)] no-underline"
 				>
 					<LogoMark size={22} />
 					<span class="font-bold">tatarverse</span>
 				</a>
 				<p class="max-w-md leading-6">{t("footer.description")}</p>
 				<p class="max-w-md leading-6">{t("footer.openSource.text")}</p>
-				<p>v{release.version} · {t("footer.updated", { date: updatedAtLabel })}</p>
 			</div>
 
-			<nav aria-label={t("footer.links")} class="grid gap-6 sm:grid-cols-3">
+			<nav aria-label={t("footer.links")} class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
 				{
 					footerSections.map((section) => (
 						<section aria-labelledby={`footer-${section.id}`}>
-							<p id={`footer-${section.id}`} class="mb-3 font-bold text-subtle-foreground">
+							<p
+								id={`footer-${section.id}`}
+								class="mb-3 text-lg font-bold text-[var(--footer-fg)]"
+							>
 								{section.title}
 							</p>
-							<ul class="space-y-2">
+							<ul class="space-y-2 text-base">
 								{section.links.map((link) => (
 									<li>
 										<a
@@ -195,48 +262,46 @@ const socialLinks: FooterLink[] = [
 		</div>
 
 		<div
-			class="mt-10 flex flex-col-reverse gap-4 border-t border-border-muted pt-6 sm:flex-row sm:items-center sm:justify-between"
+			class="mt-10 flex flex-col gap-2 border-t pt-6 sm:flex-row sm:items-center sm:justify-between"
+			style="border-color: var(--footer-border)"
 		>
 			<p>
 				&copy; tatarverse.cc {new Date().getFullYear()} · {t("footer.legalNote")}
 			</p>
-			<div class="flex items-center gap-1.5">
-				{
-					socialLinks.map((link) => (
-						<a
-							href={link.href}
-							class="inline-flex size-9 items-center justify-center rounded-full border border-border-muted text-subtle-foreground transition hover:border-border hover:text-foreground"
-							aria-label={link.label}
-							title={link.label}
-							{...link.props}
-						>
-							<Icon name={link.icon} class="size-4" aria-hidden="true" />
-						</a>
-					))
-				}
+			<div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+				<p>v{release.version} · {t("footer.updated", { date: updatedAtLabel })}</p>
 				<a
 					href={repositoryHref}
-					class="inline-flex size-9 items-center justify-center rounded-full border border-border-muted text-subtle-foreground transition hover:border-border hover:text-foreground"
-					aria-label={t("footer.openSource.short")}
-					title={t("footer.openSource.short")}
+					class={`inline-flex min-w-0 max-w-full items-center gap-1.5 text-base ${baseStyle}`}
 					{...externalProps}
 				>
 					<Icon name="mdi:github" class="size-4" aria-hidden="true" />
+					<span class="min-w-0 wrap-anywhere">{t("footer.openSource.short")}</span>
 				</a>
 			</div>
 		</div>
 	</Container>
-
-	{
-		/* Фирменная марка на всю ширину подвала, как у framer.com: подпись, а
-		   не второй заголовок, поэтому чернила почти прозрачные и текст вне
-		   таб-порядка — на плотных страницах каталога она не должна спорить с
-		   контентом за внимание. */
-	}
-	<p
-		aria-hidden="true"
-		class="mt-8 -mb-2 select-none overflow-hidden text-center font-black leading-none tracking-tight text-foreground/[0.06] text-[20vw] sm:mt-12 sm:text-[13vw] lg:text-9xl"
-	>
-		tatarverse
-	</p>
 </footer>
+
+<style>
+	/*
+	 * Тёмный на обеих темах, но по-разному: на светлой странице подвал берёт
+	 * готовый тёмный `foreground`, на тёмной странице готового токена "темнее
+	 * фона" нет, поэтому лестница продлена относительным цветом — светлота
+	 * `background` умножается на 0.6. `light-dark()` читает уже объявленный
+	 * `color-scheme` (:root/.dark в tailwind.css), поэтому ветка выбирается
+	 * сама, без класса .dark на самом подвале.
+	 */
+	.site-footer {
+		--footer-bg: light-dark(
+			var(--color-foreground),
+			oklch(from var(--color-background) calc(l * 0.6) c h)
+		);
+		--footer-fg: light-dark(var(--color-background), var(--color-foreground));
+		--footer-fg-muted: color-mix(in oklab, var(--footer-fg) 70%, transparent);
+		--footer-border: color-mix(in oklab, var(--footer-fg) 15%, transparent);
+
+		background-color: var(--footer-bg);
+		color: var(--footer-fg-muted);
+	}
+</style>

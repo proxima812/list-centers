@@ -196,6 +196,8 @@ const dict: Dictionary = {
 	"footer.codeLicense": "MIT code license",
 	"footer.contentLicense": "CC BY 4.0 content license",
 	"footer.contacts.title": "Contact",
+	"footer.added.title": "Recently added",
+	"footer.posts.title": "Posts",
 	"footer.legalNote": "Code is available under MIT; content is available under CC BY 4.0.",
 	"footer.collaboration.title": "For collaboration",
 	"footer.collaboration.email": "Email",

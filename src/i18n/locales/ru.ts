@@ -200,6 +200,8 @@ const dict: Dictionary = {
 	"footer.codeLicense": "Лицензия кода MIT",
 	"footer.contentLicense": "Лицензия материалов CC BY 4.0",
 	"footer.contacts.title": "Связь",
+	"footer.added.title": "Добавленные",
+	"footer.posts.title": "Посты",
 	"footer.legalNote": "Код распространяется по MIT, материалы - по CC BY 4.0.",
 	"footer.collaboration.title": "Для сотрудничества",
 	"footer.collaboration.email": "Почта",
