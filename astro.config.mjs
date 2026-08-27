@@ -69,6 +69,7 @@ export default defineConfig({
                   "/en/thanks",
                   "/centers/print",
                   "/en/centers/print",
+                  "/colors",
               ]);
               return !excluded.has(path);
           },

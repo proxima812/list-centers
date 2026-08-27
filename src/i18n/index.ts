@@ -43,6 +43,7 @@ const translatedPostIds = idsFromGlob(import.meta.glob("../data/posts_i18n/en/*.
  */
 const ruOnlyRoutes: Array<{ pattern: RegExp; switcher: "stay" | "hub" }> = [
 	{ pattern: /^thanks$/, switcher: "hub" },
+	{ pattern: /^colors$/, switcher: "hub" },
 ];
 
 function findRuOnlyRoute(relativePath: string) {
