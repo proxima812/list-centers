@@ -86,7 +86,5 @@ remain legible against every fill they sit on, not just against the page.
 
 ## Known Debt
 
-- `HomePeopleStats` ships rounded population estimates with no source, and its copy is a
-  draft. Either source the numbers or drop the section — the file says so in place.
 - `HomeFollowersCarousel` is not mounted on any page and still carries placeholder English
   copy from its template origin.

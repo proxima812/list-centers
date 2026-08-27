@@ -577,9 +577,10 @@ one either shows a real image of the product or a number the catalog can prove.
   catalog does not render a tile. The tiles **stay** cards — `rounded-control`, `bg-surface`,
   a ring, `surface-lift` — because there the frame is the grid's structure, not decoration.
   Brand hues here are brand marks, the one sanctioned exception to the no-literal-color rule.
-- **People numbers:** three large figures, centered. **These are placeholders** — rounded
-  population estimates with no source. Source them or remove the section; do not style
-  around the problem.
+- **People numbers:** three large figures, centered, straight from the 2021 Russian census
+  (Rosstat, volume 5), unrounded, with the source linked in small type underneath. The
+  labels say "in Russia" and not "worldwide" on purpose: the census counts nobody outside
+  the country, and the copy says so instead of letting the figure imply more than it is.
 
 ### Catalog Stats
 
