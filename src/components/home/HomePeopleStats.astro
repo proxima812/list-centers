@@ -22,10 +22,7 @@ const t = useTranslations(locale);
 const format = new Intl.NumberFormat(locale === "en" ? "en-US" : "ru-RU");
 ---
 
-<section
-	class="rounded-card bg-surface px-6 py-14 text-center surface-lift ring-1 ring-border-muted sm:px-8 md:px-12 md:py-20"
-	aria-labelledby="home-people-stats"
->
+<section class="py-4 text-center md:py-8" aria-labelledby="home-people-stats">
 	<div class="mx-auto max-w-2xl space-y-4">
 		<h2 id="home-people-stats" class="text-4xl font-bold tracking-tight">
 			{t("home.people.title")}

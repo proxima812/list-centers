@@ -20,9 +20,7 @@ const searchImage = locale === "en" ? searchImageEn : searchImageRu;
 ---
 
 <div id="sections" class="md:space-y-14 space-y-8 py-12 md:py-20">
-	<section
-		class="grid grid-cols-1 items-center overflow-hidden rounded-card bg-surface surface-lift ring-1 ring-border-muted md:grid-cols-2"
-	>
+	<section class="grid grid-cols-1 items-center gap-8 md:grid-cols-2 md:gap-12">
 		<Image
 			src={present}
 			alt={t("home.present.imageAlt")}
@@ -30,9 +28,9 @@ const searchImage = locale === "en" ? searchImageEn : searchImageRu;
 			sizes="(min-width: 768px) 50vw, 100vw"
 			loading="eager"
 			fetchpriority="high"
-			class="h-full w-full object-cover"
+			class="h-full w-full rounded-card object-cover"
 		/>
-		<div class="space-y-6 px-6 py-10 sm:px-8 md:px-12 md:py-16">
+		<div class="space-y-6">
 			<h2 class="text-4xl font-bold tracking-tight">{t("home.present.title")}</h2>
 			<p
 				class="leading-7 text-muted-foreground"
@@ -46,10 +44,8 @@ const searchImage = locale === "en" ? searchImageEn : searchImageRu;
 			<p class="leading-7 text-muted-foreground">{t("home.present.text2")}</p>
 		</div>
 	</section>
-	<section
-		class="grid grid-cols-1 items-center overflow-hidden rounded-card bg-surface surface-lift ring-1 ring-border-muted md:grid-cols-2"
-	>
-		<div class="order-2 space-y-6 px-6 py-10 sm:px-8 md:order-1 md:px-12 md:py-16">
+	<section class="grid grid-cols-1 items-center gap-8 md:grid-cols-2 md:gap-12">
+		<div class="order-2 space-y-6 md:order-1">
 			<h2 class="text-4xl font-bold tracking-tight">
 				{t("home.search.title")}
 			</h2>
@@ -67,7 +63,7 @@ const searchImage = locale === "en" ? searchImageEn : searchImageRu;
 			alt={t("home.search.imageAlt")}
 			widths={[400, 640, 768, 1200]}
 			sizes="(min-width: 768px) 50vw, 100vw"
-			class="order-1 h-full w-full object-cover md:order-2"
+			class="order-1 h-full w-full rounded-card object-cover md:order-2"
 		/>
 	</section>
 	<HomeLinksShowcase />
