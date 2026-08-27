@@ -31,7 +31,19 @@ const heroLines2 = [
 const titleClass = "uppercase inline-block";
 ---
 
-<h1 class="relative select-none text-center text-3xl sm:text-5xl md:text-6xl lg:text-7xl">
+{/*
+	Размер тянется за шириной, а не прыгает по брейкпоинтам.
+	Контейнер — `max-w-5xl`, то есть 984px контента, а «Язык. Культура. Люди.»
+	при `text-7xl` занимает 963: на десктопе строка помещается, а на всём, что
+	уже 1024px, рвалась — и на телефоне разваливалась на четыре рваные строки
+	с одиноким словом посередине. Коэффициент подобран по самой длинной русской
+	строке с запасом; верхняя граница 4.5rem — прежний `text-7xl`, поэтому
+	десктоп выглядит ровно как раньше. Это роль display из DESIGN.md, она там
+	и описана как clamp.
+*/}
+<h1
+	class="relative select-none text-center text-[clamp(1.25rem,calc(7.1vw-3px),4.5rem)] leading-none"
+>
 	<div class="flex flex-wrap items-baseline justify-center gap-x-2 gap-y-2 md:gap-x-3.5">
 		{
 			heroLines.map(({ key, className }) => (

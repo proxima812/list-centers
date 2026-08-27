@@ -35,7 +35,7 @@ const countries = [...countryStats.entries()]
 	.sort((left, right) => right.count - left.count || left.label.localeCompare(right.label, locale));
 
 const selectClass =
-	"min-w-0 cursor-pointer rounded-control corner-squircle bg-surface px-3 py-2 text-sm font-medium text-surface-foreground outline-none transition hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
+	"w-full min-w-0 cursor-pointer appearance-none rounded-control corner-squircle bg-surface py-2 pl-3.5 pr-9 text-sm font-medium text-surface-foreground outline-none transition hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
 const chipClass =
 	"group flex min-w-0 max-w-fit cursor-pointer items-center gap-1.5 rounded-full corner-squircle bg-surface-muted px-3 py-1.5 text-sm font-medium text-muted-foreground transition not-data-[active]:hover:bg-subtle hover:text-foreground data-[active]:bg-accent data-[active]:text-accent-foreground";
 ---
@@ -79,7 +79,7 @@ const chipClass =
 					<span data-nearby-label class="min-w-0 font-semibold"></span>
 				</p>
 
-				<label class="inline-flex min-w-0 items-center gap-2">
+				<label class="relative inline-flex min-w-0 items-center">
 					<span class="sr-only">{t("nearby.countryLabel")}</span>
 					<select data-nearby-country class={selectClass}>
 						<option value="">{t("nearby.chooseCountry")}</option>
@@ -92,6 +92,18 @@ const chipClass =
 							))
 						}
 					</select>
+					{/* Своя стрелка вместо нативной: та рисуется системой и не знает
+					    ни про тему, ни про скругления. Разметка — как у CopyPageMenu. */}
+					<svg
+						viewBox="0 0 20 20"
+						class="pointer-events-none absolute right-3 size-3.5 text-subtle-foreground"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						aria-hidden="true"
+					>
+						<path d="m5 7 5 5 5-5" stroke-linecap="round" stroke-linejoin="round"></path>
+					</svg>
 				</label>
 			</div>
 
