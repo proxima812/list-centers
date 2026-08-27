@@ -3,7 +3,7 @@ import { getCenterPath } from "../../src/utils/centers";
 import { formatPost } from "./format-post";
 import { buildRouteIdMap, loadAllCenters, type ParsedCenter } from "./parse-center";
 import { loadState, saveState, type PublishState } from "./state";
-import { readVkConfig, wallPost } from "./vk";
+import { FATAL_ERROR_CODES, VkApiError, readVkConfig, wallPost } from "./vk";
 
 const DELAY_BETWEEN_POSTS_MS = 700;
 
@@ -75,6 +75,7 @@ async function main() {
 	let published = 0;
 	let skipped = 0;
 	let errors = 0;
+	let stoppedEarly = 0;
 
 	for (let i = 0; i < queue.length; i++) {
 		const { center, routeId } = queue[i];
@@ -112,6 +113,15 @@ async function main() {
 			const reason = error instanceof Error ? error.message : String(error);
 			console.log(`${progress} — ошибка VK: ${reason}`);
 			errors++;
+
+			if (error instanceof VkApiError && FATAL_ERROR_CODES.has(error.code)) {
+				stoppedEarly = queue.length - (i + 1);
+				console.log(
+					`\nОстановка: дальше вся очередь упрётся в ту же ошибку.\n` +
+						`Прогресс сохранён в state.json — повторный запуск продолжит с этого места.`,
+				);
+				break;
+			}
 		}
 
 		if (i < queue.length - 1) await sleep(DELAY_BETWEEN_POSTS_MS);
@@ -122,6 +132,7 @@ async function main() {
 	console.log(`${options.dryRun ? "Показано" : "Опубликовано"}: ${published}`);
 	console.log(`Пропущено: ${skipped}`);
 	console.log(`Ошибок: ${errors}`);
+	if (stoppedEarly > 0) console.log(`Осталось на следующий запуск: ${stoppedEarly}`);
 
 	if (errors > 0) process.exitCode = 1;
 }
