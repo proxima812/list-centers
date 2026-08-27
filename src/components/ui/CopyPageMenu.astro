@@ -111,11 +111,14 @@ const aiPlatforms = [
 </div>
 
 <script>
+	// Обе версии обращаются к модели, а не к читателю. В английской подлежащее
+	// раньше уезжало («It can also help you find...»), и просьба поискать
+	// превращалась в обещание сервиса.
 	const PROMPT_TEXT: Record<string, (url: string) => string> = {
 		ru: (url: string) =>
 			`Я смотрю эту страницу: ${url}. Помоги мне разобраться в ней. Будь готов объяснять концепции, приводить примеры или отвечать на любые вопросы о ней. Также можешь найти дополнительную информацию в интернете и других источниках.`,
 		en: (url: string) =>
-			`I'm looking at this page: ${url}. Help me understand it. Be ready to explain concepts, give examples, or answer any questions about it. It can also help you find more information on the Internet and in other sources.`,
+			`I'm looking at this page: ${url}. Help me understand it. Be ready to explain concepts, give examples, or answer any questions about it. You can also look up additional information on the web and in other sources.`,
 	};
 
 	function getPromptUrl(base: string, url: string, locale: string) {
