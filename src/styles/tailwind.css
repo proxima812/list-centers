@@ -20,10 +20,10 @@
   --font-sans: var(--font-country-flags), var(--font-tatarverse-sans), ui-sans-serif, system-ui,
     sans-serif;
 
-  --color-background: hsl(0 0% 97.5%);
-  --color-surface: hsl(0 0% 100%);
-  --color-muted: hsl(0 0% 92.5%);
-  --color-subtle: hsl(0 0% 89%);
+  --color-background: #F6F3F9;
+  --color-surface: #FBF9FD;
+  --color-muted: #E9E5EE;
+  --color-subtle: #E1DCE6;
 
 
   --color-surface-muted: color-mix(
@@ -37,32 +37,32 @@
     var(--color-surface-foreground)
   );
   --color-border: color-mix(in oklab, var(--color-surface) 80%, var(--color-surface-foreground));
-  --color-ring: hsl(0 0% 78%);
+  --color-ring: #C4C0C9;
 
 
   --color-catalog: var(--color-surface-muted);
 
-  --color-foreground: hsl(0 0% 11.4%);
-  --color-surface-foreground: hsl(0 0% 11.4%);
-  --color-primary: hsl(0 0% 11.4%);
-  --color-primary-foreground: hsl(0 0% 100%);
+  --color-foreground: #1F1C21;
+  --color-surface-foreground: #1F1C21;
+  --color-primary: #1F1C21;
+  --color-primary-foreground: #FBF9FD;
 
-  --color-link: hsl(214 85% 42%);
-
-
-  --color-muted-foreground: hsl(0 0% 35%);
-  --color-subtle-foreground: hsl(0 0% 39.5%);
+  --color-link: #1F53B8;
 
 
-  --color-link-decoration: hsl(214 80% 55%);
+  --color-muted-foreground: #534F56;
+  --color-subtle-foreground: #646067;
 
 
-  --color-accent: hsl(0 0% 11.4%);
-  --color-accent-foreground: hsl(0 0% 100%);
+  --color-link-decoration: #447BE4;
 
 
-  --color-accent-vivid: hsl(0 0% 11.4%);
-  --color-accent-glow: hsl(0 0% 56.5%);
+  --color-accent: #1F1C21;
+  --color-accent-foreground: #FBF9FD;
+
+
+  --color-accent-vivid: #1F1C21;
+  --color-accent-glow: #9C97A0;
 
 
   --color-accent-soft: color-mix(in oklab, var(--color-accent) 12%, var(--color-background));
@@ -74,24 +74,24 @@
   );
 
 
-  --color-shade: hsl(0 0% 0%);
+  --color-shade: #090211;
 
 
-  --color-lift: hsl(0 0% 100%);
+  --color-lift: #FBF9FD;
 
-  --color-destructive: hsl(15 74% 45%);
+  --color-destructive: #B23A26;
 
 
-  --color-favorite: hsl(352 72% 46%);
+  --color-favorite: #BD1F3F;
 
 
   --color-depth-100: color-mix(in oklab, var(--color-surface) 84%, var(--color-surface-foreground));
-  --color-depth-200: hsl(0 0% 76%);
-  --color-depth-300: hsl(0 0% 62%);
-  --color-depth-400: hsl(0 0% 48%);
-  --color-depth-500: hsl(0 0% 36%);
-  --color-depth-600: hsl(0 0% 28%);
-  --color-depth-700: hsl(0 0% 20%);
+  --color-depth-200: #C0BBC4;
+  --color-depth-300: #9C97A0;
+  --color-depth-400: #78747C;
+  --color-depth-500: #5A565E;
+  --color-depth-600: #454149;
+  --color-depth-700: #312E35;
 
 
   --radius-micro: 8px;
@@ -196,40 +196,40 @@
   --hero-pulse-max-blur: 5px;
 
 
-  --color-background: hsl(0 0% 0%);
-  --color-muted: hsl(0 0% 2%);
-  --color-surface: hsl(0 0% 5%);
-  --color-subtle: hsl(0 0% 14%);
+  --color-background: #090211;
+  --color-muted: #150C1C;
+  --color-surface: #201727;
+  --color-subtle: #2F2936;
   --color-catalog: var(--color-muted);
-  --color-ring: hsl(0 0% 40%);
+  --color-ring: #4F4A54;
 
 
-  --color-foreground: hsl(0 0% 93%);
-  --color-surface-foreground: hsl(0 0% 93%);
-  --color-primary: hsl(0 0% 93%);
-  --color-primary-foreground: hsl(0 0% 0%);
+  --color-foreground: #EFECF2;
+  --color-surface-foreground: #EFECF2;
+  --color-primary: #EFECF2;
+  --color-primary-foreground: #090211;
 
-  --color-link: hsl(210 100% 76%);
-  --color-muted-foreground: hsl(0 0% 63%);
-  --color-subtle-foreground: hsl(0 0% 58%);
+  --color-link: #9FC1FF;
+  --color-muted-foreground: #AAA7AD;
+  --color-subtle-foreground: #959298;
 
-  --color-link-decoration: hsl(210 75% 60%);
-
-
-  --color-depth-200: hsl(0 0% 19%);
-  --color-depth-300: hsl(0 0% 23%);
-  --color-depth-400: hsl(0 0% 29%);
-  --color-depth-500: hsl(0 0% 45%);
-  --color-depth-600: hsl(0 0% 63%);
-  --color-depth-700: hsl(0 0% 80%);
-
-  --color-destructive: hsl(15 80% 65%);
+  --color-link-decoration: #6B97E8;
 
 
-  --color-favorite: hsl(352 84% 64%);
+  --color-depth-200: #443C4B;
+  --color-depth-300: #4D4653;
+  --color-depth-400: #59535E;
+  --color-depth-500: #7B767F;
+  --color-depth-600: #A09CA3;
+  --color-depth-700: #C3BFC6;
+
+  --color-destructive: #F18A76;
+
+
+  --color-favorite: #F87580;
 
   --color-accent: hsl(142 58% 52%);
-  --color-accent-foreground: hsl(0 0% 0%);
+  --color-accent-foreground: #090211;
   --color-accent-vivid: hsl(142 62% 52%);
   --color-accent-glow: hsl(142 70% 70%);
 

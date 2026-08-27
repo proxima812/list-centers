@@ -1,7 +1,7 @@
 
 :root[data-accent="blue"] {
   --color-accent: hsl(217 79% 45%);
-  --color-accent-foreground: hsl(0 0% 100%);
+  --color-accent-foreground: #FBF9FD;
   --color-accent-vivid: hsl(217 88% 44%);
   --color-accent-glow: hsl(213 92% 62%);
   --color-mark-tint: hsl(215 84% 56%);
@@ -10,7 +10,7 @@
 
 :root.dark[data-accent="blue"] {
   --color-accent: hsl(213 90% 66%);
-  --color-accent-foreground: hsl(0 0% 0%);
+  --color-accent-foreground: #090211;
   --color-accent-vivid: hsl(213 90% 64%);
   --color-accent-glow: hsl(213 95% 78%);
   --color-mark-tint: hsl(213 92% 74%);

@@ -34,40 +34,40 @@
       ]
     },
     "colorMeta": {
-      "source": "src/styles/tailwind.css несёт светлые нейтрали в @theme и тёмные в .dark; src/styles/palettes/<name>.css — только акцентные токены пресета в обеих темах. Ни один пресет не переопределяет нейтрали, границы, глубину или радиусы: бумага одна на все семь. `canonical` ниже — светлое значение, `dark` — значение из блока .dark в tailwind.css, которое работает и как фолбэк, пока data-accent не проставлен.",
+      "source": "src/styles/tailwind.css несёт светлые нейтрали в @theme и тёмные в .dark; src/styles/palettes/<name>.css — только акцентные токены пресета в обеих темах. Ни один пресет не переопределяет нейтрали, границы, глубину или радиусы: бумага одна на все семь. `canonical` ниже — светлое значение, `dark` — значение из блока .dark в tailwind.css, которое работает и как фолбэк, пока data-accent не проставлен. Чистый #FFFFFF и чистый #000000 в проекте не используются: бумага — #FBF9FD, чернила — #090211, и вся нейтральная лестница построена как один тон (OKLCH H 308) на разной светлоте.",
       "background": {
         "role": "neutral",
         "displayName": "Page Plane",
-        "canonical": "hsl(0 0% 97.5%)",
-        "dark": "hsl(0 0% 0%)",
+        "canonical": "#F6F3F9",
+        "dark": "#090211",
         "usage": "Плоскость страницы. Больше не равна surface: в светлой теме страница слегка тонирована (97.5%), карточка остаётся белой."
       },
       "foreground": {
         "role": "neutral",
         "displayName": "Catalog Ink",
-        "canonical": "hsl(0 0% 11.4%)",
-        "dark": "hsl(0 0% 93%)",
+        "canonical": "#1F1C21",
+        "dark": "#EFECF2",
         "usage": "Primary text, high hierarchy, strong links, and active catalog states."
       },
       "muted": {
         "role": "neutral",
         "displayName": "Quiet Muted",
-        "canonical": "hsl(0 0% 92.5%)",
-        "dark": "hsl(0 0% 2%)",
+        "canonical": "#E9E5EE",
+        "dark": "#150C1C",
         "usage": "Полоса секции и тихие заливки. Лежит МЕЖДУ background и surface: полоса утоплена относительно страницы, карточка на ней приподнята."
       },
       "subtleForeground": {
         "role": "neutral",
         "displayName": "Subtle Ink",
-        "canonical": "hsl(0 0% 39.5%)",
-        "dark": "hsl(0 0% 58%)",
+        "canonical": "#646067",
+        "dark": "#959298",
         "usage": "Самый тусклый текстовый токен. Проходит 4.55:1 против всех пяти заливок своей палитры, а не только против страницы."
       },
       "surface": {
         "role": "neutral",
         "displayName": "Surface Plane",
-        "canonical": "hsl(0 0% 100%)",
-        "dark": "hsl(0 0% 5%)",
+        "canonical": "#FBF9FD",
+        "dark": "#201727",
         "usage": "Карточки, панели, поповеры. Верхняя ступень лестницы поверхностей."
       },
       "border": {
@@ -80,19 +80,19 @@
       "primary": {
         "role": "primary",
         "displayName": "Catalog Ink",
-        "canonical": "hsl(0 0% 11.4%)",
-        "dark": "hsl(0 0% 93%)",
+        "canonical": "#1F1C21",
+        "dark": "#EFECF2",
         "usage": "Primary actions, active filters, and strongest text. Inverts with the theme — pair with `primary-foreground`, never with a literal white or black."
       },
       "accent": {
         "role": "accent",
         "displayName": "User Accent Signal",
-        "canonical": "hsl(0 0% 11.4%)",
-        "dark": "hsl(0 0% 95%)",
+        "canonical": "#1F1C21",
+        "dark": "#EFECF2",
         "presets": {
           "default": {
-            "light": "hsl(0 0% 11.4%)",
-            "dark": "hsl(0 0% 95%)",
+            "light": "#1F1C21",
+            "dark": "#EFECF2",
             "default": true,
             "note": "Монохром: акцент здесь — сами чернила, поэтому тема разворачивает картинку целиком."
           },
@@ -127,29 +127,29 @@
       "accentVivid": {
         "role": "accent",
         "displayName": "Display Accent",
-        "canonical": "hsl(0 0% 11.4%)",
-        "dark": "hsl(0 0% 95%)",
+        "canonical": "#1F1C21",
+        "dark": "#EFECF2",
         "usage": "Display-scale type only (hero lines), where WCAG allows 3:1. Never on small UI."
       },
       "accentGlow": {
         "role": "accent",
         "displayName": "Hero Glow",
-        "canonical": "hsl(0 0% 56.5%)",
-        "dark": "hsl(0 0% 74%)",
+        "canonical": "#9C97A0",
+        "dark": "#A09CA3",
         "usage": "Source tone for the hero `drop-shadow` halo (`--animate-hero-pulse`). Decorative only, never load-bearing for text contrast."
       },
       "shade": {
         "role": "neutral",
         "displayName": "Shadow Tone",
-        "canonical": "hsl(0 0% 0%)",
-        "dark": "hsl(0 0% 0%)",
+        "canonical": "#090211",
+        "dark": "#090211",
         "usage": "Shadows, and effectively light-theme only. Black in both themes — vary opacity, not lightness. Never derive a shadow from `foreground`: it goes near-white in dark and the shadow glows. In dark, depth comes from the lightness step and from `lift`, not from this token — black on near-black draws nothing."
       },
       "lift": {
         "role": "neutral",
         "displayName": "Highlight Tone",
-        "canonical": "hsl(0 0% 100%)",
-        "dark": "hsl(0 0% 100%)",
+        "canonical": "#FBF9FD",
+        "dark": "#FBF9FD",
         "usage": "Counterpart to `shade`: the inset top-edge highlight on floating panels. White in both themes, but only load-bearing in dark, where it replaces the shadow. Used by the `overlay-lift` utility."
       },
       "depth": {
@@ -299,22 +299,20 @@
       ],
       "values": {
         "light": {
-          "background": 97.5,
-          "muted": 92.5,
-          "surface": 100,
-          "surface-muted": 95,
-          "subtle": 89
+          "background": "#F6F3F9",
+          "muted": "#E9E5EE",
+          "surface": "#FBF9FD",
+          "subtle": "#E1DCE6"
         },
         "dark": {
-          "note": "Одна тёмная лестница на все семь пресетов — бывший регистр violet (Vercel): чистый чёрный холст, скупо приподнятые поверхности, тихие границы, чернила 93%, а не белые. Персональных лестниц у пресетов больше нет: палитра меняет только акцент.",
-          "background": 0,
-          "muted": 2,
-          "surface": 5,
-          "surface-muted": 9,
-          "subtle": 14
-        }
+          "background": "#090211",
+          "muted": "#150C1C",
+          "surface": "#201727",
+          "subtle": "#2F2936"
+        },
+        "note": "Одна лестница на все семь пресетов, один тон OKLCH H 308 на обеих темах. Чистых #FFF и #000 в проекте нет."
       },
-      "constraints": "Значения решены численно: порядок лестницы, карточка-на-полосе >= ΔL 4, border-muted >= 1.28:1 к surface и background, border >= 1.5:1, muted-foreground и subtle-foreground >= 4.55:1 против всех пяти заливок общей лестницы."
+      "constraints": "Значения решены численно: порядок лестницы, карточка-на-полосе >= ΔL 4, border-muted >= 1.28:1 к surface и background, border >= 1.5:1, muted-foreground и subtle-foreground >= 4.55:1 против всех пяти заливок общей лестницы. После перехода на #FBF9FD/#090211 значения пересолвлены: карточка на полосе ΔL* 4.87 в светлой и 4.96 в тёмной, текстовые токены >=4.55 против всех заливок."
     },
     "derivedSteps": {
       "rationale": "Приём HeroUI v3: ступень вычисляется как подмешивание собственной подложки к её же чернилам. Отказ вида «граница стала невидимой» становится структурно невозможным. Проценты решены под наши пороги — у HeroUI 78%/92% дают ΔL 2.6-3.7 там, где нам нужно 4.",
@@ -481,7 +479,8 @@
       "Do not reuse homepage display treatment inside dense catalog surfaces.",
       "Do not add decorative motion to MDX pages, lists, or center detail content.",
       "Do not rewrite factual copy into slogans, and do not ship an unsourced number.",
-      "Do not wrap the homepage feature sections back into full-width cards — spacing carries them; only their images are rounded."
+      "Do not wrap the homepage feature sections back into full-width cards — spacing carries them; only their images are rounded.",
+      "Не используй #FFFFFF и #000000: бумага проекта — #FBF9FD, чернила — #090211, и обе несут тон OKLCH H 308."
     ]
   }
 }

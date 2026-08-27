@@ -3,35 +3,35 @@ name: Tatarverse
 description: Bilingual catalog of Tatar, Bashkir, Tatar-Bashkir, and Crimean Tatar centers.
 register: brand
 colors:
-  background: "#f9f9f9"
-  foreground: "#1d1d1d"
-  muted: "#ececec"
-  muted-foreground: "#595959"
-  subtle: "#e3e3e3"
-  subtle-foreground: "#656565"
-  surface: "#ffffff"
-  surface-foreground: "#1d1d1d"
-  surface-muted: "#f1f1f1"
-  catalog: "#f1f1f1"
-  border: "#cccccc"
-  border-muted: "#dbdbdb"
-  ring: "#c7c7c7"
-  primary: "#1d1d1d"
-  primary-foreground: "#ffffff"
-  link: "#105fc6"
-  link-decoration: "#3080e8"
-  depth-100: "#d6d6d6"
-  depth-200: "#c2c2c2"
-  depth-300: "#9e9e9e"
-  depth-400: "#7a7a7a"
-  depth-500: "#5c5c5c"
-  depth-600: "#474747"
-  depth-700: "#333333"
-  accent: "#1d1d1d"
-  accent-foreground: "#ffffff"
-  accent-glow: "#909090"
-  destructive: "#c9532a"
-  favorite: "#ca2440"
+  background: "#F6F3F9"
+  foreground: "#1F1C21"
+  muted: "#E9E5EE"
+  muted-foreground: "#534F56"
+  subtle: "#E1DCE6"
+  subtle-foreground: "#646067"
+  surface: "#FBF9FD"
+  surface-foreground: "#1F1C21"
+  surface-muted: "#EDEBEF"
+  catalog: "#EDEBEF"
+  border: "#CAC7CC"
+  border-muted: "#D8D6DA"
+  ring: "#C4C0C9"
+  primary: "#1F1C21"
+  primary-foreground: "#FBF9FD"
+  link: "#1F53B8"
+  link-decoration: "#447BE4"
+  depth-100: "#D3D1D6"
+  depth-200: "#C0BBC4"
+  depth-300: "#9C97A0"
+  depth-400: "#78747C"
+  depth-500: "#5A565E"
+  depth-600: "#454149"
+  depth-700: "#312E35"
+  accent: "#1F1C21"
+  accent-foreground: "#FBF9FD"
+  accent-glow: "#9C97A0"
+  destructive: "#B23A26"
+  favorite: "#BD1F3F"
 typography:
   display:
     fontFamily: "'Twemoji Country Flags', 'Tatarverse Sans', ui-sans-serif, system-ui, sans-serif"
@@ -202,8 +202,8 @@ first paint (`src/layouts/Layout.astro`).
 - Accent: `data-accent` on `<html>` — `default` (monochrome, the default), `green`,
   `blue`, `violet`, `red`, `orange`, `pink`.
 
-`default` is the odd one out and deliberately so: its accent is the ink itself — near-black
-in light, near-white in dark — so the theme switch reverses the whole picture. A signal does
+`default` is the odd one out and deliberately so: its accent is the ink itself — `#1F1C21`
+in light, `#EFECF2` in dark — so the theme switch reverses the whole picture. A signal does
 not have to be a hue; contrast is a signal too, and the catalog reads well without colour.
 Its dark paper is the shared one, like everyone else's — a preset carries no paper of its
 own.
@@ -252,8 +252,20 @@ so every `bg-surface` panel on the page — `Box`, MDX, project cards — was wh
 
 | theme | background | muted | surface | surface-muted | subtle |
 | --- | --- | --- | --- | --- | --- |
-| light (all seven) | 97.5% | 92.5% | 100% | 95% | 89% |
-| dark (all seven) | 0% | 2% | 5% | 9% | 14% |
+| light (all seven) | `#F6F3F9` | `#E9E5EE` | `#FBF9FD` | derived | `#E1DCE6` |
+| dark (all seven) | `#090211` | `#150C1C` | `#201727` | derived | `#2F2936` |
+
+**Neither end of the ladder is neutral, and no end is pure.** The paper is `#FBF9FD` and
+the ink is `#090211` — a near-white and a near-black, both carrying the same violet hue
+(`H 308` in OKLCH). Pure `#FFFFFF` and pure `#000000` are gone from the project entirely:
+white paper glares next to a tinted interface, and a pure-black page kills every shadow
+while making any accent on top of it look detached. Every fill, every line and every depth
+step is now a step of that one hue at a different lightness and a decreasing chroma.
+
+The dark steps are **not** the old ones with a tint added. The old ladder stood on `L* 0`
+and could spend its whole range going up; this one starts at the ink's own lightness, so
+the steps above it are re-solved rather than shifted — the constraints below are what they
+are solved against, and `card on band` lands at `ΔL* 4.96` in dark and `4.87` in light.
 
 One ladder per theme, no per-preset variants. The dark one is the former `violet`
 register — the Vercel read: pure black canvas, surfaces raised sparingly, quiet borders,
@@ -351,7 +363,7 @@ threshold described below.
 
 **The Accent Is A Signal.** The accent belongs to identity moments, focus, and active state only. It should never become a generic decoration.
 
-**Never Hardcode A Color.** Anything written as a literal hex or a Tailwind palette class (`bg-white`, `text-zinc-500`) will not survive a theme switch. The only exceptions are logo plates, which need white regardless of theme, and third-party brand colors — the platform tiles in the homepage link showcase and the social buttons are the sanctioned list, and they are brand marks, not interface color.
+**Never Hardcode A Color.** Anything written as a literal hex or a Tailwind palette class (`bg-white`, `text-zinc-500`) will not survive a theme switch. `bg-white` and `text-black` are doubly wrong now: those two values do not exist in this project at all — the paper is `#FBF9FD` and the ink is `#090211`. The only exceptions are third-party brand colors — the platform tiles in the homepage link showcase and the social buttons are the sanctioned list, and they are brand marks, not interface color.
 
 **No Cultural Color Pastiche.** Do not infer a palette from flags, ethnic motifs, or ornamental references. Cultural meaning comes from the content and source-backed data.
 

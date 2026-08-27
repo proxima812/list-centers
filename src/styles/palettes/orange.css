@@ -2,14 +2,14 @@
 
 :root[data-accent="orange"] {
   --color-accent: hsl(25 88% 38.7%);
-  --color-accent-foreground: hsl(0 0% 100%);
+  --color-accent-foreground: #FBF9FD;
   --color-accent-vivid: hsl(25 96% 43.5%);
   --color-accent-glow: hsl(30 92% 60%);
 }
 
 :root.dark[data-accent="orange"] {
   --color-accent: hsl(30 90% 51.5%);
-  --color-accent-foreground: hsl(0 0% 0%);
+  --color-accent-foreground: #090211;
   --color-accent-vivid: hsl(30 95% 52%);
   --color-accent-glow: hsl(35 95% 66%);
 }
