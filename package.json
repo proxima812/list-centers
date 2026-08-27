@@ -10,7 +10,8 @@
 		"cf:preview": "bun run build && wrangler pages dev ./dist",
 		"cf:deploy": "bun run build && bun run cf:deploy:dist",
 		"cf:deploy:dist": "CLOUDFLARE_ACCOUNT_ID=711d25ce64e87b4faeb50022b3e63631 wrangler pages deploy --branch main",
-		"release:bump": "node scripts/release-bump.js"
+		"release:bump": "node scripts/release-bump.js",
+		"vk:publish": "bun run tools/vk-publish/index.ts"
 	},
 	"dependencies": {
 		"@astrojs/check": "^0.9.9",
@@ -35,6 +36,7 @@
 		"@tailwindcss/typography": "^0.5.16",
 		"@vite-pwa/astro": "^1.2.0",
 		"typescript": "^6.0.2",
-		"wrangler": "^4.92.0"
+		"wrangler": "^4.92.0",
+		"yaml": "^2.7.0"
 	}
 }

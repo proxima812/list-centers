@@ -48,3 +48,6 @@ bun.lockb*
 # бренд-кит: пересобирается из палитр командой `bun run brand-kit`
 /brand-kit.html
 /brand-kit.pdf
+
+# локальный прогресс одноразового импортера центров в VK
+tools/vk-publish/state.json
