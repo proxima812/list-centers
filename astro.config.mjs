@@ -30,6 +30,8 @@ export default defineConfig({
               const excluded = new Set([
                   "/saved",
                   "/en/saved",
+                  "/nearby",
+                  "/en/nearby",
                   "/centers/print",
                   "/en/posts",
                   "/en/policy",

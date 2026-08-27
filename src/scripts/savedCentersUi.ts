@@ -37,7 +37,15 @@ function syncCounters(count: number) {
 	}
 }
 
-function sync() {
+/**
+ * Привести кнопки и счётчики к тому, что лежит в хранилище.
+ *
+ * Наружу это нужно страницам, которые добавляют карточки уже после
+ * загрузки: делегированный обработчик кликов подхватит их сам, а вот
+ * `aria-pressed` у новых кнопок остался бы от заготовки, и сохранённая
+ * карточка выглядела бы несохранённой.
+ */
+export function syncSavedCenters() {
 	const list = readSaved();
 	syncButtons(new Set(list.map((item) => item.id)));
 	syncCounters(list.length);
@@ -65,6 +73,6 @@ export function initSavedCenters() {
 		toggleSaved(snapshot);
 	});
 
-	onSavedChange(sync);
-	sync();
+	onSavedChange(syncSavedCenters);
+	syncSavedCenters();
 }

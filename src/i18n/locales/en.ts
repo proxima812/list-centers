@@ -180,6 +180,24 @@ const dict: Dictionary = {
 	"feedback.text":
 		"Found a mistake or inaccuracy, or want to fix, expand, or improve the translation? Let us know.",
 	"feedback.link": "Open Telegram",
+	"nav.nearby": "Centers nearby",
+	"nearby.title": "Centers nearby",
+	"nearby.description":
+		"We detect your country from your connection and show TBC center cards from there, with a city filter.",
+	"nearby.heroIntro":
+		"We detect where you are browsing from and show cards for that country. Narrow it down by city below, or pick another country.",
+	"nearby.detecting": "Detecting your location...",
+	"nearby.failed": "Could not detect your location - pick a country yourself.",
+	"nearby.countryLabel": "Country",
+	"nearby.chooseCountry": "Choose a country",
+	"nearby.cities": "Cities",
+	"nearby.allCities": "All cities",
+	"nearby.count": "Cards nearby: {count}",
+	"nearby.emptyCountry": "No cards in {country} yet.",
+	"nearby.emptyHint":
+		"Pick another country or open the full catalog - it has search and regional filters.",
+	"nearby.toCatalog": "Open the full catalog",
+
 	"saved.title": "Saved",
 	"saved.description":
 		"Your personal list of centers: the cards you bookmarked in the catalog. The list is stored in this browser only.",
