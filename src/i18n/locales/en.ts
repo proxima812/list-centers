@@ -59,7 +59,8 @@ const dict: Dictionary = {
 	"home.meta.title": "Tatars, Bashkirs, and Crimean Tatars",
 	"home.meta.description":
 		"tatarverse helps people find Tatar, Bashkir, and Crimean Tatar centers around the world: for new connections, friends, relationships, language learning, cultural reconnection, and shared values.",
-	"home.present.imageAlt": "People at a community gathering",
+	"home.present.imageAlt":
+		"Greetings in Tatar, Bashkir, and Crimean Tatar beside the emblems of each people",
 	"home.present.title": "Everywhere. Always. For everyone.",
 	"home.present.caption":
 		"<strong>{centers}</strong> centers, communities and initiatives across <strong>{countries}</strong> countries and <strong>{regions}</strong> regions.",
@@ -88,7 +89,7 @@ const dict: Dictionary = {
 		"Choose a country, city, or region and find nearby cultural centers, public associations, youth initiatives, language clubs, and local communities.",
 	"home.search.text2":
 		"The catalog helps you quickly understand where meetings, events, holidays, and educational programs take place.",
-	"home.search.imageAlt": "Catalog interface with search and center cards",
+	"home.search.imageAlt": "Close-up of the Tatar, Bashkir, and Crimean Tatar emblems",
 	"list.title": "Directory of Tatar, Bashkir, and Crimean Tatar centers",
 	"list.description":
 		"TBK directory: {count} cards about Tatars, Bashkirs, and Crimean Tatars across all countries, regions, cities, types, and categories. The database currently covers {countries} countries and {regions} regions; use search and filters to find centers and reference information.",
