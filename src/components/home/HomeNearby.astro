@@ -1,8 +1,6 @@
 ---
-import nearbyEnDark from "@/assets/images/nearby-en-dark.png";
-import nearbyEnLight from "@/assets/images/nearby-en-light.png";
-import nearbyRuDark from "@/assets/images/nearby-ru-dark.png";
-import nearbyRuLight from "@/assets/images/nearby-ru-light.png";
+import nearbyEn from "@/assets/images/nearby-en.png";
+import nearbyRu from "@/assets/images/nearby-ru.png";
 import { getLocaleFromUrl, useTranslations } from "@/i18n";
 import { Image } from "astro:assets";
 import ButtonLink from "../ui/ButtonLink.astro";
@@ -10,17 +8,14 @@ import ButtonLink from "../ui/ButtonLink.astro";
 /**
  * Поиск по геолокации: обещание раздела `/nearby`.
  *
- * Материал нарисован в четырёх вариантах — язык × тема. Тему нельзя выбрать
- * на сервере: она живёт в localStorage и ставится до первой отрисовки, —
- * поэтому обе картинки попадают в разметку, а показывает нужную CSS. Так
- * при переключении темы не мигает старая версия.
+ * Материал нарисован на двух языках; тема на него больше не влияет,
+ * поэтому в разметку идёт одна картинка.
  */
 
 const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
 
-const light = locale === "en" ? nearbyEnLight : nearbyRuLight;
-const dark = locale === "en" ? nearbyEnDark : nearbyRuDark;
+const image = locale === "en" ? nearbyEn : nearbyRu;
 const alt = t("home.nearby.imageAlt");
 const sizes = "(min-width: 768px) 50vw, 100vw";
 const widths = [400, 640, 768, 1200];
@@ -40,6 +35,5 @@ const widths = [400, 640, 768, 1200];
 		/>
 	</div>
 
-	<Image src={light} alt={alt} widths={widths} sizes={sizes} class="w-full dark:hidden" />
-	<Image src={dark} alt={alt} widths={widths} sizes={sizes} class="hidden w-full dark:block" />
+	<Image src={image} alt={alt} widths={widths} sizes={sizes} class="w-full rounded-card" />
 </section>
