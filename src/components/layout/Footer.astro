@@ -314,10 +314,10 @@ const footerColumns: FooterSection[][] = [
 		--footer-fg: light-dark(var(--color-background), var(--color-foreground));
 		--footer-fg-muted: color-mix(in oklab, var(--footer-fg) 70%, transparent);
 		--footer-border: color-mix(in oklab, var(--footer-fg) 15%, transparent);
-		/* Подвал темный при обеих темах. В темной теме --color-accent сам
-		   светлый, в светлой он почти черный и сливается с фоном — там берем
-		   glow, светлый вариант того же акцента. */
-		--logo-mark-color: light-dark(var(--color-accent-glow), var(--color-accent));
+		/* Подвал темный при обеих темах, поэтому марка здесь не следует за
+		   акцентом: берем бумагу проекта — единственный светлый тон, который
+		   держится на этой плашке при любом пресете. */
+		--logo-mark-color: var(--color-lift);
 
 		/* Плашка ставится здесь, а не классом: `bg-surface` в светлой теме
 		   клал светлый текст подвала на светлую же карточку. */
