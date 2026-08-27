@@ -30,8 +30,8 @@ export function readVkConfig(): VkConfig {
 	const groupId = process.env.VK_GROUP_ID;
 	const apiVersion = process.env.VK_API_VERSION || "5.199";
 
-	if (!accessToken) throw new Error("VK_ACCESS_TOKEN не задан в окружении (см. .env.example)");
-	if (!groupId) throw new Error("VK_GROUP_ID не задан в окружении (см. .env.example)");
+	if (!accessToken) throw new Error("VK_ACCESS_TOKEN не задан в окружении");
+	if (!groupId) throw new Error("VK_GROUP_ID не задан в окружении");
 	if (groupId.startsWith("-")) {
 		throw new Error("VK_GROUP_ID должен быть без минуса — знак добавляется при вызове API");
 	}
