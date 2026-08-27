@@ -65,6 +65,11 @@ const dict: Dictionary = {
 		"<strong>{centers}</strong> centers, communities and initiatives across <strong>{countries}</strong> countries and <strong>{regions}</strong> regions.",
 	"home.present.text1": "Find one near you or far away.",
 	"home.present.text2": "With kindness. With love. With acceptance.",
+	"home.contacts.title": "Links, not just addresses",
+	"home.contacts.text":
+		"The cards hold <strong>{links}</strong> working links to <strong>{centers}</strong> centers: websites, social profiles, and channels where communities actually reply.",
+	"home.contacts.text2":
+		"No need to hunt for contacts online — open a card and write directly.",
 	"home.search.title": "Communities on the world map",
 	"home.search.text1":
 		"Choose a country, city, or region and find nearby cultural centers, public associations, youth initiatives, language clubs, and local communities.",

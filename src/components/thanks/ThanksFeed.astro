@@ -8,11 +8,7 @@ const t = useTranslations(locale);
 
 const MAX_LABEL_LENGTH = 22;
 
-// Переводы живут отдельной коллекцией, как у центров и постов. Пустая —
-// значит для локали переводов нет, и лучше русский текст, чем пустая полоса.
-const translated = locale === "en" ? await getCollection("thanksEn") : [];
-const source = await getCollection("thanks");
-const entries = [...(translated.length > 0 ? translated : source)].sort(
+const entries = (await getCollection("thanks")).sort(
 	(a, b) => a.data.sortOrder - b.data.sortOrder,
 );
 

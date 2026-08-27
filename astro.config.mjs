@@ -66,6 +66,7 @@ export default defineConfig({
                   "/en/saved",
                   "/nearby",
                   "/en/nearby",
+                  "/en/thanks",
                   "/centers/print",
                   "/en/centers/print",
               ]);

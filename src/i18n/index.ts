@@ -38,11 +38,12 @@ const translatedPostIds = idsFromGlob(import.meta.glob("../data/posts_i18n/en/*.
 /**
  * Маршруты, у которых английской версии нет вовсе.
  *
- * Сейчас список пуст: переведены все служебные страницы, посты и печатная
- * форма. Механизм оставлен — он понадобится следующему разделу, который
- * выйдет сначала по-русски.
+ * Благодарности остаются только по-русски: это личные слова конкретным
+ * людям, а не интерфейс, и переводить их за них не нам.
  */
-const ruOnlyRoutes: Array<{ pattern: RegExp; switcher: "stay" | "hub" }> = [];
+const ruOnlyRoutes: Array<{ pattern: RegExp; switcher: "stay" | "hub" }> = [
+	{ pattern: /^thanks$/, switcher: "hub" },
+];
 
 function findRuOnlyRoute(relativePath: string) {
 	return ruOnlyRoutes.find((route) => route.pattern.test(relativePath));
