@@ -216,7 +216,7 @@ const footerColumns: FooterSection[][] = [
 ---
 
 <footer
-	class="site-footer rounded-t-[30px] md:rounded-t-[60px] mt-auto pt-15 pb-10 text-sm sm:text-xs bg-surface surface-lift"
+	class="site-footer rounded-t-[30px] md:rounded-t-[60px] mt-auto pt-15 pb-10 text-sm sm:text-xs"
 >
 	<Container container class="max-w-7xl">
 		<div class="grid gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,2.5fr)]">
@@ -297,7 +297,7 @@ const footerColumns: FooterSection[][] = [
 					<span class="min-w-0 wrap-anywhere">{t("footer.openSource.short")}</span>
 				</a>
 
-				<p class="text-sm text-muted-foreground">
+				<p class="text-sm text-[var(--footer-fg-muted)]">
 					v{release.version} · {t("footer.updated", { date: updatedAtLabel })}
 				</p>
 			</div>
@@ -319,6 +319,9 @@ const footerColumns: FooterSection[][] = [
 		   glow, светлый вариант того же акцента. */
 		--logo-mark-color: light-dark(var(--color-accent-glow), var(--color-accent));
 
+		/* Плашка ставится здесь, а не классом: `bg-surface` в светлой теме
+		   клал светлый текст подвала на светлую же карточку. */
+		background-color: var(--footer-bg);
 		color: var(--footer-fg-muted);
 	}
 </style>
