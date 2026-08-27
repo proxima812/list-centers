@@ -42,8 +42,8 @@ brand
   country when it is not — the country list is built at build time so the page works
   without geolocation and without Cloudflare.
 - Read the catalog on paper (`/centers/print`) or copy any page as Markdown.
-- Set their own presentation: light/dark/system theme, seven accent presets (monochrome
-  `default`, green, blue, violet, red, orange, pink), and a motion on/off toggle, all in
+- Set their own presentation: light/dark/system theme, six accent presets (monochrome
+  `default`, green, blue, violet, red, pink), and a motion on/off toggle, all in
   the header appearance menu and all persisted in `localStorage`.
 
 ## Brand Personality
@@ -78,7 +78,7 @@ the drawer, and small control feedback.
 
 ## Accessibility & Inclusion
 
-Aim for clear readable contrast in both themes and all seven accent presets,
+Aim for clear readable contrast in both themes and all six accent presets,
 keyboard-accessible controls, semantic structure, meaningful alt text, and multilingual
 consistency. Motion must respect both `prefers-reduced-motion` and the in-app motion
 toggle (`[data-motion="off"]`). Placeholder text, muted metadata, and small labels must

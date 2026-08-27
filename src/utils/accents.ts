@@ -8,13 +8,12 @@ export interface AccentPreset {
 }
 
 export const ACCENT_PRESETS: AccentPreset[] = [
-	{ value: "default", labelKey: "accent.default", label: "Дефолт", from: "hsl(0 0% 11.4%)", to: "hsl(0 0% 56.5%)" },
-	{ value: "green", labelKey: "accent.green", label: "Җаным Яшел", from: "hsl(142 76% 36%)", to: "hsl(142 71% 55%)" },
-	{ value: "blue", labelKey: "accent.blue", label: "Кадерле Зәнгәр", from: "hsl(217 88% 44%)", to: "hsl(213 92% 62%)" },
-	{ value: "violet", labelKey: "accent.violet", label: "Яна Шәмәха", from: "hsl(263 75% 50%)", to: "hsl(263 85% 68%)" },
-	{ value: "red", labelKey: "accent.red", label: "Утлы Кызыл", from: "hsl(0 80% 56.5%)", to: "hsl(0 85% 72%)" },
-	{ value: "orange", labelKey: "accent.orange", label: "Җылы Наранҗы", from: "hsl(25 96% 43.5%)", to: "hsl(30 92% 60%)" },
-	{ value: "pink", labelKey: "accent.pink", label: "Иркә Алсу", from: "hsl(335 80% 54.5%)", to: "hsl(335 88% 72%)" },
+	{ value: "default", labelKey: "accent.default", label: "Дефолт", from: "#29262C", to: "#4A474D" },
+	{ value: "green", labelKey: "accent.green", label: "Җаным Яшел", from: "#009143", to: "#58B772" },
+	{ value: "blue", labelKey: "accent.blue", label: "Кадерле Зәнгәр", from: "#596FFA", to: "#8AA1FF" },
+	{ value: "violet", labelKey: "accent.violet", label: "Яна Шәмәха", from: "#6920DF", to: "#9D68F3" },
+	{ value: "red", labelKey: "accent.red", label: "Утлы Кызыл", from: "#F7001A", to: "#FF8175" },
+	{ value: "pink", labelKey: "accent.pink", label: "Иркә Алсу", from: "#F20077", to: "#FF7DA4" },
 ];
 
 export const ACCENT_VALUES = ACCENT_PRESETS.map((preset) => preset.value);

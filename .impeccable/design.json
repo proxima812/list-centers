@@ -18,12 +18,12 @@
         },
         {
           "name": "Appearance layer",
-          "purpose": "User-controlled presentation: theme (system/light/dark), accent preset (default/green/blue/violet/red/orange/pink), and a motion on/off toggle. Applied as `.dark`, `[data-accent]`, and `[data-motion]` on <html> by an inline script in Layout.astro <head> before first paint."
+          "purpose": "User-controlled presentation: theme (system/light/dark), accent preset (default/green/blue/violet/red/pink), and a motion on/off toggle. Applied as `.dark`, `[data-accent]`, and `[data-motion]` on <html> by an inline script in Layout.astro <head> before first paint."
         }
       ],
       "rules": [
         "Keep catalog utility first.",
-        "Never hardcode a hue. Ship only `--color-*` tokens (`accent`, `accent-vivid`, `accent-glow`, `foreground`, `surface`, `border`, `depth-*`), so a surface survives all seven accent presets in both themes.",
+        "Never hardcode a hue. Ship only `--color-*` tokens (`accent`, `accent-vivid`, `accent-glow`, `foreground`, `surface`, `border`, `depth-*`), so a surface survives all six accent presets in both themes.",
         "The accent is a signal — hero line, focus ring, active state — not a general palette. Neutrals carry the catalog.",
         "Every new color is authored twice: a light value in `@theme` in src/styles/tailwind.css and a dark value in src/styles/palettes/<preset>.css. Contrast floors: >=4.5:1 for small UI, >=3:1 for display type. Check the pairs against the CSS itself after touching a palette — the standalone audit script was removed as a second source of truth.",
         "Use real interface imagery when explaining product behavior.",
@@ -34,7 +34,7 @@
       ]
     },
     "colorMeta": {
-      "source": "src/styles/tailwind.css несёт светлые нейтрали в @theme и тёмные в .dark; src/styles/palettes/<name>.css — только акцентные токены пресета в обеих темах. Ни один пресет не переопределяет нейтрали, границы, глубину или радиусы: бумага одна на все семь. `canonical` ниже — светлое значение, `dark` — значение из блока .dark в tailwind.css, которое работает и как фолбэк, пока data-accent не проставлен. Чистый #FFFFFF и чистый #000000 в проекте не используются: бумага — #FBF9FD, чернила — #090211, и вся нейтральная лестница построена как один тон (OKLCH H 308) на разной светлоте.",
+      "source": "src/styles/tailwind.css несёт светлые нейтрали в @theme и тёмные в .dark; src/styles/palettes/<name>.css — только акцентные токены пресета в обеих темах. Ни один пресет не переопределяет нейтрали, границы, глубину или радиусы: бумага одна на все шесть. `canonical` ниже — светлое значение, `dark` — значение из блока .dark в tailwind.css, которое работает и как фолбэк, пока data-accent не проставлен. Чистый #FFFFFF и чистый #000000 в проекте не используются: бумага — #FBF9FD, чернила — #090211, и вся нейтральная лестница построена как один тон (OKLCH H 308) на разной светлоте.",
       "background": {
         "role": "neutral",
         "displayName": "Page Plane",
@@ -87,42 +87,38 @@
       "accent": {
         "role": "accent",
         "displayName": "User Accent Signal",
-        "canonical": "#1F1C21",
-        "dark": "#EFECF2",
+        "canonical": "#1D1A1F",
+        "dark": "#FDFBFF",
         "presets": {
           "default": {
-            "light": "#1F1C21",
-            "dark": "#EFECF2",
+            "light": "#1D1A1F",
+            "dark": "#FDFBFF",
             "default": true,
             "note": "Монохром: акцент здесь — сами чернила, поэтому тема разворачивает картинку целиком."
           },
           "green": {
-            "light": "hsl(142 66% 30.9%)",
-            "dark": "hsl(142 58% 52%)"
+            "light": "#00803A",
+            "dark": "#00BC5D"
           },
           "blue": {
-            "light": "hsl(217 79% 45%)",
-            "dark": "hsl(213 90% 66%)"
+            "light": "#4F63DC",
+            "dark": "#7A9FFF"
           },
           "violet": {
             "light": "hsl(263 60% 50%)",
             "dark": "hsl(263 85% 72%)"
           },
           "red": {
-            "light": "hsl(0 72% 52.5%)",
-            "dark": "hsl(0 80% 67.5%)"
-          },
-          "orange": {
-            "light": "hsl(25 88% 39.5%)",
-            "dark": "hsl(30 90% 51.5%)"
+            "light": "#DD0016",
+            "dark": "#FF7A79"
           },
           "pink": {
-            "light": "hsl(335 72% 50.5%)",
-            "dark": "hsl(335 85% 67.5%)"
+            "light": "#D8006A",
+            "dark": "#FF74AC"
           }
         },
         "source": "The preset list itself lives in src/utils/accents.ts — one array feeding both the header dropdown and the mobile toggle. Never copy the swatch array into a component.",
-        "usage": "Focus rings, active states, and the homepage hero word. Монохромный `default` — дефолтный пресет. Held at >=4.5:1 on its own background in every preset/theme pair. The CSS is the check, not this note: read the authored values out of src/styles/tailwind.css and src/styles/palettes/*.css rather than trusting a written-down number. Fourteen theme × preset pairs matter — accent on its background, accent-foreground on accent, vivid at display scale, the accent-soft pair, subtle-foreground on bg-subtle, and the page→surface lightness step."
+        "usage": "Focus rings, active states, and the homepage hero word. Монохромный `default` — дефолтный пресет. Held at >=4.5:1 on its own background in every preset/theme pair. The CSS is the check, not this note: read the authored values out of src/styles/tailwind.css and src/styles/palettes/*.css rather than trusting a written-down number. Twelve theme × preset pairs matter — accent on its background, accent-foreground on accent, vivid at display scale, the accent-soft pair, subtle-foreground on bg-subtle, and the page→surface lightness step."
       },
       "accentVivid": {
         "role": "accent",
@@ -204,7 +200,7 @@
       "card": "rounded-card — 24px — panels, sections, ordinary cards, marketing blocks",
       "catalog": "rounded-catalog — 32px — center cards and other large catalog surfaces",
       "full": "rounded-full stays raw: a pill is not a step on the scale and must not move with the preset, or toggles and avatars stop being circles",
-      "followsAccent": "No. Radius is a constant of the system, not part of the preset: one scale 8/16/24/32 in @theme serves all seven presets in both themes. Palette files declare no --radius-* at all. The three former shape registers (default 8/16/24/32, medium 8/12/18/24, small 6/8/12/16) were removed — picking a colour must not silently rebuild the geometry of every card and button. Contrast depends on the background, shape does not.",
+      "followsAccent": "No. Radius is a constant of the system, not part of the preset: one scale 8/16/24/32 in @theme serves all six presets in both themes. Palette files declare no --radius-* at all. The three former shape registers (default 8/16/24/32, medium 8/12/18/24, small 6/8/12/16) were removed — picking a colour must not silently rebuild the geometry of every card and button. Contrast depends on the background, shape does not.",
       "exceptions": "src/pages/centers/print.astro keeps raw radii — paper must not shift with a screen preset.",
       "plugin": "@toolwind/corner-shape"
     },
@@ -310,7 +306,7 @@
           "surface": "#201727",
           "subtle": "#2F2936"
         },
-        "note": "Одна лестница на все семь пресетов, один тон OKLCH H 308 на обеих темах. Чистых #FFF и #000 в проекте нет."
+        "note": "Одна лестница на все шесть пресетов, один тон OKLCH H 308 на обеих темах. Чистых #FFF и #000 в проекте нет."
       },
       "constraints": "Значения решены численно: порядок лестницы, карточка-на-полосе >= ΔL 4, border-muted >= 1.28:1 к surface и background, border >= 1.5:1, muted-foreground и subtle-foreground >= 4.55:1 против всех пяти заливок общей лестницы. После перехода на #FBF9FD/#090211 значения пересолвлены: карточка на полосе ΔL* 4.87 в светлой и 4.96 в тёмной, текстовые токены >=4.55 против всех заливок."
     },
@@ -322,8 +318,8 @@
         "border": "surface 80% + surface-foreground",
         "depth-100": "surface 84% + surface-foreground"
       },
-      "authored": "background, muted, surface и subtle авторские, но единые на все семь пресетов (тёмная лестница 0/2/5/14 — бывший регистр violet); surface-muted и оба border выводятся из surface.",
-      "verified": "Худшие случаи в браузере по 14 комбинациям: border-muted 1.28, border 1.51, depth-100 на surface 1.35, на полосе 1.23, ΔL surface-muted 3.4."
+      "authored": "background, muted, surface и subtle авторские, но единые на все шесть пресетов (тёмная лестница 0/2/5/14 — бывший регистр violet); surface-muted и оба border выводятся из surface.",
+      "verified": "Худшие случаи в браузере по 12 комбинациям: border-muted 1.28, border 1.51, depth-100 на surface 1.35, на полосе 1.23, ΔL surface-muted 3.4."
     }
   },
   "components": [
@@ -412,7 +408,7 @@
     "overview": "Tatarverse pairs a memorable homepage identity with a quiet, practical catalog. The homepage may use the flower mark, heavy uppercase hero type with one accent line, a data-derived news badge, and feature sections built on real imagery and computed counts. Catalog surfaces remain neutral, factual, and easy to scan. Presentation is the visitor's: seven accent presets (monochrome `default` ships), light/dark/system, and a motion toggle, so no surface may assume one fixed hue or one fixed theme.",
     "keyCharacteristics": [
       "Two-layer system: homepage brand layer plus catalog utility layer.",
-      "Neutral semantic tokens carry structure; one light ladder and one dark ladder serve all seven presets.",
+      "Neutral semantic tokens carry structure; one light ladder and one dark ladder serve all six presets.",
       "A preset is colour and nothing but colour — no per-preset neutrals, radii, or shadows.",
       "The user-chosen accent stays a signal: hero line, focus ring, active state. The default one is monochrome.",
       "Squircle geometry on one four-step radius scale for controls, cards, sections, and catalog primitives.",
@@ -437,7 +433,7 @@
       },
       {
         "name": "Radius Is A Constant",
-        "body": "One scale 8/16/24/32 in @theme for all seven presets. Never a raw rounded-2xl/3xl/4xl; `rounded-full` stays raw.",
+        "body": "One scale 8/16/24/32 in @theme for all six presets. Never a raw rounded-2xl/3xl/4xl; `rounded-full` stays raw.",
         "section": "shape"
       },
       {

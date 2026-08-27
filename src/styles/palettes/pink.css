@@ -1,15 +1,13 @@
-
-
 :root[data-accent="pink"] {
-  --color-accent: hsl(335 72% 49.1%);
+  --color-accent: #D8006A;
   --color-accent-foreground: #FBF9FD;
-  --color-accent-vivid: hsl(335 80% 54.5%);
-  --color-accent-glow: hsl(335 88% 72%);
+  --color-accent-vivid: #F20077;
+  --color-accent-glow: #FF7DA4;
 }
 
 :root.dark[data-accent="pink"] {
-  --color-accent: hsl(335 85% 67.5%);
+  --color-accent: #FF74AC;
   --color-accent-foreground: #090211;
-  --color-accent-vivid: hsl(335 88% 67%);
-  --color-accent-glow: hsl(335 92% 80%);
+  --color-accent-vivid: #FF81B2;
+  --color-accent-glow: #FFBAD1;
 }

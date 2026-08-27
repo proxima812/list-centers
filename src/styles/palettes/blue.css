@@ -1,18 +1,13 @@
-
 :root[data-accent="blue"] {
-  --color-accent: hsl(217 79% 45%);
+  --color-accent: #4F63DC;
   --color-accent-foreground: #FBF9FD;
-  --color-accent-vivid: hsl(217 88% 44%);
-  --color-accent-glow: hsl(213 92% 62%);
-  --color-mark-tint: hsl(215 84% 56%);
+  --color-accent-vivid: #596FFA;
+  --color-accent-glow: #8AA1FF;
 }
 
-
 :root.dark[data-accent="blue"] {
-  --color-accent: hsl(213 90% 66%);
+  --color-accent: #7A9FFF;
   --color-accent-foreground: #090211;
-  --color-accent-vivid: hsl(213 90% 64%);
-  --color-accent-glow: hsl(213 95% 78%);
-  --color-mark-tint: hsl(213 92% 74%);
-
+  --color-accent-vivid: #83A6FF;
+  --color-accent-glow: #B2C9FF;
 }

@@ -1,13 +1,13 @@
 :root[data-accent="default"] {
-  --color-accent: #1F1C21;
+  --color-accent: #1D1A1F;
   --color-accent-foreground: #FBF9FD;
-  --color-accent-vivid: #1F1C21;
-  --color-accent-glow: #9C97A0;
+  --color-accent-vivid: #29262C;
+  --color-accent-glow: #4A474D;
 }
 
 :root.dark[data-accent="default"] {
-  --color-accent: #EFECF2;
+  --color-accent: #FDFBFF;
   --color-accent-foreground: #090211;
-  --color-accent-vivid: #EFECF2;
-  --color-accent-glow: #A09CA3;
+  --color-accent-vivid: #F7F4FA;
+  --color-accent-glow: #FAF7FD;
 }

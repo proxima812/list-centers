@@ -40,7 +40,6 @@ const dict: Dictionary = {
 	"accent.blue": "Кадерле Зәнгәр",
 	"accent.violet": "Яна Шәмәха",
 	"accent.red": "Утлы Кызыл",
-	"accent.orange": "Җылы Наранҗы",
 	"accent.pink": "Иркә Алсу",
 	"appearance.theme": "Тема",
 	"appearance.palette": "Палитра",

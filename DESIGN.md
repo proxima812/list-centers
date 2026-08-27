@@ -194,13 +194,13 @@ are `background`, `foreground`, `muted`, `subtle`, `surface`, `surface-muted`, `
 
 ### Themes
 
-The site ships **light and dark** themes plus **seven accent palettes**. Both are user
+The site ships **light and dark** themes plus **six accent palettes**. Both are user
 choices, persisted in `localStorage` and applied by an inline script in `<head>` before
 first paint (`src/layouts/Layout.astro`).
 
 - Theme: `.dark` class on `<html>`, chosen via `light` / `dark` / `system`.
 - Accent: `data-accent` on `<html>` — `default` (monochrome, the default), `green`,
-  `blue`, `violet`, `red`, `orange`, `pink`.
+  `blue`, `violet`, `red`, `pink`.
 
 `default` is the odd one out and deliberately so: its accent is the ink itself — `#1F1C21`
 in light, `#EFECF2` in dark — so the theme switch reverses the whole picture. A signal does
@@ -213,16 +213,16 @@ dropdown and the mobile toggle read it. Adding a palette means editing that file
 adding `src/styles/palettes/<name>.css` — never a second copy of the swatch array. The
 `from` / `to` pair in each preset is the swatch gradient in the menu, nothing else.
 
-**A preset is colour and nothing but colour.** `src/styles/palettes/` holds seven files,
+**A preset is colour and nothing but colour.** `src/styles/palettes/` holds six files,
 and each holds exactly two blocks — the accent tokens in light and in dark. The neutral
 paper, the borders, the ink and the depth ramp live in `tailwind.css`, and so does the
 radius scale. Switching palette repaints the interface; it does not change its shape, its
 depth or its contrast.
 
 This used to be otherwise: every preset shipped its own dark surface ladder and its own
-shape register, so the seven palettes read as seven different sites rather than seven
+shape register, so the palettes read as that many different sites rather than that many
 colours of one. Removing that removed the class of bug it caused — a ladder solved once is
-solved for all seven, instead of seven ladders each drifting on its own.
+solved for all six, instead of six ladders each drifting on its own.
 
 Selectors inside a palette file start with `:root` on purpose, not for looks: `(0,2,0)` and
 `(0,3,0)` beat the `(0,1,0)` of `:root` from `@theme` and of `.dark`. That makes `@import`
@@ -232,7 +232,7 @@ order irrelevant, so palette files can be listed in any sequence.
 clear the contrast threshold on both a white and a near-black background.
 
 **Neither theme's neutrals depend on the accent.** Light and dark paper are both shared by
-all seven presets; the accent changes nothing but the accent tokens.
+all six presets; the accent changes nothing but the accent tokens.
 
 ### The Surface Ladder
 
@@ -241,9 +241,9 @@ whole system.** A section band takes `bg-muted` and is recessed relative to the 
 card on that band takes `bg-surface` and is raised above it. Order the two the other way
 and the catalog collapses.
 
-That is exactly what used to happen. `muted` sat *above* `surface` in dark, and at three
-presets they landed on the same value or one point apart — `orange` `20%`/`20%`,
-`pink` `15%/15%`, `red` `13%/12%`. Several hundred centre cards rendered the same colour
+That is exactly what used to happen. `muted` sat *above* `surface` in dark, and at several
+presets they landed on the same value or one point apart — `pink` `15%/15%`,
+`red` `13%/12%`, and the since-removed `orange` `20%/20%`. Several hundred centre cards rendered the same colour
 as the list band behind them. In light, `surface` and `background` were both pure white,
 so every `bg-surface` panel on the page — `Box`, MDX, project cards — was white on white.
 
@@ -252,8 +252,8 @@ so every `bg-surface` panel on the page — `Box`, MDX, project cards — was wh
 
 | theme | background | muted | surface | surface-muted | subtle |
 | --- | --- | --- | --- | --- | --- |
-| light (all seven) | `#F6F3F9` | `#E9E5EE` | `#FBF9FD` | derived | `#E1DCE6` |
-| dark (all seven) | `#090211` | `#150C1C` | `#201727` | derived | `#2F2936` |
+| light (all six) | `#F6F3F9` | `#E9E5EE` | `#FBF9FD` | derived | `#E1DCE6` |
+| dark (all six) | `#090211` | `#150C1C` | `#201727` | derived | `#2F2936` |
 
 **Neither end of the ladder is neutral, and no end is pure.** The paper is `#FBF9FD` and
 the ink is `#090211` — a near-white and a near-black, both carrying the same violet hue
@@ -320,7 +320,7 @@ This is HeroUI v3's approach, where `--border-secondary` and `--separator-second
 mixes of `--surface` and `--surface-foreground`. **Their proportions are not ours**: HeroUI's
 `78%` / `92%` produce `ΔL 2.6-3.7` against our anchors where we need `4`, because they are
 tuned for a single dark palette with a `12% → 21%` gap. Ours are solved against our own
-floors and verified in the browser across all fourteen combinations.
+floors and verified in the browser across all twelve combinations.
 
 **Not everything derives, and that is deliberate.** `muted`, `subtle` and the two ink tokens
 stay authored. A single global proportion would flatten the recessed band into the page,
@@ -349,7 +349,7 @@ to the accent and are not general-purpose colors.
 `accent-soft` / `accent-soft-hover` / `accent-soft-foreground` are the quiet fill of the
 accent — the hero badge and the active filter row in the desktop aside. They are not
 authored per preset: each is a `color-mix()` over the current `accent` and neutrals, so
-all fourteen theme × accent pairs follow for free.
+all twelve theme × accent pairs follow for free.
 
 Two things are deliberate there. The text is **not** pure `accent` — on a 12% fill light
 green gives 3.9:1, below AA for 12px, so 25% `foreground` is mixed in and the worst pair
@@ -455,7 +455,7 @@ only when separation is needed.
 ### Radius Is A Constant
 
 Radius does **not** follow the accent. One scale — `8 / 16 / 24 / 32` for
-`micro / control / card / catalog` — lives in `@theme` and serves all seven presets, in
+`micro / control / card / catalog` — lives in `@theme` and serves all six presets, in
 both themes: contrast depends on the background, shape does not, and neither depends on
 which colour the visitor picked.
 

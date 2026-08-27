@@ -252,28 +252,28 @@ export const PALETTE_LAB: PaletteLab[] = [
 		"label": "Дефолт",
 		"current": {
 			"light": {
-				"accent": "#1F1C21",
+				"accent": "#1D1A1F",
 				"accentForeground": "#FBF9FD",
-				"accentVivid": "#1F1C21",
-				"accentGlow": "#9C97A0"
+				"accentVivid": "#29262C",
+				"accentGlow": "#4A474D"
 			},
 			"dark": {
-				"accent": "#EFECF2",
+				"accent": "#FDFBFF",
 				"accentForeground": "#090211",
-				"accentVivid": "#EFECF2",
-				"accentGlow": "#A09CA3"
+				"accentVivid": "#F7F4FA",
+				"accentGlow": "#FAF7FD"
 			}
 		},
 		"currentContrast": {
 			"light": {
-				"onBackground": 15.33,
-				"onSurface": 16.1,
-				"foregroundOnAccent": 16.1
+				"onBackground": 15.66,
+				"onSurface": 16.45,
+				"foregroundOnAccent": 16.45
 			},
 			"dark": {
-				"onBackground": 17.45,
-				"onSurface": 14.8,
-				"foregroundOnAccent": 17.45
+				"onBackground": 19.86,
+				"onSurface": 16.83,
+				"foregroundOnAccent": 19.86
 			}
 		},
 		"variants": [
@@ -399,28 +399,28 @@ export const PALETTE_LAB: PaletteLab[] = [
 		"label": "Җаным Яшел",
 		"current": {
 			"light": {
-				"accent": "#1B8341",
+				"accent": "#00803A",
 				"accentForeground": "#FBF9FD",
-				"accentVivid": "#16A249",
-				"accentGlow": "#3BDE77"
+				"accentVivid": "#009143",
+				"accentGlow": "#58B772"
 			},
 			"dark": {
-				"accent": "#3ECC72",
+				"accent": "#00BC5D",
 				"accentForeground": "#090211",
-				"accentVivid": "#39D070",
-				"accentGlow": "#7DE8A4"
+				"accentVivid": "#00C361",
+				"accentGlow": "#6ADF8D"
 			}
 		},
 		"currentContrast": {
 			"light": {
-				"onBackground": 4.37,
-				"onSurface": 4.59,
-				"foregroundOnAccent": 4.59
+				"onBackground": 4.61,
+				"onSurface": 4.84,
+				"foregroundOnAccent": 4.84
 			},
 			"dark": {
-				"onBackground": 9.81,
-				"onSurface": 8.31,
-				"foregroundOnAccent": 9.81
+				"onBackground": 8.12,
+				"onSurface": 6.88,
+				"foregroundOnAccent": 8.12
 			}
 		},
 		"variants": [
@@ -429,22 +429,22 @@ export const PALETTE_LAB: PaletteLab[] = [
 				"title": "Строгий AA",
 				"note": "Светлота решена под 4.6:1 к своему фону, тон и хрома пресета сохранены. Минимальная правка: то же семейство, но акцент гарантированно читается как текст и как иконка.",
 				"light": {
-					"accent": "#137F3D",
+					"accent": "#00803A",
 					"accentForeground": "#FBF9FD",
-					"accentVivid": "#0F9045",
-					"accentGlow": "#5DB674",
-					"onBackground": 4.63,
-					"onSurface": 4.86,
-					"foregroundOnAccent": 4.86
+					"accentVivid": "#009143",
+					"accentGlow": "#58B772",
+					"onBackground": 4.61,
+					"onSurface": 4.84,
+					"foregroundOnAccent": 4.84
 				},
 				"dark": {
-					"accent": "#23BA61",
+					"accent": "#00BC5D",
 					"accentForeground": "#090211",
-					"accentVivid": "#1CC263",
-					"accentGlow": "#70DD90",
-					"onBackground": 8.04,
-					"onSurface": 6.81,
-					"foregroundOnAccent": 8.04
+					"accentVivid": "#00C361",
+					"accentGlow": "#6ADF8D",
+					"onBackground": 8.12,
+					"onSurface": 6.88,
+					"foregroundOnAccent": 8.12
 				}
 			},
 			{
@@ -475,22 +475,22 @@ export const PALETTE_LAB: PaletteLab[] = [
 				"title": "Приглушённый",
 				"note": "Хрома срезана до 60%. Акцент перестаёт спорить с фотографиями и брендовыми плитками платформ, но остаётся отличимым от нейтралей.",
 				"light": {
-					"accent": "#467852",
+					"accent": "#437950",
 					"accentForeground": "#FBF9FD",
-					"accentVivid": "#4F885D",
-					"accentGlow": "#7DAE88",
-					"onBackground": 4.7,
-					"onSurface": 4.93,
-					"foregroundOnAccent": 4.93
+					"accentVivid": "#4B8A5B",
+					"accentGlow": "#7BAF86",
+					"onBackground": 4.67,
+					"onSurface": 4.91,
+					"foregroundOnAccent": 4.91
 				},
 				"dark": {
-					"accent": "#6BB27E",
+					"accent": "#67B37C",
 					"accentForeground": "#090211",
-					"accentVivid": "#6EB982",
-					"accentGlow": "#9AD6A8",
-					"onBackground": 8.07,
-					"onSurface": 6.84,
-					"foregroundOnAccent": 8.07
+					"accentVivid": "#6ABA80",
+					"accentGlow": "#97D7A6",
+					"onBackground": 8.09,
+					"onSurface": 6.85,
+					"foregroundOnAccent": 8.09
 				}
 			},
 			{
@@ -498,13 +498,13 @@ export const PALETTE_LAB: PaletteLab[] = [
 				"title": "Сдвиг тона",
 				"note": "Тон повёрнут на +12°, светлота и контраст те же. Раздвигает пресеты, которые сейчас соседствуют по тону (red/pink, green/blue).",
 				"light": {
-					"accent": "#007E56",
+					"accent": "#007E55",
 					"accentForeground": "#FBF9FD",
-					"accentVivid": "#008F62",
-					"accentGlow": "#58B58C",
+					"accentVivid": "#008F61",
+					"accentGlow": "#58B58B",
 					"onBackground": 4.64,
-					"onSurface": 4.87,
-					"foregroundOnAccent": 4.87
+					"onSurface": 4.88,
+					"foregroundOnAccent": 4.88
 				},
 				"dark": {
 					"accent": "#00B982",
@@ -521,9 +521,9 @@ export const PALETTE_LAB: PaletteLab[] = [
 				"title": "Ровная громкость",
 				"note": "Одинаковые L и C во всех семи: L 0.53 в светлой и 0.80 в тёмной, C 0.135. Пресеты перестают отличаться яркостью — только тоном.",
 				"light": {
-					"accent": "#18813F",
+					"accent": "#19813F",
 					"accentForeground": "#FBF9FD",
-					"accentVivid": "#169247",
+					"accentVivid": "#179247",
 					"accentGlow": "#60B876",
 					"onBackground": 4.49,
 					"onSurface": 4.72,
@@ -546,28 +546,28 @@ export const PALETTE_LAB: PaletteLab[] = [
 		"label": "Кадерле Зәнгәр",
 		"current": {
 			"light": {
-				"accent": "#185ECD",
+				"accent": "#4F63DC",
 				"accentForeground": "#FBF9FD",
-				"accentVivid": "#0D59D3",
-				"accentGlow": "#4595F7"
+				"accentVivid": "#596FFA",
+				"accentGlow": "#8AA1FF"
 			},
 			"dark": {
-				"accent": "#5AA0F6",
+				"accent": "#7A9FFF",
 				"accentForeground": "#090211",
-				"accentVivid": "#519BF6",
-				"accentGlow": "#92C2FC"
+				"accentVivid": "#83A6FF",
+				"accentGlow": "#B2C9FF"
 			}
 		},
 		"currentContrast": {
 			"light": {
-				"onBackground": 5.43,
-				"onSurface": 5.7,
-				"foregroundOnAccent": 5.7
+				"onBackground": 4.6,
+				"onSurface": 4.84,
+				"foregroundOnAccent": 4.84
 			},
 			"dark": {
-				"onBackground": 7.58,
-				"onSurface": 6.42,
-				"foregroundOnAccent": 7.58
+				"onBackground": 8.0,
+				"onSurface": 6.78,
+				"foregroundOnAccent": 8.0
 			}
 		},
 		"variants": [
@@ -575,75 +575,6 @@ export const PALETTE_LAB: PaletteLab[] = [
 				"key": "aa",
 				"title": "Строгий AA",
 				"note": "Светлота решена под 4.6:1 к своему фону, тон и хрома пресета сохранены. Минимальная правка: то же семейство, но акцент гарантированно читается как текст и как иконка.",
-				"light": {
-					"accent": "#2469D9",
-					"accentForeground": "#FBF9FD",
-					"accentVivid": "#2676F7",
-					"accentGlow": "#6FA5FF",
-					"onBackground": 4.66,
-					"onSurface": 4.9,
-					"foregroundOnAccent": 4.9
-				},
-				"dark": {
-					"accent": "#5EA5FB",
-					"accentForeground": "#090211",
-					"accentVivid": "#67ACFF",
-					"accentGlow": "#A3CCFF",
-					"onBackground": 8.02,
-					"onSurface": 6.8,
-					"foregroundOnAccent": 8.02
-				}
-			},
-			{
-				"key": "vivid",
-				"title": "Насыщенный",
-				"note": "Хрома поднята до края sRGB при том же контрасте. Для тех, кому дефолт кажется приглушённым; риск — заливки становятся крикливыми, поэтому soft-фон остаётся вычисляемым.",
-				"light": {
-					"accent": "#0065F0",
-					"accentForeground": "#FBF9FD",
-					"accentVivid": "#2076FF",
-					"accentGlow": "#72A7FF",
-					"onBackground": 4.64,
-					"onSurface": 4.87,
-					"foregroundOnAccent": 4.87
-				},
-				"dark": {
-					"accent": "#5DA6FF",
-					"accentForeground": "#090211",
-					"accentVivid": "#6AADFF",
-					"accentGlow": "#A5CDFF",
-					"onBackground": 8.13,
-					"onSurface": 6.89,
-					"foregroundOnAccent": 8.13
-				}
-			},
-			{
-				"key": "muted",
-				"title": "Приглушённый",
-				"note": "Хрома срезана до 60%. Акцент перестаёт спорить с фотографиями и брендовыми плитками платформ, но остаётся отличимым от нейтралей.",
-				"light": {
-					"accent": "#476EAF",
-					"accentForeground": "#FBF9FD",
-					"accentVivid": "#507CC7",
-					"accentGlow": "#7DA5E7",
-					"onBackground": 4.64,
-					"onSurface": 4.87,
-					"foregroundOnAccent": 4.87
-				},
-				"dark": {
-					"accent": "#7DA5D8",
-					"accentForeground": "#090211",
-					"accentVivid": "#81ABE1",
-					"accentGlow": "#A8CBF8",
-					"onBackground": 8.02,
-					"onSurface": 6.8,
-					"foregroundOnAccent": 8.02
-				}
-			},
-			{
-				"key": "shift",
-				"title": "Сдвиг тона",
-				"note": "Тон повёрнут на +12°, светлота и контраст те же. Раздвигает пресеты, которые сейчас соседствуют по тону (red/pink, green/blue).",
 				"light": {
 					"accent": "#4F63DC",
 					"accentForeground": "#FBF9FD",
@@ -664,26 +595,95 @@ export const PALETTE_LAB: PaletteLab[] = [
 				}
 			},
 			{
+				"key": "vivid",
+				"title": "Насыщенный",
+				"note": "Хрома поднята до края sRGB при том же контрасте. Для тех, кому дефолт кажется приглушённым; риск — заливки становятся крикливыми, поэтому soft-фон остаётся вычисляемым.",
+				"light": {
+					"accent": "#4957FF",
+					"accentForeground": "#FBF9FD",
+					"accentVivid": "#596FFF",
+					"accentGlow": "#8CA3FF",
+					"onBackground": 4.67,
+					"onSurface": 4.91,
+					"foregroundOnAccent": 4.91
+				},
+				"dark": {
+					"accent": "#7A9FFF",
+					"accentForeground": "#090211",
+					"accentVivid": "#83A6FF",
+					"accentGlow": "#B2C9FF",
+					"onBackground": 8.0,
+					"onSurface": 6.78,
+					"foregroundOnAccent": 8.0
+				}
+			},
+			{
+				"key": "muted",
+				"title": "Приглушённый",
+				"note": "Хрома срезана до 60%. Акцент перестаёт спорить с фотографиями и брендовыми плитками платформ, но остаётся отличимым от нейтралей.",
+				"light": {
+					"accent": "#596AB0",
+					"accentForeground": "#FBF9FD",
+					"accentVivid": "#6478C8",
+					"accentGlow": "#8EA1E8",
+					"onBackground": 4.65,
+					"onSurface": 4.88,
+					"foregroundOnAccent": 4.88
+				},
+				"dark": {
+					"accent": "#8BA2DB",
+					"accentForeground": "#090211",
+					"accentVivid": "#90A8E4",
+					"accentGlow": "#B4C9FB",
+					"onBackground": 8.06,
+					"onSurface": 6.83,
+					"foregroundOnAccent": 8.06
+				}
+			},
+			{
+				"key": "shift",
+				"title": "Сдвиг тона",
+				"note": "Тон повёрнут на +12°, светлота и контраст те же. Раздвигает пресеты, которые сейчас соседствуют по тону (red/pink, green/blue).",
+				"light": {
+					"accent": "#695BD8",
+					"accentForeground": "#FBF9FD",
+					"accentVivid": "#7766F5",
+					"accentGlow": "#9E9BFF",
+					"onBackground": 4.67,
+					"onSurface": 4.91,
+					"foregroundOnAccent": 4.91
+				},
+				"dark": {
+					"accent": "#929AFF",
+					"accentForeground": "#090211",
+					"accentVivid": "#99A2FF",
+					"accentGlow": "#BFC7FF",
+					"onBackground": 8.06,
+					"onSurface": 6.83,
+					"foregroundOnAccent": 8.06
+				}
+			},
+			{
 				"key": "uniform",
 				"title": "Ровная громкость",
 				"note": "Одинаковые L и C во всех семи: L 0.53 в светлой и 0.80 в тёмной, C 0.135. Пресеты перестают отличаться яркостью — только тоном.",
 				"light": {
-					"accent": "#3A6AB9",
+					"accent": "#5164B9",
 					"accentForeground": "#FBF9FD",
-					"accentVivid": "#4178D3",
-					"accentGlow": "#71A2F1",
-					"onBackground": 4.85,
-					"onSurface": 5.09,
-					"foregroundOnAccent": 5.09
+					"accentVivid": "#5C71D3",
+					"accentGlow": "#859CF1",
+					"onBackground": 4.93,
+					"onSurface": 5.18,
+					"foregroundOnAccent": 5.18
 				},
 				"dark": {
-					"accent": "#90C1FF",
+					"accent": "#A0BCFF",
 					"accentForeground": "#090211",
-					"accentVivid": "#9CC7FF",
-					"accentGlow": "#D3E6FF",
-					"onBackground": 10.95,
-					"onSurface": 9.28,
-					"foregroundOnAccent": 10.95
+					"accentVivid": "#A9C3FF",
+					"accentGlow": "#D9E4FF",
+					"onBackground": 10.82,
+					"onSurface": 9.18,
+					"foregroundOnAccent": 10.82
 				}
 			}
 		]
@@ -840,28 +840,28 @@ export const PALETTE_LAB: PaletteLab[] = [
 		"label": "Утлы Кызыл",
 		"current": {
 			"light": {
-				"accent": "#DC2727",
+				"accent": "#DD0016",
 				"accentForeground": "#FBF9FD",
-				"accentVivid": "#E93737",
-				"accentGlow": "#F47B7B"
+				"accentVivid": "#F7001A",
+				"accentGlow": "#FF8175"
 			},
 			"dark": {
-				"accent": "#EE6A6A",
+				"accent": "#FF7A79",
 				"accentForeground": "#090211",
-				"accentVivid": "#F26363",
-				"accentGlow": "#FA9E9E"
+				"accentVivid": "#FF8684",
+				"accentGlow": "#FFBBB8"
 			}
 		},
 		"currentContrast": {
 			"light": {
-				"onBackground": 4.38,
-				"onSurface": 4.6,
-				"foregroundOnAccent": 4.6
+				"onBackground": 4.68,
+				"onSurface": 4.91,
+				"foregroundOnAccent": 4.91
 			},
 			"dark": {
-				"onBackground": 6.71,
-				"onSurface": 5.69,
-				"foregroundOnAccent": 6.71
+				"onBackground": 8.08,
+				"onSurface": 6.85,
+				"foregroundOnAccent": 8.08
 			}
 		},
 		"variants": [
@@ -870,13 +870,13 @@ export const PALETTE_LAB: PaletteLab[] = [
 				"title": "Строгий AA",
 				"note": "Светлота решена под 4.6:1 к своему фону, тон и хрома пресета сохранены. Минимальная правка: то же семейство, но акцент гарантированно читается как текст и как иконка.",
 				"light": {
-					"accent": "#D72023",
+					"accent": "#DD0116",
 					"accentForeground": "#FBF9FD",
-					"accentVivid": "#F31C24",
-					"accentGlow": "#FF8175",
-					"onBackground": 4.64,
-					"onSurface": 4.87,
-					"foregroundOnAccent": 4.87
+					"accentVivid": "#F7001A",
+					"accentGlow": "#FF8275",
+					"onBackground": 4.67,
+					"onSurface": 4.91,
+					"foregroundOnAccent": 4.91
 				},
 				"dark": {
 					"accent": "#FF7A79",
@@ -916,22 +916,22 @@ export const PALETTE_LAB: PaletteLab[] = [
 				"title": "Приглушённый",
 				"note": "Хрома срезана до 60%. Акцент перестаёт спорить с фотографиями и брендовыми плитками платформ, но остаётся отличимым от нейтралей.",
 				"light": {
-					"accent": "#B15047",
+					"accent": "#B54C44",
 					"accentForeground": "#FBF9FD",
-					"accentVivid": "#C8594F",
-					"accentGlow": "#EB897E",
-					"onBackground": 4.65,
-					"onSurface": 4.89,
-					"foregroundOnAccent": 4.89
+					"accentVivid": "#CD554C",
+					"accentGlow": "#F0867B",
+					"onBackground": 4.68,
+					"onSurface": 4.92,
+					"foregroundOnAccent": 4.92
 				},
 				"dark": {
-					"accent": "#DE8E8A",
+					"accent": "#DD8E8A",
 					"accentForeground": "#090211",
-					"accentVivid": "#E7938F",
-					"accentGlow": "#FFB8B4",
-					"onBackground": 8.11,
-					"onSurface": 6.88,
-					"foregroundOnAccent": 8.11
+					"accentVivid": "#E6938F",
+					"accentGlow": "#FEB8B4",
+					"onBackground": 8.08,
+					"onSurface": 6.85,
+					"foregroundOnAccent": 8.08
 				}
 			},
 			{
@@ -948,13 +948,13 @@ export const PALETTE_LAB: PaletteLab[] = [
 					"foregroundOnAccent": 4.89
 				},
 				"dark": {
-					"accent": "#FF7E60",
+					"accent": "#FD7D5F",
 					"accentForeground": "#090211",
-					"accentVivid": "#FF8A6E",
-					"accentGlow": "#FFBEAD",
-					"onBackground": 8.17,
-					"onSurface": 6.93,
-					"foregroundOnAccent": 8.17
+					"accentVivid": "#FF876B",
+					"accentGlow": "#FFBBAB",
+					"onBackground": 8.05,
+					"onSurface": 6.82,
+					"foregroundOnAccent": 8.05
 				}
 			},
 			{
@@ -983,179 +983,32 @@ export const PALETTE_LAB: PaletteLab[] = [
 		]
 	},
 	{
-		"name": "orange",
-		"label": "Җылы Наранҗы",
-		"current": {
-			"light": {
-				"accent": "#BA540C",
-				"accentForeground": "#FBF9FD",
-				"accentVivid": "#D95D04",
-				"accentGlow": "#F7993B"
-			},
-			"dark": {
-				"accent": "#F38314",
-				"accentForeground": "#090211",
-				"accentVivid": "#F98510",
-				"accentGlow": "#FBB656"
-			}
-		},
-		"currentContrast": {
-			"light": {
-				"onBackground": 4.38,
-				"onSurface": 4.6,
-				"foregroundOnAccent": 4.6
-			},
-			"dark": {
-				"onBackground": 7.84,
-				"onSurface": 6.65,
-				"foregroundOnAccent": 7.84
-			}
-		},
-		"variants": [
-			{
-				"key": "aa",
-				"title": "Строгий AA",
-				"note": "Светлота решена под 4.6:1 к своему фону, тон и хрома пресета сохранены. Минимальная правка: то же семейство, но акцент гарантированно читается как текст и как иконка.",
-				"light": {
-					"accent": "#B55002",
-					"accentForeground": "#FBF9FD",
-					"accentVivid": "#CC5A00",
-					"accentGlow": "#EF8A53",
-					"onBackground": 4.65,
-					"onSurface": 4.88,
-					"foregroundOnAccent": 4.88
-				},
-				"dark": {
-					"accent": "#F58518",
-					"accentForeground": "#090211",
-					"accentVivid": "#FF8911",
-					"accentGlow": "#FFBC8D",
-					"onBackground": 8.02,
-					"onSurface": 6.8,
-					"foregroundOnAccent": 8.02
-				}
-			},
-			{
-				"key": "vivid",
-				"title": "Насыщенный",
-				"note": "Хрома поднята до края sRGB при том же контрасте. Для тех, кому дефолт кажется приглушённым; риск — заливки становятся крикливыми, поэтому soft-фон остаётся вычисляемым.",
-				"light": {
-					"accent": "#B64F00",
-					"accentForeground": "#FBF9FD",
-					"accentVivid": "#CC5A00",
-					"accentGlow": "#F18952",
-					"onBackground": 4.65,
-					"onSurface": 4.89,
-					"foregroundOnAccent": 4.89
-				},
-				"dark": {
-					"accent": "#F98400",
-					"accentForeground": "#090211",
-					"accentVivid": "#FF8B1D",
-					"accentGlow": "#FFBE90",
-					"onBackground": 8.1,
-					"onSurface": 6.86,
-					"foregroundOnAccent": 8.1
-				}
-			},
-			{
-				"key": "muted",
-				"title": "Приглушённый",
-				"note": "Хрома срезана до 60%. Акцент перестаёт спорить с фотографиями и брендовыми плитками платформ, но остаётся отличимым от нейтралей.",
-				"light": {
-					"accent": "#9A5F40",
-					"accentForeground": "#FBF9FD",
-					"accentVivid": "#AF6B47",
-					"accentGlow": "#D29677",
-					"onBackground": 4.68,
-					"onSurface": 4.91,
-					"foregroundOnAccent": 4.91
-				},
-				"dark": {
-					"accent": "#D79464",
-					"accentForeground": "#090211",
-					"accentVivid": "#E09966",
-					"accentGlow": "#F8BD94",
-					"onBackground": 8.08,
-					"onSurface": 6.85,
-					"foregroundOnAccent": 8.08
-				}
-			},
-			{
-				"key": "shift",
-				"title": "Сдвиг тона",
-				"note": "Тон повёрнут на +12°, светлота и контраст те же. Раздвигает пресеты, которые сейчас соседствуют по тону (red/pink, green/blue).",
-				"light": {
-					"accent": "#A65B00",
-					"accentForeground": "#FBF9FD",
-					"accentVivid": "#BB6700",
-					"accentGlow": "#DF9352",
-					"onBackground": 4.64,
-					"onSurface": 4.87,
-					"foregroundOnAccent": 4.87
-				},
-				"dark": {
-					"accent": "#E58F00",
-					"accentForeground": "#090211",
-					"accentVivid": "#ED9400",
-					"accentGlow": "#FFBC72",
-					"onBackground": 8.03,
-					"onSurface": 6.81,
-					"foregroundOnAccent": 8.03
-				}
-			},
-			{
-				"key": "uniform",
-				"title": "Ровная громкость",
-				"note": "Одинаковые L и C во всех семи: L 0.53 в светлой и 0.80 в тёмной, C 0.135. Пресеты перестают отличаться яркостью — только тоном.",
-				"light": {
-					"accent": "#A84E14",
-					"accentForeground": "#FBF9FD",
-					"accentVivid": "#BF5812",
-					"accentGlow": "#E28757",
-					"onBackground": 5.08,
-					"onSurface": 5.33,
-					"foregroundOnAccent": 5.33
-				},
-				"dark": {
-					"accent": "#FFA663",
-					"accentForeground": "#090211",
-					"accentVivid": "#FFB076",
-					"accentGlow": "#FFDDC6",
-					"onBackground": 10.59,
-					"onSurface": 8.97,
-					"foregroundOnAccent": 10.59
-				}
-			}
-		]
-	},
-	{
 		"name": "pink",
 		"label": "Иркә Алсу",
 		"current": {
 			"light": {
-				"accent": "#D7236E",
+				"accent": "#D8006A",
 				"accentForeground": "#FBF9FD",
-				"accentVivid": "#E82E7C",
-				"accentGlow": "#F679AD"
+				"accentVivid": "#F20077",
+				"accentGlow": "#FF7DA4"
 			},
 			"dark": {
-				"accent": "#F366A0",
+				"accent": "#FF74AC",
 				"accentForeground": "#090211",
-				"accentVivid": "#F5619F",
-				"accentGlow": "#FB9DC4"
+				"accentVivid": "#FF81B2",
+				"accentGlow": "#FFBAD1"
 			}
 		},
 		"currentContrast": {
 			"light": {
-				"onBackground": 4.39,
-				"onSurface": 4.61,
-				"foregroundOnAccent": 4.61
+				"onBackground": 4.63,
+				"onSurface": 4.86,
+				"foregroundOnAccent": 4.86
 			},
 			"dark": {
-				"onBackground": 7.02,
-				"onSurface": 5.95,
-				"foregroundOnAccent": 7.02
+				"onBackground": 8.12,
+				"onSurface": 6.88,
+				"foregroundOnAccent": 8.12
 			}
 		},
 		"variants": [
@@ -1164,13 +1017,13 @@ export const PALETTE_LAB: PaletteLab[] = [
 				"title": "Строгий AA",
 				"note": "Светлота решена под 4.6:1 к своему фону, тон и хрома пресета сохранены. Минимальная правка: то же семейство, но акцент гарантированно читается как текст и как иконка.",
 				"light": {
-					"accent": "#D21B6A",
+					"accent": "#D8006A",
 					"accentForeground": "#FBF9FD",
-					"accentVivid": "#ED1477",
-					"accentGlow": "#FF7BA3",
-					"onBackground": 4.65,
-					"onSurface": 4.89,
-					"foregroundOnAccent": 4.89
+					"accentVivid": "#F20077",
+					"accentGlow": "#FF7DA4",
+					"onBackground": 4.63,
+					"onSurface": 4.86,
+					"foregroundOnAccent": 4.86
 				},
 				"dark": {
 					"accent": "#FF74AC",
@@ -1210,22 +1063,22 @@ export const PALETTE_LAB: PaletteLab[] = [
 				"title": "Приглушённый",
 				"note": "Хрома срезана до 60%. Акцент перестаёт спорить с фотографиями и брендовыми плитками платформ, но остаётся отличимым от нейтралей.",
 				"light": {
-					"accent": "#AE4D6B",
+					"accent": "#B24B6C",
 					"accentForeground": "#FBF9FD",
-					"accentVivid": "#C55679",
-					"accentGlow": "#E886A1",
-					"onBackground": 4.69,
-					"onSurface": 4.93,
-					"foregroundOnAccent": 4.93
+					"accentVivid": "#C9537A",
+					"accentGlow": "#ED84A2",
+					"onBackground": 4.64,
+					"onSurface": 4.88,
+					"foregroundOnAccent": 4.88
 				},
 				"dark": {
-					"accent": "#DF8AA9",
+					"accent": "#DC8AA7",
 					"accentForeground": "#090211",
-					"accentVivid": "#E88EAF",
-					"accentGlow": "#FFB5CF",
-					"onBackground": 8.12,
-					"onSurface": 6.88,
-					"foregroundOnAccent": 8.12
+					"accentVivid": "#E58EAD",
+					"accentGlow": "#FDB4CD",
+					"onBackground": 8.01,
+					"onSurface": 6.79,
+					"foregroundOnAccent": 8.01
 				}
 			},
 			{
@@ -1233,13 +1086,13 @@ export const PALETTE_LAB: PaletteLab[] = [
 				"title": "Сдвиг тона",
 				"note": "Тон повёрнут на +12°, светлота и контраст те же. Раздвигает пресеты, которые сейчас соседствуют по тону (red/pink, green/blue).",
 				"light": {
-					"accent": "#D6194B",
+					"accent": "#DC004A",
 					"accentForeground": "#FBF9FD",
-					"accentVivid": "#F21053",
-					"accentGlow": "#FF7E8C",
-					"onBackground": 4.66,
-					"onSurface": 4.9,
-					"foregroundOnAccent": 4.9
+					"accentVivid": "#F60054",
+					"accentGlow": "#FF818E",
+					"onBackground": 4.61,
+					"onSurface": 4.85,
+					"foregroundOnAccent": 4.85
 				},
 				"dark": {
 					"accent": "#FF7693",

@@ -6,7 +6,6 @@
 @import "./palettes/blue.css";
 @import "./palettes/violet.css";
 @import "./palettes/red.css";
-@import "./palettes/orange.css";
 @import "./palettes/pink.css";
 
 @plugin "@tailwindcss/typography";
