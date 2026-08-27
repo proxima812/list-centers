@@ -80,7 +80,7 @@ const dict: Dictionary = {
 	"home.nearby.imageAlt": "Center cards with country flags under a “Search by geolocation” heading",
 	"home.people.title": "There are more of us than it seems",
 	"home.people.text":
-		"The census counts only those inside Russia. Beyond it there are more of us - that is where the catalog works.",
+		"We do not disappear when we leave: the language, the songs, and the holidays travel with us. The catalog shows where they are kept alive.",
 	"home.people.tatars": "Tatars in Russia",
 	"home.people.bashkirs": "Bashkirs in Russia",
 	"home.people.crimean": "Crimean Tatars in Russia",
