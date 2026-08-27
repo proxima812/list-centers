@@ -96,16 +96,66 @@ function formatLinksBlock(center: ParsedCenter): string | null {
 	return ["Ссылки:", ...lines].join("\n");
 }
 
+/**
+ * Хештег для поиска в VK: внутри тега живут только буквы, цифры и `_`, поэтому
+ * пробелы и дефисы не экранируются, а склеиваются — «Регион РФ» → `#РегионРФ`,
+ * «Татаро-Башкирский» → `#ТатароБашкирский`. Регистр исходника сохраняем.
+ */
+function toHashtag(value: string): string | null {
+	// Каждое слово с заглавной, иначе «Алтайский край» слипается в
+	// `#Алтайскийкрай`. Для поиска VK регистр не важен, но читается это плохо.
+	const cleaned = value
+		.split(/[^\p{L}\p{N}_]+/u)
+		.filter(Boolean)
+		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+		.join("");
+
+	if (!cleaned || /^\d/.test(cleaned)) return null;
+	return `#${cleaned}`;
+}
+
+function uniqueHashtags(values: Array<string | undefined>): string[] {
+	const tags = values
+		.filter((value): value is string => Boolean(value))
+		.map(toHashtag)
+		.filter((tag): tag is string => tag !== null);
+
+	return [...new Set(tags)];
+}
+
+/**
+ * Футер повторяет шапку карточки тегами: `#tatarverse | 📍 <гео> <категория · тип>`.
+ * Пустые части просто выпадают, включая сам разделитель и пин.
+ */
+function formatHashtagFooter(placeParts: string[], badgeParts: string[]): string {
+	const placeTags = uniqueHashtags(placeParts);
+	const badgeTags = uniqueHashtags(badgeParts);
+
+	const groups = [
+		placeTags.length > 0 ? `📍 ${placeTags.join(" ")}` : null,
+		badgeTags.length > 0 ? badgeTags.join(" · ") : null,
+	].filter((group): group is string => group !== null);
+
+	return groups.length > 0 ? `#tatarverse | ${groups.join(" ")}` : "#tatarverse";
+}
+
 export interface FormatPostOptions {
 	center: ParsedCenter;
 	url: string;
 }
 
 export function formatPost({ center, url }: FormatPostOptions): string {
-	const placeLine = [center.location?.city, center.location?.region, center.location?.country]
-		.filter((value): value is string => Boolean(value))
-		.join(", ");
-	const badgeLine = [center.category, center.type].filter(Boolean).join(" · ");
+	const placeParts = [
+		center.location?.city,
+		center.location?.region,
+		center.location?.country,
+	].filter((value): value is string => Boolean(value));
+	const badgeParts = [center.category, center.type].filter((value): value is string =>
+		Boolean(value),
+	);
+
+	const placeLine = placeParts.join(", ");
+	const badgeLine = badgeParts.join(" · ");
 
 	const sections = orderedSections(splitIntoSections(center.body))
 		.map(sectionToPlainText)
@@ -120,7 +170,7 @@ export function formatPost({ center, url }: FormatPostOptions): string {
 		...sections,
 		linksBlock,
 		`Карточка в tatarverse:\n${url}`,
-		"#tatarverse #татары",
+		formatHashtagFooter(placeParts, badgeParts),
 	].filter((block): block is string => Boolean(block && block.trim()));
 
 	return blocks.join("\n\n");

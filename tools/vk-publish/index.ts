@@ -80,15 +80,23 @@ async function main() {
 		const url = buildUrl(routeId);
 		const message = formatPost({ center, url });
 
-		if (state[routeId]) {
-			console.log(`${progress} — уже опубликовано, пропуск (post_id=${state[routeId].postId})`);
-			skipped++;
+		const alreadyPublished = state[routeId];
+
+		// В dry-run опубликованное всё равно показываем: иначе после первого
+		// прогона нельзя посмотреть, как изменился формат поста.
+		if (options.dryRun) {
+			const note = alreadyPublished
+				? ` — при реальном запуске будет пропущено (post_id=${alreadyPublished.postId})`
+				: "";
+			console.log(`${progress} — предпросмотр (dry-run)${note}:\n${message}\n${"-".repeat(40)}`);
+			if (alreadyPublished) skipped++;
+			else published++;
 			continue;
 		}
 
-		if (options.dryRun) {
-			console.log(`${progress} — предпросмотр (dry-run):\n${message}\n${"-".repeat(40)}`);
-			published++;
+		if (alreadyPublished) {
+			console.log(`${progress} — уже опубликовано, пропуск (post_id=${alreadyPublished.postId})`);
+			skipped++;
 			continue;
 		}
 
