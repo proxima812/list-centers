@@ -3,6 +3,7 @@ import searchImageEn from "@/assets/1-en.png";
 import searchImageRu from "@/assets/1-ru.png";
 import present from "@/assets/present.png";
 import HomeLinksShowcase from "@/components/home/HomeLinksShowcase.astro";
+import HomeNearby from "@/components/home/HomeNearby.astro";
 import HomePeopleStats from "@/components/home/HomePeopleStats.astro";
 import { catalogStats } from "@/domain/center/stats";
 import { getLocaleFromUrl, useTranslations } from "@/i18n";
@@ -66,6 +67,7 @@ const searchImage = locale === "en" ? searchImageEn : searchImageRu;
 			class="order-1 h-full w-full rounded-card object-cover md:order-2"
 		/>
 	</section>
+	<HomeNearby />
 	<HomeLinksShowcase />
 	<HomePeopleStats />
 </div>

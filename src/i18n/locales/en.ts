@@ -70,6 +70,12 @@ const dict: Dictionary = {
 		"Links in the cards: <strong>{links}</strong> — websites, social profiles, and channels where communities actually reply.",
 	"home.contacts.text2":
 		"No need to hunt for contacts online — open a card and write directly.",
+	"home.nearby.title": "Search by geolocation",
+	"home.nearby.text1":
+		"Allow the browser to detect your location, and the catalog will sort centers by distance — nearest first.",
+	"home.nearby.text2":
+		"Your coordinates stay in the browser: the page computes distances on your device and sends them nowhere.",
+	"home.nearby.imageAlt": "A list of centers sorted by distance from you",
 	"home.people.title": "There are more of us than it seems",
 	"home.people.text":
 		"Placeholder copy: a short paragraph will go here about Tatars, Bashkirs, and Crimean Tatars living all over the world — from their home republics to diasporas on other continents — and about the catalog collecting the places where that connection continues.",
