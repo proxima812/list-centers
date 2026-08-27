@@ -6,46 +6,114 @@ import { getCollection } from "astro:content";
 import ButtonLink from "../ui/ButtonLink.astro";
 
 /**
- * Витрина ссылок каталога: слева обещание, справа сетка платформ.
+ * Витрина каналов связи: справа обещание, слева сетка платформ.
  *
- * Числа не выдуманы — они считаются через `getCenterLinks`, то есть тем же
- * разбором, который рисует ссылки в карточке центра. Если у платформы в
- * каталоге не осталось ни одной ссылки, её плитка просто не рисуется.
+ * Плитка рисуется, только если такая ссылка в каталоге правда есть —
+ * присутствие считается тем же `getCenterLinks`, что рисует ссылки в
+ * карточке центра. Числа рядом с иконками не показываем: рядом с «368» у
+ * сайта двойка у YouTube читается как «тут пусто», хотя канал живой.
+ *
+ * Почта и телефон живут в разделе «Контакты», а не в «Ссылках», поэтому
+ * их наличие проверяется по схеме ссылки, а не через getCenterLinks.
  */
 
-const PLATFORMS: Array<{ kind: CenterLinkKind; label: string; icon: string; tone: string }> = [
-	{ kind: "website", label: "Сайт", icon: "mdi:web", tone: "text-accent" },
-	{ kind: "vk", label: "VK", icon: "mdi:vk", tone: "text-[#0077ff]" },
-	{ kind: "telegram", label: "Telegram", icon: "mdi:telegram", tone: "text-[#2aabee]" },
-	{ kind: "instagram", label: "Instagram", icon: "mdi:instagram", tone: "text-[#d6249f]" },
-	{ kind: "facebook", label: "Facebook", icon: "mdi:facebook", tone: "text-[#1877f2]" },
-	{ kind: "ok", label: "OK", icon: "mdi:odnoklassniki", tone: "text-[#ee8208]" },
-	{ kind: "youtube", label: "YouTube", icon: "mdi:youtube", tone: "text-[#ff0033]" },
+type Tile = { key: string; label: string; icon: string; tone: string };
+
+const PLATFORMS: Array<Tile & { kind: CenterLinkKind }> = [
+	{ kind: "website", key: "website", label: "Сайт", icon: "mdi:web", tone: "text-accent" },
+	{ kind: "vk", key: "vk", label: "VK", icon: "mdi:vk", tone: "text-[#0077ff]" },
+	{
+		kind: "telegram",
+		key: "telegram",
+		label: "Telegram",
+		icon: "mdi:telegram",
+		tone: "text-[#2aabee]",
+	},
+	{
+		kind: "instagram",
+		key: "instagram",
+		label: "Instagram",
+		icon: "mdi:instagram",
+		tone: "text-[#d6249f]",
+	},
+	{
+		kind: "facebook",
+		key: "facebook",
+		label: "Facebook",
+		icon: "mdi:facebook",
+		tone: "text-[#1877f2]",
+	},
+	{ kind: "ok", key: "ok", label: "OK", icon: "mdi:odnoklassniki", tone: "text-[#ee8208]" },
+	{
+		kind: "youtube",
+		key: "youtube",
+		label: "YouTube",
+		icon: "mdi:youtube",
+		tone: "text-[#ff0033]",
+	},
+	{
+		kind: "tiktok",
+		key: "tiktok",
+		label: "TikTok",
+		icon: "tabler:brand-tiktok",
+		tone: "text-foreground",
+	},
+	{ kind: "twitter", key: "twitter", label: "X", icon: "tabler:brand-x", tone: "text-foreground" },
+	{
+		kind: "whatsapp",
+		key: "whatsapp",
+		label: "WhatsApp",
+		icon: "mdi:whatsapp",
+		tone: "text-[#25d366]",
+	},
+	{ kind: "maps", key: "maps", label: "Карты", icon: "mdi:map-marker", tone: "text-[#ea4335]" },
 ];
 
-/** Куда в сетке попадают плитки: остальные клетки остаются пустыми. */
-const SLOTS = [2, 5, 7, 10, 13, 16, 21];
-const CELLS = 24;
+const CONTACTS: Array<Tile & { pattern: RegExp }> = [
+	{
+		key: "email",
+		label: "Почта",
+		icon: "mdi:email",
+		tone: "text-accent",
+		pattern: /\]\(mailto:/,
+	},
+	{
+		key: "phone",
+		label: "Телефон",
+		icon: "mdi:phone",
+		tone: "text-accent",
+		pattern: /\]\(tel:/,
+	},
+];
+
+/** Куда в сетке садятся плитки: остальные клетки остаются пустыми. */
+const SLOTS = [2, 5, 7, 10, 13, 16, 19, 21, 24, 27, 29, 32, 34];
+const CELLS = 36;
 
 const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
 
-const counts = new Map<CenterLinkKind, number>();
+const kinds = new Set<CenterLinkKind>();
+const contacts = new Set<string>();
 let links = 0;
 
 for (const center of await getCollection("centers")) {
 	for (const link of getCenterLinks(center.body, center.data.source)) {
-		counts.set(link.kind, (counts.get(link.kind) ?? 0) + 1);
+		kinds.add(link.kind);
 		links += 1;
+	}
+
+	for (const contact of CONTACTS) {
+		if (contact.pattern.test(center.body ?? "")) contacts.add(contact.key);
 	}
 }
 
-const bySlot = new Map(
-	PLATFORMS.filter((platform) => (counts.get(platform.kind) ?? 0) > 0).map((platform, index) => [
-		SLOTS[index] ?? CELLS,
-		{ ...platform, count: counts.get(platform.kind) ?? 0 },
-	]),
-);
+const tiles: Tile[] = [
+	...PLATFORMS.filter((platform) => kinds.has(platform.kind)),
+	...CONTACTS.filter((contact) => contacts.has(contact.key)),
+];
+
+const bySlot = new Map(tiles.map((tile, index) => [SLOTS[index] ?? CELLS, tile]));
 const cells = Array.from({ length: CELLS }, (_, index) => bySlot.get(index) ?? null);
 ---
 
@@ -77,16 +145,11 @@ const cells = Array.from({ length: CELLS }, (_, index) => bySlot.get(index) ?? n
 				cells.map((tile) =>
 					tile ? (
 						<li
-							class="aspect-square rounded-control corner-squircle bg-surface p-2 ring-1 ring-border-muted surface-lift transition hover:-translate-y-0.5"
-							title={`${tile.label} — ${tile.count}`}
+							class="flex aspect-square items-center justify-center rounded-control corner-squircle bg-surface ring-1 ring-border-muted surface-lift transition hover:-translate-y-0.5"
+							title={tile.label}
 						>
-							<span class="flex h-full w-full flex-col items-center justify-center gap-0.5">
-								<Icon name={tile.icon} class={`h-6 w-6 ${tile.tone}`} aria-hidden="true" />
-								<span class="text-[10px] leading-none tabular-nums text-muted-foreground">
-									{tile.count}
-								</span>
-								<span class="sr-only">{tile.label}</span>
-							</span>
+							<Icon name={tile.icon} class={`h-6 w-6 ${tile.tone}`} aria-hidden="true" />
+							<span class="sr-only">{tile.label}</span>
 						</li>
 					) : (
 						<li

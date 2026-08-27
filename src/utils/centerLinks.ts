@@ -6,7 +6,11 @@ export type CenterLinkKind =
 	| "vk"
 	| "youtube"
 	| "facebook"
-	| "ok";
+	| "ok"
+	| "tiktok"
+	| "twitter"
+	| "whatsapp"
+	| "maps";
 
 export interface CenterLink {
 	kind: CenterLinkKind;
@@ -44,22 +48,49 @@ const PLATFORMS: Platform[] = [
 		pattern: /(^|\.)(facebook\.com|fb\.com)$/,
 	},
 	{ kind: "ok", label: "OK", icon: "mdi:odnoklassniki", pattern: /(^|\.)ok\.ru$/ },
+	{
+		kind: "tiktok",
+		label: "TikTok",
+		icon: "tabler:brand-tiktok",
+		pattern: /(^|\.)tiktok\.com$/,
+	},
+	{ kind: "twitter", label: "X", icon: "tabler:brand-x", pattern: /(^|\.)(x\.com|twitter\.com)$/ },
+	{
+		kind: "whatsapp",
+		label: "WhatsApp",
+		icon: "mdi:whatsapp",
+		pattern: /(^|\.)(wa\.me|whatsapp\.com)$/,
+	},
+	{ kind: "maps", label: "Карты", icon: "mdi:map-marker", pattern: /(^|\.)2gis\.[a-z]+$/ },
 ];
+
+/**
+ * Карты Google и Яндекса живут на общем домене: отличает их только путь,
+ * поэтому одного хоста для них мало.
+ */
+const MAP_PATHS = /^\/maps(\/|$)/;
+const MAP_HOSTS = /(^|\.)(google\.[a-z.]+|yandex\.[a-z.]+)$/;
 
 const LINKS_SECTION = /^##\s+(Ссылки|Links)\s*$/im;
 const MARKDOWN_LINK = /\[[^\]]*\]\((https?:\/\/[^)\s]+)\)/g;
 
 function classify(href: string): Omit<CenterLink, "href"> | null {
-	let host: string;
+	let url: URL;
 
 	try {
-		host = new URL(href).hostname.replace(/^www\./, "").toLowerCase();
+		url = new URL(href);
 	} catch {
 		return null;
 	}
 
+	const host = url.hostname.replace(/^www\./, "").toLowerCase();
+
 	const platform = PLATFORMS.find((candidate) => candidate.pattern.test(host));
 	if (platform) return { kind: platform.kind, label: platform.label, icon: platform.icon };
+
+	if (MAP_HOSTS.test(host) && MAP_PATHS.test(url.pathname)) {
+		return { kind: "maps", label: "Карты", icon: "mdi:map-marker" };
+	}
 
 	return { kind: "website", label: "Сайт", icon: "mdi:web" };
 }
