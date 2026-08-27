@@ -11,14 +11,15 @@ colors:
   subtle-foreground: "#656565"
   surface: "#ffffff"
   surface-foreground: "#1d1d1d"
-  surface-muted: "#f2f2f2"
+  surface-muted: "#f1f1f1"
+  catalog: "#f1f1f1"
   border: "#cccccc"
-  border-muted: "#dddddd"
+  border-muted: "#dbdbdb"
   ring: "#c7c7c7"
   primary: "#1d1d1d"
   primary-foreground: "#ffffff"
-  link: "#1d1d1d"
-  link-decoration: "#909090"
+  link: "#105fc6"
+  link-decoration: "#3080e8"
   depth-100: "#d6d6d6"
   depth-200: "#c2c2c2"
   depth-300: "#9e9e9e"
@@ -26,12 +27,15 @@ colors:
   depth-500: "#5c5c5c"
   depth-600: "#474747"
   depth-700: "#333333"
-  accent: "#1b8341"
+  accent: "#1d1d1d"
   accent-foreground: "#ffffff"
+  accent-glow: "#909090"
+  destructive: "#c9532a"
+  favorite: "#ca2440"
 typography:
   display:
     fontFamily: "'Twemoji Country Flags', 'Tatarverse Sans', ui-sans-serif, system-ui, sans-serif"
-    fontSize: "clamp(2.25rem, 7vw, 4.5rem)"
+    fontSize: "clamp(1.25rem, calc(7.1vw - 3px), 4.5rem)"
     fontWeight: 900
     lineHeight: 1
     letterSpacing: "-0.04em"
@@ -85,6 +89,12 @@ components:
     color: "{colors.foreground}"
     accent: "{colors.accent}"
     typography: "{typography.display}"
+  hero-badge:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.foreground}"
+    rounded: "{rounded.full}"
+    padding: "6px 12px"
+    typography: "{typography.caption}"
   button-primary:
     backgroundColor: "{colors.primary}"
     textColor: "{colors.primary-foreground}"
@@ -103,6 +113,12 @@ components:
     rounded: "{rounded.full}"
     padding: "6px 10px"
     typography: "{typography.label}"
+  filter-row-active:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.foreground}"
+    rounded: "{rounded.control}"
+    padding: "8px 12px"
+    typography: "{typography.label}"
   stats-pill:
     backgroundColor: "{colors.surface}"
     textColor: "{colors.foreground}"
@@ -114,6 +130,17 @@ components:
     textColor: "{colors.surface-foreground}"
     rounded: "{rounded.catalog}"
     padding: "20px"
+  section-feature:
+    backgroundColor: "transparent"
+    textColor: "{colors.foreground}"
+    rounded: "0"
+    padding: "48px 0"
+  platform-tile:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.foreground}"
+    rounded: "{rounded.control}"
+    padding: "8px"
+    typography: "{typography.caption}"
 ---
 
 # Design System: Tatarverse
@@ -122,27 +149,48 @@ components:
 
 **Creative North Star: "A Catalog With A Signal"**
 
-Tatarverse is still a practical catalog, but the current site has a clearer public identity than the older flat system. The homepage introduces the project with a compact brand mark, uppercase hero typography, one controlled accent color, animated catalog statistics, and a screenshot-led search section. After that first impression, the product returns to a quiet, scannable catalog language.
+Tatarverse is a practical catalog with a public identity. The homepage introduces the
+project with the flower mark, a rotating news badge, uppercase hero typography where one
+line carries the accent, a short link list, and a stack of explanatory feature sections
+built from real data and real interface imagery. After that first impression, the product
+returns to a quiet, scannable catalog language.
 
 The design system has two layers:
 
-- **Brand layer:** homepage identity moments, the liquid-metal mark, hero accent, stats choreography, and product imagery.
-- **Catalog layer:** centers list, cards, filters, search, MDX content, navigation, translation surfaces, and source-backed detail pages.
+- **Brand layer:** homepage identity moments — the mark, the hero, the badge, the feature
+  sections, product imagery.
+- **Catalog layer:** centers list, cards, filters, search, saved, nearby, stats, MDX
+  content, navigation, translation surfaces, and source-backed detail pages.
 
-The brand layer should make the site memorable. The catalog layer should make the data easy to use.
+The brand layer should make the site memorable. The catalog layer should make the data
+easy to use.
+
+**The default is quiet.** The shipped accent preset is monochrome — the signal is ink, not
+a hue. Everything below has to hold when the visitor never touches the appearance menu.
 
 ## 2. Color
 
-The base palette is neutral and semantic. Light neutrals live in `@theme` in `src/styles/tailwind.css`; each accent preset carries its own dark neutrals in `src/styles/palettes/<name>.css`. The Tailwind v4 tokens are `background`, `foreground`, `muted`, `surface`, `border`, `ring`, `primary`, `link`, `depth-*`, and `accent`.
+The base palette is neutral and semantic. Light neutrals live in `@theme` in
+`src/styles/tailwind.css`, dark ones under `.dark` in the same file; each accent preset
+carries only its accent tokens in `src/styles/palettes/<name>.css`. The Tailwind v4 tokens
+are `background`, `foreground`, `muted`, `subtle`, `surface`, `surface-muted`, `catalog`,
+`border`, `ring`, `primary`, `link`, `depth-*`, `accent`, plus two role colors —
+`destructive` and `favorite`.
 
 ### Base Roles
 
 - **Background / Surface:** the page, cards, menus, screenshots, and MDX content.
 - **Foreground / Primary:** the main ink color for text, strong actions, and active filters.
 - **Muted / Subtle:** low-emphasis surfaces, metadata, labels, chips, and quiet card backgrounds.
+- **Catalog:** the band the center grid sits on. It is an alias — `surface-muted` in light,
+  `muted` in dark — so the card keeps its lightness step against the band in both themes.
 - **Border / Ring / Depth:** separators, inset rings, dividers, and tonal hierarchy.
 - **Primary Foreground:** inverse text for active controls and primary buttons.
 - **Accent / Accent Foreground:** the one signal color and its contrast pair.
+- **Link / Link Decoration:** prose links. Blue in both themes and **not** the accent:
+  a link that changed hue with the appearance menu would stop reading as a link.
+- **Destructive / Favorite:** clearing filters and the saved-center heart. Two fixed roles,
+  authored per theme, never borrowed for decoration.
 
 ### Themes
 
@@ -162,13 +210,14 @@ own.
 
 The preset list lives in exactly one place, `src/utils/accents.ts`, and both the header
 dropdown and the mobile toggle read it. Adding a palette means editing that file plus
-adding `src/styles/palettes/<name>.css` — never a second copy of the swatch array.
+adding `src/styles/palettes/<name>.css` — never a second copy of the swatch array. The
+`from` / `to` pair in each preset is the swatch gradient in the menu, nothing else.
 
 **A preset is colour and nothing but colour.** `src/styles/palettes/` holds seven files,
 and each holds exactly two blocks — the accent tokens in light and in dark. The neutral
-paper, the borders, the ink and the depth ramp live in `tailwind.css` (light neutrals in
-`@theme`, dark ones in `.dark`), and so does the radius scale. Switching palette repaints
-the interface; it does not change its shape, its depth or its contrast.
+paper, the borders, the ink and the depth ramp live in `tailwind.css`, and so does the
+radius scale. Switching palette repaints the interface; it does not change its shape, its
+depth or its contrast.
 
 This used to be otherwise: every preset shipped its own dark surface ladder and its own
 shape register, so the seven palettes read as seven different sites rather than seven
@@ -259,14 +308,11 @@ This is HeroUI v3's approach, where `--border-secondary` and `--separator-second
 mixes of `--surface` and `--surface-foreground`. **Their proportions are not ours**: HeroUI's
 `78%` / `92%` produce `ΔL 2.6-3.7` against our anchors where we need `4`, because they are
 tuned for a single dark palette with a `12% → 21%` gap. Ours are solved against our own
-floors and verified in the browser across all twelve combinations.
+floors and verified in the browser across all fourteen combinations.
 
 **Not everything derives, and that is deliberate.** `muted`, `subtle` and the two ink tokens
-stay authored per palette. A single global proportion would flatten the presets into each
-other — a derived `muted` moves `blue`'s band from `L* 14.6` to `6.25`, erasing exactly the
-"visibly lifted surfaces" register that makes `blue` the Uber Base entry. And `subtle` has no
-feasible global proportion at all while the inks stay authored. Six dark papers with
-deliberately different characters is the feature; the derivation serves it, not the reverse.
+stay authored. A single global proportion would flatten the recessed band into the page,
+and `subtle` has no feasible global proportion at all while the inks stay authored.
 
 The authored `hsl()` values and these `color-mix()` formulas live in exactly one place —
 the CSS. The percentages above are a reading of that source, not a second copy: when they
@@ -277,17 +323,21 @@ hand.)
 
 ### Brand Accent
 
-The accent is green by default (`#1b8341` light, `#3ecc72` dark) and appears in the hero
-word treatment, the liquid-metal mark, focus indicators, active filter chips, and the
-filter badge. Treat it as a named signal, not a general palette. Do not apply it to cards,
-prose, footer links, or center detail pages unless a specific design pass asks for that.
+The accent appears in the hero line, the flower mark, focus indicators, active filter
+chips and rows, and the filter badge. Treat it as a named signal, not a general palette.
+Do not apply it to cards, prose, footer links, or center detail pages unless a specific
+design pass asks for that.
+
+Two satellites exist for the hero only: `accent-vivid` (the saturated twin) and
+`accent-glow` (the halo behind the pulsing hero line). They are authored per preset next
+to the accent and are not general-purpose colors.
 
 ### Soft Accent
 
 `accent-soft` / `accent-soft-hover` / `accent-soft-foreground` are the quiet fill of the
-accent — currently only the hero badge. They are not authored per preset: each is a
-`color-mix()` over the current `accent` and neutrals, so all twelve theme × accent pairs
-follow for free.
+accent — the hero badge and the active filter row in the desktop aside. They are not
+authored per preset: each is a `color-mix()` over the current `accent` and neutrals, so
+all fourteen theme × accent pairs follow for free.
 
 Two things are deliberate there. The text is **not** pure `accent` — on a 12% fill light
 green gives 3.9:1, below AA for 12px, so 25% `foreground` is mixed in and the worst pair
@@ -301,22 +351,38 @@ threshold described below.
 
 **The Accent Is A Signal.** The accent belongs to identity moments, focus, and active state only. It should never become a generic decoration.
 
-**Never Hardcode A Color.** Anything written as a literal hex or a Tailwind palette class (`bg-white`, `text-zinc-500`) will not survive a theme switch. The only exceptions are logo plates, which need white regardless of theme, and third-party brand colors.
+**Never Hardcode A Color.** Anything written as a literal hex or a Tailwind palette class (`bg-white`, `text-zinc-500`) will not survive a theme switch. The only exceptions are logo plates, which need white regardless of theme, and third-party brand colors — the platform tiles in the homepage link showcase and the social buttons are the sanctioned list, and they are brand marks, not interface color.
 
 **No Cultural Color Pastiche.** Do not infer a palette from flags, ethnic motifs, or ornamental references. Cultural meaning comes from the content and source-backed data.
 
 ## 3. Typography
 
-The site uses **Tatarverse Sans**, a self-hosted variable font (`/fonts/tatarverse-sans.woff2`, weights 100-900, `font-display: optional`), with the system sans stack as fallback. `Twemoji Country Flags` sits first in the stack but only covers flag glyphs — Windows has no built-in flag emoji, so everything else falls through to Tatarverse Sans. The voice is practical and direct, with a sharper homepage display treatment.
+The site uses **Tatarverse Sans**, a self-hosted variable font (weights 100-900,
+`font-display: optional`, loaded through Astro's font pipeline as
+`--font-tatarverse-sans`), with the system sans stack as fallback. `Twemoji Country Flags`
+sits first in the stack but is scoped to flag glyphs by `unicodeRange` — everything else
+falls through to Tatarverse Sans. The voice is practical and direct, with a sharper
+homepage display treatment.
 
 ### Hierarchy
 
-- **Display:** homepage hero only. Use heavy uppercase sans, tight tracking no tighter than `-0.04em`, balanced wrapping, and short localized phrases.
-- **Headline:** major page titles, list heroes, and content headers.
+- **Display:** homepage hero only. Heavy uppercase sans, tight tracking no tighter than
+  `-0.04em`, balanced wrapping, short localized phrases.
+- **Headline:** major page titles, list heroes, feature section titles, and content headers.
 - **Title:** center card titles, post titles, compact section headings, and detail-page modules.
 - **Body:** MDX content, summaries, factual descriptions, policy text, and explanatory copy.
 - **Label:** buttons, chips, nav items, stats labels, metadata, and menu controls.
 - **Caption:** filter counts, group headings, and other micro-labels. This is the floor — nothing meaningful goes below 12px.
+
+### The Hero Scale Is Measured, Not Guessed
+
+The hero size is a `clamp()` tied to viewport width, and **each locale has its own**: the
+container is the same but the longest line is not — «Язык. Культура. Люди.» is 13.4em,
+"Language. Culture. People." is 15.4em, and the Russian coefficient broke English onto
+three lines with an orphan. Change the hero copy and re-measure all three numbers: slope =
+`100 / width` with ~5% headroom, ceiling = `984 / width`, floor = `280 / width`. Write the
+class as a whole literal — Tailwind scans source text and will not see a class assembled
+from a variable.
 
 ### Typography Rules
 
@@ -330,12 +396,19 @@ The site uses **Tatarverse Sans**, a self-hosted variable font (`/fonts/tatarver
 
 The site uses centered content, generous vertical rhythm on the homepage, and compact catalog modules on data-heavy pages.
 
-- Homepage: stacked brand mark, hero title, quick links, stats, and a screenshot-led search section.
+- Homepage: badge, hero title, quick links, then a stack of unframed feature sections — the
+  project statement with an illustration, the search explainer with a localized screenshot,
+  the link showcase, and the people numbers. Rhythm comes from vertical spacing, not from
+  panels.
 - Centers index: list hero, toolbar, search/filter controls, grid cards, and pagination.
+  Filters live in a left aside from `lg` and in a collapsible band below it.
 - Center detail: compact navigation, a left-aligned header, the MDX body in a measured
   column, and a facts aside. Everything sits on one left axis — the header must not be
   centered above left-aligned prose, and neither the body nor the aside is wrapped in a
   panel. Separation comes from spacing, column measure, and hairline rules.
+- Saved and nearby: the same card primitive as the catalog, an empty state that links back
+  to the catalog, and no filters. They are views, not a second catalog.
+- Stats: catalog numbers and country breakdown, built entirely from the collections.
 - MDX pages: a readable surface with clear prose styles and restrained borders.
 
 ### Layout Rules
@@ -346,6 +419,10 @@ The site uses centered content, generous vertical rhythm on the homepage, and co
 
 **Screenshots Are Product Imagery.** The search section should use real interface imagery when explaining behavior. Avoid placeholder panels.
 
+**Every Number Is Computed.** Counts on the homepage come from `catalogStats` and from the
+same link parser the card uses. A figure that cannot be derived from the collections needs
+a visible source, or it does not ship.
+
 ## 5. Shape And Surface
 
 The visual language uses squircle geometry through `@toolwind/corner-shape` and a
@@ -354,8 +431,8 @@ The visual language uses squircle geometry through `@toolwind/corner-shape` and 
 
 - `rounded-micro` (`8px`) — badges, chips, inputs, small icon buttons.
 - `rounded-control` (`16px`) — buttons, menu items, toolbars, popovers.
-- `rounded-card` (`24px`) — panels, sections, ordinary cards, marketing and screenshot
-  blocks (with image clipping and `surface-lift`).
+- `rounded-card` (`24px`) — panels, ordinary cards, and the images inside the homepage
+  feature sections.
 - `rounded-catalog` (`32px`) — center cards and other large catalog surfaces.
 - `rounded-full` stays raw. A pill is not a step on the scale: it must **not** move with
   the preset, or toggles and avatars would stop being circles.
@@ -402,14 +479,17 @@ is the same tone as the page behind it and survives on its border alone.
 
 ## 6. Motion
 
-Motion is part of the new system, but it is limited.
+Motion is part of the system, but it is limited. Everything animated in the project is CSS
+in `src/styles/tailwind.css` or in a component's own `<style>` block — there is no JS
+animation library, and adding one is a design decision, not an implementation detail.
 
-- **Hero accent:** slow brand accent movement on the highlighted word, driven by `--color-accent`.
-- **Stats:** short count and focus animation that emphasizes catalog scale.
-- **Marquee / word imagery:** optional brand texture, only when it supports the page rhythm.
+- **Hero line:** `hero-pulse`, a slow halo on the accent line driven by `--color-accent-glow`.
+- **Hero badge:** a short entrance per rotation; the rotation itself is timer-driven.
+- **Drawer:** `drawer-in` / `drawer-out` plus `fade-in` / `fade-out` for the mobile menu and its backdrop.
 - **Controls:** small hover, focus, and active-state transitions.
 
-Every animation needs a reduced-motion path. Motion must enhance already visible content, not gate content rendering.
+Every animation needs a reduced-motion path. Motion must enhance already visible content,
+not gate content rendering.
 
 ### Two Off Switches
 
@@ -419,7 +499,7 @@ Motion has **two independent off switches**, and a component must survive both:
 2. **User toggle** — the appearance menu in the header writes `data-motion="off"`
    on `<html>` (localStorage key `motion`, `on` by default). It forces
    `animation: none` and `transition: none` on every element plus
-   `scroll-behavior: auto`, killing the hero, the mark, marquees, and hovers
+   `scroll-behavior: auto`, killing the hero, the badge rotation, and hovers
    while leaving colors and gradients intact.
 
 Because the toggle removes animations outright, **any component whose state
@@ -434,25 +514,27 @@ off, OS reduced-motion.
 ### Logo Mark
 
 The mark is `flower.svg` used as a CSS mask, not as an image: the file is filled black and
-the colour comes from a token, so the shape follows theme and accent for free.
+the colour comes from a token, so the shape follows theme and accent for free. The colour
+is `var(--logo-mark-color, var(--color-accent))` — an inverted surface such as the footer
+overrides the variable rather than shipping a second SVG.
 
-It is **one flat fill of `--color-accent`, and it does not move.** The gradient sweep and
-the nine-second shimmer are gone — a permanently animating logo reads as a separate effect
-competing with the identity it is supposed to be, and it was the only decoration on the
-site that never stopped. Changing the accent changes the mark; nothing else does.
-`--color-mark-tint` existed only to feed that gradient and has been removed from every
-palette.
+It is **one flat fill, and it does not move.** The gradient sweep and the nine-second
+shimmer are gone — a permanently animating logo reads as a separate effect competing with
+the identity it is supposed to be, and it was the only decoration on the site that never
+stopped. Changing the accent changes the mark; nothing else does.
 
 ### Hero Title
 
-The hero title uses heavy uppercase lines with one accent phrase and quieter secondary lines. Keep words short enough for mobile. Do not add repeated section eyebrows around it.
+The hero title uses heavy uppercase lines with one accent line and quieter secondary lines.
+Keep words short enough for mobile; the scale is measured per locale (see Typography). Do
+not add repeated section eyebrows around it.
 
 ### Hero Badge
 
-One soft-accent pill above the hero title (HeroUI's announcement pattern), rotating
-through three project news items: the latest post, the newest center, and the current site
-version. Every line is derived from data — posts by `pubDate`, centers by their sequential
-`tbk-N` id, the version from `src/data/release.json` — so the badge never needs editing.
+One soft-accent pill above the hero title, rotating through three project news items: the
+latest post, the newest center, and the current site version. Every line is derived from
+data — posts by `pubDate`, centers by their sequential `tbk-N` id, the version from
+`src/data/release.json` — so the badge never needs editing.
 
 It is the only place the badge treatment is allowed: one pill, one fold, never a row of
 them and never inside catalog surfaces. The cards are stacked with `absolute inset-0`,
@@ -467,13 +549,30 @@ so anything waiting on `transitionend` would stall on the first card.
 
 Home links should be direct, localized navigation to key catalog surfaces. Keep them compact and useful.
 
+### Home Feature Sections
+
+The homepage stack after the links is four sections. **They are not panels.** Each one sits
+directly on the page: no `bg-surface`, no ring, no `surface-lift`. Two-column split at `md`
+with alternating image side, columns separated by `gap`, and the only rounding is on the
+image itself. Four full-width cards stacked down the page read as a template; the content
+is what should be legible, not the container. They are explanatory, not promotional — each
+one either shows a real image of the product or a number the catalog can prove.
+
+- **Statement:** illustration plus the project's own description, with live counts.
+- **Search:** copy plus a localized screenshot (`1-ru.png` / `1-en.png`).
+- **Link showcase:** platform tiles in a sparse grid, each with a count parsed from the
+  catalog by the same `getCenterLinks` the card uses. A platform with no links in the
+  catalog does not render a tile. The tiles **stay** cards — `rounded-control`, `bg-surface`,
+  a ring, `surface-lift` — because there the frame is the grid's structure, not decoration.
+  Brand hues here are brand marks, the one sanctioned exception to the no-literal-color rule.
+- **People numbers:** three large figures, centered. **These are placeholders** — rounded
+  population estimates with no source. Source them or remove the section; do not style
+  around the problem.
+
 ### Catalog Stats
 
-Stats are small, three-column pills with icons, tabular numbers, and muted labels. The animation should feel like a quick focus cue, not a dashboard metric showpiece.
-
-### Search Screenshot Section
-
-The homepage search section combines explanatory copy with localized screenshot imagery (`1-ru.png` / `1-en.png`). It may use stronger shadow than routine catalog cards because it is a product image feature.
+Stats are small pills with icons, tabular numbers, and muted labels, used on the stats
+page. The animation should feel like a quick focus cue, not a dashboard metric showpiece.
 
 ### Buttons And Chips
 
@@ -518,9 +617,19 @@ must have a hover state — ring step, lift, and an underlined title. Resting el
 stays off: a shadow under each of several hundred cards is noise plus compositing cost,
 so `surface-lift` is spent on hover instead.
 
+The one interactive exception is the save button: a small icon control in `favorite`,
+layered above the card link, with its own accessible label. It is the only thing allowed
+to sit on top of a card link, and it stays icon-only.
+
 ### MDX Surfaces
 
-MDX content should use the typography plugin tokens, readable line lengths, restrained borders, and clear link styling. Do not add marketing wrappers around factual content.
+MDX content should use the typography plugin tokens, readable line lengths, restrained borders, and clear link styling. Prose links take `link` / `link-decoration`, not the accent. Do not add marketing wrappers around factual content.
+
+### Print
+
+`/centers/print` is a separate layout with raw radii, no shadows, no accent, and no
+appearance state. Screen tokens do not apply there and screen fixes do not need to be
+mirrored into it — but a change to the card's content model does.
 
 ## 8. Do And Do Not
 
@@ -530,15 +639,17 @@ MDX content should use the typography plugin tokens, readable line lengths, rest
 - Keep the homepage brand layer distinct from catalog utility surfaces.
 - Use real product imagery where it clarifies a feature.
 - Preserve source-backed content, locale routes, stable slugs, and metadata behavior.
-- Verify contrast for muted labels, placeholders, metadata, and small controls.
+- Verify contrast for muted labels, placeholders, metadata, and small controls — against every fill they sit on, not just the page.
 - Keep both motion escape paths in every animated component: `prefers-reduced-motion` and the `[data-motion="off"]` toggle.
+- Check a visual change in the monochrome default first: if it only reads under a colored preset, it does not read.
 
 ### Do Not
 
 - Do not turn the whole site into the accent color.
-- Do not hardcode hex values or Tailwind palette classes in components.
+- Do not hardcode hex values or Tailwind palette classes in components — outside the sanctioned platform and social brand marks.
 - Do not add extra cultural palettes or ornamental motifs.
 - Do not add glossy SaaS gradients, glass panels, side stripes, or generic icon-card grids.
 - Do not reuse homepage display treatment inside dense catalog surfaces.
 - Do not add decorative motion to MDX pages, lists, or center detail content.
 - Do not rewrite factual copy into slogans.
+- Do not ship a number the catalog cannot compute or a source cannot back.

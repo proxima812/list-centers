@@ -1,20 +1,20 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-08-20T00:00:00.000Z",
+  "generatedAt": "2026-08-27T00:00:00.000Z",
   "title": "Design System: Tatarverse",
   "register": "brand",
-  "summary": "Bilingual cultural-center catalog with a controlled homepage brand layer and a quiet neutral catalog layer, themed by a user-chosen accent across light and dark.",
+  "summary": "Bilingual cultural-center catalog with a controlled homepage brand layer and a quiet neutral catalog layer, themed by a user-chosen accent across light and dark. The shipped default accent is monochrome ink, not a hue.",
   "extensions": {
     "strategy": {
       "northStar": "A Catalog With A Signal",
       "layers": [
         {
           "name": "Brand layer",
-          "purpose": "Homepage identity moments: logo mark, heavy uppercase hero title, accent-tinted hero word, compact animated stats, and search screenshot imagery."
+          "purpose": "Homepage identity moments: flower mark, rotating news badge, heavy uppercase hero with one accent line, and the feature-section stack (statement, search screenshot, link showcase, people numbers)."
         },
         {
           "name": "Catalog layer",
-          "purpose": "Centers list, detail pages, MDX content, filters, search, navigation, translation surfaces, and source-backed factual content."
+          "purpose": "Centers list, detail pages, saved, nearby, stats, MDX content, filters, search, navigation, translation surfaces, and source-backed factual content."
         },
         {
           "name": "Appearance layer",
@@ -24,48 +24,50 @@
       "rules": [
         "Keep catalog utility first.",
         "Never hardcode a hue. Ship only `--color-*` tokens (`accent`, `accent-vivid`, `accent-glow`, `foreground`, `surface`, `border`, `depth-*`), so a surface survives all seven accent presets in both themes.",
-        "The accent is a signal — hero word, focus ring, active state — not a general palette. Neutrals carry the catalog.",
+        "The accent is a signal — hero line, focus ring, active state — not a general palette. Neutrals carry the catalog.",
         "Every new color is authored twice: a light value in `@theme` in src/styles/tailwind.css and a dark value in src/styles/palettes/<preset>.css. Contrast floors: >=4.5:1 for small UI, >=3:1 for display type. Check the pairs against the CSS itself after touching a palette — the standalone audit script was removed as a second source of truth.",
         "Use real interface imagery when explaining product behavior.",
         "Preserve locale routes, source links, stable slugs, and factual copy.",
-        "Every animated component needs two escape paths, not one: `prefers-reduced-motion` and the user toggle `[data-motion=\"off\"]`. The toggle kills animation and transition globally, so never rely on `transitionend`/`animationend` firing without an explicit 1ms carve-out."
+        "Every animated component needs two escape paths, not one: `prefers-reduced-motion` and the user toggle `[data-motion=\"off\"]`. The toggle kills animation and transition globally, so never rely on `transitionend`/`animationend` firing without an explicit 1ms carve-out.",
+        "Every number on a public surface is computed from the collections or carries a visible source. HomePeopleStats currently violates this and is marked as debt.",
+        "Check a visual change in the monochrome `default` preset first: it is what ships, and a change that only reads under a colored preset does not read."
       ]
     },
     "colorMeta": {
-      "source": "src/styles/tailwind.css несёт светлые нейтрали в @theme и тёмные в .dark; src/styles/palettes/<name>.css — только акцент пресета в обеих темах. `canonical` ниже — светлое значение, `dark` — акцентный фолбэк из блока .dark в tailwind.css, который работает, пока data-accent не проставлен. Все шесть пресетов переопределяют тёмные нейтрали целиком, и у green они тонированы в hue 142 — совпадения с этим фолбэком у него больше нет.",
+      "source": "src/styles/tailwind.css несёт светлые нейтрали в @theme и тёмные в .dark; src/styles/palettes/<name>.css — только акцентные токены пресета в обеих темах. Ни один пресет не переопределяет нейтрали, границы, глубину или радиусы: бумага одна на все семь. `canonical` ниже — светлое значение, `dark` — значение из блока .dark в tailwind.css, которое работает и как фолбэк, пока data-accent не проставлен.",
       "background": {
         "role": "neutral",
         "displayName": "Page Plane",
         "canonical": "hsl(0 0% 97.5%)",
-        "dark": "hsl(0 0% 7%)",
+        "dark": "hsl(0 0% 0%)",
         "usage": "Плоскость страницы. Больше не равна surface: в светлой теме страница слегка тонирована (97.5%), карточка остаётся белой."
       },
       "foreground": {
         "role": "neutral",
         "displayName": "Catalog Ink",
         "canonical": "hsl(0 0% 11.4%)",
-        "dark": "hsl(0 0% 95%)",
+        "dark": "hsl(0 0% 93%)",
         "usage": "Primary text, high hierarchy, strong links, and active catalog states."
       },
       "muted": {
         "role": "neutral",
         "displayName": "Quiet Muted",
         "canonical": "hsl(0 0% 92.5%)",
-        "dark": "hsl(0 0% 11%)",
+        "dark": "hsl(0 0% 2%)",
         "usage": "Полоса секции и тихие заливки. Лежит МЕЖДУ background и surface: полоса утоплена относительно страницы, карточка на ней приподнята."
       },
       "subtleForeground": {
         "role": "neutral",
         "displayName": "Subtle Ink",
         "canonical": "hsl(0 0% 39.5%)",
-        "dark": "hsl(0 0% 63.5%)",
+        "dark": "hsl(0 0% 58%)",
         "usage": "Самый тусклый текстовый токен. Проходит 4.55:1 против всех пяти заливок своей палитры, а не только против страницы."
       },
       "surface": {
         "role": "neutral",
         "displayName": "Surface Plane",
         "canonical": "hsl(0 0% 100%)",
-        "dark": "hsl(0 0% 16%)",
+        "dark": "hsl(0 0% 5%)",
         "usage": "Карточки, панели, поповеры. Верхняя ступень лестницы поверхностей."
       },
       "border": {
@@ -79,14 +81,14 @@
         "role": "primary",
         "displayName": "Catalog Ink",
         "canonical": "hsl(0 0% 11.4%)",
-        "dark": "hsl(0 0% 95%)",
+        "dark": "hsl(0 0% 93%)",
         "usage": "Primary actions, active filters, and strongest text. Inverts with the theme — pair with `primary-foreground`, never with a literal white or black."
       },
       "accent": {
         "role": "accent",
         "displayName": "User Accent Signal",
-        "canonical": "hsl(142 66% 30.9%)",
-        "dark": "hsl(142 58% 52%)",
+        "canonical": "hsl(0 0% 11.4%)",
+        "dark": "hsl(0 0% 95%)",
         "presets": {
           "default": {
             "light": "hsl(0 0% 11.4%)",
@@ -120,20 +122,20 @@
           }
         },
         "source": "The preset list itself lives in src/utils/accents.ts — one array feeding both the header dropdown and the mobile toggle. Never copy the swatch array into a component.",
-        "usage": "Focus rings, active states, and the homepage hero word. Монохромный `default` — дефолтный пресет. Held at >=4.5:1 on its own background in every preset/theme pair. The CSS is the check, not this note: read the authored values out of src/styles/tailwind.css and src/styles/palettes/*.css rather than trusting a written-down number. Twelve pairs matter — accent on its background, accent-foreground on accent, vivid at display scale, the accent-soft pair, subtle-foreground on bg-subtle, and the page→surface lightness step."
+        "usage": "Focus rings, active states, and the homepage hero word. Монохромный `default` — дефолтный пресет. Held at >=4.5:1 on its own background in every preset/theme pair. The CSS is the check, not this note: read the authored values out of src/styles/tailwind.css and src/styles/palettes/*.css rather than trusting a written-down number. Fourteen theme × preset pairs matter — accent on its background, accent-foreground on accent, vivid at display scale, the accent-soft pair, subtle-foreground on bg-subtle, and the page→surface lightness step."
       },
       "accentVivid": {
         "role": "accent",
         "displayName": "Display Accent",
-        "canonical": "hsl(142 76% 36%)",
-        "dark": "hsl(142 62% 52%)",
+        "canonical": "hsl(0 0% 11.4%)",
+        "dark": "hsl(0 0% 95%)",
         "usage": "Display-scale type only (hero lines), where WCAG allows 3:1. Never on small UI."
       },
       "accentGlow": {
         "role": "accent",
         "displayName": "Hero Glow",
-        "canonical": "hsl(142 71% 55%)",
-        "dark": "hsl(142 70% 70%)",
+        "canonical": "hsl(0 0% 56.5%)",
+        "dark": "hsl(0 0% 74%)",
         "usage": "Source tone for the hero `drop-shadow` halo (`--animate-hero-pulse`). Decorative only, never load-bearing for text contrast."
       },
       "shade": {
@@ -225,34 +227,29 @@
     ],
     "motion": [
       {
-        "name": "hero-accent-flow",
-        "value": "8s ease-in-out infinite",
-        "purpose": "Slow homepage accent movement on the highlighted hero word."
+        "name": "hero-pulse",
+        "value": "3s ease-in-out infinite",
+        "purpose": "Accent-tinted drop-shadow halo breathing around the hero accent line, sourced from --color-accent-glow."
       },
       {
-        "name": "stats-focus",
-        "value": "912ms cubic-bezier(0.16, 1, 0.3, 1)",
-        "purpose": "Short focus and count animation for catalog scale stats."
+        "name": "hero-gray-drift",
+        "value": "14s ease-in-out infinite",
+        "purpose": "Quiet background-position drift available to hero lines."
+      },
+      {
+        "name": "hero-badge-in",
+        "value": "short entrance per rotation",
+        "purpose": "Hero news badge card entrance. Rotation itself is timer-driven, never transitionend-driven."
+      },
+      {
+        "name": "drawer-in / drawer-out",
+        "value": "250ms / 200ms cubic-bezier(0.32, 0.72, 0, 1)",
+        "purpose": "Mobile drawer and its backdrop, with fade-in/fade-out on the backdrop. Asymmetric curves, so these are animations rather than transitions."
       },
       {
         "name": "state-transition",
         "value": "150ms color and background transitions",
         "purpose": "Small hover, focus, and active-state feedback."
-      },
-      {
-        "name": "hero-pulse",
-        "value": "3s ease-in-out infinite",
-        "purpose": "Accent-tinted drop-shadow halo breathing around the hero word."
-      },
-      {
-        "name": "hero-gray-drift",
-        "value": "14s ease-in-out infinite",
-        "purpose": "Quiet background-position drift on the hero's second line."
-      },
-      {
-        "name": "drawer-in / drawer-out",
-        "value": "250ms / 200ms cubic-bezier(0.32, 0.72, 0, 1)",
-        "purpose": "Mobile drawer and its backdrop. Asymmetric in/out curves, so these are animations rather than transitions."
       },
       {
         "name": "reduced-motion",
@@ -262,7 +259,12 @@
       {
         "name": "motion-toggle",
         "value": "required",
-        "purpose": "Second, independent off switch: the header appearance menu writes `[data-motion=\"off\"]` on <html> (localStorage key `motion`, values on/off, default on). It forces `animation: none` and `transition: none` on every element and `scroll-behavior: auto`, killing hero, mark, marquee, and hovers while leaving colors and gradients intact. Any component whose state machine waits on `animationend`/`transitionend` must be carved out and given `animation-duration: 1ms` instead of `none` — the drawer (`[data-menu-list]`, `[data-menu-backdrop]`) is the existing precedent. Design and QA every animated surface in all three states: motion on, toggle off, OS reduced-motion."
+        "purpose": "Second, independent off switch: `[data-motion=\"off\"]` on <html> kills animation and transition outright. Anything waiting on animationend/transitionend must be carved out with animation-duration: 1ms — see [data-menu-list] / [data-menu-backdrop]."
+      },
+      {
+        "name": "no-js-animation-library",
+        "value": "required",
+        "purpose": "All motion is CSS in src/styles/tailwind.css or a component <style> block. There is no JS animation library in the project."
       }
     ],
     "breakpoints": [
@@ -323,7 +325,7 @@
         "depth-100": "surface 84% + surface-foreground"
       },
       "authored": "background, muted, surface и subtle авторские, но единые на все семь пресетов (тёмная лестница 0/2/5/14 — бывший регистр violet); surface-muted и оба border выводятся из surface.",
-      "verified": "Худшие случаи в браузере по 12 комбинациям: border-muted 1.28, border 1.51, depth-100 на surface 1.35, на полосе 1.23, ΔL surface-muted 3.4."
+      "verified": "Худшие случаи в браузере по 14 комбинациям: border-muted 1.28, border 1.51, depth-100 на surface 1.35, на полосе 1.23, ΔL surface-muted 3.4."
     }
   },
   "components": [
@@ -409,14 +411,15 @@
   ],
   "narrative": {
     "northStar": "A Catalog With A Signal",
-    "overview": "Tatarverse pairs a memorable homepage identity with a quiet, practical catalog. The homepage may use the logo mark, heavy uppercase hero type, an accent-tinted hero phrase, compact animated stats, and real interface imagery. Catalog surfaces remain neutral, factual, and easy to scan. Presentation is the user's: three accent presets, light/dark, and a motion toggle, so no surface may assume one fixed hue or one fixed theme.",
+    "overview": "Tatarverse pairs a memorable homepage identity with a quiet, practical catalog. The homepage may use the flower mark, heavy uppercase hero type with one accent line, a data-derived news badge, and feature sections built on real imagery and computed counts. Catalog surfaces remain neutral, factual, and easy to scan. Presentation is the visitor's: seven accent presets (monochrome `default` ships), light/dark/system, and a motion toggle, so no surface may assume one fixed hue or one fixed theme.",
     "keyCharacteristics": [
       "Two-layer system: homepage brand layer plus catalog utility layer.",
-      "Neutral semantic tokens carry most interface structure; both themes are authored, never derived.",
-      "The user-chosen accent stays a signal: hero phrase, focus ring, active state.",
-      "Squircle geometry for controls, cards, stats, menus, and catalog primitives.",
-      "Real product imagery in the homepage search section.",
-      "Motion limited to identity, stats emphasis, and small control feedback."
+      "Neutral semantic tokens carry structure; one light ladder and one dark ladder serve all seven presets.",
+      "A preset is colour and nothing but colour — no per-preset neutrals, radii, or shadows.",
+      "The user-chosen accent stays a signal: hero line, focus ring, active state. The default one is monochrome.",
+      "Squircle geometry on one four-step radius scale for controls, cards, sections, and catalog primitives.",
+      "Homepage feature sections are unframed: real imagery and computed counts on the bare page, no stacked full-width cards.",
+      "Motion limited to the hero, the badge, the drawer, and small control feedback — CSS only."
     ],
     "rules": [
       {
@@ -426,22 +429,37 @@
       },
       {
         "name": "The Accent Is A Signal",
-        "body": "The accent belongs to the homepage identity moment, focus, and active state only — and it is whichever preset the user picked, so it is only ever referenced as `var(--color-accent)` / `accent-vivid` / `accent-glow`.",
+        "body": "The accent belongs to the homepage identity moment, focus, and active state only — and it is whichever preset the visitor picked, so it is only ever referenced as `var(--color-accent)` / `accent-vivid` / `accent-glow`. Links are not accent-coloured: prose links use `link` / `link-decoration`.",
         "section": "colors"
       },
       {
+        "name": "The Surface Ladder Is Load-Bearing",
+        "body": "`muted` sits between `background` and `surface`. A band is recessed, a card on it is raised. Reversing the order collapses the catalog.",
+        "section": "colors"
+      },
+      {
+        "name": "Radius Is A Constant",
+        "body": "One scale 8/16/24/32 in @theme for all seven presets. Never a raw rounded-2xl/3xl/4xl; `rounded-full` stays raw.",
+        "section": "shape"
+      },
+      {
         "name": "Display Is Scarce",
-        "body": "Heavy uppercase display type is for homepage identity and rare page-level statements.",
+        "body": "Heavy uppercase display type is for homepage identity and rare page-level statements. The hero clamp is measured per locale — re-measure when the copy changes.",
         "section": "typography"
       },
       {
         "name": "Cards Are Functional",
-        "body": "Use cards for center records, posts, MDX surfaces, and real grouped data.",
+        "body": "Use cards for center records, posts, MDX surfaces, and real grouped data. One ring per nesting level; the save button is the only control allowed on top of a card link.",
+        "section": "layout"
+      },
+      {
+        "name": "Every Number Is Computed",
+        "body": "Public counts come from the collections or from the same parser the card uses. A figure without a source does not ship.",
         "section": "layout"
       },
       {
         "name": "Motion Must Have A Reason",
-        "body": "Motion is allowed for identity, stats emphasis, and small state feedback, and must survive both off switches: OS reduced-motion and the header `[data-motion=\"off\"]` toggle.",
+        "body": "Motion is allowed for identity, the drawer, and small state feedback, and must survive both off switches: OS reduced-motion and the header `[data-motion=\"off\"]` toggle.",
         "section": "motion"
       }
     ],
@@ -450,19 +468,20 @@
       "Keep the homepage brand layer distinct from catalog utility surfaces.",
       "Use real product imagery where it clarifies a feature.",
       "Preserve source-backed content, locale routes, stable slugs, and metadata behavior.",
-      "Verify contrast for muted labels, placeholders, metadata, and small controls in both themes.",
+      "Verify contrast for muted labels, placeholders, metadata, and small controls against every fill they sit on, not just the page.",
       "Keep both motion escape paths in every animated component: `prefers-reduced-motion` and `[data-motion=\"off\"]`.",
-      "Author every new color twice — light in `@theme`, dark under `.dark` — and check it against all three accent presets."
+      "Author every new color twice — light in `@theme`, dark under `.dark` — and check it in the monochrome default before any hue."
     ],
     "donts": [
-      "Do not turn the whole site into the accent hue, and never hardcode one — the user can switch it to green, blue, or violet at any moment.",
+      "Do not turn the whole site into the accent hue, and never hardcode one — the visitor can switch it to any of six hues or back to monochrome at any moment.",
+      "Do not hardcode hex or Tailwind palette classes; the platform tiles in the link showcase and the social buttons are the only sanctioned brand-mark exception.",
+      "Do not give a preset its own neutrals, radii, or shadows.",
       "Do not add extra cultural palettes or ornamental motifs.",
       "Do not add glossy SaaS gradients, glass panels, side stripes, or generic icon-card grids.",
       "Do not reuse homepage display treatment inside dense catalog surfaces.",
       "Do not add decorative motion to MDX pages, lists, or center detail content.",
-      "Do not rewrite factual copy into slogans.",
-      "Do not hardcode a hex, `bg-white`, `text-black`, or a Tailwind palette color (`zinc-*`, `blue-*`) — they break dark theme and the accent presets.",
-      "Do not derive shadows from `foreground`, and do not gate a component's state machine on `transitionend` without a `[data-motion=\"off\"]` carve-out."
+      "Do not rewrite factual copy into slogans, and do not ship an unsourced number.",
+      "Do not wrap the homepage feature sections back into full-width cards — spacing carries them; only their images are rounded."
     ]
   }
 }
