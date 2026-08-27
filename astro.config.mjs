@@ -5,7 +5,7 @@ import tailwindcss from "@tailwindcss/vite";
 import AstroPWA from "@vite-pwa/astro";
 import icon from "astro-icon";
 import metaTags from "astro-meta-tags";
-import { defineConfig } from "astro/config";
+import { defineConfig, fontProviders } from "astro/config";
 import { config } from "./src/config.ts";
 import aiTxt from "./src/integrations/aiTxt.ts";
 import { buildHomeMarkdown } from "./src/integrations/homeMarkdown.ts";
@@ -16,6 +16,40 @@ import { includeAssets, manifest, workbox } from "./src/utils/pwaSettings.ts";
 
 export default defineConfig({
     site: config.site.url,
+    fonts: [
+        {
+            provider: fontProviders.local(),
+            name: "Tatarverse Sans",
+            cssVariable: "--font-tatarverse-sans",
+            options: {
+                variants: [
+                    {
+                        src: ["./src/assets/fonts/tatarverse-sans.woff2"],
+                        weight: "100 900",
+                        style: "normal",
+                        display: "optional",
+                    },
+                ],
+            },
+        },
+        {
+            provider: fontProviders.local(),
+            name: "Twemoji Country Flags",
+            cssVariable: "--font-country-flags",
+            fallbacks: [],
+            options: {
+                variants: [
+                    {
+                        src: ["./src/assets/fonts/twemoji-country-flags.woff2"],
+                        weight: 400,
+                        style: "normal",
+                        display: "swap",
+                        unicodeRange: ["U+1F1E6-1F1FF", "U+1F3F4", "U+E0062-E007F"],
+                    },
+                ],
+            },
+        },
+    ],
     i18n: {
         locales: ["ru", "en"],
         defaultLocale: "ru",

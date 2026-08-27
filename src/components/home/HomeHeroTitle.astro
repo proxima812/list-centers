@@ -1,5 +1,5 @@
 ---
-import { getLocaleFromUrl, useTranslations } from "@/i18n";
+import { getLocaleFromUrl, useTranslations, type AppLocale } from "@/i18n";
 
 const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
@@ -29,20 +29,31 @@ const heroLines2 = [
 ] as const;
 
 const titleClass = "uppercase inline-block";
+
+/**
+ * Размер тянется за шириной, а не прыгает по брейкпоинтам — и у каждого языка
+ * он свой. Контейнер один и тот же (`max-w-5xl`, 984px контента), а самая
+ * длинная строка разная: «Язык. Культура. Люди.» занимает 13.4em, а
+ * «Language. Culture. People.» — 15.4em. С русским коэффициентом английский
+ * рвался на три строки с одиноким «People.» внизу.
+ *
+ * Литералы записаны целиком: Tailwind сканирует исходник, и класс, собранный
+ * из переменной, до него не дойдёт.
+ *
+ * Меняешь текст заголовка — перемеряй. Наклон = 100 / ширина_строки_в_em с
+ * запасом ~5%, потолок = 984px / ширина_строки_в_em.
+ */
+const heroSizeClass: Record<AppLocale, string> = {
+	ru: "text-[clamp(1.25rem,calc(7.1vw-3px),4.5rem)]",
+	en: "text-[clamp(1.25rem,calc(6.2vw-3px),3.75rem)]",
+};
 ---
 
-{/*
-	Размер тянется за шириной, а не прыгает по брейкпоинтам.
-	Контейнер — `max-w-5xl`, то есть 984px контента, а «Язык. Культура. Люди.»
-	при `text-7xl` занимает 963: на десктопе строка помещается, а на всём, что
-	уже 1024px, рвалась — и на телефоне разваливалась на четыре рваные строки
-	с одиноким словом посередине. Коэффициент подобран по самой длинной русской
-	строке с запасом; верхняя граница 4.5rem — прежний `text-7xl`, поэтому
-	десктоп выглядит ровно как раньше. Это роль display из DESIGN.md, она там
-	и описана как clamp.
-*/}
 <h1
-	class="relative select-none text-center text-[clamp(1.25rem,calc(7.1vw-3px),4.5rem)] leading-none"
+	class:list={[
+		"relative select-none text-center leading-none",
+		heroSizeClass[locale] ?? heroSizeClass.ru,
+	]}
 >
 	<div class="flex flex-wrap items-baseline justify-center gap-x-2 gap-y-2 md:gap-x-3.5">
 		{
