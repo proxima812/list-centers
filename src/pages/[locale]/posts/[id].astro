@@ -1,0 +1,31 @@
+---
+import { byNewest, localizedPosts } from "@/domain/post/collection";
+import { secondaryLocales } from "@/i18n/routes";
+import { getPostId } from "@/utils/posts";
+import PostPage from "../../posts/[id].astro";
+
+export async function getStaticPaths() {
+	const byLocale = await Promise.all(
+		secondaryLocales().map(async (locale) => {
+			const posts = byNewest(await localizedPosts(locale));
+
+			return posts.map((post, index) => ({
+				params: { locale, id: getPostId(post.id) },
+				props: {
+					post,
+					newerPost: index > 0 ? posts[index - 1] : null,
+					olderPost: index < posts.length - 1 ? posts[index + 1] : null,
+				},
+			}));
+		}),
+	);
+
+	return byLocale.flat();
+}
+---
+
+<PostPage
+	post={Astro.props.post}
+	newerPost={Astro.props.newerPost}
+	olderPost={Astro.props.olderPost}
+/>

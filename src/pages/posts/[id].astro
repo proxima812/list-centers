@@ -2,16 +2,16 @@
 import { markdownComponents } from "@/components/markdown/markdownComponents";
 import SkipNode from "@/components/markdown/SkipNode.astro";
 import BackButton from "@/components/navigation/BackButton.astro";
+import { byNewest, type PostEntry } from "@/domain/post/collection";
+import { defaultLocale, getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
 import Layout from "@/layouts/Layout.astro";
 import { formatContentDateTime, getContentDates } from "@/utils/contentDates";
 import { getPostId, getPostMarkdownPath, getPostPath } from "@/utils/posts";
 import { Icon } from "astro-icon/components";
-import { getCollection, render, type CollectionEntry } from "astro:content";
+import { getCollection, render } from "astro:content";
 
 export async function getStaticPaths() {
-	const posts = (await getCollection("posts")).sort(
-		(a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime(),
-	);
+	const posts = byNewest(await getCollection("posts"));
 
 	return posts.map((post, index) => ({
 		params: { id: getPostId(post.id) },
@@ -24,21 +24,25 @@ export async function getStaticPaths() {
 }
 
 interface Props {
-	post: CollectionEntry<"posts">;
-	newerPost: CollectionEntry<"posts"> | null;
-	olderPost: CollectionEntry<"posts"> | null;
+	post: PostEntry;
+	newerPost: PostEntry | null;
+	olderPost: PostEntry | null;
 }
 
 const { post, newerPost, olderPost } = Astro.props as Props;
 const { Content } = await render(post);
 const data = post.data;
 
+const locale = getLocaleFromUrl(Astro.url);
+const t = useTranslations(locale);
+const isDefault = locale === defaultLocale;
+
 const { publishedDate, modifiedDate } = getContentDates({
 	pubDate: data.pubDate,
 	filePath: post.filePath,
 });
 
-const fullDate = new Intl.DateTimeFormat("ru-RU", {
+const fullDate = new Intl.DateTimeFormat(locale, {
 	day: "numeric",
 	month: "long",
 	year: "numeric",
@@ -47,15 +51,15 @@ const fullDate = new Intl.DateTimeFormat("ru-RU", {
 	.format(data.pubDate)
 	.replace(/\s?г\.$/, "");
 
-const publishedLabel = formatContentDateTime(publishedDate, "ru");
-const modifiedLabel = formatContentDateTime(modifiedDate, "ru");
+const publishedLabel = formatContentDateTime(publishedDate, locale);
+const modifiedLabel = formatContentDateTime(modifiedDate, locale);
 
 const badgeClass =
 	"rounded-full bg-surface px-2.5 py-1 font-medium text-muted-foreground ring ring-depth-100";
 
 const neighbours = [
-	newerPost ? { post: newerPost, label: "Новее", icon: "tabler:arrow-left" } : null,
-	olderPost ? { post: olderPost, label: "Старее", icon: "tabler:arrow-right" } : null,
+	newerPost ? { post: newerPost, label: t("posts.newer"), icon: "tabler:arrow-left" } : null,
+	olderPost ? { post: olderPost, label: t("posts.older"), icon: "tabler:arrow-right" } : null,
 ].filter((item): item is NonNullable<typeof item> => Boolean(item));
 ---
 
@@ -63,15 +67,15 @@ const neighbours = [
 	title={data.title}
 	description={data.description}
 	type="article"
-	canonicalURL={getPostPath(post.id)}
-	keywords={["tatarverse", "посты", data.category, ...data.tags]}
+	canonicalURL={localizePath(locale, getPostPath(post.id))}
+	keywords={["tatarverse", t("posts.title"), data.category, ...data.tags]}
 	ogImage={data.ogImage}
-	rssURL="/posts/rss.xml"
-	markdownURL={getPostMarkdownPath(post.id)}
+	rssURL={isDefault ? "/posts/rss.xml" : undefined}
+	markdownURL={isDefault ? getPostMarkdownPath(post.id) : undefined}
 	datePublished={publishedDate}
 	dateModified={modifiedDate}
 >
-	<BackButton href="/posts" variant="outline" label="Все посты" labelKey="nav.posts" />
+	<BackButton href="/posts" variant="outline" label="Все посты" labelKey="posts.all" />
 
 	<main class="mx-auto w-full max-w-3xl min-w-0">
 		<article class="flex w-full min-w-0 flex-col gap-6">
@@ -116,12 +120,14 @@ const neighbours = [
 					<footer class="border-t border-depth-100 pt-3 text-[0.72rem] leading-5 text-muted-foreground">
 						{publishedLabel && (
 							<time datetime={publishedDate?.toISOString()}>
-								Опубликовано: {publishedLabel}
+								{t("content.published")}: {publishedLabel}
 							</time>
 						)}
 						{publishedLabel && modifiedLabel && <span aria-hidden="true"> · </span>}
 						{modifiedLabel && (
-							<time datetime={modifiedDate?.toISOString()}>Обновлено: {modifiedLabel}</time>
+							<time datetime={modifiedDate?.toISOString()}>
+								{t("content.updated")}: {modifiedLabel}
+							</time>
 						)}
 					</footer>
 				)
@@ -132,11 +138,11 @@ const neighbours = [
 			neighbours.length > 0 && (
 				<nav
 					class="mt-10 grid gap-3 sm:grid-cols-2"
-					aria-label="Соседние посты"
+					aria-label={t("posts.neighbours")}
 				>
 					{neighbours.map((item) => (
 						<a
-							href={getPostPath(item.post.id)}
+							href={localizePath(locale, getPostPath(item.post.id))}
 							class="group flex min-w-0 flex-col gap-1 rounded-card corner-squircle bg-surface p-4 text-left no-underline ring ring-depth-100 transition hover:ring-depth-200"
 						>
 							<span class="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground">

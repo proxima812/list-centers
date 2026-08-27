@@ -1,4 +1,6 @@
 ---
+import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
+
 interface Props {
 	id: string;
 	href: string;
@@ -30,6 +32,10 @@ const {
 	modifiedLabel,
 	isLong,
 } = Astro.props as Props;
+
+const locale = getLocaleFromUrl(Astro.url);
+const t = useTranslations(locale);
+const postHref = localizePath(locale, href);
 ---
 
 <article
@@ -57,7 +63,7 @@ const {
 		</div>
 
 		<h2 class="mt-4 text-xl font-bold leading-tight tracking-tight text-foreground sm:text-2xl">
-			<a href={href} class="wrap-anywhere rounded-micro no-underline transition hover:text-depth-700">
+			<a href={postHref} class="wrap-anywhere rounded-micro no-underline transition hover:text-depth-700">
 				{title}
 			</a>
 		</h2>
@@ -78,10 +84,10 @@ const {
 		</div>
 
 		<a
-			href={href}
+			href={postHref}
 			class="mt-3 inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1.5 text-sm font-medium text-muted-foreground no-underline ring ring-depth-100 transition hover:bg-primary hover:text-primary-foreground"
 		>
-			<span>Читать пост</span>
+			<span>{t("posts.read")}</span>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				viewBox="0 0 24 24"
@@ -104,7 +110,7 @@ const {
 		{
 			publishedLabel && (
 				<time datetime={publishedDate?.toISOString()}>
-					Опубликовано: {publishedLabel}
+					{t("content.published")}: {publishedLabel}
 				</time>
 			)
 		}
@@ -112,7 +118,7 @@ const {
 		{
 			modifiedLabel && (
 				<time datetime={modifiedDate?.toISOString()}>
-					Обновлено: {modifiedLabel}
+					{t("content.updated")}: {modifiedLabel}
 				</time>
 			)
 		}

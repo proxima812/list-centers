@@ -9,6 +9,7 @@ import {
 	getCenterPath,
 	getCenterTranslationCollection,
 } from "@/utils/centers";
+import { byNewest, localizedPosts } from "@/domain/post/collection";
 import { getPostPath } from "@/utils/posts";
 import { Icon } from "astro-icon/components";
 import { getCollection } from "astro:content";
@@ -46,9 +47,7 @@ const centerTitle = (entry: (typeof allCenters)[number]) =>
 	translatedCenters.find((translation) => translation.id === entry.id)?.data.title ??
 	entry.data.title;
 
-const recentPosts = (await getCollection("posts"))
-	.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
-	.slice(0, 4);
+const recentPosts = byNewest(await localizedPosts(locale)).slice(0, 4);
 
 const baseStyle =
 	"text-[var(--footer-fg-muted)] transition-colors hover:text-[var(--footer-fg)]";

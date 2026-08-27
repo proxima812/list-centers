@@ -25,18 +25,24 @@ const ogLocales: Record<AppLocale, string> = {
 	en: "en_US",
 };
 
-const translatedCenterIds = new Set(
-	Object.keys(import.meta.glob("../data/centers_i18n/en/*.mdx")).map((path) =>
-		path.slice(path.lastIndexOf("/") + 1).replace(/\.mdx$/, ""),
-	),
-);
+const idsFromGlob = (files: Record<string, unknown>) =>
+	new Set(
+		Object.keys(files).map((path) =>
+			path.slice(path.lastIndexOf("/") + 1).replace(/\.mdx$/, ""),
+		),
+	);
 
-const ruOnlyRoutes: Array<{ pattern: RegExp; switcher: "stay" | "hub" }> = [
-	{ pattern: /^(posts|saved)$/, switcher: "stay" },
-	{ pattern: /^posts\/.+/, switcher: "hub" },
-	{ pattern: /^centers\/print$/, switcher: "hub" },
-	{ pattern: /^(policy|sources|translations|thanks)$/, switcher: "hub" },
-];
+const translatedCenterIds = idsFromGlob(import.meta.glob("../data/centers_i18n/en/*.mdx"));
+const translatedPostIds = idsFromGlob(import.meta.glob("../data/posts_i18n/en/*.mdx"));
+
+/**
+ * Маршруты, у которых английской версии нет вовсе.
+ *
+ * Сейчас список пуст: переведены все служебные страницы, посты и печатная
+ * форма. Механизм оставлен — он понадобится следующему разделу, который
+ * выйдет сначала по-русски.
+ */
+const ruOnlyRoutes: Array<{ pattern: RegExp; switcher: "stay" | "hub" }> = [];
 
 function findRuOnlyRoute(relativePath: string) {
 	return ruOnlyRoutes.find((route) => route.pattern.test(relativePath));
@@ -48,6 +54,9 @@ export function hasLocalizedRoute(locale: AppLocale, relativePath: string): bool
 
 	const centerId = relativePath.match(/^centers\/([^/.]+)$/)?.[1];
 	if (centerId && !translatedCenterIds.has(centerId)) return false;
+
+	const postId = relativePath.match(/^posts\/([^/.]+)$/)?.[1];
+	if (postId && !translatedPostIds.has(postId)) return false;
 
 	return true;
 }

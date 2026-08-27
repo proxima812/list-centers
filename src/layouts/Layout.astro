@@ -73,14 +73,12 @@ const yandexMetrika = config.site.analytics.yandexMetrika;
 				};
 				const theme = read("theme") ?? "dark";
 				const accent = read("accent") ?? "default";
-				const motion = read("motion") ?? "on";
 				const dark =
 					theme === "dark" ||
 					(theme === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
 
 				root.dataset.theme = theme;
 				root.dataset.accent = accent;
-				root.dataset.motion = motion;
 				root.classList.toggle("dark", dark);
 
 				const syncThemeColor = () => {

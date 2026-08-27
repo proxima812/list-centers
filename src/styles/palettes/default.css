@@ -3,9 +3,7 @@
 :root[data-accent="default"] {
   --color-accent: hsl(0 0% 11.4%);
   --color-accent-foreground: hsl(0 0% 100%);
-  
   --color-accent-vivid: hsl(0 0% 11.4%);
-  
   --color-accent-glow: hsl(0 0% 56.5%);
 }
 

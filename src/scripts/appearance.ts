@@ -9,10 +9,10 @@ import {
 import { APPEARANCE_SPECS } from "@/domain/site/appearance";
 
 /**
- * Тема, палитра и анимация: чтение, применение и сохранение.
+ * Тема и палитра: чтение, применение и сохранение.
  *
- * Три настройки устроены одинаково, поэтому и обрабатываются одинаково —
- * таблицей `APPEARANCE_SPECS`, а не тремя парами read/apply и цепочкой
+ * Обе настройки устроены одинаково, поэтому и обрабатываются одинаково —
+ * таблицей `APPEARANCE_SPECS`, а не двумя парами read/apply и цепочкой
  * тернарников при разборе нажатия.
  */
 
@@ -82,8 +82,7 @@ function apply(group: AppearanceGroup, value: string) {
 	}
 
 	syncButtons(group, value);
-	// Анимация на цвет фона не влияет — лишний пересчёт стилей ни к чему.
-	if (group !== "motion") syncThemeColor();
+	syncThemeColor();
 }
 
 function set(group: AppearanceGroup, value: string) {

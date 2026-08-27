@@ -145,6 +145,14 @@ const posts = defineCollection({
 	schema: PostSchema,
 });
 
+const postsEn = defineCollection({
+	loader: glob({
+		pattern: "**/*.{md,mdx}",
+		base: "./src/data/posts_i18n/en",
+	}),
+	schema: PostSchema,
+});
+
 const thanks = defineCollection({
 	loader: glob({
 		pattern: "**/*.{md,mdx}",
@@ -153,11 +161,21 @@ const thanks = defineCollection({
 	schema: ThanksSchema,
 });
 
+const thanksEn = defineCollection({
+	loader: glob({
+		pattern: "**/*.{md,mdx}",
+		base: "./src/data/thanks_i18n/en",
+	}),
+	schema: ThanksSchema,
+});
+
 export const collections = {
 	centers,
 	centersEn,
 	posts,
+	postsEn,
 	thanks,
+	thanksEn,
 };
 
 export type CenterCategory = z.infer<typeof CenterCategorySchema>;

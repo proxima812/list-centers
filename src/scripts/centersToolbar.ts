@@ -131,8 +131,7 @@ export function initCardsToolbar() {
 	// --- рендер -------------------------------------------------------------
 
 	function scrollBehavior(): ScrollBehavior {
-		const motionOff = document.documentElement.dataset.motion === "off";
-		return motionOff || prefersReducedMotion.matches ? "auto" : "smooth";
+		return prefersReducedMotion.matches ? "auto" : "smooth";
 	}
 
 	function renderFacets() {

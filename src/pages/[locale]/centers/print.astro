@@ -1,5 +1,6 @@
 ---
+import PrintPage from "../../centers/print.astro";
 export { secondaryLocalePaths as getStaticPaths } from "@/i18n/routes";
-
-return Astro.redirect("/posts/", 301);
 ---
+
+<PrintPage />

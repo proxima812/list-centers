@@ -64,23 +64,6 @@ const ACCENT_OPTIONS: AppearanceOption[] = ACCENT_PRESETS.map((preset) => ({
 	swatch: { from: preset.from, to: preset.to },
 }));
 
-const MOTION_OPTIONS: AppearanceOption[] = [
-	{
-		value: "on",
-		labelKey: "motion.on",
-		shortLabelKey: "motion.on",
-		label: "Animations on",
-		icon: "tabler:wave-sine",
-	},
-	{
-		value: "off",
-		labelKey: "motion.off",
-		shortLabelKey: "motion.off",
-		label: "Animations off",
-		icon: "tabler:wave-square",
-	},
-];
-
 /**
  * Порядок важен: тёмная тема — значение по умолчанию, его же ставит
  * блокирующий скрипт в `Layout.astro` до первой отрисовки.
@@ -99,12 +82,5 @@ export const APPEARANCE_SPECS: Record<AppearanceGroup, AppearanceGroupSpec> = {
 		switcherLabelKey: "accent.switcher",
 		fallback: DEFAULT_ACCENT,
 		options: ACCENT_OPTIONS,
-	},
-	motion: {
-		group: "motion",
-		storageKey: "motion",
-		switcherLabelKey: "motion.switcher",
-		fallback: "on",
-		options: MOTION_OPTIONS,
 	},
 };

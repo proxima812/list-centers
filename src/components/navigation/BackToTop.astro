@@ -29,10 +29,8 @@ const t = useTranslations(locale);
 		};
 
 		button.addEventListener("click", () => {
-			const motionOff =
-				document.documentElement.dataset.motion === "off" ||
-				matchMedia("(prefers-reduced-motion: reduce)").matches;
-			window.scrollTo({ top: 0, behavior: motionOff ? "auto" : "smooth" });
+			const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+			window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
 		});
 
 		window.addEventListener("scroll", setVisible, { passive: true });

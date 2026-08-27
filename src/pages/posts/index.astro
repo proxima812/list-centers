@@ -1,19 +1,23 @@
 ---
 import BackButton from "@/components/navigation/BackButton.astro";
 import PostCard from "@/components/posts/PostCard.astro";
+import { byNewest, localizedPosts } from "@/domain/post/collection";
+import { defaultLocale, getLocaleFromUrl, useTranslations } from "@/i18n";
 import Layout from "@/layouts/Layout.astro";
 import { formatContentDateTime, getContentDates } from "@/utils/contentDates";
 import { getPostId, getPostPath } from "@/utils/posts";
-import { getCollection, render } from "astro:content";
+import { render } from "astro:content";
 
-const posts = await getCollection("posts");
-const rendered = posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+const locale = getLocaleFromUrl(Astro.url);
+const t = useTranslations(locale);
+const isDefault = locale === defaultLocale;
 
-const title = "Посты";
-const description =
-	"Лента tatarverse: короткие заметки о центрах, культуре, языке и живом сообществе.";
+const rendered = byNewest(await localizedPosts(locale));
 
-const fullDateFormatter = new Intl.DateTimeFormat("ru-RU", {
+const title = t("posts.title");
+const description = t("posts.description");
+
+const fullDateFormatter = new Intl.DateTimeFormat(locale, {
 	day: "numeric",
 	month: "short",
 	year: "numeric",
@@ -36,14 +40,14 @@ const getRelativeTime = (date: Date) => {
 	const day = 24 * hour;
 
 	if (diffMs < hour) {
-		return `${Math.max(1, Math.floor(diffMs / minute))} мин.`;
+		return t("posts.ago.minutes", { value: Math.max(1, Math.floor(diffMs / minute)) });
 	}
 
 	if (diffMs < day) {
-		return `${Math.floor(diffMs / hour)} ч.`;
+		return t("posts.ago.hours", { value: Math.floor(diffMs / hour) });
 	}
 
-	return `${Math.floor(diffMs / day)} дн.`;
+	return t("posts.ago.days", { value: Math.floor(diffMs / day) });
 };
 
 const postsFeed = await Promise.all(
@@ -68,8 +72,8 @@ const postsFeed = await Promise.all(
 			modifiedDate,
 			relativeTime: getRelativeTime(post.data.pubDate),
 			fullDate: fullDateFormatter.format(post.data.pubDate).replace(/\s?г\.$/, ""),
-			publishedLabel: formatContentDateTime(publishedDate, "ru"),
-			modifiedLabel: formatContentDateTime(modifiedDate, "ru"),
+			publishedLabel: formatContentDateTime(publishedDate, locale),
+			modifiedLabel: formatContentDateTime(modifiedDate, locale),
 		};
 	}),
 );
@@ -83,9 +87,9 @@ const latestModifiedDate = postsFeed
 <Layout
 	title={title}
 	description={description}
-	keywords={["tatarverse", "посты", "лента", "сабантуй", "культура", "язык"]}
-	rssURL="/posts/rss.xml"
-	markdownURL="/posts.md"
+	keywords={["tatarverse", title, "сабантуй", "культура", "язык"]}
+	rssURL={isDefault ? "/posts/rss.xml" : undefined}
+	markdownURL={isDefault ? "/posts.md" : undefined}
 	dateModified={latestModifiedDate}
 >
 	<BackButton href="/" variant="outline" label="Назад" labelKey="nav.back" />
@@ -99,10 +103,7 @@ const latestModifiedDate = postsFeed
 			</p>
 		</header>
 
-		<section
-			class="mt-6 grid gap-4 sm:mt-8 sm:gap-5"
-			aria-label="Лента постов"
-		>
+		<section class="mt-6 grid gap-4 sm:mt-8 sm:gap-5" aria-label={t("posts.feed")}>
 			{
 				postsFeed.map((post) => (
 					<PostCard

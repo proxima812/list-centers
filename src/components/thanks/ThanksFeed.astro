@@ -1,10 +1,18 @@
 ---
+import { getLocaleFromUrl, useTranslations } from "@/i18n";
 import { Icon } from "astro-icon/components";
 import { getCollection, render } from "astro:content";
 
+const locale = getLocaleFromUrl(Astro.url);
+const t = useTranslations(locale);
+
 const MAX_LABEL_LENGTH = 22;
 
-const entries = (await getCollection("thanks")).sort(
+// Переводы живут отдельной коллекцией, как у центров и постов. Пустая —
+// значит для локали переводов нет, и лучше русский текст, чем пустая полоса.
+const translated = locale === "en" ? await getCollection("thanksEn") : [];
+const source = await getCollection("thanks");
+const entries = [...(translated.length > 0 ? translated : source)].sort(
 	(a, b) => a.data.sortOrder - b.data.sortOrder,
 );
 
@@ -35,7 +43,7 @@ const items = await Promise.all(
 
 		const handle = getHandleFromUrl(primaryUrl);
 
-		const label = entry.data.name ?? (handle ? `@${handle}` : "Пользователь");
+		const label = entry.data.name ?? (handle ? `@${handle}` : t("thanks.person"));
 
 		return {
 			Content,
@@ -51,7 +59,7 @@ const items = await Promise.all(
 
 {
 	items.length > 0 && (
-		<section class="mx-auto w-full" aria-label="Благодарности">
+		<section class="mx-auto w-full" aria-label={t("thanks.aria")}>
 			<ol class="columns-1 gap-8 sm:columns-2 md:columns-3 lg:columns-4">
 				{items.map(({ Content, label, displayLabel, instagram, telegram, social }) => {
 					const href = instagram ?? telegram ?? social;
@@ -71,7 +79,7 @@ const items = await Promise.all(
 											href={href}
 											target="_blank"
 											rel="noreferrer noopener"
-											aria-label={`${label} — открыть социальную сеть`}
+											aria-label={t("thanks.openSocial", { name: label })}
 											title={label}
 											class="inline-flex max-w-full min-w-0 items-center gap-1.5 text-sm font-semibold text-foreground no-underline transition-colors hover:text-muted-foreground"
 										>

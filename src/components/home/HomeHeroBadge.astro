@@ -1,5 +1,6 @@
 ---
 import release from "@/data/release.json";
+import { byNewest, localizedPosts } from "@/domain/post/collection";
 import { latestCenter } from "@/domain/center/order";
 import { siteLinks } from "@/domain/site/links";
 import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
@@ -15,8 +16,8 @@ import { getCollection } from "astro:content";
 const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
 
-const posts = await getCollection("posts");
-const latestPost = posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())[0];
+// Берём посты под локаль: иначе на /en/ в бейдже висел русский заголовок.
+const latestPost = byNewest(await localizedPosts(locale))[0];
 
 const centers = await getCollection("centers");
 const centerRouteIds = createCenterRouteIdMap(centers);
@@ -141,7 +142,6 @@ const items = [
 
 		const canRotate = () =>
 			!reduceMotion.matches &&
-			document.documentElement.dataset.motion !== "off" &&
 			!document.hidden &&
 			!hovered &&
 			!focused;
@@ -182,10 +182,6 @@ const items = [
 		});
 		document.addEventListener("visibilitychange", start);
 		reduceMotion.addEventListener("change", start);
-
-		new MutationObserver(start).observe(document.documentElement, {
-			attributeFilter: ["data-motion"],
-		});
 
 		start();
 	}

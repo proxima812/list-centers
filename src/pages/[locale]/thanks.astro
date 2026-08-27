@@ -1,5 +1,6 @@
 ---
+import ThanksPage from "../thanks.astro";
 export { secondaryLocalePaths as getStaticPaths } from "@/i18n/routes";
-
-return Astro.redirect("/thanks/", 301);
 ---
+
+<ThanksPage />

@@ -67,11 +67,7 @@ export default defineConfig({
                   "/nearby",
                   "/en/nearby",
                   "/centers/print",
-                  "/en/posts",
-                  "/en/policy",
-                  "/en/sources",
-                  "/en/translations",
-                  "/en/thanks",
+                  "/en/centers/print",
               ]);
               return !excluded.has(path);
           },

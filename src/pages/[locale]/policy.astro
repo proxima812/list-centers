@@ -1,5 +1,9 @@
 ---
+import MDX from "@/layouts/MDX.astro";
+import Content, { file, frontmatter } from "@/data/pages_i18n/en/policy.mdx";
 export { secondaryLocalePaths as getStaticPaths } from "@/i18n/routes";
-
-return Astro.redirect("/policy/", 301);
 ---
+
+<MDX frontmatter={frontmatter} file={file}>
+	<Content />
+</MDX>
