@@ -18,8 +18,9 @@ const { size = 32, class: className } = Astro.props;
 		height: var(--mark-size);
 		width: var(--mark-size);
 
-		
-		background-color: var(--color-accent);
+		/* Цвет задаёт окружение: на инвертированных поверхностях вроде подвала
+		   акцент светлой темы совпадает с их фоном и марка пропадает. */
+		background-color: var(--logo-mark-color, var(--color-accent));
 
 		mask: url("/flower.svg") center / contain no-repeat;
 		-webkit-mask: url("/flower.svg") center / contain no-repeat;
