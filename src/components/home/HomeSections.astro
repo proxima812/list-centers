@@ -26,9 +26,9 @@ const t = useTranslations(locale);
 			sizes="(min-width: 768px) 50vw, 100vw"
 			loading="eager"
 			fetchpriority="high"
-			class="h-full w-full rounded-card object-cover md:order-2"
+			class="order-2 h-full w-full rounded-card object-cover"
 		/>
-		<div class="space-y-6 md:order-1">
+		<div class="order-1 space-y-6">
 			<h2 class="text-4xl font-bold tracking-tight">{t("home.present.title")}</h2>
 			<p
 				class="leading-7 text-muted-foreground"
@@ -43,7 +43,7 @@ const t = useTranslations(locale);
 		</div>
 	</section>
 	<section class="grid grid-cols-1 items-center gap-8 md:grid-cols-2 md:gap-12">
-		<div class="order-2 space-y-6">
+		<div class="order-1 space-y-6 md:order-2">
 			<h2 class="text-4xl font-bold tracking-tight">
 				{t("home.search.title")}
 			</h2>
@@ -61,7 +61,7 @@ const t = useTranslations(locale);
 			alt={t("home.search.imageAlt")}
 			widths={[400, 640, 768, 1200]}
 			sizes="(min-width: 768px) 50vw, 100vw"
-			class="order-1 h-full w-full rounded-card object-cover"
+			class="order-2 h-full w-full rounded-card object-cover md:order-1"
 		/>
 	</section>
 	<HomeNearby />
