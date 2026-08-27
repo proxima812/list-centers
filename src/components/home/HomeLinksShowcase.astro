@@ -53,7 +53,7 @@ const cells = Array.from({ length: CELLS }, (_, index) => bySlot.get(index) ?? n
 	class="grid grid-cols-1 items-center gap-8 md:grid-cols-2 md:gap-12"
 	aria-labelledby="home-links-showcase"
 >
-	<div class="space-y-6">
+	<div class="space-y-6 md:order-2">
 		<h2 id="home-links-showcase" class="text-4xl font-bold tracking-tight">
 			{t("home.contacts.title")}
 		</h2>
@@ -68,7 +68,7 @@ const cells = Array.from({ length: CELLS }, (_, index) => bySlot.get(index) ?? n
 		/>
 	</div>
 
-	<div>
+	<div class="md:order-1">
 		<ul
 			class="mx-auto grid max-w-md grid-cols-4 gap-2.5 sm:gap-3 md:max-w-none md:grid-cols-6"
 			role="list"
