@@ -86,9 +86,9 @@ const CONTACTS: Array<Tile & { pattern: RegExp }> = [
 	},
 ];
 
-/** Куда в сетке 5x5 садятся плитки: остальные клетки остаются пустыми. */
-const SLOTS = [1, 4, 5, 7, 9, 12, 14, 15, 16, 18, 21, 22, 24];
-const CELLS = 25;
+/** Куда в сетке 5x4 садятся плитки: остальные клетки остаются пустыми. */
+const SLOTS = [0, 2, 3, 6, 7, 9, 10, 11, 13, 14, 16, 17, 18];
+const CELLS = 20;
 
 const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
