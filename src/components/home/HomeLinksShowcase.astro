@@ -1,0 +1,101 @@
+---
+import { getLocaleFromUrl, useTranslations } from "@/i18n";
+import { getCenterLinks, type CenterLinkKind } from "@/utils/centerLinks";
+import { Icon } from "astro-icon/components";
+import { getCollection } from "astro:content";
+import ButtonLink from "../ui/ButtonLink.astro";
+
+/**
+ * Витрина ссылок каталога: слева обещание, справа сетка платформ.
+ *
+ * Числа не выдуманы — они считаются через `getCenterLinks`, то есть тем же
+ * разбором, который рисует ссылки в карточке центра. Если у платформы в
+ * каталоге не осталось ни одной ссылки, её плитка просто не рисуется.
+ */
+
+const PLATFORMS: Array<{ kind: CenterLinkKind; label: string; icon: string; tone: string }> = [
+	{ kind: "website", label: "Сайт", icon: "mdi:web", tone: "text-accent" },
+	{ kind: "vk", label: "VK", icon: "mdi:vk", tone: "text-[#0077ff]" },
+	{ kind: "telegram", label: "Telegram", icon: "mdi:telegram", tone: "text-[#2aabee]" },
+	{ kind: "instagram", label: "Instagram", icon: "mdi:instagram", tone: "text-[#d6249f]" },
+	{ kind: "facebook", label: "Facebook", icon: "mdi:facebook", tone: "text-[#1877f2]" },
+	{ kind: "ok", label: "OK", icon: "mdi:odnoklassniki", tone: "text-[#ee8208]" },
+	{ kind: "youtube", label: "YouTube", icon: "mdi:youtube", tone: "text-[#ff0033]" },
+];
+
+/** Куда в сетке попадают плитки: остальные клетки остаются пустыми. */
+const SLOTS = [2, 5, 7, 10, 13, 16, 21];
+const CELLS = 24;
+
+const locale = getLocaleFromUrl(Astro.url);
+const t = useTranslations(locale);
+
+const counts = new Map<CenterLinkKind, number>();
+let links = 0;
+
+for (const center of await getCollection("centers")) {
+	for (const link of getCenterLinks(center.body, center.data.source)) {
+		counts.set(link.kind, (counts.get(link.kind) ?? 0) + 1);
+		links += 1;
+	}
+}
+
+const bySlot = new Map(
+	PLATFORMS.filter((platform) => (counts.get(platform.kind) ?? 0) > 0).map((platform, index) => [
+		SLOTS[index] ?? CELLS,
+		{ ...platform, count: counts.get(platform.kind) ?? 0 },
+	]),
+);
+const cells = Array.from({ length: CELLS }, (_, index) => bySlot.get(index) ?? null);
+---
+
+<section
+	class="grid grid-cols-1 items-center overflow-hidden rounded-card bg-surface surface-lift ring-1 ring-border-muted md:grid-cols-2"
+	aria-labelledby="home-links-showcase"
+>
+	<div class="space-y-6 px-6 py-10 sm:px-8 md:px-12 md:py-16">
+		<h2 id="home-links-showcase" class="text-4xl font-bold tracking-tight">
+			{t("home.contacts.title")}
+		</h2>
+		<p class="leading-7 text-muted-foreground" set:html={t("home.contacts.text", { links })} />
+		<p class="leading-7 text-muted-foreground">{t("home.contacts.text2")}</p>
+		<ButtonLink
+			href="/centers"
+			labelKey="nav.viewCenters"
+			label="Посмотреть центры"
+			icon="mdi:link-variant"
+			variant="gradient"
+		/>
+	</div>
+
+	<div class="h-full bg-surface-muted px-6 py-10 sm:px-8 md:px-10 md:py-14">
+		<ul
+			class="mx-auto grid max-w-md grid-cols-4 gap-2.5 sm:gap-3 md:max-w-none md:grid-cols-6"
+			role="list"
+		>
+			{
+				cells.map((tile) =>
+					tile ? (
+						<li
+							class="aspect-square rounded-control corner-squircle bg-surface p-2 ring-1 ring-border-muted surface-lift transition hover:-translate-y-0.5"
+							title={`${tile.label} — ${tile.count}`}
+						>
+							<span class="flex h-full w-full flex-col items-center justify-center gap-0.5">
+								<Icon name={tile.icon} class={`h-6 w-6 ${tile.tone}`} aria-hidden="true" />
+								<span class="text-[10px] leading-none tabular-nums text-muted-foreground">
+									{tile.count}
+								</span>
+								<span class="sr-only">{tile.label}</span>
+							</span>
+						</li>
+					) : (
+						<li
+							aria-hidden="true"
+							class="aspect-square rounded-control corner-squircle ring-1 ring-border-muted/60"
+						/>
+					),
+				)
+			}
+		</ul>
+	</div>
+</section>

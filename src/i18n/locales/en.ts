@@ -67,9 +67,16 @@ const dict: Dictionary = {
 	"home.present.text2": "With kindness. With love. With acceptance.",
 	"home.contacts.title": "Links, not just addresses",
 	"home.contacts.text":
-		"The cards hold <strong>{links}</strong> working links to <strong>{centers}</strong> centers: websites, social profiles, and channels where communities actually reply.",
+		"Links in the cards: <strong>{links}</strong> — websites, social profiles, and channels where communities actually reply.",
 	"home.contacts.text2":
 		"No need to hunt for contacts online — open a card and write directly.",
+	"home.people.title": "There are more of us than it seems",
+	"home.people.text":
+		"Placeholder copy: a short paragraph will go here about Tatars, Bashkirs, and Crimean Tatars living all over the world — from their home republics to diasporas on other continents — and about the catalog collecting the places where that connection continues.",
+	"home.people.tatars": "Tatars worldwide",
+	"home.people.bashkirs": "Bashkirs worldwide",
+	"home.people.crimean": "Crimean Tatars worldwide",
+	"home.people.note": "Placeholder numbers: rounded estimates, source not yet attached.",
 	"home.search.title": "Communities on the world map",
 	"home.search.text1":
 		"Choose a country, city, or region and find nearby cultural centers, public associations, youth initiatives, language clubs, and local communities.",

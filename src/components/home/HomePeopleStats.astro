@@ -1,0 +1,118 @@
+---
+import { getLocaleFromUrl, useTranslations } from "@/i18n";
+
+/**
+ * Сколько нас в мире: три числа по народам, по центру страницы.
+ *
+ * ВНИМАНИЕ: числа — заглушка. Это округлённые оценки численности, а не
+ * данные каталога и не выверенная статистика переписей. Прежде чем
+ * показывать это как факт, замените значения на цифры с источником и
+ * добавьте ссылку на него — иначе главная утверждает то, что проект не может
+ * подтвердить. Текст описания тоже черновой.
+ */
+
+const STATS = [
+	{ key: "tatars", value: 6_800_000 },
+	{ key: "bashkirs", value: 1_700_000 },
+	{ key: "crimean", value: 500_000 },
+];
+
+const locale = getLocaleFromUrl(Astro.url);
+const t = useTranslations(locale);
+const format = new Intl.NumberFormat(locale === "en" ? "en-US" : "ru-RU");
+---
+
+<section
+	class="rounded-card bg-surface px-6 py-14 text-center surface-lift ring-1 ring-border-muted sm:px-8 md:px-12 md:py-20"
+	aria-labelledby="home-people-stats"
+>
+	<div class="mx-auto max-w-2xl space-y-4">
+		<h2 id="home-people-stats" class="text-4xl font-bold tracking-tight">
+			{t("home.people.title")}
+		</h2>
+		<p class="leading-7 text-muted-foreground">{t("home.people.text")}</p>
+	</div>
+
+	<dl
+		class="mx-auto mt-12 grid max-w-4xl grid-cols-1 gap-10 sm:grid-cols-3 sm:gap-6"
+		data-people-stats
+	>
+		{
+			STATS.map((stat) => (
+				<div class="space-y-2">
+					<dt class="text-xs uppercase tracking-wide text-muted-foreground">
+						{t(`home.people.${stat.key}`)}
+					</dt>
+					<dd
+						class="text-4xl font-bold tabular-nums tracking-tight text-accent md:text-5xl"
+						data-count-to={stat.value}
+					>
+						{format.format(stat.value)}
+					</dd>
+				</div>
+			))
+		}
+	</dl>
+
+	<p class="mt-10 text-xs text-muted-foreground">{t("home.people.note")}</p>
+</section>
+
+<script>
+	/**
+	 * Числа набегают снизу вверх, когда секция попадает в кадр.
+	 *
+	 * Разметка уже содержит готовое значение — анимация только переписывает
+	 * его на время. Без JS, при `prefers-reduced-motion` и в поиске виден
+	 * финальный результат, а не ноль.
+	 */
+	const list = document.querySelector<HTMLElement>("[data-people-stats]");
+
+	if (list && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+		const cells = [...list.querySelectorAll<HTMLElement>("[data-count-to]")];
+		const format = new Intl.NumberFormat(document.documentElement.lang || "ru");
+		const DURATION = 1400;
+
+		const write = (progress: number) => {
+			// easeOutCubic: быстрый разгон и мягкая остановка на точном числе.
+			const eased = progress >= 1 ? 1 : 1 - (1 - progress) ** 3;
+
+			for (const cell of cells) {
+				const target = Number(cell.dataset.countTo ?? 0);
+				cell.textContent = format.format(Math.round(target * eased));
+			}
+		};
+
+		const run = () => {
+			const started = performance.now();
+			write(0);
+
+			const frame = (now: number) => {
+				const progress = Math.min(1, (now - started) / DURATION);
+				write(progress);
+
+				if (progress < 1) requestAnimationFrame(frame);
+			};
+
+			requestAnimationFrame(frame);
+			// Вкладка может уйти в фон и заморозить кадры на середине отсчёта:
+			// возвращаемся — показываем итог, а не случайное промежуточное число.
+			document.addEventListener("visibilitychange", () => {
+				if (document.hidden) return;
+				if (performance.now() - started >= DURATION) write(1);
+			});
+		};
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) {
+					if (!entry.isIntersecting) continue;
+					observer.disconnect();
+					run();
+				}
+			},
+			{ threshold: 0.35 },
+		);
+
+		observer.observe(list);
+	}
+</script>
