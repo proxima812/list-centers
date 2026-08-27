@@ -86,9 +86,9 @@ const CONTACTS: Array<Tile & { pattern: RegExp }> = [
 	},
 ];
 
-/** Куда в сетке садятся плитки: остальные клетки остаются пустыми. */
-const SLOTS = [2, 5, 7, 10, 13, 16, 19, 21, 24, 27, 29, 32, 34];
-const CELLS = 36;
+/** Куда в сетке 5x5 садятся плитки: остальные клетки остаются пустыми. */
+const SLOTS = [1, 4, 5, 7, 9, 12, 14, 15, 16, 18, 21, 22, 24];
+const CELLS = 25;
 
 const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
@@ -138,7 +138,7 @@ const cells = Array.from({ length: CELLS }, (_, index) => bySlot.get(index) ?? n
 
 	<div class="md:order-1">
 		<ul
-			class="mx-auto grid max-w-md grid-cols-4 gap-2.5 sm:gap-3 md:max-w-none md:grid-cols-6"
+			class="mx-auto grid max-w-md grid-cols-5 gap-2.5 sm:gap-3 md:max-w-none"
 			role="list"
 		>
 			{
