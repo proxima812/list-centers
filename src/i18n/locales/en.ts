@@ -62,9 +62,11 @@ const dict: Dictionary = {
 		"Greetings in Tatar, Bashkir, and Crimean Tatar beside the emblems of each people",
 	"home.present.title": "Everywhere. Always. For everyone.",
 	"home.present.caption":
-		"<strong>{centers}</strong> centers, communities and initiatives across <strong>{countries}</strong> countries and <strong>{regions}</strong> regions.",
-	"home.present.text1": "Find one near you or far away.",
-	"home.present.text2": "With kindness. With love. With acceptance.",
+		"<strong>{centers}</strong> points on the map: centers, communities, and initiatives across <strong>{countries}</strong> countries and <strong>{regions}</strong> regions.",
+	"home.present.text1":
+		"Wherever you are, your people are already somewhere close — a neighborhood away, or a couple of messages away. Language, songs, and memory are held not by archives but by people who found each other.",
+	"home.present.text2":
+		"Find the ones nearby — or the ones far away. With kindness. With love. With acceptance.",
 	"home.contacts.title": "Links, not just addresses",
 	"home.contacts.text":
 		"Links in the cards: <strong>{links}</strong> — websites, social profiles, and channels where communities actually reply.",
