@@ -2,19 +2,25 @@
 import { getLocaleFromUrl, useTranslations } from "@/i18n";
 
 /**
- * Сколько нас в мире: три числа по народам, по центру страницы.
+ * Сколько нас: три числа по народам, по центру страницы.
  *
- * ВНИМАНИЕ: числа — заглушка. Это округлённые оценки численности, а не
- * данные каталога и не выверенная статистика переписей. Прежде чем
- * показывать это как факт, замените значения на цифры с источником и
- * добавьте ссылку на него — иначе главная утверждает то, что проект не может
- * подтвердить. Текст описания тоже черновой.
+ * Числа - не оценка и не округление, а строки таблицы 5 Всероссийской
+ * переписи населения 2020 года (проведена в 2021-м, Росстат, том 5
+ * «Национальный состав и владение языками»). Поэтому и подписи говорят
+ * «в России», а не «в мире»: за пределами страны перепись не считает
+ * никого, мировые оценки заметно выше и у каждой свой источник.
+ *
+ * Меняешь число - меняй и ссылку под секцией. Цифра без источника с этой
+ * страницы уходит: правило проекта, а не вкус.
  */
 
+const CENSUS_YEAR = 2021;
+const CENSUS_HREF = "https://rosstat.gov.ru/vpn/2020/Tom5_Nacionalnyj_sostav_i_vladenie_yazykami";
+
 const STATS = [
-	{ key: "tatars", value: 6_800_000 },
-	{ key: "bashkirs", value: 1_700_000 },
-	{ key: "crimean", value: 500_000 },
+	{ key: "tatars", value: 4_713_669 },
+	{ key: "bashkirs", value: 1_571_879 },
+	{ key: "crimean", value: 257_592 },
 ];
 
 const locale = getLocaleFromUrl(Astro.url);
@@ -51,7 +57,17 @@ const format = new Intl.NumberFormat(locale === "en" ? "en-US" : "ru-RU");
 		}
 	</dl>
 
-	<p class="mt-10 text-xs text-muted-foreground">{t("home.people.note")}</p>
+	<p class="mt-10 text-xs text-muted-foreground">
+		{t("home.people.note", { year: CENSUS_YEAR })}{" "}
+		<a
+			href={CENSUS_HREF}
+			target="_blank"
+			rel="noopener noreferrer"
+			class="underline decoration-link-decoration underline-offset-2 hover:text-foreground"
+		>
+			{t("home.people.source")}
+		</a>
+	</p>
 </section>
 
 <script>

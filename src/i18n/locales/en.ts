@@ -80,11 +80,13 @@ const dict: Dictionary = {
 	"home.nearby.imageAlt": "Center cards with country flags under a “Search by geolocation” heading",
 	"home.people.title": "There are more of us than it seems",
 	"home.people.text":
-		"Placeholder copy: a short paragraph will go here about Tatars, Bashkirs, and Crimean Tatars living all over the world — from their home republics to diasporas on other continents — and about the catalog collecting the places where that connection continues.",
-	"home.people.tatars": "Tatars worldwide",
-	"home.people.bashkirs": "Bashkirs worldwide",
-	"home.people.crimean": "Crimean Tatars worldwide",
-	"home.people.note": "Placeholder numbers: rounded estimates, source not yet attached.",
+		"Tatars, Bashkirs, and Crimean Tatars live far beyond their home republics: communities, associations, and cultural centers work in dozens of countries, from neighbouring ones to those across the ocean. The three figures below come from the latest census, which means they count only the people Russia counted. There are more of us worldwide: no one keeps a single register of the diaspora, and every country counts differently. The catalog collects exactly those places where the connection held.",
+	"home.people.tatars": "Tatars in Russia",
+	"home.people.bashkirs": "Bashkirs in Russia",
+	"home.people.crimean": "Crimean Tatars in Russia",
+	"home.people.note":
+		"Figures as of {year}, unrounded. Source: the Russian census, volume 5 “Ethnic composition and language proficiency”:",
+	"home.people.source": "Rosstat publication",
 	"home.search.title": "Communities on the world map",
 	"home.search.text1":
 		"Choose a country, city, or region and find nearby cultural centers, public associations, youth initiatives, language clubs, and local communities.",
