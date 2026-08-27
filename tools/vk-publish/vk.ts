@@ -27,6 +27,15 @@ export function readVkConfig(): VkConfig {
 	if (groupId.startsWith("-")) {
 		throw new Error("VK_GROUP_ID должен быть без минуса — знак добавляется при вызове API");
 	}
+	// wall.post принимает только числовой owner_id: экранная форма вроде
+	// `club241041984` или `public12345` уедет в API как есть и вернёт error 100.
+	if (!/^\d+$/.test(groupId)) {
+		const digits = /^(?:club|public|event)(\d+)$/.exec(groupId)?.[1];
+		throw new Error(
+			`VK_GROUP_ID должен быть числом без префикса, получено "${groupId}"` +
+				(digits ? ` — укажите ${digits}` : ""),
+		);
+	}
 
 	return { accessToken, groupId, apiVersion };
 }
