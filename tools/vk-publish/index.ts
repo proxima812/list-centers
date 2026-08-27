@@ -43,7 +43,9 @@ function parseArgs(argv: string[]): CliOptions {
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function buildUrl(routeId: string): string {
-	return new URL(getCenterPath(routeId), config.site.url).toString();
+	// Со слешем на конце: без него сайт отвечает 308 на канонический адрес,
+	// и каждый переход из VK стоит лишнего редиректа.
+	return new URL(`${getCenterPath(routeId)}/`, config.site.url).toString();
 }
 
 async function main() {
