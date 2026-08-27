@@ -155,4 +155,8 @@ export default defineConfig({
         enabled: true,
     },
     output: "static",
+    experimental: {
+        // Пропускаем ререндер страниц, чей cacheKey и граф зависимостей не менялись.
+        incrementalBuild: true,
+    },
 });

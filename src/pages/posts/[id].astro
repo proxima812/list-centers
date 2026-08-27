@@ -7,20 +7,28 @@ import { defaultLocale, getLocaleFromUrl, localizePath, useTranslations } from "
 import Layout from "@/layouts/Layout.astro";
 import { formatContentDateTime, getContentDates } from "@/utils/contentDates";
 import { getPostId, getPostMarkdownPath, getPostPath } from "@/utils/posts";
+import { entryFingerprint, pageCacheKey } from "@/utils/cacheKey";
 import { Icon } from "astro-icon/components";
 import { getCollection, render } from "astro:content";
 
 export async function getStaticPaths() {
 	const posts = byNewest(await getCollection("posts"));
 
-	return posts.map((post, index) => ({
-		params: { id: getPostId(post.id) },
-		props: {
-			post,
-			newerPost: index > 0 ? posts[index - 1] : null,
-			olderPost: index < posts.length - 1 ? posts[index + 1] : null,
-		},
-	}));
+	return posts.map((post, index) => {
+		const newerPost = index > 0 ? posts[index - 1] : null;
+		const olderPost = index < posts.length - 1 ? posts[index + 1] : null;
+
+		return {
+			params: { id: getPostId(post.id) },
+			props: { post, newerPost, olderPost },
+			// Пост зависит только от себя и двух соседних ссылок.
+			cacheKey: pageCacheKey(
+				entryFingerprint(post),
+				newerPost && entryFingerprint(newerPost),
+				olderPost && entryFingerprint(olderPost),
+			),
+		};
+	});
 }
 
 interface Props {

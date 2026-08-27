@@ -1,12 +1,14 @@
 ---
 import { getCenterTranslationCollection, createCenterRouteIdMap } from "@/utils/centers";
 import { secondaryLocales } from "@/i18n/routes";
+import { collectionFingerprint } from "@/utils/cacheKey";
 import { getCollection } from "astro:content";
 import CenterPage from "../../centers/[id].astro";
 
 export async function getStaticPaths() {
 	const entries = await getCollection("centers");
 	const routeIds = createCenterRouteIdMap(entries);
+	const cacheKey = collectionFingerprint([...entries, ...(await getCollection("centersEn"))]);
 
 	const translationsByLocale = new Map(
 		await Promise.all(
@@ -30,6 +32,7 @@ export async function getStaticPaths() {
 				{
 					params: { locale, id: routeIds.get(entry.id) ?? entry.id },
 					props: { entry, localizedEntry },
+					cacheKey,
 				},
 			];
 		}),

@@ -2,6 +2,7 @@
 import { byNewest, localizedPosts } from "@/domain/post/collection";
 import { secondaryLocales } from "@/i18n/routes";
 import { getPostId } from "@/utils/posts";
+import { entryFingerprint, pageCacheKey } from "@/utils/cacheKey";
 import PostPage from "../../posts/[id].astro";
 
 export async function getStaticPaths() {
@@ -9,14 +10,20 @@ export async function getStaticPaths() {
 		secondaryLocales().map(async (locale) => {
 			const posts = byNewest(await localizedPosts(locale));
 
-			return posts.map((post, index) => ({
-				params: { locale, id: getPostId(post.id) },
-				props: {
-					post,
-					newerPost: index > 0 ? posts[index - 1] : null,
-					olderPost: index < posts.length - 1 ? posts[index + 1] : null,
-				},
-			}));
+			return posts.map((post, index) => {
+				const newerPost = index > 0 ? posts[index - 1] : null;
+				const olderPost = index < posts.length - 1 ? posts[index + 1] : null;
+
+				return {
+					params: { locale, id: getPostId(post.id) },
+					props: { post, newerPost, olderPost },
+					cacheKey: pageCacheKey(
+						entryFingerprint(post),
+						newerPost && entryFingerprint(newerPost),
+						olderPost && entryFingerprint(olderPost),
+					),
+				};
+			});
 		}),
 	);
 

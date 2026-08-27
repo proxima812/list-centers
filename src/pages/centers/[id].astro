@@ -18,15 +18,21 @@ import { getCountryLabel } from "@/data/worldCountries";
 import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
 import { getCenterLinks } from "@/utils/centerLinks";
 import { createCenterRouteIdMap, getCenterPath } from "@/utils/centers";
+import { collectionFingerprint } from "@/utils/cacheKey";
 import { formatContentDateTime, getContentDates } from "@/utils/contentDates";
 
 export async function getStaticPaths() {
 	const entries = await getCollection("centers");
 	const routeIds = createCenterRouteIdMap(entries);
 
+	// Страница центра читает всю коллекцию (похожие, пагинация, EN-версия),
+	// поэтому ключ общий: правка любого центра честно инвалидирует все карточки.
+	const cacheKey = collectionFingerprint([...entries, ...(await getCollection("centersEn"))]);
+
 	return entries.map((entry) => ({
 		params: { id: routeIds.get(entry.id) ?? entry.id },
 		props: { entry },
+		cacheKey,
 	}));
 }
 
