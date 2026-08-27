@@ -7,12 +7,6 @@
   --color-mark-tint: hsl(215 84% 56%);
 }
 
-:root[data-accent="blue"] {
-  --radius-micro: 6px;
-  --radius-control: 8px;
-  --radius-card: 12px;
-  --radius-catalog: 16px;
-}
 
 :root.dark[data-accent="blue"] {
   --color-accent: hsl(213 90% 66%);
@@ -21,24 +15,4 @@
   --color-accent-glow: hsl(213 95% 78%);
   --color-mark-tint: hsl(213 92% 74%);
 
-  --color-background: hsl(0 0% 0%);
-  --color-muted: hsl(0 0% 4%);
-  --color-surface: hsl(0 0% 8%);
-  --color-subtle: hsl(0 0% 16%);
-
-  --color-ring: hsl(0 0% 47%);
-
-  --color-foreground: hsl(0 0% 100%);
-  --color-surface-foreground: hsl(0 0% 100%);
-  --color-primary: hsl(0 0% 100%);
-  --color-primary-foreground: hsl(0 0% 0%);
-  --color-muted-foreground: hsl(0 0% 80%);
-  --color-subtle-foreground: hsl(0 0% 69%);
-
-  --color-depth-200: hsl(0 0% 21%);
-  --color-depth-300: hsl(0 0% 26%);
-  --color-depth-400: hsl(0 0% 34%);
-  --color-depth-500: hsl(0 0% 55%);
-  --color-depth-600: hsl(0 0% 69%);
-  --color-depth-700: hsl(0 0% 85%);
 }
