@@ -34,38 +34,38 @@ colors:
   favorite: "#BD1F3F"
 typography:
   display:
-    fontFamily: "'Twemoji Country Flags', 'Tatarverse Sans', ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "'Twemoji Country Flags', 'Inter', ui-sans-serif, system-ui, sans-serif"
     fontSize: "clamp(1.25rem, calc(7.1vw - 3px), 4.5rem)"
     fontWeight: 900
     lineHeight: 1
     letterSpacing: "-0.04em"
     textTransform: "uppercase"
   headline:
-    fontFamily: "'Twemoji Country Flags', 'Tatarverse Sans', ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "'Twemoji Country Flags', 'Inter', ui-sans-serif, system-ui, sans-serif"
     fontSize: "clamp(1.875rem, 5vw, 3.75rem)"
     fontWeight: 700
     lineHeight: 1.05
     letterSpacing: "-0.035em"
   title:
-    fontFamily: "'Twemoji Country Flags', 'Tatarverse Sans', ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "'Twemoji Country Flags', 'Inter', ui-sans-serif, system-ui, sans-serif"
     fontSize: "1rem"
     fontWeight: 700
     lineHeight: 1.375
     letterSpacing: "-0.015em"
   body:
-    fontFamily: "'Twemoji Country Flags', 'Tatarverse Sans', ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "'Twemoji Country Flags', 'Inter', ui-sans-serif, system-ui, sans-serif"
     fontSize: "1rem"
     fontWeight: 400
     lineHeight: 1.5
     letterSpacing: "normal"
   label:
-    fontFamily: "'Twemoji Country Flags', 'Tatarverse Sans', ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "'Twemoji Country Flags', 'Inter', ui-sans-serif, system-ui, sans-serif"
     fontSize: "0.875rem"
     fontWeight: 500
     lineHeight: 1.25
     letterSpacing: "normal"
   caption:
-    fontFamily: "'Twemoji Country Flags', 'Tatarverse Sans', ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "'Twemoji Country Flags', 'Inter', ui-sans-serif, system-ui, sans-serif"
     fontSize: "0.75rem"
     fontWeight: 500
     lineHeight: 1.3333
@@ -369,11 +369,11 @@ threshold described below.
 
 ## 3. Typography
 
-The site uses **Tatarverse Sans**, a self-hosted variable font (weights 100-900,
+The site uses **Inter**, a self-hosted variable font (weights 100-900,
 `font-display: optional`, loaded through Astro's font pipeline as
-`--font-tatarverse-sans`), with the system sans stack as fallback. `Twemoji Country Flags`
+`--font-inter`), with the system sans stack as fallback. `Twemoji Country Flags`
 sits first in the stack but is scoped to flag glyphs by `unicodeRange` — everything else
-falls through to Tatarverse Sans. The voice is practical and direct, with a sharper
+falls through to Inter. The voice is practical and direct, with a sharper
 homepage display treatment.
 
 ### Hierarchy

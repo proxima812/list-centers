@@ -16,7 +16,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-sans: var(--font-country-flags), var(--font-tatarverse-sans), ui-sans-serif, system-ui,
+  --font-sans: var(--font-country-flags), var(--font-inter), ui-sans-serif, system-ui,
     sans-serif;
 
   --color-background: #F6F3F9;
