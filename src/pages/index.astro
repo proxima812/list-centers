@@ -8,9 +8,11 @@ import { getLocaleFromUrl, useTranslations } from "@/i18n";
 import Layout from "@/layouts/Layout.astro";
 import { getCollection } from "astro:content";
 
-const { count: centers, countries: countriesCount, regions: regionsCount } = catalogStats(
-	await getCollection("centers"),
-);
+const {
+	count: centers,
+	countries: countriesCount,
+	regions: regionsCount,
+} = catalogStats(await getCollection("centers"));
 const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
 ---
@@ -41,7 +43,6 @@ const t = useTranslations(locale);
 		<div>
 			<HomeLinks />
 		</div>
-
 
 		<HomeSections />
 	</main>

@@ -153,7 +153,7 @@ export default defineConfig({
     },
   },
   devToolbar: {
-    enabled: true,
+    enabled: false,
   },
   output: "static",
   experimental: {
