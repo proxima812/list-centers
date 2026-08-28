@@ -75,7 +75,7 @@ export default defineConfig({
       },
     }),
     mdx(),
-    icon({ uis: ["*"] }),
+    icon({ uis: ["*"], iconDir: "src/assets/icons" }),
     metaTags(),
     robotsTxt(),
     ...(config.features.llms ? [llmsTxt()] : []),
