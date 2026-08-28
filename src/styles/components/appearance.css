@@ -2,13 +2,20 @@
  * Меню оформления — `components/layout/AppearanceMenu.astro`.
  */
 
-.appearance-dot {
-	background-image: linear-gradient(
-		135deg,
-		var(--color-accent-vivid),
-		var(--color-accent-glow)
-	);
-	box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--color-shade) 20%, transparent);
+/* Кружок в шапке — та же картинка палитры, что и в списке. Все шесть лежат
+   в разметке, показывается выбранная: скрипт ставит значение на <html>, и
+   переключение не ждёт загрузки картинки. */
+.appearance-dot [data-accent-image] {
+	display: none;
+}
+
+html[data-accent="default"] .appearance-dot [data-accent-image="default"],
+html[data-accent="green"] .appearance-dot [data-accent-image="green"],
+html[data-accent="blue"] .appearance-dot [data-accent-image="blue"],
+html[data-accent="violet"] .appearance-dot [data-accent-image="violet"],
+html[data-accent="red"] .appearance-dot [data-accent-image="red"],
+html[data-accent="pink"] .appearance-dot [data-accent-image="pink"] {
+	display: block;
 }
 
 [data-appearance-trigger][aria-expanded="true"] svg {

@@ -59,7 +59,20 @@ const t = useTranslations(locale);
 		aria-controls="appearance-panel"
 		aria-label={t("appearance.switcher")}
 	>
-		<span class="appearance-dot size-5 rounded-full" aria-hidden="true"></span>
+		<span class="appearance-dot size-5" aria-hidden="true">
+			{
+				accents.map((item) => (
+					<Image
+						src={SWATCH_IMAGES[item.value]}
+						alt=""
+						widths={[40, 80]}
+						sizes="20px"
+						class="size-5 rounded-full"
+						data-accent-image={item.value}
+					/>
+				))
+			}
+		</span>
 		<svg
 			aria-hidden="true"
 			viewBox="0 0 16 16"
