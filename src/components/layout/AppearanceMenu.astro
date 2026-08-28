@@ -4,6 +4,13 @@ import { APPEARANCE_SPECS } from "@/lib/site/appearance";
 import { getLocaleFromUrl, useTranslations } from "@/i18n";
 import { cn } from "@/lib/cn";
 import { Icon } from "astro-icon/components";
+import { Image } from "astro:assets";
+import blueSwatch from "@/assets/images/palettes/blue.png";
+import defaultSwatch from "@/assets/images/palettes/default.png";
+import greenSwatch from "@/assets/images/palettes/green.png";
+import pinkSwatch from "@/assets/images/palettes/pink.png";
+import purpleSwatch from "@/assets/images/palettes/purple.png";
+import redSwatch from "@/assets/images/palettes/red.png";
 
 interface Props {
 	class?: string;
@@ -19,6 +26,17 @@ const groupLabelClass =
 
 
 
+
+// Палитра показывается картинкой шара, а не плоским кружком: подпись не нужна,
+// цвет сам себя называет.
+const SWATCH_IMAGES: Record<string, ImageMetadata> = {
+	default: defaultSwatch,
+	green: greenSwatch,
+	blue: blueSwatch,
+	violet: purpleSwatch,
+	red: redSwatch,
+	pink: pinkSwatch,
+};
 
 const optionClass =
 	"flex w-full cursor-pointer items-center gap-2.5 rounded-control px-2 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground aria-checked:bg-muted aria-checked:font-medium aria-checked:text-foreground";
@@ -58,7 +76,7 @@ const t = useTranslations(locale);
 		id="appearance-panel"
 		data-appearance-panel
 		hidden
-		class="absolute right-0 top-full z-[90] mt-2 w-52 max-w-[calc(100vw-2rem)] rounded-control corner-squircle border border-border-muted bg-surface p-1.5 overlay-lift"
+		class="absolute right-0 top-full z-[90] mt-2 w-64 max-w-[calc(100vw-2rem)] rounded-control corner-squircle border border-border-muted bg-surface p-1.5 overlay-lift"
 	>
 		<p class={groupLabelClass} id="appearance-theme-label">{t("appearance.theme")}</p>
 		<div role="radiogroup" aria-labelledby="appearance-theme-label">
@@ -89,32 +107,37 @@ const t = useTranslations(locale);
 		<p class={`${groupLabelClass} pt-2`} id="appearance-accent-label">
 			{t("appearance.palette")}
 		</p>
-		<div role="radiogroup" aria-labelledby="appearance-accent-label">
+		<div
+			class="flex items-center justify-between gap-1 px-1 pt-1"
+			role="radiogroup"
+			aria-labelledby="appearance-accent-label"
+		>
 			{
-				accents.map((item) => (
-					<button
-						type="button"
-						class={optionClass}
-						{...appearanceOption("accent", item.value)}
-						role="radio"
-						aria-checked="false"
-						tabindex="-1"
-					>
-						<span
-							class="size-4 shrink-0 rounded-full ring-1 ring-inset ring-shade/20"
-							style={`background-image:linear-gradient(135deg, ${item.swatch?.from}, ${item.swatch?.to})`}
-							aria-hidden="true"
-						/>
-						<span class="min-w-0 flex-1 truncate text-left">
-							{t(item.shortLabelKey, undefined, item.label)}
-						</span>
-						<Icon
-							name="tabler:check"
-							class="size-4 shrink-0 text-accent opacity-0 aria-checked-visible"
-							aria-hidden="true"
-						/>
-					</button>
-				))
+				accents.map((item) => {
+					const label = t(item.shortLabelKey, undefined, item.label);
+
+					return (
+						<button
+							type="button"
+							class="cursor-pointer rounded-full p-0.5 ring-2 ring-transparent transition-[box-shadow,transform] hover:scale-105 aria-checked:ring-accent"
+							{...appearanceOption("accent", item.value)}
+							role="radio"
+							aria-label={label}
+							title={label}
+							aria-checked="false"
+							tabindex="-1"
+						>
+							<Image
+								src={SWATCH_IMAGES[item.value]}
+								alt=""
+								widths={[64, 128]}
+								sizes="32px"
+								class="size-8 rounded-full"
+								aria-hidden="true"
+							/>
+						</button>
+					);
+				})
 			}
 		</div>
 
