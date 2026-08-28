@@ -1,5 +1,5 @@
 import { closestCard, readCard } from "@/lib/site/cardAttributes";
-import { onSavedChange, readSaved, toggleSaved, type SavedCenter } from "@/scripts/savedCenters";
+import { onSavedChange, readSaved, toggleSaved, type SavedCenter } from "@/lib/scripts/savedCenters";
 
 let initialized = false;
 

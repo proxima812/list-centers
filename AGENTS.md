@@ -34,7 +34,7 @@ Say "the catalog" for the centers listing, "a card" for one center entry, and
 - Bun is the preferred package manager.
 - Deploy: Cloudflare Pages via `wrangler` (`bun run cf:deploy`).
 - Main source folders: `src/pages`, `src/components`, `src/layouts`, `src/data`,
-  `src/i18n`, `src/styles`, `src/scripts`, `src/assets`, и `src/lib` — вся
+  `src/i18n`, `src/styles`, `src/assets`, и `src/lib` — вся
   логика, вынутая из страниц и компонентов, лежит там и только там:
   - `src/lib/center`, `src/lib/post` — правила предметной области без DOM и без
     сети: порядок центров, нормализация поиска, статистика каталога, ссылки и
@@ -48,6 +48,8 @@ Say "the catalog" for the centers listing, "a card" for one center entry, and
   - `src/lib/seo` — сборка графа schema.org.
   - `src/lib/integrations` — Astro-интеграции сборки (`robots.txt`, `llms.txt`,
     `ai.txt`, IndexNow, markdown-версия главной).
+  - `src/lib/scripts` — точки входа для `<script>` в компонентах: этот код
+    уезжает в браузерный бандл, Node-зависимостей в нём быть не может.
   - `src/lib/build` — вспомогательное для сборки (`cacheKey`).
   - `src/lib/types.ts` — единственный файл с разделяемыми типами; отдельных
     `types.ts` по папкам нет.
