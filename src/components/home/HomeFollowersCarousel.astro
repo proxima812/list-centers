@@ -48,25 +48,3 @@ const rows = Array.from({ length: 5 }, (_, rowIndex) => {
 	)
 }
 
-<style>
-	.followers-carousel-track {
-		animation: followers-carousel-scroll 500s linear infinite;
-	}
-
-	.followers-carousel-track-reverse {
-		animation-direction: reverse;
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.followers-carousel-track {
-			animation: none;
-			width: auto;
-		}
-	}
-
-	@keyframes followers-carousel-scroll {
-		to {
-			transform: translateX(-50%);
-		}
-	}
-</style>

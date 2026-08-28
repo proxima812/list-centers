@@ -13,16 +13,3 @@ const { size = 32, class: className } = Astro.props;
 	class:list={["logo-mark pointer-events-none inline-block shrink-0", className]}
 	style={`--mark-size:${size}px`}></span>
 
-<style>
-	.logo-mark {
-		height: var(--mark-size);
-		width: var(--mark-size);
-
-		/* Цвет задаёт окружение: на инвертированных поверхностях вроде подвала
-		   акцент светлой темы совпадает с их фоном и марка пропадает. */
-		background-color: var(--logo-mark-color, var(--color-accent));
-
-		mask: url("/flower.svg") center / contain no-repeat;
-		-webkit-mask: url("/flower.svg") center / contain no-repeat;
-	}
-</style>

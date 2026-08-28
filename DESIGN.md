@@ -492,7 +492,7 @@ is the same tone as the page behind it and survives on its border alone.
 ## 6. Motion
 
 Motion is part of the system, but it is limited. Everything animated in the project is CSS
-in `src/styles/tailwind.css` or in a component's own `<style>` block — there is no JS
+in `src/styles/tailwind.css` or in `src/styles/components/*.css` — there is no JS
 animation library, and adding one is a design decision, not an implementation detail.
 
 - **Hero line:** `hero-pulse`, a slow halo on the accent line driven by `--color-accent-glow`.

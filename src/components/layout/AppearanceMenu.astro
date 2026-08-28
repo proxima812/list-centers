@@ -121,26 +121,6 @@ const t = useTranslations(locale);
 	</div>
 </div>
 
-<style>
-	
-	.appearance-dot {
-		background-image: linear-gradient(
-			135deg,
-			var(--color-accent-vivid),
-			var(--color-accent-glow)
-		);
-		box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--color-shade) 20%, transparent);
-	}
-
-	[data-appearance-trigger][aria-expanded="true"] svg {
-		transform: rotate(180deg);
-	}
-
-	
-	[aria-checked="true"] .aria-checked-visible {
-		opacity: 1;
-	}
-</style>
 
 <script>
 	import { initAppearance } from "@/scripts/appearance";

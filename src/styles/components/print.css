@@ -1,0 +1,26 @@
+/**
+ * Печатная версия каталога — `pages/centers/print.astro`.
+ *
+ * Правила навешаны на `.print-sheet`, а не на голые `li` и `h2`: файл теперь
+ * общий для всего сайта, и без корня разрывы страниц уехали бы на любую
+ * печатаемую страницу.
+ */
+
+@page {
+	size: A4;
+	margin: 15mm 12mm;
+}
+
+@media print {
+	.print-sheet li {
+		break-inside: avoid;
+	}
+
+	.print-sheet h2 {
+		break-after: avoid;
+	}
+
+	.print-sheet section[data-print-group] {
+		break-inside: auto;
+	}
+}

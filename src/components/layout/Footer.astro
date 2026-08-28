@@ -305,23 +305,3 @@ const footerColumns: FooterSection[][] = [
 	</Container>
 </footer>
 
-<style>
-	.site-footer {
-		--footer-bg: light-dark(
-			var(--color-foreground),
-			oklch(from var(--color-background) calc(l * 0.6) c h)
-		);
-		--footer-fg: light-dark(var(--color-background), var(--color-foreground));
-		--footer-fg-muted: color-mix(in oklab, var(--footer-fg) 70%, transparent);
-		--footer-border: color-mix(in oklab, var(--footer-fg) 15%, transparent);
-		/* Подвал темный при обеих темах, поэтому марка здесь не следует за
-		   акцентом: берем бумагу проекта — единственный светлый тон, который
-		   держится на этой плашке при любом пресете. */
-		--logo-mark-color: var(--color-lift);
-
-		/* Плашка ставится здесь, а не классом: `bg-surface` в светлой теме
-		   клал светлый текст подвала на светлую же карточку. */
-		background-color: var(--footer-bg);
-		color: var(--footer-fg-muted);
-	}
-</style>

@@ -27,6 +27,10 @@ Say "the catalog" for the centers listing, "a card" for one center entry, and
   is no React, Vue, or Svelte in this project, and no JS animation library —
   motion is CSS keyframes in `src/styles/tailwind.css`.
 - Tailwind CSS v4 through `@tailwindcss/vite` (single entry: `src/styles/tailwind.css`).
+  Тегов `<style>` в `.astro` нет: компонентный CSS лежит в
+  `src/styles/components/*.css` и подключается импортом из `tailwind.css`.
+  Селекторы там глобальные, поэтому имя класса или `data-`-атрибута должно
+  быть уникальным по проекту.
 - Bun is the preferred package manager.
 - Deploy: Cloudflare Pages via `wrangler` (`bun run cf:deploy`).
 - Main source folders: `src/pages`, `src/components`, `src/layouts`, `src/data`,

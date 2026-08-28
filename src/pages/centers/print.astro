@@ -75,7 +75,7 @@ const printedAt = new Date().toLocaleDateString(locale, {
 		<title>{t("print.title")} — tatarverse</title>
 		<link rel="canonical" href={`${siteUrl}${catalogHref}`} />
 	</head>
-	<body class="bg-background font-sans text-foreground">
+	<body class="print-sheet bg-background font-sans text-foreground">
 		<div class="mx-auto max-w-3xl px-6 py-10 print:max-w-none print:px-0 print:py-0">
 			<header class="border-b border-border pb-6">
 				<h1 class="text-2xl font-bold sm:text-3xl print:text-xl">
@@ -208,26 +208,6 @@ const printedAt = new Date().toLocaleDateString(locale, {
 			</footer>
 		</div>
 
-		<style is:global>
-			@page {
-				size: A4;
-				margin: 15mm 12mm;
-			}
-
-			@media print {
-				li {
-					break-inside: avoid;
-				}
-
-				h2 {
-					break-after: avoid;
-				}
-
-				section[data-print-group] {
-					break-inside: auto;
-				}
-			}
-		</style>
 
 		<script>
 			const printButton = document.querySelector<HTMLButtonElement>("[data-print-button]");

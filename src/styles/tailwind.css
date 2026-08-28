@@ -12,6 +12,15 @@
 @plugin "@toolwind/corner-shape";
 @import "tw-shimmer";
 
+/* Компонентные стили: в `.astro` тегов `<style>` нет, всё живёт здесь. */
+@import "./components/logo.css";
+@import "./components/footer.css";
+@import "./components/appearance.css";
+@import "./components/catalog.css";
+@import "./components/save-button.css";
+@import "./components/home.css";
+@import "./components/print.css";
+
 
 @custom-variant dark (&:where(.dark, .dark *));
 

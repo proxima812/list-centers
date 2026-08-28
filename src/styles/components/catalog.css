@@ -1,0 +1,28 @@
+/**
+ * Каталог — `components/centers/Toolbar.astro` и `ListCards.astro`.
+ */
+
+/* Панель фильтров сворачивается только на узких экранах: на десктопе она
+   всегда развернута, что бы ни оставил в разметке мобильный тумблер. */
+@media (min-width: 1024px) {
+	[data-filters-shell],
+	[data-filters-panel] {
+		display: block !important;
+	}
+}
+
+[data-filters-shell] {
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+
+[data-filters-shell]::-webkit-scrollbar {
+	width: 0;
+	height: 0;
+	display: none;
+}
+
+.not-container {
+	--catalog-aside: 20rem;
+	--catalog-gap: 3rem;
+}
