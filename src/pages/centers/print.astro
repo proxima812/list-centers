@@ -1,64 +1,18 @@
 ---
+import PrintList from "@/components/print/PrintList.astro";
+import PrintToolbar from "@/components/print/PrintToolbar.astro";
 import { config } from "@/config";
-import { localizedCenters } from "@/lib/center/collection";
 import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
-import { getCountryLabel } from "@/data/worldCountries";
-import { createCenterRouteIdMap, getCenterPath } from "@/lib/center/centers";
-import { Icon } from "astro-icon/components";
-
-import "@/styles/tailwind.css";
+import Print from "@/layouts/Print.astro";
+import { buildPrintCatalog } from "@/lib/center/print";
 
 const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
 
-const centers = await localizedCenters(locale);
-const routeIds = createCenterRouteIdMap(centers);
 const siteUrl = config.site.url.replace(/\/$/, "");
 const catalogHref = localizePath(locale, "/centers");
-
-// Ключ группировки — русское название: по нему сходятся карточки обеих
-// коллекций. На печать уходит уже локализованная подпись.
-const UNKNOWN_COUNTRY = "Прочее";
-
-type PrintEntry = {
-	title: string;
-	place: string;
-	kind: string;
-	href: string;
-};
-
-const groups = new Map<string, PrintEntry[]>();
-
-for (const center of centers) {
-	const country = center.data.location?.country ?? UNKNOWN_COUNTRY;
-	const place = [center.data.location?.city, center.data.location?.region]
-		.filter(Boolean)
-		.filter((value, index, list) => list.indexOf(value) === index)
-		.join(", ");
-	const kind = [center.data.category, center.data.type].filter(Boolean).join(" · ");
-
-	const entry: PrintEntry = {
-		title: center.data.title,
-		place,
-		kind,
-		href: `${siteUrl}${localizePath(locale, getCenterPath(routeIds.get(center.id) ?? center.id))}`,
-	};
-
-	const group = groups.get(country);
-	if (group) {
-		group.push(entry);
-	} else {
-		groups.set(country, [entry]);
-	}
-}
-
-for (const entries of groups.values()) {
-	entries.sort((a, b) => a.place.localeCompare(b.place, locale) || a.title.localeCompare(b.title, locale));
-}
-
-const countries = [...groups.entries()].sort(
-	(a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0], locale),
-);
+const catalogUrl = `${siteUrl}${catalogHref}`;
+const { countries, total } = await buildPrintCatalog(locale, siteUrl);
 
 const printedAt = new Date().toLocaleDateString(locale, {
 	day: "numeric",
@@ -67,214 +21,24 @@ const printedAt = new Date().toLocaleDateString(locale, {
 });
 ---
 
-<html lang={locale} data-language={locale}>
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<meta name="robots" content="noindex, follow" />
-		<title>{t("print.title")} — tatarverse</title>
-		<link rel="canonical" href={`${siteUrl}${catalogHref}`} />
-	</head>
-	<body class="print-sheet bg-background font-sans text-foreground">
-		<div class="mx-auto max-w-3xl px-6 py-10 print:max-w-none print:px-0 print:py-0">
-			<header class="border-b border-border pb-6">
-				<h1 class="text-2xl font-bold sm:text-3xl print:text-xl">
-					{t("print.heading")}
-				</h1>
-				<p class="mt-2 text-base text-muted-foreground print:text-sm">
-					{t("print.stats", { count: centers.length, countries: countries.length, date: printedAt })}
-				</p>
-				<p class="mt-1 text-base text-muted-foreground print:text-sm">
-					{t("print.full", { url: `${siteUrl}${catalogHref}` })}
-				</p>
-			</header>
+<Print title={t("print.title")} canonicalURL={catalogUrl}>
+	<header class="border-b border-border pb-6">
+		<h1 class="text-2xl font-bold sm:text-3xl print:text-xl">
+			{t("print.heading")}
+		</h1>
+		<p class="mt-2 text-base text-muted-foreground print:text-sm">
+			{t("print.stats", { count: total, countries: countries.length, date: printedAt })}
+		</p>
+		<p class="mt-1 text-base text-muted-foreground print:text-sm">
+			{t("print.full", { url: catalogUrl })}
+		</p>
+	</header>
 
-			<div
-				data-print-toolbar
-				class="my-8 space-y-6 rounded-2xl border border-border bg-surface-muted p-5 sm:p-6 print:hidden"
-			>
-				<section>
-					<h2 class="flex items-center gap-2 text-lg font-bold">
-						<Icon name="mdi:file-pdf-box" class="size-5 shrink-0" aria-hidden="true" />
-						{t("print.step1")}
-					</h2>
-					<p class="mt-1 text-base text-muted-foreground">
-						{t("print.step1.hint")}
-					</p>
-					<div
-						class="mt-4 flex flex-wrap gap-2"
-						role="group"
-						aria-label={t("print.countries.aria")}
-						data-print-countries
-					>
-						<button
-							type="button"
-							data-print-all
-							data-active=""
-							aria-pressed="true"
-							class="inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-border bg-surface px-4 py-2 text-base font-medium text-muted-foreground transition hover:bg-muted hover:text-foreground data-[active]:border-foreground data-[active]:bg-foreground data-[active]:text-background"
-						>
-							<Icon name="mdi:earth" class="size-4 shrink-0" aria-hidden="true" />
-							{t("print.allCountries")} ({centers.length})
-						</button>
-						{
-							countries.map(([country, entries]) => (
-								<button
-									type="button"
-									data-print-country={country}
-									aria-pressed="false"
-									class="inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-border bg-surface px-4 py-2 text-base font-medium text-muted-foreground transition hover:bg-muted hover:text-foreground data-[active]:border-foreground data-[active]:bg-foreground data-[active]:text-background"
-								>
-									<Icon name="mdi:map-marker-outline" class="size-4 shrink-0" aria-hidden="true" />
-									{getCountryLabel(country, locale)} ({entries.length})
-								</button>
-							))
-						}
-					</div>
-					<p
-						class="mt-4 flex items-center gap-2 text-base text-muted-foreground"
-						data-print-summary-row
-					>
-						<Icon name="mdi:format-list-numbered" class="size-4 shrink-0" aria-hidden="true" />
-						<span
-							data-print-summary
-							data-template={t("print.ready", { count: "{count}" })}
-							aria-live="polite"
-						>
-							{t("print.ready", { count: centers.length })}
-						</span>
-					</p>
-				</section>
+	<PrintToolbar countries={countries} total={total} catalogHref={catalogHref} />
 
-				<section class="border-t border-border-muted pt-6">
-					<h2 class="flex items-center gap-2 text-lg font-bold">
-						<Icon name="mdi:printer-outline" class="size-5 shrink-0" aria-hidden="true" />
-						{t("print.step2")}
-					</h2>
-					<p class="mt-1 text-base text-muted-foreground">
-						{t("print.step2.hint")}
-					</p>
-					<div class="mt-4 flex flex-wrap items-center gap-3">
-						<button
-							type="button"
-							data-print-button
-							class="inline-flex cursor-pointer items-center gap-2 rounded-full bg-foreground px-5 py-3 text-base font-semibold text-background transition hover:opacity-85"
-						>
-							<Icon name="mdi:printer-outline" class="size-5 shrink-0" aria-hidden="true" />
-							{t("print.open")}
-						</button>
-						<a
-							href={catalogHref}
-							class="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-5 py-3 text-base font-medium text-foreground transition hover:bg-muted"
-						>
-							<Icon name="mdi:arrow-left" class="size-5 shrink-0" aria-hidden="true" />
-							{t("print.back")}
-						</a>
-					</div>
-				</section>
-			</div>
+	<PrintList countries={countries} />
 
-			<main class="mt-6 print:mt-4">
-				{
-					countries.map(([country, entries]) => (
-						<section data-print-group={country} class="mt-8 first:mt-0 print:mt-6">
-							<h2 class="border-b border-border pb-2 text-xl font-bold print:text-base">
-								{getCountryLabel(country, locale)} — {entries.length}
-							</h2>
-							<ol class="mt-3">
-								{entries.map((entry, index) => (
-									<li class="border-b border-border-muted py-3 print:py-2">
-										<p class="text-base font-semibold print:text-sm">
-											{index + 1}. {entry.title}
-										</p>
-										{(entry.place || entry.kind) && (
-											<p class="mt-0.5 text-base text-muted-foreground print:text-xs">
-												{[entry.place, entry.kind].filter(Boolean).join(" · ")}
-											</p>
-										)}
-										<p class="mt-0.5 text-sm break-all text-muted-foreground print:text-xs">
-											{entry.href}
-										</p>
-									</li>
-								))}
-							</ol>
-						</section>
-					))
-				}
-			</main>
-
-			<footer class="mt-10 border-t border-border pt-4 text-sm text-muted-foreground print:mt-6">
-				tatarverse — {siteUrl}
-			</footer>
-		</div>
-
-
-		<script>
-			const printButton = document.querySelector<HTMLButtonElement>("[data-print-button]");
-			const allButton = document.querySelector<HTMLButtonElement>("[data-print-all]");
-			const countryButtons = Array.from(
-				document.querySelectorAll<HTMLButtonElement>("[data-print-country]"),
-			);
-			const groups = Array.from(document.querySelectorAll<HTMLElement>("[data-print-group]"));
-			const summary = document.querySelector<HTMLElement>("[data-print-summary]");
-
-			const selected = new Set<string>();
-
-			function setActive(button: HTMLButtonElement, active: boolean) {
-				button.toggleAttribute("data-active", active);
-				button.setAttribute("aria-pressed", String(active));
-			}
-
-			function render() {
-				let visibleCount = 0;
-
-				for (const group of groups) {
-					const country = group.dataset.printGroup ?? "";
-					const visible = selected.size === 0 || selected.has(country);
-					group.hidden = !visible;
-					if (visible) {
-						visibleCount += group.querySelectorAll("li").length;
-					}
-				}
-
-				for (const button of countryButtons) {
-					setActive(button, selected.has(button.dataset.printCountry ?? ""));
-				}
-
-				if (allButton) {
-					setActive(allButton, selected.size === 0);
-				}
-
-				if (summary) {
-					summary.textContent = (summary.dataset.template ?? "").replace(
-						"{count}",
-						String(visibleCount),
-					);
-				}
-			}
-
-			printButton?.addEventListener("click", () => {
-				window.print();
-			});
-
-			allButton?.addEventListener("click", () => {
-				selected.clear();
-				render();
-			});
-
-			for (const button of countryButtons) {
-				button.addEventListener("click", () => {
-					const country = button.dataset.printCountry ?? "";
-					if (selected.has(country)) {
-						selected.delete(country);
-					} else {
-						selected.add(country);
-					}
-					render();
-				});
-			}
-
-			render();
-		</script>
-	</body>
-</html>
+	<footer class="mt-10 border-t border-border pt-4 text-sm text-muted-foreground print:mt-6">
+		tatarverse — {siteUrl}
+	</footer>
+</Print>

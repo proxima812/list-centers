@@ -1,0 +1,34 @@
+---
+import { getLocaleFromUrl } from "@/i18n";
+
+import "@/styles/tailwind.css";
+
+/**
+ * Оболочка страницы для бумаги.
+ *
+ * Своя, а не общий `Layout`: на печать не уходят ни шапка, ни меню, ни
+ * аналитика, а `robots` тут всегда `noindex`.
+ */
+interface Props {
+	title: string;
+	canonicalURL: string;
+}
+
+const { title, canonicalURL } = Astro.props as Props;
+const locale = getLocaleFromUrl(Astro.url);
+---
+
+<html lang={locale} data-language={locale}>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="robots" content="noindex, follow" />
+		<title>{title} — tatarverse</title>
+		<link rel="canonical" href={canonicalURL} />
+	</head>
+	<body class="print-sheet bg-background font-sans text-foreground">
+		<div class="mx-auto max-w-3xl px-6 py-10 print:max-w-none print:px-0 print:py-0">
+			<slot />
+		</div>
+	</body>
+</html>

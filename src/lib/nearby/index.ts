@@ -52,3 +52,41 @@ export async function getNearbyIndex(locale: AppLocale): Promise<NearbyIndexItem
 
 	return items;
 }
+
+export interface NearbyCountry {
+	country: string;
+	label: string;
+	flag: string;
+	count: number;
+}
+
+/**
+ * Страны для ручного выбора: считаются на сборке, а не в браузере.
+ *
+ * Список одинаков для всех посетителей, поэтому ручной выбор работает ещё до
+ * того, как приедет индекс карточек, и остаётся единственным рабочим путём
+ * там, где функции геолокации нет вовсе — на `astro dev` и на превью без
+ * Cloudflare.
+ */
+export function nearbyCountries(
+	items: readonly NearbyIndexItem[],
+	locale: AppLocale,
+): NearbyCountry[] {
+	const stats = new Map<string, NearbyCountry>();
+
+	for (const item of items) {
+		const stat = stats.get(item.country);
+		if (stat) stat.count += 1;
+		else
+			stats.set(item.country, {
+				country: item.country,
+				label: item.countryLabel,
+				flag: item.flag,
+				count: 1,
+			});
+	}
+
+	return [...stats.values()].sort(
+		(left, right) => right.count - left.count || left.label.localeCompare(right.label, locale),
+	);
+}

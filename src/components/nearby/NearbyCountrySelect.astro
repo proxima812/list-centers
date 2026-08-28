@@ -1,0 +1,42 @@
+---
+import { getLocaleFromUrl, useTranslations } from "@/i18n";
+import type { NearbyCountry } from "@/lib/nearby/index";
+
+interface Props {
+	countries: NearbyCountry[];
+}
+
+const { countries } = Astro.props as Props;
+const locale = getLocaleFromUrl(Astro.url);
+const t = useTranslations(locale);
+
+const selectClass =
+	"w-full min-w-0 cursor-pointer appearance-none rounded-control corner-squircle bg-surface py-2 pl-3.5 pr-9 text-sm font-medium text-surface-foreground outline-none transition hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
+---
+
+<label class="relative inline-flex min-w-0 items-center">
+	<span class="sr-only">{t("nearby.countryLabel")}</span>
+	<select data-nearby-country class={selectClass}>
+		<option value="">{t("nearby.chooseCountry")}</option>
+		{
+			countries.map((entry) => (
+				<option value={entry.country} data-flag={entry.flag} data-label={entry.label}>
+					{entry.flag ? `${entry.flag} ` : ""}
+					{entry.label} ({entry.count})
+				</option>
+			))
+		}
+	</select>
+	{/* Своя стрелка вместо нативной: та рисуется системой и не знает
+	    ни про тему, ни про скругления. Разметка — как у CopyPageMenu. */}
+	<svg
+		viewBox="0 0 20 20"
+		class="pointer-events-none absolute right-3 size-3.5 text-subtle-foreground"
+		fill="none"
+		stroke="currentColor"
+		stroke-width="2"
+		aria-hidden="true"
+	>
+		<path d="m5 7 5 5 5-5" stroke-linecap="round" stroke-linejoin="round"></path>
+	</svg>
+</label>

@@ -1,0 +1,31 @@
+---
+interface Props {
+	title: string;
+	summary?: string | null;
+	/** Категория и тип центра. */
+	badges?: string[];
+}
+
+const { title, summary, badges = [] } = Astro.props as Props;
+---
+
+<header class="flex w-full min-w-0 flex-col gap-4">
+	{
+		badges.length > 0 && (
+			<p class="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-medium text-muted-foreground">
+				{badges.map((badge, index) => (
+					<>
+						{index > 0 && <span aria-hidden="true">·</span>}
+						<span>{badge}</span>
+					</>
+				))}
+			</p>
+		)
+	}
+	<h1
+		class="max-w-4xl text-balance break-words text-3xl font-semibold leading-tight text-foreground sm:text-4xl lg:text-5xl"
+	>
+		{title}
+	</h1>
+	{summary && <p class="max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">{summary}</p>}
+</header>

@@ -115,7 +115,7 @@ card alone lives under all of these at once:
 | Motion | `[data-motion="off"]` and `prefers-reduced-motion`. Kill animation with `1ms`, not `animation: none` — `animationend` still has to fire. |
 | Locale | `ru` unprefixed and `en` under `/en/`. Routes with no EN version are listed in `ruOnlyRoutes` (`src/i18n/index.ts`). |
 | Print | `/centers/print` renders the catalog for paper; it has its own layout. |
-| Client filter | Тулбар фильтрует карточки по `data-*`. Имена атрибутов объявлены один раз в `src/dom/cardAttributes.ts`: пиши через `cardDataset`, читай через `readCard`. Менять контракт — там же, расхождение станет ошибкой типов, а не багом в рантайме. |
+| Client filter | Тулбар фильтрует карточки по `data-*`. Имена атрибутов объявлены один раз в `src/lib/site/cardAttributes.ts`: пиши через `cardDataset`, читай через `readCard`. Менять контракт — там же, расхождение станет ошибкой типов, а не багом в рантайме. |
 
 Say which of these you checked and how. "Builds fine" is not a check.
 

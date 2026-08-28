@@ -1,0 +1,100 @@
+---
+import { getLocaleFromUrl, useTranslations } from "@/i18n";
+import type { PrintCountry } from "@/lib/center/print";
+import { Icon } from "astro-icon/components";
+
+interface Props {
+	countries: PrintCountry[];
+	total: number;
+	catalogHref: string;
+}
+
+const { countries, total, catalogHref } = Astro.props as Props;
+const locale = getLocaleFromUrl(Astro.url);
+const t = useTranslations(locale);
+
+const filterClass =
+	"inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-border bg-surface px-4 py-2 text-base font-medium text-muted-foreground transition hover:bg-muted hover:text-foreground data-[active]:border-foreground data-[active]:bg-foreground data-[active]:text-background";
+---
+
+<div
+	data-print-toolbar
+	class="my-8 space-y-6 rounded-2xl border border-border bg-surface-muted p-5 sm:p-6 print:hidden"
+>
+	<section>
+		<h2 class="flex items-center gap-2 text-lg font-bold">
+			<Icon name="mdi:file-pdf-box" class="size-5 shrink-0" aria-hidden="true" />
+			{t("print.step1")}
+		</h2>
+		<p class="mt-1 text-base text-muted-foreground">
+			{t("print.step1.hint")}
+		</p>
+		<div
+			class="mt-4 flex flex-wrap gap-2"
+			role="group"
+			aria-label={t("print.countries.aria")}
+			data-print-countries
+		>
+			<button type="button" data-print-all data-active="" aria-pressed="true" class={filterClass}>
+				<Icon name="mdi:earth" class="size-4 shrink-0" aria-hidden="true" />
+				{t("print.allCountries")} ({total})
+			</button>
+			{
+				countries.map((group) => (
+					<button
+						type="button"
+						data-print-country={group.country}
+						aria-pressed="false"
+						class={filterClass}
+					>
+						<Icon name="mdi:map-marker-outline" class="size-4 shrink-0" aria-hidden="true" />
+						{group.label} ({group.entries.length})
+					</button>
+				))
+			}
+		</div>
+		<p class="mt-4 flex items-center gap-2 text-base text-muted-foreground" data-print-summary-row>
+			<Icon name="mdi:format-list-numbered" class="size-4 shrink-0" aria-hidden="true" />
+			<span
+				data-print-summary
+				data-template={t("print.ready", { count: "{count}" })}
+				aria-live="polite"
+			>
+				{t("print.ready", { count: total })}
+			</span>
+		</p>
+	</section>
+
+	<section class="border-t border-border-muted pt-6">
+		<h2 class="flex items-center gap-2 text-lg font-bold">
+			<Icon name="mdi:printer-outline" class="size-5 shrink-0" aria-hidden="true" />
+			{t("print.step2")}
+		</h2>
+		<p class="mt-1 text-base text-muted-foreground">
+			{t("print.step2.hint")}
+		</p>
+		<div class="mt-4 flex flex-wrap items-center gap-3">
+			<button
+				type="button"
+				data-print-button
+				class="inline-flex cursor-pointer items-center gap-2 rounded-full bg-foreground px-5 py-3 text-base font-semibold text-background transition hover:opacity-85"
+			>
+				<Icon name="mdi:printer-outline" class="size-5 shrink-0" aria-hidden="true" />
+				{t("print.open")}
+			</button>
+			<a
+				href={catalogHref}
+				class="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-5 py-3 text-base font-medium text-foreground transition hover:bg-muted"
+			>
+				<Icon name="mdi:arrow-left" class="size-5 shrink-0" aria-hidden="true" />
+				{t("print.back")}
+			</a>
+		</div>
+	</section>
+</div>
+
+<script>
+	import { initPrintCatalog } from "@/lib/scripts/printCatalog";
+
+	initPrintCatalog();
+</script>

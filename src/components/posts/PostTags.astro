@@ -1,0 +1,19 @@
+---
+import { POST_BADGE_CLASS } from "@/components/posts/postStyles";
+
+interface Props {
+	tags: string[];
+}
+
+const { tags } = Astro.props as Props;
+---
+
+{
+	tags.length > 0 && (
+		<ul class="flex list-none flex-wrap gap-2 p-0 text-xs leading-5">
+			{tags.map((tag) => (
+				<li class={POST_BADGE_CLASS}>#{tag}</li>
+			))}
+		</ul>
+	)
+}

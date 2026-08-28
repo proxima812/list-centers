@@ -1,6 +1,9 @@
 ---
-import Layout from "@/layouts/Layout.astro";
+import AccentPresetCard from "@/components/colors/AccentPresetCard.astro";
+import AccentVariantCard from "@/components/colors/AccentVariantCard.astro";
+import NeutralTokenCard from "@/components/colors/NeutralTokenCard.astro";
 import { AA_THRESHOLD, NEUTRAL_TOKENS, PALETTE_LAB } from "@/data/colorLab";
+import Layout from "@/layouts/Layout.astro";
 
 /**
  * Внутренняя палитра проекта: все токены и пять расчётных вариантов акцента
@@ -13,11 +16,6 @@ import { AA_THRESHOLD, NEUTRAL_TOKENS, PALETTE_LAB } from "@/data/colorLab";
  * Страница закрыта от индексации и исключена из sitemap: она для нас, а не
  * для посетителя.
  */
-
-const swatchClass = "h-12 w-full rounded-micro corner-squircle ring-1 ring-inset ring-shade/10";
-const cellClass = "font-mono text-[11px] tabular-nums text-muted-foreground";
-
-const fails = (value: number) => value < AA_THRESHOLD;
 ---
 
 <Layout
@@ -52,31 +50,7 @@ const fails = (value: number) => value < AA_THRESHOLD;
 			</div>
 
 			<ul class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-				{
-					NEUTRAL_TOKENS.map((row) => (
-						<li class="space-y-3 rounded-card corner-squircle bg-surface p-4 ring-1 ring-border-muted">
-							<div class="grid grid-cols-2 gap-2">
-								<div class={swatchClass} style={`background-color:${row.light}`} />
-								<div class={swatchClass} style={`background-color:${row.dark}`} />
-							</div>
-							<div class="space-y-1">
-								<p class="flex items-baseline justify-between gap-2">
-									<span class="font-mono text-sm font-medium text-foreground">{row.token}</span>
-									{row.derived && (
-										<span class="rounded-full bg-subtle px-2 py-0.5 text-[11px] font-medium text-subtle-foreground">
-											выведен
-										</span>
-									)}
-								</p>
-								<p class="flex justify-between gap-2">
-									<span class={cellClass}>{row.light}</span>
-									<span class={cellClass}>{row.dark}</span>
-								</p>
-								<p class="text-xs text-subtle-foreground">{row.usage}</p>
-							</div>
-						</li>
-					))
-				}
+				{NEUTRAL_TOKENS.map((row) => <NeutralTokenCard row={row} />)}
 			</ul>
 		</section>
 
@@ -93,50 +67,7 @@ const fails = (value: number) => value < AA_THRESHOLD;
 			</div>
 
 			<div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-				{
-					PALETTE_LAB.map((palette) => (
-						<article class="space-y-4 rounded-card corner-squircle bg-surface p-5 ring-1 ring-border-muted">
-							<header class="flex items-baseline justify-between gap-3">
-								<h3 class="font-bold text-foreground">{palette.label}</h3>
-								<span class="font-mono text-xs text-subtle-foreground">{palette.name}</span>
-							</header>
-
-							{(["light", "dark"] as const).map((theme) => {
-								const set = palette.current[theme];
-								const metrics = palette.currentContrast[theme];
-
-								return (
-									<div class="space-y-2">
-										<p class="text-xs font-medium text-subtle-foreground">
-											{theme === "light" ? "Светлая" : "Тёмная"}
-										</p>
-										<div class="grid grid-cols-4 gap-2">
-											{[set.accent, set.accentForeground, set.accentVivid, set.accentGlow].map(
-												(color) => (
-													<div class="space-y-1">
-														<div class={swatchClass} style={`background-color:${color}`} />
-														<p class={cellClass}>{color}</p>
-													</div>
-												),
-											)}
-										</div>
-										<p class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-											<span class:list={[fails(metrics.onBackground) && "text-destructive"]}>
-												на фоне {metrics.onBackground}
-											</span>
-											<span class:list={[fails(metrics.onSurface) && "text-destructive"]}>
-												на карточке {metrics.onSurface}
-											</span>
-											<span class:list={[fails(metrics.foregroundOnAccent) && "text-destructive"]}>
-												текст на акценте {metrics.foregroundOnAccent}
-											</span>
-										</p>
-									</div>
-								);
-							})}
-						</article>
-					))
-				}
+				{PALETTE_LAB.map((palette) => <AccentPresetCard palette={palette} />)}
 			</div>
 		</section>
 
@@ -167,72 +98,7 @@ const fails = (value: number) => value < AA_THRESHOLD;
 
 						<div class="grid grid-cols-1 gap-3 lg:grid-cols-2">
 							{palette.variants.map((variant) => (
-								<article class="space-y-4 rounded-card corner-squircle bg-surface p-5 ring-1 ring-border-muted">
-									<header class="space-y-1">
-										<p class="flex items-baseline justify-between gap-3">
-											<span class="font-bold text-foreground">{variant.title}</span>
-											<span class="font-mono text-xs text-subtle-foreground">{variant.key}</span>
-										</p>
-										<p class="text-sm leading-6 text-muted-foreground">{variant.note}</p>
-									</header>
-
-									{(["light", "dark"] as const).map((theme) => {
-										const set = variant[theme];
-
-										return (
-											<div class="space-y-2">
-												<p class="text-xs font-medium text-subtle-foreground">
-													{theme === "light" ? "Светлая" : "Тёмная"}
-												</p>
-												<div class="grid grid-cols-4 gap-2">
-													{(
-														[
-															["accent", set.accent],
-															["fg", set.accentForeground],
-															["vivid", set.accentVivid],
-															["glow", set.accentGlow],
-														] as const
-													).map(([label, color]) => (
-														<div class="space-y-1">
-															<div class={swatchClass} style={`background-color:${color}`} />
-															<p class="text-[11px] text-subtle-foreground">{label}</p>
-															<p class={cellClass}>{color}</p>
-														</div>
-													))}
-												</div>
-
-												<div
-													class="flex items-center gap-3 rounded-control corner-squircle p-3"
-													style={`background-color:${theme === "light" ? "#F6F3F9" : "#090211"}`}
-												>
-													<span
-														class="rounded-full px-3 py-1 text-xs font-medium"
-														style={`background-color:${set.accent};color:${set.accentForeground}`}
-													>
-														Активный чип
-													</span>
-													<span class="text-sm font-medium" style={`color:${set.accent}`}>
-														Ссылка-сигнал
-													</span>
-												</div>
-
-												<p class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-													<span class:list={[fails(set.onBackground) && "text-destructive"]}>
-														на фоне {set.onBackground}
-													</span>
-													<span class:list={[fails(set.onSurface) && "text-destructive"]}>
-														на карточке {set.onSurface}
-													</span>
-													<span
-														class:list={[fails(set.foregroundOnAccent) && "text-destructive"]}
-													>
-														текст на акценте {set.foregroundOnAccent}
-													</span>
-												</p>
-											</div>
-										);
-									})}
-								</article>
+								<AccentVariantCard variant={variant} />
 							))}
 						</div>
 					</section>

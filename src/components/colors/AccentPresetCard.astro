@@ -1,0 +1,38 @@
+---
+import ColorSwatch from "@/components/colors/ColorSwatch.astro";
+import ContrastRow from "@/components/colors/ContrastRow.astro";
+import { THEMES, THEME_LABELS } from "@/components/colors/colorLabStyles";
+import type { PaletteLab } from "@/data/colorLab";
+
+/** Пресет акцента как он есть сейчас: четыре токена на тему и ничего кроме. */
+interface Props {
+	palette: PaletteLab;
+}
+
+const { palette } = Astro.props as Props;
+---
+
+<article class="space-y-4 rounded-card corner-squircle bg-surface p-5 ring-1 ring-border-muted">
+	<header class="flex items-baseline justify-between gap-3">
+		<h3 class="font-bold text-foreground">{palette.label}</h3>
+		<span class="font-mono text-xs text-subtle-foreground">{palette.name}</span>
+	</header>
+
+	{
+		THEMES.map((theme) => {
+			const set = palette.current[theme];
+
+			return (
+				<div class="space-y-2">
+					<p class="text-xs font-medium text-subtle-foreground">{THEME_LABELS[theme]}</p>
+					<div class="grid grid-cols-4 gap-2">
+						{[set.accent, set.accentForeground, set.accentVivid, set.accentGlow].map((color) => (
+							<ColorSwatch color={color} value />
+						))}
+					</div>
+					<ContrastRow metrics={palette.currentContrast[theme]} />
+				</div>
+			);
+		})
+	}
+</article>

@@ -2,13 +2,16 @@
 import { markdownComponents } from "@/components/markdown/markdownComponents";
 import SkipNode from "@/components/markdown/SkipNode.astro";
 import BackButton from "@/components/navigation/BackButton.astro";
-import { byNewest, type PostEntry } from "@/lib/post/collection";
+import PostHeader from "@/components/posts/PostHeader.astro";
+import PostNeighbours from "@/components/posts/PostNeighbours.astro";
+import PostTags from "@/components/posts/PostTags.astro";
+import ContentDates from "@/components/ui/ContentDates.astro";
 import { defaultLocale, getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
 import Layout from "@/layouts/Layout.astro";
-import { formatContentDateTime, getContentDates } from "@/lib/contentDates";
-import { getPostId, getPostMarkdownPath, getPostPath } from "@/lib/post/posts";
 import { entryFingerprint, pageCacheKey } from "@/lib/build/cacheKey";
-import { Icon } from "astro-icon/components";
+import { getContentDates } from "@/lib/contentDates";
+import { byNewest, type PostEntry } from "@/lib/post/collection";
+import { getPostId, getPostMarkdownPath, getPostPath } from "@/lib/post/posts";
 import { getCollection, render } from "astro:content";
 
 export async function getStaticPaths() {
@@ -58,17 +61,6 @@ const fullDate = new Intl.DateTimeFormat(locale, {
 })
 	.format(data.pubDate)
 	.replace(/\s?г\.$/, "");
-
-const publishedLabel = formatContentDateTime(publishedDate, locale);
-const modifiedLabel = formatContentDateTime(modifiedDate, locale);
-
-const badgeClass =
-	"rounded-full bg-surface px-2.5 py-1 font-medium text-muted-foreground ring ring-depth-100";
-
-const neighbours = [
-	newerPost ? { post: newerPost, label: t("posts.newer"), icon: "tabler:arrow-left" } : null,
-	olderPost ? { post: olderPost, label: t("posts.older"), icon: "tabler:arrow-right" } : null,
-].filter((item): item is NonNullable<typeof item> => Boolean(item));
 ---
 
 <Layout
@@ -87,25 +79,14 @@ const neighbours = [
 
 	<main class="mx-auto w-full max-w-3xl min-w-0">
 		<article class="flex w-full min-w-0 flex-col gap-6">
-			<header class="flex min-w-0 flex-col gap-3">
-				<div class="flex flex-wrap items-center gap-2 text-xs leading-5">
-					<span class={badgeClass}>{data.author}</span>
-					<span class={badgeClass}>{data.category}</span>
-					<time class="text-muted-foreground" datetime={data.pubDate.toISOString()}>
-						{fullDate}
-					</time>
-				</div>
-
-				<h1
-					class="text-2xl font-bold leading-tight tracking-tight text-balance wrap-anywhere text-foreground sm:text-3xl"
-				>
-					{data.title}
-				</h1>
-
-				<p class="text-sm leading-6 text-muted-foreground sm:text-base">
-					{data.description}
-				</p>
-			</header>
+			<PostHeader
+				title={data.title}
+				description={data.description}
+				author={data.author}
+				category={data.category}
+				pubDate={data.pubDate}
+				fullDate={fullDate}
+			/>
 
 			<div
 				class="prose prose-sm min-w-0 max-w-none sm:prose-base prose-a:font-medium prose-a:text-link prose-a:decoration-link-decoration prose-a:underline-offset-4"
@@ -113,57 +94,15 @@ const neighbours = [
 				<Content components={{ ...markdownComponents, h1: SkipNode }} />
 			</div>
 
-			{
-				data.tags.length > 0 && (
-					<ul class="flex list-none flex-wrap gap-2 p-0 text-xs leading-5">
-						{data.tags.map((tag) => (
-							<li class={badgeClass}>#{tag}</li>
-						))}
-					</ul>
-				)
-			}
+			<PostTags tags={data.tags} />
 
-			{
-				(publishedLabel || modifiedLabel) && (
-					<footer class="border-t border-depth-100 pt-3 text-[0.72rem] leading-5 text-muted-foreground">
-						{publishedLabel && (
-							<time datetime={publishedDate?.toISOString()}>
-								{t("content.published")}: {publishedLabel}
-							</time>
-						)}
-						{publishedLabel && modifiedLabel && <span aria-hidden="true"> · </span>}
-						{modifiedLabel && (
-							<time datetime={modifiedDate?.toISOString()}>
-								{t("content.updated")}: {modifiedLabel}
-							</time>
-						)}
-					</footer>
-				)
-			}
+			<ContentDates
+				publishedDate={publishedDate}
+				modifiedDate={modifiedDate}
+				class="text-[0.72rem] text-muted-foreground"
+			/>
 		</article>
 
-		{
-			neighbours.length > 0 && (
-				<nav
-					class="mt-10 grid gap-3 sm:grid-cols-2"
-					aria-label={t("posts.neighbours")}
-				>
-					{neighbours.map((item) => (
-						<a
-							href={localizePath(locale, getPostPath(item.post.id))}
-							class="group flex min-w-0 flex-col gap-1 rounded-card corner-squircle bg-surface p-4 text-left no-underline ring ring-depth-100 transition hover:ring-depth-200"
-						>
-							<span class="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-								<Icon name={item.icon} class="size-3.5 shrink-0" aria-hidden="true" />
-								{item.label}
-							</span>
-							<span class="min-w-0 text-sm font-semibold wrap-anywhere text-foreground sm:text-base">
-								{item.post.data.title}
-							</span>
-						</a>
-					))}
-				</nav>
-			)
-		}
+		<PostNeighbours newerPost={newerPost} olderPost={olderPost} />
 	</main>
 </Layout>

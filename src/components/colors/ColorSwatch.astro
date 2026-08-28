@@ -1,0 +1,29 @@
+---
+import { CELL_CLASS, SWATCH_CLASS } from "@/components/colors/colorLabStyles";
+
+/**
+ * Плитка цвета. Литеральный hex здесь разрешён: на `/colors` цвет — это
+ * контент, а значения приходят снимком из `src/data/colorLab.ts`.
+ */
+interface Props {
+	color: string;
+	/** Роль токена: `accent`, `fg`, `vivid`, `glow`. */
+	label?: string;
+	/** Показать сам hex под плиткой. */
+	value?: boolean;
+}
+
+const { color, label, value = false } = Astro.props as Props;
+---
+
+{
+	label || value ? (
+		<div class="space-y-1">
+			<div class={SWATCH_CLASS} style={`background-color:${color}`} />
+			{label && <p class="text-[11px] text-subtle-foreground">{label}</p>}
+			{value && <p class={CELL_CLASS}>{color}</p>}
+		</div>
+	) : (
+		<div class={SWATCH_CLASS} style={`background-color:${color}`} />
+	)
+}

@@ -1,0 +1,40 @@
+---
+import { getLocaleFromUrl, useTranslations } from "@/i18n";
+import { formatContentDateTime } from "@/lib/contentDates";
+
+/**
+ * Подвал материала: «опубликовано» и «обновлено». Одна разметка на странице
+ * центра и странице поста — раньше их было две, и они уже разошлись по
+ * атрибуту `datetime`.
+ */
+interface Props {
+	publishedDate?: Date;
+	modifiedDate?: Date;
+	class?: string;
+}
+
+const { publishedDate, modifiedDate, class: className } = Astro.props as Props;
+const locale = getLocaleFromUrl(Astro.url);
+const t = useTranslations(locale);
+
+const publishedLabel = formatContentDateTime(publishedDate, locale);
+const modifiedLabel = formatContentDateTime(modifiedDate, locale);
+---
+
+{
+	(publishedLabel || modifiedLabel) && (
+		<footer class:list={["border-t border-depth-100 pt-3 leading-5", className]}>
+			{publishedLabel && (
+				<time datetime={publishedDate?.toISOString()}>
+					{t("content.published")}: {publishedLabel}
+				</time>
+			)}
+			{publishedLabel && modifiedLabel && <span aria-hidden="true"> · </span>}
+			{modifiedLabel && (
+				<time datetime={modifiedDate?.toISOString()}>
+					{t("content.updated")}: {modifiedLabel}
+				</time>
+			)}
+		</footer>
+	)
+}

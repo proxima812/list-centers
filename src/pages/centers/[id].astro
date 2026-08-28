@@ -1,25 +1,20 @@
 ---
-import ButtonLink from "@/components/ui/ButtonLink.astro";
-import CardItem from "@/components/ui/CardItem.astro";
+import CenterFacts from "@/components/centers/CenterFacts.astro";
+import CenterHeader from "@/components/centers/CenterHeader.astro";
 import CenterPagination from "@/components/centers/CenterPagination.astro";
-import CopyPageMenu from "@/components/ui/CopyPageMenu.astro";
-import TranslationFeedbackCard from "@/components/ui/TranslationFeedbackCard.astro";
+import CenterRelated from "@/components/centers/CenterRelated.astro";
 import { markdownComponents } from "@/components/markdown/markdownComponents";
 import SkipNode from "@/components/markdown/SkipNode.astro";
-import Layout from "@/layouts/Layout.astro";
-import { Icon } from "astro-icon/components";
-import { getCollection, render, type CollectionEntry } from "astro:content";
-
-import { centerDescription } from "@/lib/center/description";
-import { centerJsonLd } from "@/lib/center/jsonLd";
-import { byRecency } from "@/lib/center/order";
-import { relatedByCountry, relatedCenters } from "@/lib/center/related";
-import { getCountryLabel } from "@/data/worldCountries";
+import ButtonLink from "@/components/ui/ButtonLink.astro";
+import ContentDates from "@/components/ui/ContentDates.astro";
+import CopyPageMenu from "@/components/ui/CopyPageMenu.astro";
+import TranslationFeedbackCard from "@/components/ui/TranslationFeedbackCard.astro";
 import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
-import { getCenterLinks } from "@/lib/center/links";
-import { createCenterRouteIdMap, getCenterPath } from "@/lib/center/centers";
+import Layout from "@/layouts/Layout.astro";
 import { collectionFingerprint } from "@/lib/build/cacheKey";
-import { formatContentDateTime, getContentDates } from "@/lib/contentDates";
+import { createCenterRouteIdMap } from "@/lib/center/centers";
+import { buildCenterDetail } from "@/lib/center/detail";
+import { getCollection, render, type CollectionEntry } from "astro:content";
 
 export async function getStaticPaths() {
 	const entries = await getCollection("centers");
@@ -42,118 +37,22 @@ interface Props {
 }
 
 const { entry, localizedEntry } = Astro.props as Props;
-const contentEntry = localizedEntry ?? entry;
-const data = contentEntry.data;
-const { Content } = await render(contentEntry);
 const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
-const centerEntries = byRecency(await getCollection("centers"));
-const routeIds = createCenterRouteIdMap(centerEntries);
-const englishEntries = await getCollection("centersEn");
-const englishEntryById = new Map(englishEntries.map((centerEntry) => [centerEntry.id, centerEntry]));
 
-const clean = (value?: string | null) => {
-	if (!value) return null;
-	const normalized = value.trim();
-	return normalized.length ? normalized : null;
-};
-
-const title = clean(data.title) ?? t("detail.fallbackTitle");
-const summary = clean(data.summary);
-const country = clean(data.location?.country);
-const city = clean(data.location?.city);
-const flag = clean(data.location?.flag);
-const region = clean(data.location?.region);
-const type = clean(data.type);
-const category = clean(data.category);
-const rawPubDate = clean(data.pubDate);
-const { publishedDate, modifiedDate } = getContentDates({
-	pubDate: rawPubDate,
-	filePath: contentEntry.filePath,
-});
-const routeId = routeIds.get(entry.id) ?? entry.id;
-const canonicalURL = localizePath(locale, getCenterPath(routeId));
-const markdownURL = locale === "ru" ? `${getCenterPath(routeId)}.md` : undefined;
-const hasEnglishTranslation = englishEntryById.has(entry.id);
-const alternateLinks = [
-	{ hreflang: "ru", href: getCenterPath(routeId) },
-	...(hasEnglishTranslation
-		? [{ hreflang: "en", href: localizePath("en", getCenterPath(routeId)) }]
-		: []),
-	{ hreflang: "x-default", href: getCenterPath(routeId) },
-];
-const currentIndex = centerEntries.findIndex((centerEntry) => centerEntry.id === entry.id);
-const previousEntry = currentIndex > 0 ? centerEntries[currentIndex - 1] : null;
-const nextEntry =
-	currentIndex >= 0 && currentIndex < centerEntries.length - 1
-		? centerEntries[currentIndex + 1]
-		: null;
-
-const localizedCountry = country ? getCountryLabel(country, locale) : null;
-const placeLine = [flag, localizedCountry ?? country].filter(Boolean).join(" ");
-const cityLine = city ?? null;
-const formattedDate = rawPubDate
-	? new Date(rawPubDate).toLocaleDateString(locale, {
-			day: "numeric",
-			month: "long",
-			year: "numeric",
-			timeZone: "Asia/Almaty",
-		})
-	: null;
-const publishedLabel = formatContentDateTime(publishedDate, locale);
-const modifiedLabel = formatContentDateTime(modifiedDate, locale);
-
-const sourceUrl = clean(data.source);
-const sourceLabel = (() => {
-	if (!sourceUrl) return null;
-	try {
-		return new URL(sourceUrl).hostname.replace(/^www\./, "");
-	} catch {
-		return sourceUrl;
-	}
-})();
-
-const facts = [
-	placeLine ? { label: t("detail.country"), value: placeLine } : null,
-	cityLine ? { label: t("detail.city"), value: cityLine } : null,
-	region ? { label: t("detail.region"), value: region } : null,
-	formattedDate ? { label: t("content.published"), value: formattedDate } : null,
-].filter((fact): fact is { label: string; value: string } => Boolean(fact));
-
-const headerBadges = [category, type].filter((value): value is string => Boolean(value));
-const pageDescription = centerDescription(
-	{ title, summary, city, region, country: localizedCountry, category, type },
-	locale,
-);
-
-const relatedEntries = relatedCenters(
-	entry,
-	centerEntries,
-	new Map((locale === "en" ? englishEntries : centerEntries).map((item) => [item.id, item])),
-);
-const relatedTitle = relatedByCountry(entry)
-	? t("detail.related", { country: localizedCountry ?? country ?? "" })
-	: t("detail.relatedCategory");
-
-const jsonLd = centerJsonLd({
-	name: title,
-	description: summary,
-	url: sourceUrl ?? canonicalURL,
-	country,
-	region,
-	city,
-});
+const { Content } = await render(localizedEntry ?? entry);
+const detail = await buildCenterDetail({ entry, localizedEntry, locale, t });
 ---
 
 <Layout
-	title={title}
-	description={pageDescription}
+	title={detail.title}
+	description={detail.description}
 	type="article"
-	canonicalURL={canonicalURL}
-	markdownURL={markdownURL}
-	alternates={alternateLinks}
-	datePublished={publishedDate}
-	dateModified={modifiedDate}
+	canonicalURL={detail.canonicalURL}
+	markdownURL={detail.markdownURL}
+	alternates={detail.alternates}
+	datePublished={detail.publishedDate}
+	dateModified={detail.modifiedDate}
 >
 	<article class="mx-auto flex w-full max-w-5xl min-w-0 flex-col gap-10">
 		<nav class="flex w-full flex-wrap items-center justify-between gap-3">
@@ -166,128 +65,38 @@ const jsonLd = centerJsonLd({
 			<CopyPageMenu class="max-w-full justify-self-start sm:justify-self-end" />
 		</nav>
 
-		<header class="flex w-full min-w-0 flex-col gap-4">
-			{
-				headerBadges.length > 0 && (
-					<p class="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-medium text-muted-foreground">
-						{headerBadges.map((badge, index) => (
-							<>
-								{index > 0 && <span aria-hidden="true">·</span>}
-								<span>{badge}</span>
-							</>
-						))}
-					</p>
-				)
-			}
-			<h1
-				class="max-w-4xl text-balance break-words text-3xl font-semibold leading-tight text-foreground sm:text-4xl lg:text-5xl"
-			>
-				{title}
-			</h1>
-			{
-				summary && (
-					<p class="max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">
-						{summary}
-					</p>
-				)
-			}
-		</header>
+		<CenterHeader title={detail.title} summary={detail.summary} badges={detail.badges} />
 
-		<div
-			class="grid min-w-0 grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-12"
-		>
+		<div class="grid min-w-0 grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-12">
 			<div class="prose min-w-0 max-w-[68ch]">
 				<Content components={{ ...markdownComponents, h1: SkipNode }} />
-				{
-					(publishedLabel || modifiedLabel) && (
-						<footer class="mt-8 border-t border-depth-100 pt-3 text-xs leading-5 text-subtle-foreground">
-							{publishedLabel && (
-								<time datetime={publishedDate?.toISOString()}>
-									{t("content.published")}: {publishedLabel}
-								</time>
-							)}
-							{publishedLabel && modifiedLabel && <span aria-hidden="true"> · </span>}
-							{modifiedLabel && (
-								<time datetime={modifiedDate?.toISOString()}>
-									{t("content.updated")}: {modifiedLabel}
-								</time>
-							)}
-						</footer>
-					)
-				}
+				<ContentDates
+					publishedDate={detail.publishedDate}
+					modifiedDate={detail.modifiedDate}
+					class="mt-8 text-xs text-subtle-foreground"
+				/>
 			</div>
 
-			{
-				(facts.length > 0 || sourceUrl) && (
-					<aside class="order-first h-fit min-w-0 lg:sticky lg:top-12 lg:order-2">
-						<dl class="divide-y divide-depth-100 border-y border-depth-100 text-sm">
-							{facts.map((fact) => (
-								<div class="flex items-baseline justify-between gap-4 py-2.5">
-									<dt class="shrink-0 text-xs uppercase text-subtle-foreground">
-										{fact.label}
-									</dt>
-									<dd class="min-w-0 break-words text-right text-foreground">
-										{fact.value}
-									</dd>
-								</div>
-							))}
-							{sourceUrl && (
-								<div class="flex items-baseline justify-between gap-4 py-2.5">
-									<dt class="shrink-0 text-xs uppercase text-subtle-foreground">
-										{t("detail.source")}
-									</dt>
-									<dd class="min-w-0 text-right">
-										<a
-											target="_blank"
-											rel="nofollow noreferrer noopener"
-											href={sourceUrl}
-											class="break-words text-link underline decoration-link-decoration underline-offset-4"
-										>
-											{sourceLabel}
-										</a>
-									</dd>
-								</div>
-							)}
-						</dl>
-					</aside>
-				)
-			}
+			<CenterFacts
+				facts={detail.facts}
+				sourceUrl={detail.sourceUrl}
+				sourceLabel={detail.sourceLabel}
+			/>
 		</div>
 
-		{
-			relatedEntries.length > 0 && (
-				<section class="flex flex-col gap-5">
-					<h2 class="flex items-center gap-2 text-lg font-semibold text-foreground">
-						<Icon name="mdi:compass-outline" class="h-5 w-5 text-muted-foreground" />
-						{relatedTitle}
-					</h2>
-					<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 ">
-						{relatedEntries.map((relatedEntry) => (
-							<CardItem
-								id={relatedEntry.id}
-								routeId={routeIds.get(relatedEntry.id) ?? relatedEntry.id}
-								title={relatedEntry.data.title}
-								summary={relatedEntry.data.summary}
-								type={relatedEntry.data.type}
-								category={relatedEntry.data.category}
-								location={relatedEntry.data.location}
-								region={relatedEntry.data.location?.region}
-								pubDate={relatedEntry.data.pubDate}
-								links={getCenterLinks(relatedEntry.body, relatedEntry.data.source)}
-							/>
-						))}
-					</div>
-				</section>
-			)
-		}
+		<CenterRelated
+			title={detail.relatedTitle}
+			entries={detail.related}
+			routeIds={detail.routeIds}
+		/>
 
 		<CenterPagination
-			previousEntry={previousEntry}
-			nextEntry={nextEntry}
-			routeIds={routeIds}
+			previousEntry={detail.previousEntry}
+			nextEntry={detail.nextEntry}
+			routeIds={detail.routeIds}
 		/>
 
 		<TranslationFeedbackCard />
 	</article>
-	<script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
+	<script type="application/ld+json" is:inline set:html={JSON.stringify(detail.jsonLd)} />
 </Layout>

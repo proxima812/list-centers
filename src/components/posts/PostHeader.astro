@@ -1,0 +1,35 @@
+---
+import { POST_BADGE_CLASS } from "@/components/posts/postStyles";
+
+interface Props {
+	title: string;
+	description: string;
+	author: string;
+	category: string;
+	pubDate: Date;
+	/** Дата словами: локаль и часовой пояс считает страница. */
+	fullDate: string;
+}
+
+const { title, description, author, category, pubDate, fullDate } = Astro.props as Props;
+---
+
+<header class="flex min-w-0 flex-col gap-3">
+	<div class="flex flex-wrap items-center gap-2 text-xs leading-5">
+		<span class={POST_BADGE_CLASS}>{author}</span>
+		<span class={POST_BADGE_CLASS}>{category}</span>
+		<time class="text-muted-foreground" datetime={pubDate.toISOString()}>
+			{fullDate}
+		</time>
+	</div>
+
+	<h1
+		class="text-2xl font-bold leading-tight tracking-tight text-balance wrap-anywhere text-foreground sm:text-3xl"
+	>
+		{title}
+	</h1>
+
+	<p class="text-sm leading-6 text-muted-foreground sm:text-base">
+		{description}
+	</p>
+</header>

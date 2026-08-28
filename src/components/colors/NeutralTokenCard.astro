@@ -1,0 +1,35 @@
+---
+import ColorSwatch from "@/components/colors/ColorSwatch.astro";
+import { CELL_CLASS } from "@/components/colors/colorLabStyles";
+import type { TokenRow } from "@/data/colorLab";
+
+interface Props {
+	row: TokenRow;
+}
+
+const { row } = Astro.props as Props;
+---
+
+<li class="space-y-3 rounded-card corner-squircle bg-surface p-4 ring-1 ring-border-muted">
+	<div class="grid grid-cols-2 gap-2">
+		<ColorSwatch color={row.light} />
+		<ColorSwatch color={row.dark} />
+	</div>
+	<div class="space-y-1">
+		<p class="flex items-baseline justify-between gap-2">
+			<span class="font-mono text-sm font-medium text-foreground">{row.token}</span>
+			{
+				row.derived && (
+					<span class="rounded-full bg-subtle px-2 py-0.5 text-[11px] font-medium text-subtle-foreground">
+						выведен
+					</span>
+				)
+			}
+		</p>
+		<p class="flex justify-between gap-2">
+			<span class={CELL_CLASS}>{row.light}</span>
+			<span class={CELL_CLASS}>{row.dark}</span>
+		</p>
+		<p class="text-xs text-subtle-foreground">{row.usage}</p>
+	</div>
+</li>

@@ -1,0 +1,70 @@
+---
+import ColorSwatch from "@/components/colors/ColorSwatch.astro";
+import ContrastRow from "@/components/colors/ContrastRow.astro";
+import { THEMES, THEME_LABELS } from "@/components/colors/colorLabStyles";
+import type { AccentVariant } from "@/data/colorLab";
+
+/**
+ * Расчётный вариант акцента: четыре токена, живая проба на фоне своей темы
+ * и три контраста. Фон пробы задан литеральным hex намеренно — светлая и
+ * тёмная колонки показаны одновременно, тему при этом никто не переключает.
+ */
+interface Props {
+	variant: AccentVariant;
+}
+
+const { variant } = Astro.props as Props;
+
+const PREVIEW_BACKGROUND = { light: "#F6F3F9", dark: "#090211" } as const;
+
+const TOKEN_LABELS = [
+	["accent", "accent"],
+	["fg", "accentForeground"],
+	["vivid", "accentVivid"],
+	["glow", "accentGlow"],
+] as const;
+---
+
+<article class="space-y-4 rounded-card corner-squircle bg-surface p-5 ring-1 ring-border-muted">
+	<header class="space-y-1">
+		<p class="flex items-baseline justify-between gap-3">
+			<span class="font-bold text-foreground">{variant.title}</span>
+			<span class="font-mono text-xs text-subtle-foreground">{variant.key}</span>
+		</p>
+		<p class="text-sm leading-6 text-muted-foreground">{variant.note}</p>
+	</header>
+
+	{
+		THEMES.map((theme) => {
+			const set = variant[theme];
+
+			return (
+				<div class="space-y-2">
+					<p class="text-xs font-medium text-subtle-foreground">{THEME_LABELS[theme]}</p>
+					<div class="grid grid-cols-4 gap-2">
+						{TOKEN_LABELS.map(([label, token]) => (
+							<ColorSwatch color={set[token]} label={label} value />
+						))}
+					</div>
+
+					<div
+						class="flex items-center gap-3 rounded-control corner-squircle p-3"
+						style={`background-color:${PREVIEW_BACKGROUND[theme]}`}
+					>
+						<span
+							class="rounded-full px-3 py-1 text-xs font-medium"
+							style={`background-color:${set.accent};color:${set.accentForeground}`}
+						>
+							Активный чип
+						</span>
+						<span class="text-sm font-medium" style={`color:${set.accent}`}>
+							Ссылка-сигнал
+						</span>
+					</div>
+
+					<ContrastRow metrics={set} />
+				</div>
+			);
+		})
+	}
+</article>

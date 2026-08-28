@@ -1,0 +1,102 @@
+---
+import NearbyCountrySelect from "@/components/nearby/NearbyCountrySelect.astro";
+import CardItem from "@/components/ui/CardItem.astro";
+import EmptyState from "@/components/ui/EmptyState.astro";
+import PageHero from "@/components/ui/PageHero.astro";
+import { defaultLocale, getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
+import { getNearbyIndex, nearbyCountries } from "@/lib/nearby/index";
+import { Icon } from "astro-icon/components";
+
+const locale = getLocaleFromUrl(Astro.url);
+const t = useTranslations(locale);
+const catalogHref = localizePath(locale, "/centers");
+const indexUrl = locale === defaultLocale ? "/nearby-index.json" : `/${locale}/nearby-index.json`;
+
+const countries = nearbyCountries(await getNearbyIndex(locale), locale);
+
+const chipClass =
+	"group flex min-w-0 max-w-fit cursor-pointer items-center gap-1.5 rounded-full corner-squircle bg-surface-muted px-3 py-1.5 text-sm font-medium text-muted-foreground transition not-data-[active]:hover:bg-subtle hover:text-foreground data-[active]:bg-accent data-[active]:text-accent-foreground";
+---
+
+<div
+	data-nearby
+	data-index-url={indexUrl}
+	data-geo-url="/api/geo.json"
+	data-text-failed={t("nearby.failed")}
+	data-text-count={t("nearby.count", { count: "{count}" })}
+	data-text-empty={t("nearby.emptyCountry", { country: "{country}" })}
+	class="flex min-w-0 flex-col gap-8"
+>
+	<PageHero title={t("nearby.title")} intro={t("nearby.heroIntro")}>
+		<div class="flex flex-wrap items-center gap-3 pt-2">
+			<p
+				data-nearby-place
+				hidden
+				class="inline-flex min-w-0 items-center gap-2 rounded-full corner-squircle bg-surface px-3.5 py-2 text-sm text-surface-foreground [&[hidden]]:hidden"
+			>
+				<Icon
+					name="mdi:map-marker-radius-outline"
+					class="size-4 shrink-0 text-subtle-foreground"
+					aria-hidden="true"
+				/>
+				<span data-nearby-flag class="shrink-0 text-base leading-none [&[hidden]]:hidden"></span>
+				<span data-nearby-label class="min-w-0 font-semibold"></span>
+			</p>
+
+			<NearbyCountrySelect countries={countries} />
+		</div>
+
+		<p
+			data-nearby-status
+			class="text-sm text-subtle-foreground tabular-nums"
+			role="status"
+			aria-live="polite"
+		>
+			{t("nearby.detecting")}
+		</p>
+	</PageHero>
+
+	<section
+		data-nearby-cities
+		hidden
+		data-all-label={t("nearby.allCities")}
+		aria-label={t("nearby.cities")}
+		class="flex min-w-0 flex-wrap gap-1.5 [&[hidden]]:hidden"
+	>
+	</section>
+
+	<section data-nearby-grid hidden class="grid min-w-0 grid-cols-1 gap-6 md:grid-cols-2 [&[hidden]]:hidden">
+	</section>
+
+	<EmptyState
+		data-nearby-empty
+		hidden
+		icon="mdi:map-marker-radius-outline"
+		hint={t("nearby.emptyHint")}
+		actionHref={catalogHref}
+		actionLabel={t("nearby.toCatalog")}
+		class="[&[hidden]]:hidden"
+	>
+		<p slot="title" data-nearby-empty-text class="max-w-md text-lg font-semibold"></p>
+	</EmptyState>
+
+	<template data-nearby-chip>
+		<button type="button" data-nearby-city class={chipClass}>
+			<span class="min-w-0 truncate" data-chip-label></span>
+			<span
+				data-chip-count
+				class="shrink-0 text-xs tabular-nums text-subtle-foreground group-data-[active]:text-current"
+			></span>
+		</button>
+	</template>
+
+	<template data-nearby-card>
+		<CardItem id="" title="" template />
+	</template>
+</div>
+
+<script>
+	import { initNearby } from "@/lib/scripts/nearby";
+
+	initNearby();
+</script>

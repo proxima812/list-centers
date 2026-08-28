@@ -1,0 +1,27 @@
+---
+import { AA_THRESHOLD, type AccentMetrics } from "@/data/colorLab";
+
+/**
+ * Три контраста акцента: к фону страницы, к карточке и текст на самом
+ * акценте. Красным — то, что ниже порога AA и в мелкий текст не годится.
+ */
+interface Props {
+	metrics: AccentMetrics;
+}
+
+const { metrics } = Astro.props as Props;
+
+const fails = (value: number) => value < AA_THRESHOLD;
+---
+
+<p class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+	<span class:list={[fails(metrics.onBackground) && "text-destructive"]}>
+		на фоне {metrics.onBackground}
+	</span>
+	<span class:list={[fails(metrics.onSurface) && "text-destructive"]}>
+		на карточке {metrics.onSurface}
+	</span>
+	<span class:list={[fails(metrics.foregroundOnAccent) && "text-destructive"]}>
+		текст на акценте {metrics.foregroundOnAccent}
+	</span>
+</p>

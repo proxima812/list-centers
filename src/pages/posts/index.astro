@@ -1,87 +1,19 @@
 ---
 import BackButton from "@/components/navigation/BackButton.astro";
 import PostCard from "@/components/posts/PostCard.astro";
-import { byNewest, localizedPosts } from "@/lib/post/collection";
 import { defaultLocale, getLocaleFromUrl, useTranslations } from "@/i18n";
 import Layout from "@/layouts/Layout.astro";
-import { formatContentDateTime, getContentDates } from "@/lib/contentDates";
-import { getPostId, getPostPath } from "@/lib/post/posts";
-import { render } from "astro:content";
+import { byNewest, localizedPosts } from "@/lib/post/collection";
+import { buildPostFeed, latestModifiedDate } from "@/lib/post/feed";
 
 const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
 const isDefault = locale === defaultLocale;
 
-const rendered = byNewest(await localizedPosts(locale));
-
 const title = t("posts.title");
 const description = t("posts.description");
 
-const fullDateFormatter = new Intl.DateTimeFormat(locale, {
-	day: "numeric",
-	month: "short",
-	year: "numeric",
-});
-
-const stripMarkdown = (value: string) =>
-	value
-		.replace(/```[\s\S]*?```/g, "")
-		.replace(/`([^`]+)`/g, "$1")
-		.replace(/!\[([^\]]*)\]\([^)]+\)/g, "$1")
-		.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
-		.replace(/[#>*_~|-]/g, "")
-		.replace(/\s+/g, " ")
-		.trim();
-
-const getRelativeTime = (date: Date) => {
-	const diffMs = Date.now() - date.getTime();
-	const minute = 60000;
-	const hour = 60 * minute;
-	const day = 24 * hour;
-
-	if (diffMs < hour) {
-		return t("posts.ago.minutes", { value: Math.max(1, Math.floor(diffMs / minute)) });
-	}
-
-	if (diffMs < day) {
-		return t("posts.ago.hours", { value: Math.floor(diffMs / hour) });
-	}
-
-	return t("posts.ago.days", { value: Math.floor(diffMs / day) });
-};
-
-const postsFeed = await Promise.all(
-	rendered.map(async (post) => {
-		const { Content } = await render(post);
-		const plainText = stripMarkdown(post.body ?? post.data.description);
-		const { publishedDate, modifiedDate } = getContentDates({
-			pubDate: post.data.pubDate,
-			filePath: post.filePath,
-		});
-
-		return {
-			Content,
-			id: getPostId(post.id),
-			href: getPostPath(post.id),
-			title: post.data.title,
-			description: post.data.description,
-			author: post.data.author,
-			isLong: plainText.length > 200,
-			pubDate: post.data.pubDate,
-			publishedDate,
-			modifiedDate,
-			relativeTime: getRelativeTime(post.data.pubDate),
-			fullDate: fullDateFormatter.format(post.data.pubDate).replace(/\s?г\.$/, ""),
-			publishedLabel: formatContentDateTime(publishedDate, locale),
-			modifiedLabel: formatContentDateTime(modifiedDate, locale),
-		};
-	}),
-);
-
-const latestModifiedDate = postsFeed
-	.map((post) => post.modifiedDate)
-	.filter((date): date is Date => Boolean(date))
-	.sort((a, b) => b.getTime() - a.getTime())[0];
+const postsFeed = await buildPostFeed(byNewest(await localizedPosts(locale)), locale, t);
 ---
 
 <Layout
@@ -90,7 +22,7 @@ const latestModifiedDate = postsFeed
 	keywords={["tatarverse", title, "сабантуй", "культура", "язык"]}
 	rssURL={isDefault ? "/posts/rss.xml" : undefined}
 	markdownURL={isDefault ? "/posts.md" : undefined}
-	dateModified={latestModifiedDate}
+	dateModified={latestModifiedDate(postsFeed)}
 >
 	<BackButton href="/" variant="outline" label="Назад" labelKey="nav.back" />
 	<main class="mx-auto w-full max-w-3xl">

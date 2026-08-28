@@ -1,0 +1,68 @@
+---
+import CardItem from "@/components/ui/CardItem.astro";
+import EmptyState from "@/components/ui/EmptyState.astro";
+import PageHero from "@/components/ui/PageHero.astro";
+import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
+import { Icon } from "astro-icon/components";
+
+const locale = getLocaleFromUrl(Astro.url);
+const t = useTranslations(locale);
+const catalogHref = localizePath(locale, "/centers");
+---
+
+<PageHero title={t("saved.title")} intro={t("saved.heroIntro")}>
+	<div class="flex flex-wrap items-center gap-3 pt-2">
+		<p
+			data-saved-summary
+			data-count={t("saved.count", { count: "{count}" })}
+			data-confirm={t("saved.clearConfirm")}
+			data-remove={t("saved.remove")}
+			class="text-sm text-subtle-foreground tabular-nums"
+			role="status"
+			aria-live="polite"
+		>
+		</p>
+		<button
+			type="button"
+			data-saved-clear
+			hidden
+			class="inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-border-muted px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+		>
+			<Icon name="tabler:trash" class="size-4 shrink-0" aria-hidden="true" />
+			<span>{t("saved.clear")}</span>
+		</button>
+	</div>
+</PageHero>
+
+<EmptyState
+	data-saved-empty
+	hidden
+	icon="tabler:bookmark"
+	hint={t("saved.emptyHint")}
+	actionHref={catalogHref}
+	actionLabel={t("saved.toCatalog")}
+>
+	<p slot="title" class="text-lg font-semibold">{t("saved.empty")}</p>
+</EmptyState>
+
+<section data-saved-grid hidden class="grid min-w-0 grid-cols-1 gap-6 md:grid-cols-2"></section>
+
+<template data-saved-card>
+	<CardItem id="" template>
+		<button
+			slot="action"
+			type="button"
+			data-saved-delete
+			class="absolute right-3 top-3 z-10 inline-flex cursor-pointer items-center gap-1 rounded-full bg-destructive/10 px-2.5 py-1 text-xs font-medium text-destructive transition-colors hover:bg-destructive/20"
+		>
+			<Icon name="tabler:trash" class="size-3.5 shrink-0" aria-hidden="true" />
+			<span>{t("saved.delete")}</span>
+		</button>
+	</CardItem>
+</template>
+
+<script>
+	import { initSavedPage } from "@/lib/scripts/savedPage";
+
+	initSavedPage();
+</script>

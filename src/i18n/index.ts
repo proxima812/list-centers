@@ -134,6 +134,12 @@ export function getOgLocale(locale: AppLocale): string {
 	return ogLocales[locale];
 }
 
+/**
+ * Тип функции перевода: нужен модулям в `src/lib`, которые собирают данные
+ * страницы и получают `t` параметром, а не зовут `useTranslations` сами.
+ */
+export type Translate = ReturnType<typeof useTranslations>;
+
 export function useTranslations(locale: AppLocale) {
 	const dict = dictionaries[locale] ?? dictionaries[defaultLocale];
 	const fallback = dictionaries[defaultLocale];

@@ -1,0 +1,37 @@
+---
+import CatalogStats from "@/components/centers/CatalogStats.astro";
+import { getLocaleFromUrl, useTranslations } from "@/i18n";
+import type { CenterKindBucket } from "@/lib/center/kinds";
+import type { CatalogStats as Stats } from "@/lib/center/stats";
+
+interface Props {
+	stats: Stats;
+	buckets: CenterKindBucket[];
+}
+
+const { stats, buckets } = Astro.props as Props;
+const locale = getLocaleFromUrl(Astro.url);
+const t = useTranslations(locale);
+---
+
+<section class="not-container pt-8 pb-10 lg:pt-12">
+	<div class="mx-auto max-w-7xl min-w-0 px-6 sm:px-12">
+		<div class="mx-auto flex min-w-0 max-w-5xl flex-col items-center space-y-6 text-center">
+			<h1
+				class="max-w-4xl text-3xl font-bold tracking-[-0.03em] text-foreground sm:text-5xl sm:tracking-[-0.035em] lg:text-6xl"
+			>
+				{t("stats.title")}
+			</h1>
+			<p class="max-w-3xl text-base leading-7 text-muted-foreground sm:text-lg">
+				{t("stats.intro")}
+			</p>
+			<CatalogStats
+				count={stats.count}
+				countries={stats.countries}
+				regions={stats.regions}
+				buckets={buckets}
+				class="pt-2"
+			/>
+		</div>
+	</div>
+</section>

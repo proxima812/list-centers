@@ -1,0 +1,73 @@
+---
+import { getLocaleFromUrl, useTranslations } from "@/i18n";
+import type { MacroCountryGroup } from "@/lib/center/geography";
+
+interface Props {
+	group: MacroCountryGroup;
+	/** Куда ведёт страна: каталог с уже выставленным фильтром. */
+	catalogHref: string;
+}
+
+const { group, catalogHref } = Astro.props as Props;
+const locale = getLocaleFromUrl(Astro.url);
+const t = useTranslations(locale);
+---
+
+<section>
+	<div class="flex items-baseline justify-between gap-4 border-b border-border pb-2">
+		<h3 class="text-base font-bold tracking-tight text-foreground">{t(`macro.${group.macro}`)}</h3>
+		<p class="shrink-0 text-xs font-medium text-muted-foreground">
+			{
+				t("stats.groupSummary", {
+					countries: group.present.length,
+					centers: group.total,
+				})
+			}
+		</p>
+	</div>
+
+	{
+		group.present.length > 0 && (
+			<ul class="divide-y divide-border-muted">
+				{group.present.map((row) => (
+					<li>
+						<a
+							href={`${catalogHref}?country=${encodeURIComponent(row.country)}`}
+							class="group -mx-3 flex items-center justify-between gap-4 rounded-micro px-3 py-2.5 text-sm transition hover:bg-muted"
+						>
+							<span class="flex min-w-0 items-center gap-2">
+								<span aria-hidden="true" class="shrink-0">
+									{row.flag}
+								</span>
+								<span class="truncate font-medium text-foreground group-hover:underline group-hover:decoration-current/40 group-hover:underline-offset-4">
+									{row.label}
+								</span>
+							</span>
+							<span class="shrink-0 font-semibold tabular-nums text-foreground">{row.count}</span>
+						</a>
+					</li>
+				))}
+			</ul>
+		)
+	}
+
+	{
+		group.missing.length > 0 && (
+			<div class="pt-4">
+				<p class="text-xs font-medium text-subtle-foreground">
+					{t("stats.missingLabel", { count: group.missing.length })}
+				</p>
+				<p class="mt-1.5 text-sm leading-6 text-muted-foreground">
+					{group.missing.map((row, index) => (
+						<>
+							{index > 0 && <span aria-hidden="true"> · </span>}
+							<span class="whitespace-nowrap">
+								<span aria-hidden="true">{row.flag}</span> {row.label}
+							</span>
+						</>
+					))}
+				</p>
+			</div>
+		)
+	}
+</section>

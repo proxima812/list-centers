@@ -1,0 +1,44 @@
+---
+import { getLocaleFromUrl, useTranslations } from "@/i18n";
+import type { CenterFact } from "@/lib/center/detail";
+
+interface Props {
+	facts: CenterFact[];
+	sourceUrl?: string | null;
+	sourceLabel?: string | null;
+}
+
+const { facts, sourceUrl, sourceLabel } = Astro.props as Props;
+const locale = getLocaleFromUrl(Astro.url);
+const t = useTranslations(locale);
+---
+
+{
+	(facts.length > 0 || sourceUrl) && (
+		<aside class="order-first h-fit min-w-0 lg:sticky lg:top-12 lg:order-2">
+			<dl class="divide-y divide-depth-100 border-y border-depth-100 text-sm">
+				{facts.map((fact) => (
+					<div class="flex items-baseline justify-between gap-4 py-2.5">
+						<dt class="shrink-0 text-xs uppercase text-subtle-foreground">{fact.label}</dt>
+						<dd class="min-w-0 break-words text-right text-foreground">{fact.value}</dd>
+					</div>
+				))}
+				{sourceUrl && (
+					<div class="flex items-baseline justify-between gap-4 py-2.5">
+						<dt class="shrink-0 text-xs uppercase text-subtle-foreground">{t("detail.source")}</dt>
+						<dd class="min-w-0 text-right">
+							<a
+								target="_blank"
+								rel="nofollow noreferrer noopener"
+								href={sourceUrl}
+								class="break-words text-link underline decoration-link-decoration underline-offset-4"
+							>
+								{sourceLabel}
+							</a>
+						</dd>
+					</div>
+				)}
+			</dl>
+		</aside>
+	)
+}

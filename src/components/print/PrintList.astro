@@ -1,0 +1,38 @@
+---
+import type { PrintCountry } from "@/lib/center/print";
+
+interface Props {
+	countries: PrintCountry[];
+}
+
+const { countries } = Astro.props as Props;
+---
+
+<main class="mt-6 print:mt-4">
+	{
+		countries.map((group) => (
+			<section data-print-group={group.country} class="mt-8 first:mt-0 print:mt-6">
+				<h2 class="border-b border-border pb-2 text-xl font-bold print:text-base">
+					{group.label} — {group.entries.length}
+				</h2>
+				<ol class="mt-3">
+					{group.entries.map((entry, index) => (
+						<li class="border-b border-border-muted py-3 print:py-2">
+							<p class="text-base font-semibold print:text-sm">
+								{index + 1}. {entry.title}
+							</p>
+							{(entry.place || entry.kind) && (
+								<p class="mt-0.5 text-base text-muted-foreground print:text-xs">
+									{[entry.place, entry.kind].filter(Boolean).join(" · ")}
+								</p>
+							)}
+							<p class="mt-0.5 text-sm break-all text-muted-foreground print:text-xs">
+								{entry.href}
+							</p>
+						</li>
+					))}
+				</ol>
+			</section>
+		))
+	}
+</main>
