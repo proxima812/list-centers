@@ -1,70 +1,54 @@
 ---
 import present from "@/assets/images/catalog-present-img.png";
 import searchImage from "@/assets/images/search-present-img.png";
+import HomeFeature from "@/components/home/HomeFeature.astro";
 import HomeLinksShowcase from "@/components/home/HomeLinksShowcase.astro";
 import HomeNearby from "@/components/home/HomeNearby.astro";
 import HomePeopleStats from "@/components/home/HomePeopleStats.astro";
-import { catalogStats } from "@/lib/center/stats";
 import { getLocaleFromUrl, useTranslations } from "@/i18n";
-import { Image } from "astro:assets";
+import { catalogStats } from "@/lib/center/stats";
 import { getCollection } from "astro:content";
 
-const { count: centers, countries: countriesCount, regions: regionsCount } = catalogStats(
-	await getCollection("centers"),
-);
+const {
+	count: centers,
+	countries: countriesCount,
+	regions: regionsCount,
+} = catalogStats(await getCollection("centers"));
 
 const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
 ---
 
 <div id="sections" class="space-y-20 py-12 md:space-y-32 md:py-20">
-	<section class="grid grid-cols-1 items-center gap-8 md:grid-cols-2 md:gap-12">
-		<Image
-			src={present}
-			alt={t("home.present.imageAlt")}
-			widths={[400, 640, 768, 1200]}
-			sizes="(min-width: 768px) 50vw, 100vw"
-			loading="eager"
-			fetchpriority="high"
-			class="order-2 h-full w-full rounded-card object-cover"
+	<HomeFeature
+		image={present}
+		imageAlt={t("home.present.imageAlt")}
+		title={t("home.present.title")}
+		priority
+	>
+		<p
+			class="leading-7 text-muted-foreground"
+			set:html={t("home.present.caption", {
+				centers,
+				countries: countriesCount,
+				regions: regionsCount,
+			})}
 		/>
-		<div class="order-1 space-y-6">
-			<h2 class="text-4xl font-bold tracking-tight">{t("home.present.title")}</h2>
-			<p
-				class="leading-7 text-muted-foreground"
-				set:html={t("home.present.caption", {
-					centers,
-					countries: countriesCount,
-					regions: regionsCount,
-				})}
-			/>
-			<p class="leading-7 text-muted-foreground">{t("home.present.text1")}</p>
-			<p class="leading-7 text-muted-foreground">{t("home.present.text2")}</p>
-		</div>
-	</section>
+		<p class="leading-7 text-muted-foreground">{t("home.present.text1")}</p>
+		<p class="leading-7 text-muted-foreground">{t("home.present.text2")}</p>
+	</HomeFeature>
+
 	<HomeLinksShowcase />
 	<HomePeopleStats />
 	<HomeNearby />
-	<section class="grid grid-cols-1 items-center gap-8 md:grid-cols-2 md:gap-12">
-		<div class="order-1 space-y-6 md:order-2">
-			<h2 class="text-4xl font-bold tracking-tight">
-				{t("home.search.title")}
-			</h2>
 
-			<p class="leading-7 text-muted-foreground">
-				{t("home.search.text1")}
-			</p>
-
-			<p class="leading-7 text-muted-foreground">
-				{t("home.search.text2")}
-			</p>
-		</div>
-		<Image
-			src={searchImage}
-			alt={t("home.search.imageAlt")}
-			widths={[400, 640, 768, 1200]}
-			sizes="(min-width: 768px) 50vw, 100vw"
-			class="order-2 h-full w-full rounded-card object-cover md:order-1"
-		/>
-	</section>
+	<HomeFeature
+		image={searchImage}
+		imageAlt={t("home.search.imageAlt")}
+		title={t("home.search.title")}
+		reversed
+	>
+		<p class="leading-7 text-muted-foreground">{t("home.search.text1")}</p>
+		<p class="leading-7 text-muted-foreground">{t("home.search.text2")}</p>
+	</HomeFeature>
 </div>
