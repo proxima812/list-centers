@@ -11,7 +11,7 @@ tags:
 category: "Project"
 ---
 
-In the [previous post](/en/posts/need-translators) we wrote that we are looking for people who know Tatar, Kazakh, Bashkir, or Crimean Tatar and are willing to help with translation. The question we get most is a simple one: where do I write?
+We are looking for people who know Tatar, Kazakh, Bashkir, or Crimean Tatar and are willing to help with translation. The question we get most is a simple one: where do I write?
 
 ## Write to us
 
@@ -41,7 +41,7 @@ There is no folder yet for Tatar, Kazakh, Bashkir, or Crimean Tatar: setting up 
 
 If a pull request is no trouble for you, translate any Russian file in full and open one. Mention in the description that the structure for that language does not exist yet and you are proposing the first version - then we will set it up together with your change.
 
-The whole process with a fork and a local run is written out in [CONTRIBUTING.en.md](https://github.com/proxima812/tatarverse/blob/main/CONTRIBUTING.en.md) (the Russian version is [CONTRIBUTING.ru.md](https://github.com/proxima812/tatarverse/blob/main/CONTRIBUTING.ru.md)). In short: `bun install`, `bun run dev`, a branch with the `i18n/` prefix, for example `i18n/kk-need-translators`. Commits follow Conventional Commits, along the lines of `feat(i18n): add Kazakh translation of the need-translators post`. One pull request means one language of one text: that way it can be merged straight away, without waiting for everything else to be translated.
+The whole process with a fork and a local run is written out in [CONTRIBUTING.en.md](https://github.com/proxima812/tatarverse/blob/main/CONTRIBUTING.en.md) (the Russian version is [CONTRIBUTING.ru.md](https://github.com/proxima812/tatarverse/blob/main/CONTRIBUTING.ru.md)). In short: `bun install`, `bun run dev`, a branch with the `i18n/` prefix, for example `i18n/kk-how-to-help-translate`. Commits follow Conventional Commits, along the lines of `feat(i18n): add Kazakh translation of the how-to-help-translate post`. One pull request means one language of one text: that way it can be merged straight away, without waiting for everything else to be translated.
 
 Two questions people ask most often. You do not need an `.env` file for translation, and it is not in the repository anyway. And the `pre-push` hook that bumps the release version is not enabled in a fork by default; if it does get in the way, use `RELEASE_BUMP_SKIP=1 git push`.
 
