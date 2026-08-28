@@ -64,6 +64,15 @@ export const links: Link[] = [
 		variant: "outline",
 	},
 	{
+		label: "Изменения",
+		labelKey: "nav.changelog",
+		icon: "mdi:history",
+		class: "sm:px-4 sm:py-2 py-1.5 px-3 text-sm",
+		href: "/changelog",
+		size: "default",
+		variant: "ghost",
+	},
+	{
 		label: "Благодарности",
 		labelKey: "nav.thanks",
 		icon: "mdi:hand-heart",

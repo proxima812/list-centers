@@ -1,0 +1,21 @@
+---
+import ChangelogEntry from "@/components/changelog/ChangelogEntry.astro";
+import PageHero from "@/components/ui/PageHero.astro";
+import { changelog } from "@/data/changelog";
+import { getLocaleFromUrl, useTranslations } from "@/i18n";
+import Layout from "@/layouts/Layout.astro";
+
+const locale = getLocaleFromUrl(Astro.url);
+const t = useTranslations(locale);
+
+// Данные пишутся руками, порядок в файле не гарантирован - сортируем здесь.
+const entries = [...changelog].sort((a, b) => b.date.localeCompare(a.date));
+---
+
+<Layout title={t("changelog.title")} description={t("changelog.description")}>
+	<div class="mx-auto w-full max-w-4xl">
+		<PageHero title={t("changelog.title")} intro={t("changelog.intro")} class="pb-6" />
+
+		{entries.map((entry) => <ChangelogEntry entry={entry} locale={locale} />)}
+	</div>
+</Layout>

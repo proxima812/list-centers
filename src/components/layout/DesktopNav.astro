@@ -7,7 +7,7 @@ const currentLocale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(currentLocale);
 
 const materialHrefs = new Set(["/translations", "/sources", "/policy"]);
-const otherHrefs = new Set(["/posts", "/thanks"]);
+const otherHrefs = new Set(["/posts", "/thanks", "/changelog"]);
 const topLevelLinks = links.filter(
 	(item) => !materialHrefs.has(item.href) && !otherHrefs.has(item.href),
 );

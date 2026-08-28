@@ -1,0 +1,63 @@
+---
+import type { ChangelogEntry } from "@/data/changelog";
+import type { AppLocale } from "@/i18n";
+
+/**
+ * Одна запись журнала: дата слева, изменения справа.
+ *
+ * Дата липкая - при длинной записи она остается на экране, иначе на
+ * середине списка непонятно, к какому дню относится прочитанное.
+ */
+
+interface Props {
+	entry: ChangelogEntry;
+	locale: AppLocale;
+}
+
+const { entry, locale } = Astro.props as Props;
+
+const dateLabel = new Intl.DateTimeFormat(locale, {
+	day: "numeric",
+	month: "long",
+	year: "numeric",
+}).format(new Date(entry.date));
+---
+
+<article
+	class="grid gap-4 border-t border-border-muted py-10 md:grid-cols-[12rem_minmax(0,1fr)] md:gap-12 md:py-14"
+>
+	<div class="md:sticky md:top-24 md:self-start">
+		<time datetime={entry.date} class="text-sm font-medium text-subtle-foreground">
+			{dateLabel}
+		</time>
+	</div>
+
+	<div class="min-w-0 space-y-5">
+		<h2 class="text-2xl font-bold tracking-[-0.02em] text-foreground sm:text-3xl">
+			{entry.title[locale]}
+		</h2>
+
+		<ul class="space-y-3">
+			{
+				entry.items[locale].map((item) => (
+					<li class="flex gap-3 text-base leading-7 text-muted-foreground">
+						<span class="mt-3 size-1.5 shrink-0 rounded-full bg-accent" aria-hidden="true" />
+						<span class="min-w-0">{item}</span>
+					</li>
+				))
+			}
+		</ul>
+
+		{
+			entry.tags && (
+				<ul class="flex flex-wrap gap-2 pt-1">
+					{entry.tags[locale].map((tag) => (
+						<li class="rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
+							{tag}
+						</li>
+					))}
+				</ul>
+			)
+		}
+	</div>
+</article>
