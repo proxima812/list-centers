@@ -2,12 +2,12 @@
 import { markdownComponents } from "@/components/markdown/markdownComponents";
 import SkipNode from "@/components/markdown/SkipNode.astro";
 import BackButton from "@/components/navigation/BackButton.astro";
-import { byNewest, type PostEntry } from "@/domain/post/collection";
+import { byNewest, type PostEntry } from "@/lib/post/collection";
 import { defaultLocale, getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
 import Layout from "@/layouts/Layout.astro";
-import { formatContentDateTime, getContentDates } from "@/utils/contentDates";
-import { getPostId, getPostMarkdownPath, getPostPath } from "@/utils/posts";
-import { entryFingerprint, pageCacheKey } from "@/utils/cacheKey";
+import { formatContentDateTime, getContentDates } from "@/lib/contentDates";
+import { getPostId, getPostMarkdownPath, getPostPath } from "@/lib/post/posts";
+import { entryFingerprint, pageCacheKey } from "@/lib/build/cacheKey";
 import { Icon } from "astro-icon/components";
 import { getCollection, render } from "astro:content";
 

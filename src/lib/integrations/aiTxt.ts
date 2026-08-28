@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import type { AstroIntegration } from "astro";
 import { fileURLToPath } from "node:url";
-import { config } from "../config";
+import { config } from "@/config";
 
 export interface AiTxtOptions {
 	enabled?: boolean;

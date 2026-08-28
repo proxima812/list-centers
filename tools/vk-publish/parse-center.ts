@@ -2,7 +2,7 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { extname, join, relative } from "node:path";
 import { parse as parseYaml } from "yaml";
 
-import { centerRouteId, centerRouteNumber, isCenterRouteId } from "../../src/domain/center/routeId";
+import { centerRouteId, centerRouteNumber, isCenterRouteId } from "../../src/lib/center/routeId";
 
 export const CENTERS_BASE_DIR = join(import.meta.dirname, "../../src/data/centers_formatted");
 
@@ -105,10 +105,10 @@ export function parseCenterFile(filePath: string): ParsedCenter {
 }
 
 /**
- * Тот же алгоритм, что и `createCenterRouteIdMap` в `src/utils/centers.ts`, но
+ * Тот же алгоритм, что и `createCenterRouteIdMap` в `src/lib/center/centers.ts`, но
  * над обычным списком id вместо `CollectionEntry`, чтобы не тащить сюда
  * рантайм `astro:content`. Формат `tbk-N` и вся арифметика — из
- * `src/domain/center/routeId.ts`, слаг здесь не придумывается заново.
+ * `src/lib/center/routeId.ts`, слаг здесь не придумывается заново.
  */
 export function buildRouteIdMap(ids: string[]): Map<string, string> {
 	const sorted = [...ids].sort((a, b) => {

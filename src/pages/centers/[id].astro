@@ -10,16 +10,16 @@ import Layout from "@/layouts/Layout.astro";
 import { Icon } from "astro-icon/components";
 import { getCollection, render, type CollectionEntry } from "astro:content";
 
-import { centerDescription } from "@/domain/center/description";
-import { centerJsonLd } from "@/domain/center/jsonLd";
-import { byRecency } from "@/domain/center/order";
-import { relatedByCountry, relatedCenters } from "@/domain/center/related";
+import { centerDescription } from "@/lib/center/description";
+import { centerJsonLd } from "@/lib/center/jsonLd";
+import { byRecency } from "@/lib/center/order";
+import { relatedByCountry, relatedCenters } from "@/lib/center/related";
 import { getCountryLabel } from "@/data/worldCountries";
 import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
-import { getCenterLinks } from "@/utils/centerLinks";
-import { createCenterRouteIdMap, getCenterPath } from "@/utils/centers";
-import { collectionFingerprint } from "@/utils/cacheKey";
-import { formatContentDateTime, getContentDates } from "@/utils/contentDates";
+import { getCenterLinks } from "@/lib/center/links";
+import { createCenterRouteIdMap, getCenterPath } from "@/lib/center/centers";
+import { collectionFingerprint } from "@/lib/build/cacheKey";
+import { formatContentDateTime, getContentDates } from "@/lib/contentDates";
 
 export async function getStaticPaths() {
 	const entries = await getCollection("centers");

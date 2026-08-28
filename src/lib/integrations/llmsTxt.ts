@@ -3,8 +3,8 @@ import type { AstroIntegration } from "astro";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { config } from "../config";
-import { getPostId } from "../utils/posts";
+import { config } from "@/config";
+import { getPostId } from "@/lib/post/posts";
 
 type LlmsEntry = {
 	title: string;

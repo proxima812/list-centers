@@ -82,9 +82,9 @@ const catalogHref = localizePath(locale, "/centers");
 </Layout>
 
 <script>
-	import { CARD_ATTR, CARD_PART, closestCard, readCard } from "@/dom/cardAttributes";
+	import { CARD_ATTR, CARD_PART, closestCard, readCard } from "@/lib/site/cardAttributes";
 	import { clearSaved, onSavedChange, readSaved, removeSaved } from "@/scripts/savedCenters";
-	import { getCenterMarkHue } from "@/utils/centers";
+	import { getCenterMarkHue } from "@/lib/center/centers";
 
 	const grid = document.querySelector<HTMLElement>("[data-saved-grid]");
 	const empty = document.querySelector<HTMLElement>("[data-saved-empty]");

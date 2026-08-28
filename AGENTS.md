@@ -30,16 +30,27 @@ Say "the catalog" for the centers listing, "a card" for one center entry, and
 - Bun is the preferred package manager.
 - Deploy: Cloudflare Pages via `wrangler` (`bun run cf:deploy`).
 - Main source folders: `src/pages`, `src/components`, `src/layouts`, `src/data`,
-  `src/i18n`, `src/styles`, `src/utils`, `src/integrations`, plus four that hold
-  logic pulled out of pages and components:
-  - `src/domain` — правила предметной области без DOM и без сети: порядок
-    центров, нормализация поиска, статистика каталога, ссылки проекта,
-    таблица переключателей оформления.
-  - `src/dom` — объявления `data-*`-контрактов между разметкой и клиентскими
-    скриптами (`cardAttributes`, `appearanceAttributes`).
-  - `src/features` — клиентские фичи, разложенные по ответственности
-    (`catalog`: состояние фильтров, URL, поиск, подсказки).
-  - `src/seo` — сборка графа schema.org.
+  `src/i18n`, `src/styles`, `src/scripts`, `src/assets`, и `src/lib` — вся
+  логика, вынутая из страниц и компонентов, лежит там и только там:
+  - `src/lib/center`, `src/lib/post` — правила предметной области без DOM и без
+    сети: порядок центров, нормализация поиска, статистика каталога, ссылки и
+    описания карточек.
+  - `src/lib/catalog` — клиентская логика каталога: состояние фильтров, URL,
+    поиск, подсказки.
+  - `src/lib/nearby` — индекс страницы «центры рядом».
+  - `src/lib/site` — общесайтовое: пресеты акцентов, ссылки проекта, настройки
+    PWA, таблица переключателей оформления и `data-*`-контракты между разметкой
+    и клиентскими скриптами (`cardAttributes`, `appearanceAttributes`).
+  - `src/lib/seo` — сборка графа schema.org.
+  - `src/lib/integrations` — Astro-интеграции сборки (`robots.txt`, `llms.txt`,
+    `ai.txt`, IndexNow, markdown-версия главной).
+  - `src/lib/build` — вспомогательное для сборки (`cacheKey`).
+  - `src/lib/types.ts` — единственный файл с разделяемыми типами; отдельных
+    `types.ts` по папкам нет.
+  - `src/lib/cn.ts`, `src/lib/contentDates.ts` — мелочь без своего домена.
+- `src/data` — только контент и статические данные: MDX-коллекции (их пути
+  зашиты в `src/content.config.ts`), гео, ссылки, пресса. Логику туда не класть.
+- `src/assets` — шрифты, картинки и иконки (`fonts/`, `images/`, `icons/`).
 - Site-wide settings live in `src/config.ts`; collection schemas in
   `src/content.config.ts`.
 - Components are imported directly by path through the `@/*` alias — there is
@@ -139,7 +150,7 @@ costs context that the work then does not have:
 | Changing the system (a token, the radius scale, a palette, the type ramp) | `DESIGN.md` in full, then update the sidecar. |
 | Judging whether something is off | Let the hook speak first; open `DESIGN.md` for the section it names. |
 
-Single sources: accents in `src/utils/accents.ts`, palettes in
+Single sources: accents in `src/lib/site/accents.ts`, palettes in
 `src/styles/palettes/*.css`, tokens in `src/styles/tailwind.css`. No literal
 hex and no raw Tailwind palettes — semantic tokens only. What every surface has
 to survive is in **Surfaces** above.

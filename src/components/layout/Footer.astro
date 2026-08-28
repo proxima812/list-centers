@@ -1,16 +1,16 @@
 ---
 import { pressMentions } from "@/data/press";
 import release from "@/data/release.json";
-import { byRecency } from "@/domain/center/order";
-import { byNewest, localizedPosts } from "@/domain/post/collection";
-import { externalLinkProps, siteLinks } from "@/domain/site/links";
+import { byRecency } from "@/lib/center/order";
+import { byNewest, localizedPosts } from "@/lib/post/collection";
+import { externalLinkProps, siteLinks } from "@/lib/site/links";
 import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
 import {
 	createCenterRouteIdMap,
 	getCenterPath,
 	getCenterTranslationCollection,
-} from "@/utils/centers";
-import { getPostPath } from "@/utils/posts";
+} from "@/lib/center/centers";
+import { getPostPath } from "@/lib/post/posts";
 import { Icon } from "astro-icon/components";
 import { getCollection } from "astro:content";
 import Container from "./Container.astro";

@@ -1,9 +1,9 @@
 ---
 import { config } from "@/config";
-import { localizedCenters } from "@/domain/center/collection";
+import { localizedCenters } from "@/lib/center/collection";
 import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
 import { getCountryLabel } from "@/data/worldCountries";
-import { createCenterRouteIdMap, getCenterPath } from "@/utils/centers";
+import { createCenterRouteIdMap, getCenterPath } from "@/lib/center/centers";
 import { Icon } from "astro-icon/components";
 
 import "@/styles/tailwind.css";

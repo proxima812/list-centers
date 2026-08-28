@@ -1,5 +1,5 @@
-import { byRecency } from "@/domain/center/order";
-import { createCenterRouteIdMap, getCenterPath } from "@/utils/centers";
+import { byRecency } from "@/lib/center/order";
+import { createCenterRouteIdMap, getCenterPath } from "@/lib/center/centers";
 import rss from "@astrojs/rss";
 import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";

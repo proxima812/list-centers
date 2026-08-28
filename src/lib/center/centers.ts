@@ -1,5 +1,5 @@
 import type { CollectionEntry } from "astro:content";
-import { centerRouteId, centerRouteNumber, isCenterRouteId } from "@/domain/center/routeId";
+import { centerRouteId, centerRouteNumber, isCenterRouteId } from "@/lib/center/routeId";
 
 const CENTER_TRANSLATION_COLLECTIONS = {
 	en: "centersEn",

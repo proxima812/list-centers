@@ -1,6 +1,6 @@
 ---
 import CentersCatalog from "@/components/centers/CentersCatalog.astro";
-import { byRecency } from "@/domain/center/order";
+import { byRecency } from "@/lib/center/order";
 import { getCollection } from "astro:content";
 
 const cards = byRecency(await getCollection("centers"));

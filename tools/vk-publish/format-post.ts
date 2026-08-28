@@ -1,4 +1,4 @@
-import { getCenterLinks } from "../../src/utils/centerLinks";
+import { getCenterLinks } from "../../src/lib/center/links";
 import type { ParsedCenter } from "./parse-center";
 
 /** Заголовки секций, которые не переносим в пост: техника, а не польза для читателя. */

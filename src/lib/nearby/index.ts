@@ -1,10 +1,10 @@
 import { resolveCenterGeo } from "@/data/geo";
 import { countryFlagsByRu, getCountryLabel } from "@/data/worldCountries";
-import { localizedCenters } from "@/domain/center/collection";
-import { byRecency } from "@/domain/center/order";
-import type { NearbyIndexItem } from "@/features/nearby/types";
+import { localizedCenters } from "@/lib/center/collection";
+import { byRecency } from "@/lib/center/order";
+import type { NearbyIndexItem } from "@/lib/types";
 import { localizePath, type AppLocale } from "@/i18n";
-import { createCenterRouteIdMap, getCenterPath } from "@/utils/centers";
+import { createCenterRouteIdMap, getCenterPath } from "@/lib/center/centers";
 import { getCollection } from "astro:content";
 
 /**

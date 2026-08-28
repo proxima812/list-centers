@@ -2,10 +2,10 @@
 import CatalogStats from "@/components/centers/CatalogStats.astro";
 import { MACRO_REGIONS, getMacroRegion, type MacroRegion } from "@/data/geo";
 import { countryFlagsByRu, getCountryLabel, worldCountriesRu } from "@/data/worldCountries";
-import { catalogStats, countByCountry, withoutCountry } from "@/domain/center/stats";
+import { catalogStats, countByCountry, withoutCountry } from "@/lib/center/stats";
 import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
 import Layout from "@/layouts/Layout.astro";
-import { getCenterKindBreakdown } from "@/utils/centerKinds";
+import { getCenterKindBreakdown } from "@/lib/center/kinds";
 import { getCollection } from "astro:content";
 
 const locale = getLocaleFromUrl(Astro.url);

@@ -1,11 +1,11 @@
 ---
 import BackButton from "@/components/navigation/BackButton.astro";
 import PostCard from "@/components/posts/PostCard.astro";
-import { byNewest, localizedPosts } from "@/domain/post/collection";
+import { byNewest, localizedPosts } from "@/lib/post/collection";
 import { defaultLocale, getLocaleFromUrl, useTranslations } from "@/i18n";
 import Layout from "@/layouts/Layout.astro";
-import { formatContentDateTime, getContentDates } from "@/utils/contentDates";
-import { getPostId, getPostPath } from "@/utils/posts";
+import { formatContentDateTime, getContentDates } from "@/lib/contentDates";
+import { getPostId, getPostPath } from "@/lib/post/posts";
 import { render } from "astro:content";
 
 const locale = getLocaleFromUrl(Astro.url);

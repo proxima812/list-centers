@@ -1,5 +1,5 @@
 import type { AppLocale } from "@/i18n";
-import { getCenterTranslationCollection } from "@/utils/centers";
+import { getCenterTranslationCollection } from "@/lib/center/centers";
 import { getCollection, type CollectionEntry } from "astro:content";
 
 export type CenterEntry = CollectionEntry<"centers" | "centersEn">;

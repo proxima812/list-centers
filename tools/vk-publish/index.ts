@@ -1,5 +1,5 @@
 import { config } from "../../src/config";
-import { getCenterPath } from "../../src/utils/centers";
+import { getCenterPath } from "../../src/lib/center/centers";
 import { formatPost } from "./format-post";
 import { buildRouteIdMap, loadAllCenters, type ParsedCenter } from "./parse-center";
 import { loadState, saveState, type PublishState } from "./state";

@@ -1,5 +1,5 @@
-import type { AppearanceGroup } from "@/dom/appearanceAttributes";
-import { ACCENT_PRESETS, DEFAULT_ACCENT } from "@/utils/accents";
+import type { AppearanceGroup } from "@/lib/site/appearanceAttributes";
+import { ACCENT_PRESETS, DEFAULT_ACCENT } from "@/lib/site/accents";
 
 /**
  * Что посетитель может переключить в оформлении.

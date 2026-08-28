@@ -117,7 +117,7 @@
             "dark": "#FF74AC"
           }
         },
-        "source": "The preset list itself lives in src/utils/accents.ts — one array feeding both the header dropdown and the mobile toggle. Never copy the swatch array into a component.",
+        "source": "The preset list itself lives in src/lib/site/accents.ts — one array feeding both the header dropdown and the mobile toggle. Never copy the swatch array into a component.",
         "usage": "Focus rings, active states, and the homepage hero word. Монохромный `default` — дефолтный пресет. Held at >=4.5:1 on its own background in every preset/theme pair. The CSS is the check, not this note: read the authored values out of src/styles/tailwind.css and src/styles/palettes/*.css rather than trusting a written-down number. Twelve theme × preset pairs matter — accent on its background, accent-foreground on accent, vivid at display scale, the accent-soft pair, subtle-foreground on bg-subtle, and the page→surface lightness step."
       },
       "accentVivid": {

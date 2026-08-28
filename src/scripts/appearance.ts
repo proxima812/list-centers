@@ -5,8 +5,8 @@ import {
 	appearanceOptionSelector,
 	isAppearanceGroup,
 	type AppearanceGroup,
-} from "@/dom/appearanceAttributes";
-import { APPEARANCE_SPECS } from "@/domain/site/appearance";
+} from "@/lib/site/appearanceAttributes";
+import { APPEARANCE_SPECS } from "@/lib/site/appearance";
 
 /**
  * Тема и палитра: чтение, применение и сохранение.

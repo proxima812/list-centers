@@ -1,4 +1,4 @@
-import { closestCard, readCard } from "@/dom/cardAttributes";
+import { closestCard, readCard } from "@/lib/site/cardAttributes";
 import { onSavedChange, readSaved, toggleSaved, type SavedCenter } from "@/scripts/savedCenters";
 
 let initialized = false;

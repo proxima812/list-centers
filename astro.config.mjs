@@ -7,12 +7,12 @@ import icon from "astro-icon";
 import metaTags from "astro-meta-tags";
 import { defineConfig, fontProviders } from "astro/config";
 import { config } from "./src/config.ts";
-import aiTxt from "./src/integrations/aiTxt.ts";
-import { buildHomeMarkdown } from "./src/integrations/homeMarkdown.ts";
-import indexNow from "./src/integrations/indexNow.ts";
-import llmsTxt from "./src/integrations/llmsTxt.ts";
-import robotsTxt from "./src/integrations/robotsTxt.ts";
-import { includeAssets, manifest, workbox } from "./src/utils/pwaSettings.ts";
+import aiTxt from "./src/lib/integrations/aiTxt.ts";
+import { buildHomeMarkdown } from "./src/lib/integrations/homeMarkdown.ts";
+import indexNow from "./src/lib/integrations/indexNow.ts";
+import llmsTxt from "./src/lib/integrations/llmsTxt.ts";
+import robotsTxt from "./src/lib/integrations/robotsTxt.ts";
+import { includeAssets, manifest, workbox } from "./src/lib/site/pwaSettings.ts";
 
 export default defineConfig({
   site: config.site.url,

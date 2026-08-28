@@ -1,4 +1,4 @@
-import { getPostPath } from "@/utils/posts";
+import { getPostPath } from "@/lib/post/posts";
 import rss from "@astrojs/rss";
 import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";

@@ -1,10 +1,10 @@
 ---
-import { cardDataset, cardPart } from "@/dom/cardAttributes";
+import { cardDataset, cardPart } from "@/lib/site/cardAttributes";
 import { normalizeCity, type CenterGeo } from "@/data/geo";
 import { countryFlagsByRu, getCountryLabel } from "@/data/worldCountries";
 import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
-import { formatCenterLinkLabel, type CenterLink } from "@/utils/centerLinks";
-import { getCenterMarkHue, getCenterPath } from "@/utils/centers";
+import { formatCenterLinkLabel, type CenterLink } from "@/lib/center/links";
+import { getCenterMarkHue, getCenterPath } from "@/lib/center/centers";
 import { Icon } from "astro-icon/components";
 import SaveCenterButton from "./SaveCenterButton.astro";
 
@@ -81,7 +81,7 @@ const viewButtonClass =
 const quickLinks = links ?? [];
 
 // Единственное место, где карточка объявляет свой DOM-контракт. Имена
-// атрибутов — в @/dom/cardAttributes, там же их читают фильтры и /saved.
+// атрибутов — в @/lib/site/cardAttributes, там же их читают фильтры и /saved.
 const dataset = cardDataset({
 	id,
 	scope: geo?.scope ?? "",

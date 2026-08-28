@@ -1,5 +1,5 @@
-import { normalizeSearchText } from "@/domain/center/searchText";
-import type { CardIndexItem, SearchIndexItem, SearchResult } from "./types";
+import { normalizeSearchText } from "@/lib/center/searchText";
+import type { CardIndexItem, SearchIndexItem, SearchResult } from "@/lib/types";
 
 /**
  * Поиск по каталогу: точное вхождение, потом нечёткое через Fuse.

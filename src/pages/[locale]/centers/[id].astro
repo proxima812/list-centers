@@ -1,7 +1,7 @@
 ---
-import { getCenterTranslationCollection, createCenterRouteIdMap } from "@/utils/centers";
+import { getCenterTranslationCollection, createCenterRouteIdMap } from "@/lib/center/centers";
 import { secondaryLocales } from "@/i18n/routes";
-import { collectionFingerprint } from "@/utils/cacheKey";
+import { collectionFingerprint } from "@/lib/build/cacheKey";
 import { getCollection } from "astro:content";
 import CenterPage from "../../centers/[id].astro";
 

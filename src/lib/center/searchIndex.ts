@@ -1,6 +1,6 @@
-import { localizedCenters, type CenterEntry } from "@/domain/center/collection";
-import { byRecency } from "@/domain/center/order";
-import { normalizeSearchText, uniqueTerms } from "@/domain/center/searchText";
+import { localizedCenters, type CenterEntry } from "@/lib/center/collection";
+import { byRecency } from "@/lib/center/order";
+import { normalizeSearchText, uniqueTerms } from "@/lib/center/searchText";
 import { resolveCenterGeo, type CenterGeo } from "@/data/geo";
 import { getCollection } from "astro:content";
 import type { AppLocale } from "@/i18n";

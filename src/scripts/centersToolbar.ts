@@ -1,15 +1,15 @@
-import { CARD_ATTR, isFacetField, readCard } from "@/dom/cardAttributes";
-import { normalizeSearchText, uniqueTerms } from "@/domain/center/searchText";
-import { createCatalogFilter } from "@/features/catalog/filterState";
-import { readCatalogQuery, writeCatalogQuery } from "@/features/catalog/query";
-import { createCenterSearch } from "@/features/catalog/search";
-import { createSearchSuggestions } from "@/features/catalog/suggestions";
+import { CARD_ATTR, isFacetField, readCard } from "@/lib/site/cardAttributes";
+import { normalizeSearchText, uniqueTerms } from "@/lib/center/searchText";
+import { createCatalogFilter } from "@/lib/catalog/filterState";
+import { readCatalogQuery, writeCatalogQuery } from "@/lib/catalog/query";
+import { createCenterSearch } from "@/lib/catalog/search";
+import { createSearchSuggestions } from "@/lib/catalog/suggestions";
 import type {
 	CardIndexItem,
 	CenterScope,
 	FacetKey,
 	FilterGate,
-} from "@/features/catalog/types";
+} from "@/lib/types";
 
 /**
  * Вид каталога: читает разметку, слушает события, показывает результат.

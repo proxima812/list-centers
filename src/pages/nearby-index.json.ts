@@ -1,5 +1,5 @@
 import { defaultLocale } from "@/i18n";
-import { getNearbyIndex } from "@/utils/nearbyIndex";
+import { getNearbyIndex } from "@/lib/nearby/index";
 import type { APIRoute } from "astro";
 
 export const prerender = true;

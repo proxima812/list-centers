@@ -1,5 +1,5 @@
 import { defaultLocale } from "@/i18n";
-import { getCenterSearchIndex } from "@/utils/centersSearchIndex";
+import { getCenterSearchIndex } from "@/lib/center/searchIndex";
 import type { APIRoute } from "astro";
 
 export const prerender = true;

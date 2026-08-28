@@ -2,7 +2,7 @@
 import CardItem from "@/components/ui/CardItem.astro";
 import { defaultLocale, getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
 import Layout from "@/layouts/Layout.astro";
-import { getNearbyIndex } from "@/utils/nearbyIndex";
+import { getNearbyIndex } from "@/lib/nearby/index";
 import { Icon } from "astro-icon/components";
 
 const locale = getLocaleFromUrl(Astro.url);
@@ -172,10 +172,10 @@ const chipClass =
 <script>
 	import { matchCity, matchCountry } from "@/data/geo/detect";
 	import { countryFlagsByRu, getCountryLabel } from "@/data/worldCountries";
-	import { CARD_ATTR, CARD_PART, cardDataset } from "@/dom/cardAttributes";
-	import type { NearbyIndexItem } from "@/features/nearby/types";
+	import { CARD_ATTR, CARD_PART, cardDataset } from "@/lib/site/cardAttributes";
+	import type { NearbyIndexItem } from "@/lib/types";
 	import { syncSavedCenters } from "@/scripts/savedCentersUi";
-	import { getCenterMarkHue } from "@/utils/centers";
+	import { getCenterMarkHue } from "@/lib/center/centers";
 
 	const root = document.querySelector<HTMLElement>("[data-nearby]");
 	const place = root?.querySelector<HTMLElement>("[data-nearby-place]");

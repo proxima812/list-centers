@@ -208,7 +208,7 @@ not have to be a hue; contrast is a signal too, and the catalog reads well witho
 Its dark paper is the shared one, like everyone else's — a preset carries no paper of its
 own.
 
-The preset list lives in exactly one place, `src/utils/accents.ts`, and both the header
+The preset list lives in exactly one place, `src/lib/site/accents.ts`, and both the header
 dropdown and the mobile toggle read it. Adding a palette means editing that file plus
 adding `src/styles/palettes/<name>.css` — never a second copy of the swatch array. The
 `from` / `to` pair in each preset is the swatch gradient in the menu, nothing else.

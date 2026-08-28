@@ -1,4 +1,4 @@
-import type { CenterScope, FacetKey, FilterGate, FilterRecord } from "./types";
+import type { CenterScope, FacetKey, FilterGate, FilterRecord } from "@/lib/types";
 
 /**
  * Отбор карточек каталога — без единого обращения к DOM.

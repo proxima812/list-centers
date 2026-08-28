@@ -1,8 +1,8 @@
 ---
-import { byNewest, localizedPosts } from "@/domain/post/collection";
+import { byNewest, localizedPosts } from "@/lib/post/collection";
 import { secondaryLocales } from "@/i18n/routes";
-import { getPostId } from "@/utils/posts";
-import { entryFingerprint, pageCacheKey } from "@/utils/cacheKey";
+import { getPostId } from "@/lib/post/posts";
+import { entryFingerprint, pageCacheKey } from "@/lib/build/cacheKey";
 import PostPage from "../../posts/[id].astro";
 
 export async function getStaticPaths() {

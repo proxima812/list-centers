@@ -1,5 +1,5 @@
 import type { FilterSnapshot } from "./filterState";
-import type { CenterScope, FacetKey } from "./types";
+import type { CenterScope, FacetKey } from "@/lib/types";
 
 /**
  * Состояние каталога ⇄ строка запроса.

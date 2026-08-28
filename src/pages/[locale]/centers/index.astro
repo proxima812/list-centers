@@ -1,7 +1,7 @@
 ---
 import CentersCatalog from "@/components/centers/CentersCatalog.astro";
-import { localizedCenters, type CenterEntry } from "@/domain/center/collection";
-import { byRecency } from "@/domain/center/order";
+import { localizedCenters, type CenterEntry } from "@/lib/center/collection";
+import { byRecency } from "@/lib/center/order";
 import { secondaryLocales } from "@/i18n/routes";
 
 export async function getStaticPaths() {
