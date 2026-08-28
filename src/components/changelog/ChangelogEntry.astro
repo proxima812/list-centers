@@ -48,16 +48,5 @@ const dateLabel = new Intl.DateTimeFormat(locale, {
 			}
 		</ul>
 
-		{
-			entry.tags && (
-				<ul class="flex flex-wrap gap-2 pt-1">
-					{entry.tags[locale].map((tag) => (
-						<li class="rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
-							{tag}
-						</li>
-					))}
-				</ul>
-			)
-		}
 	</div>
 </article>

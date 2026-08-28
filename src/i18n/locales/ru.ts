@@ -8,7 +8,6 @@ const dict: Dictionary = {
 	"nav.changelog": "Изменения",
 	"changelog.title": "Изменения",
 	"changelog.description": "Что нового в tatarverse: обновления каталога, интерфейса и текстов, от свежих к старым.",
-	"changelog.intro": "Что менялось на сайте. Сюда попадает то, что видно посетителю: новые разделы, правки каталога и оформления.",
 	"nav.soon": "cкоро...",
 	"nav.back": "Назад",
 	"nav.allCenters": "Все центры",
