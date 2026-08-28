@@ -1,6 +1,6 @@
 ---
-title: "How to help with translation: GitHub, Telegram, and other ways to reach us"
-description: "A detailed look at how you can help tatarverse with translation into Tatar, Kazakh, Bashkir, and Crimean Tatar - through GitHub, Telegram, email, or Instagram."
+title: "How to help with translation: write to us, or come to GitHub"
+description: "How to help tatarverse with translation into Tatar, Kazakh, Bashkir, and Crimean Tatar: write on Telegram, Instagram, VK, Threads, or by email - and if you prefer, send the change through GitHub."
 pubDate: 2026-08-11
 author: "tatarverse"
 tags:
@@ -11,16 +11,38 @@ tags:
 category: "Project"
 ---
 
-In the [previous post](/en/posts/need-translators) we wrote that we are looking for people who know Tatar, Kazakh, Bashkir, or Crimean Tatar and are willing to help with translation. Here is the detail - how exactly to do it, by any of several routes.
+In the [previous post](/en/posts/need-translators) we wrote that we are looking for people who know Tatar, Kazakh, Bashkir, or Crimean Tatar and are willing to help with translation. The question we get most is a simple one: where do I write?
 
-**Through GitHub.** The site's repository is open: [github.com/proxima812/tatarverse](https://github.com/proxima812/tatarverse). The texts of the posts live in `src/data/posts`, the interface strings in `src/i18n/locales/ru.ts` and `en.ts`, the center cards in `src/data/centers_formatted` (Russian) and `src/data/centers_i18n/en` (English). There is no separate folder for Tatar, Kazakh, Bashkir, or Crimean Tatar yet, so the easiest way to start is an [issue](https://github.com/proxima812/tatarverse/issues/new): paste in your translation of a post, a center description, or an interface string, and say which language it is. If you are comfortable with pull requests, translate any Russian file in full and open a PR, explaining in the description that the structure for that language has not been set up and you are proposing the first version.
+## Write to us
 
-**For those who are at home with Git.** If you have worked with forks and pull requests before, the full process is written out in [CONTRIBUTING.en.md](https://github.com/proxima812/tatarverse/blob/main/CONTRIBUTING.en.md) (and in the Russian version, [CONTRIBUTING.ru.md](https://github.com/proxima812/tatarverse/blob/main/CONTRIBUTING.ru.md)): fork the repository, install the dependencies with `bun install`, bring the site up locally with `bun run dev`, and create a branch for the task with the `i18n/` prefix, for example `i18n/kk-need-translators`. Commits follow Conventional Commits, along the lines of `feat(i18n): add Kazakh translation of the need-translators post`. One pull request means one language of one text - that way it is easier to review and to merge in pieces, without waiting for everything to be translated at once.
+Anywhere on this list - it makes no difference, we read all of them:
 
-Two things people usually ask about. You do not need `.env` for translation - it is only needed by the server-side submission forms, and it is not in the repository. And the `pre-push` hook that bumps the release version on push is not active in a fork by default; if it does get in the way, use `RELEASE_BUMP_SKIP=1 git push`.
+- Telegram: [@the_tatarverse](https://t.me/the_tatarverse), or the developer directly at [@mirikhan1](https://t.me/mirikhan1)
+- Instagram: [@the_tatarverse](https://www.instagram.com/the_tatarverse/)
+- VK: [@the_tatarverse](https://vk.ru/the_tatarverse)
+- Threads: [@the_tatarverse](https://www.threads.com/@the_tatarverse)
+- Email: [kamil.mirikhan@gmail.com](mailto:kamil.mirikhan@gmail.com?subject=Hello%21%20writing%20from%20tatarverse.cc)
 
-**Through Telegram.** Write to the [Бәйсез](https://t.me/the_tatarverse) channel - you can reach the developer directly there, or by direct message at [t.me/isembez](https://t.me/isembez). Tell us which language you know and what you are ready to translate; everything else is worked out in the conversation, and no separate form is needed.
+The same contacts always sit in the site footer, under "Contact".
 
-**Other ways.** An [email](mailto:kamil.mirikhan@gmail.com?subject=Hello%21%20writing%20from%20tatarverse.cc) works the same way as Telegram - you can attach a translation straight away, or simply say that you are willing to help. Instagram [@the_tatarverse](https://www.instagram.com/the_tatarverse/) is read too, but for a substantive conversation about translation email or Telegram is more convenient.
+One line is enough: which language you know. What to translate we will work out together. You can also send finished text right away - just say where it came from: a post, a center card, or the interface strings. There is no form, no questionnaire, no sign-up.
 
-What to translate is something we decide together. You do not have to take on the whole site at once - one post, one center card, or a few interface strings will do.
+You do not have to take on the whole site. One post, one card, or a dozen interface strings is already help, and changes that size reach the site fastest.
+
+## If you prefer GitHub
+
+The site is open and all of its text lives in the repository [github.com/proxima812/tatarverse](https://github.com/proxima812/tatarverse) as plain files. If that is where you feel at home, here is what sits where:
+
+- posts - in `src/data/posts`
+- interface strings - in `src/i18n/locales/ru.ts` and `en.ts`
+- center cards - in `src/data/centers_formatted`, with English versions in `src/data/centers_i18n/en`
+
+There is no folder yet for Tatar, Kazakh, Bashkir, or Crimean Tatar: setting up an empty structure before the first translation made no sense. So the simplest route is to open an [issue](https://github.com/proxima812/tatarverse/issues/new), paste the translation in, and say which language it is. We will file it into the right places ourselves.
+
+If a pull request is no trouble for you, translate any Russian file in full and open one. Mention in the description that the structure for that language does not exist yet and you are proposing the first version - then we will set it up together with your change.
+
+The whole process with a fork and a local run is written out in [CONTRIBUTING.en.md](https://github.com/proxima812/tatarverse/blob/main/CONTRIBUTING.en.md) (the Russian version is [CONTRIBUTING.ru.md](https://github.com/proxima812/tatarverse/blob/main/CONTRIBUTING.ru.md)). In short: `bun install`, `bun run dev`, a branch with the `i18n/` prefix, for example `i18n/kk-need-translators`. Commits follow Conventional Commits, along the lines of `feat(i18n): add Kazakh translation of the need-translators post`. One pull request means one language of one text: that way it can be merged straight away, without waiting for everything else to be translated.
+
+Two questions people ask most often. You do not need an `.env` file for translation, and it is not in the repository anyway. And the `pre-push` hook that bumps the release version is not enabled in a fork by default; if it does get in the way, use `RELEASE_BUMP_SKIP=1 git push`.
+
+One last thing: GitHub is a route for people who like it, not a requirement. A translation sent over Telegram or email arrives just the same.
