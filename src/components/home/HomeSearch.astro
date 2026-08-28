@@ -1,0 +1,31 @@
+---
+import searchImage from "@/assets/images/search-present-img.png";
+import { getLocaleFromUrl, useTranslations } from "@/i18n";
+import { Image } from "astro:assets";
+
+const locale = getLocaleFromUrl(Astro.url);
+const t = useTranslations(locale);
+---
+
+<section class="grid grid-cols-1 items-center gap-8 md:grid-cols-2 md:gap-12">
+	<div class="order-1 space-y-6 md:order-2">
+		<h2 class="text-4xl font-bold tracking-tight">
+			{t("home.search.title")}
+		</h2>
+
+		<p class="leading-7 text-muted-foreground">
+			{t("home.search.text1")}
+		</p>
+
+		<p class="leading-7 text-muted-foreground">
+			{t("home.search.text2")}
+		</p>
+	</div>
+	<Image
+		src={searchImage}
+		alt={t("home.search.imageAlt")}
+		widths={[400, 640, 768, 1200]}
+		sizes="(min-width: 768px) 50vw, 100vw"
+		class="order-2 h-full w-full rounded-card object-cover md:order-1"
+	/>
+</section>

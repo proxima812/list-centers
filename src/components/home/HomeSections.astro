@@ -1,54 +1,15 @@
 ---
-import present from "@/assets/images/catalog-present-img.png";
-import searchImage from "@/assets/images/search-present-img.png";
-import HomeFeature from "@/components/home/HomeFeature.astro";
 import HomeLinksShowcase from "@/components/home/HomeLinksShowcase.astro";
 import HomeNearby from "@/components/home/HomeNearby.astro";
 import HomePeopleStats from "@/components/home/HomePeopleStats.astro";
-import { getLocaleFromUrl, useTranslations } from "@/i18n";
-import { catalogStats } from "@/lib/center/stats";
-import { getCollection } from "astro:content";
-
-const {
-	count: centers,
-	countries: countriesCount,
-	regions: regionsCount,
-} = catalogStats(await getCollection("centers"));
-
-const locale = getLocaleFromUrl(Astro.url);
-const t = useTranslations(locale);
+import HomePresent from "@/components/home/HomePresent.astro";
+import HomeSearch from "@/components/home/HomeSearch.astro";
 ---
 
 <div id="sections" class="space-y-20 py-12 md:space-y-32 md:py-20">
-	<HomeFeature
-		image={present}
-		imageAlt={t("home.present.imageAlt")}
-		title={t("home.present.title")}
-		priority
-	>
-		<p
-			class="leading-7 text-muted-foreground"
-			set:html={t("home.present.caption", {
-				centers,
-				countries: countriesCount,
-				regions: regionsCount,
-			})}
-		/>
-		<p class="leading-7 text-muted-foreground">{t("home.present.text1")}</p>
-		<p class="leading-7 text-muted-foreground">{t("home.present.text2")}</p>
-	</HomeFeature>
-
+	<HomePresent />
 	<HomeLinksShowcase />
 	<HomePeopleStats />
 	<HomeNearby />
-
-	<HomeFeature
-		image={searchImage}
-		imageAlt={t("home.search.imageAlt")}
-		title={t("home.search.title")}
-		reversed
-	>
-		<p class="leading-7 text-muted-foreground">{t("home.search.text1")}</p>
-		<p class="leading-7 text-muted-foreground">{t("home.search.text2")}</p>
-	</HomeFeature>
+	<HomeSearch />
 </div>
