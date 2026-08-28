@@ -201,6 +201,7 @@ const dict: Dictionary = {
 	"footer.added.title": "Добавленные",
 	"footer.about.title": "О проекте",
 	"footer.about.press": "Статья на {outlet}",
+	"footer.about.story": "Полная история tatarverse на vc.ru",
 	"footer.posts.title": "Посты",
 	"footer.legalNote": "Код распространяется по MIT, материалы - по CC BY 4.0.",
 	"notFound.title": "Ошибка 404 — такой страницы не существует",

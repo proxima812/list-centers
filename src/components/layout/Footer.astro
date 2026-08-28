@@ -119,11 +119,18 @@ const footerSections: FooterSection[] = [
 	{
 		id: "about",
 		title: t("footer.about.title"),
-		links: pressMentions.map((mention) => ({
-			href: mention.href,
-			label: t("footer.about.press", { outlet: mention.outlet }),
-			props: externalProps,
-		})),
+		links: [
+			{
+				href: "https://vc.ru/life/3102323-poisk-tatarskikh-tsentrov-katalog-organizatsiy",
+				label: t("footer.about.story"),
+				props: externalProps,
+			},
+			...pressMentions.map((mention) => ({
+				href: mention.href,
+				label: t("footer.about.press", { outlet: mention.outlet }),
+				props: externalProps,
+			})),
+		],
 	},
 	{
 		id: "added",

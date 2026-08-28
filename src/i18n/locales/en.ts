@@ -198,6 +198,7 @@ const dict: Dictionary = {
 	"footer.added.title": "Recently added",
 	"footer.about.title": "About the project",
 	"footer.about.press": "Article on {outlet}",
+	"footer.about.story": "The full tatarverse story on vc.ru",
 	"footer.posts.title": "Posts",
 	"footer.legalNote": "Code is available under MIT; content is available under CC BY 4.0.",
 	"notFound.title": "404 — page not found",
