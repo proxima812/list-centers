@@ -86,6 +86,18 @@ const dict: Dictionary = {
 	"home.people.crimean": "Crimean Tatars in Russia",
 	"home.people.note": "{year},",
 	"home.people.source": "Russian census",
+	"home.saved.title": "Saved centers within reach",
+	"home.saved.text1":
+		"Tap the bookmark in the corner of a card and the center joins your personal list. It lives in your browser: no sign-up, no account.",
+	"home.saved.text2":
+		"The list survives a reload and opens without a connection - plan a route across cities in advance and come back to it whenever you like.",
+	"home.saved.imageAlt": "A center card with an active bookmark next to the saved page",
+	"home.print.title": "The catalog on paper",
+	"home.print.text1":
+		"Pick the countries and print the list of centers with cities and links - or save it as a PDF in one click.",
+	"home.print.text2":
+		"Useful where there is no internet: at a meetup, on the road, or on the desk of someone who prefers paper.",
+	"home.print.imageAlt": "The catalog print page with a country filter and a list of centers",
 	"home.search.title": "Communities on the world map",
 	"home.search.text1":
 		"Choose a country, city, or region and find nearby cultural centers, public associations, youth initiatives, language clubs, and local communities.",
