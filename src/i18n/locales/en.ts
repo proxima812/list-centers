@@ -88,9 +88,9 @@ const dict: Dictionary = {
 	"home.people.source": "Russian census",
 	"home.saved.title": "Saved centers within reach",
 	"home.saved.text1":
-		"Tap the bookmark in the corner of a card and the center joins your personal list. It lives in your browser: no sign-up, no account.",
+		"A center you liked stays in your own list - no need to hunt for it in the catalog again.",
 	"home.saved.text2":
-		"The list survives a reload and opens without a connection - plan a route across cities in advance and come back to it whenever you like.",
+		"A handy way to gather your own: the ones you are meeting this week and the ones waiting in another city.",
 	"home.saved.imageAlt": "A center card with an active bookmark next to the saved page",
 	"home.print.title": "The catalog on paper",
 	"home.print.text1":
