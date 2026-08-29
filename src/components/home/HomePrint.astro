@@ -10,8 +10,8 @@ const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
 ---
 
-<section class="grid grid-cols-1 items-center gap-8 md:grid-cols-2 md:gap-12">
-	<div class="space-y-6">
+<section class="grid grid-cols-1 items-center gap-6 md:grid-cols-2 md:gap-12">
+	<div class="order-2 space-y-6 md:order-1">
 		<h2 class="text-4xl font-bold tracking-tight">{t("home.print.title")}</h2>
 		<p class="leading-7 text-muted-foreground">{t("home.print.text1")}</p>
 		<p class="leading-7 text-muted-foreground">{t("home.print.text2")}</p>
@@ -29,6 +29,6 @@ const t = useTranslations(locale);
 		alt={t("home.print.imageAlt")}
 		widths={[400, 640, 768, 1200]}
 		sizes="(min-width: 768px) 50vw, 100vw"
-		class="w-full rounded-card"
+		class="order-1 w-full rounded-card md:order-2"
 	/>
 </section>
