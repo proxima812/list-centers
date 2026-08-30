@@ -3,6 +3,10 @@
     "astro-docs": {
       "type": "http",
       "url": "https://mcp.docs.astro.build/mcp"
+    },
+    "proxima-components": {
+      "command": "bun",
+      "args": ["/Users/samgold/Desktop/Проекты/Astro/proxima-primitive/mcp/server.ts"]
     }
   }
 }
