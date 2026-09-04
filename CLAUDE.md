@@ -34,3 +34,17 @@ Claude (`/impeccable`, пути `.claude/…`) рядом с codex-сборко�
 - В этом репозитории параллельно работает **Codex**. Перед началом работы и
   перед пушем подтягивай изменения (`git pull --rebase`), чтобы не терять его
   правки и разрешать конфликты аккуратно.
+
+## Agent skills
+
+### Issue tracker
+
+Задачи и спеки живут локальными markdown-файлами в `.scratch/<feature>/` (внешний трекер не используется). См. `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Дефолтные пять ролей: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. См. `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: `CONTEXT.md` и `docs/adr/` в корне репозитория. См. `docs/agents/domain.md`.
