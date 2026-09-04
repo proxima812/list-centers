@@ -42,6 +42,13 @@ const FUSE_KEYS: { name: keyof SearchIndexItem; weight: number }[] = [
 	{ name: "summary", weight: 0.03 },
 ];
 
+/**
+ * Сколько точных вхождений считаем самодостаточным ответом. Ниже порога
+ * список дополняется нечёткими: «Берлинскй центр» находит один точный хит по
+ * слову «центр» — и без добора это была бы вся выдача.
+ */
+const ENOUGH_EXACT = 5;
+
 export interface CenterSearch {
 	/** Пустой запрос возвращает весь каталог в исходном порядке. */
 	run(query: string): Promise<SearchResult[]>;
@@ -93,9 +100,11 @@ export function createCenterSearch(
 	}
 
 	/**
-	 * Индекс знает больше карточек, чем отрисовано на странице (например,
-	 * русские записи без английского перевода). Всё, чему не нашлось карточки
-	 * в DOM, отбрасываем.
+	 * Поля индекса кладём поверх прочитанных из разметки: индекс знает больше
+	 * о той же карточке — район и локализованные город с регионом («Sydney»,
+	 * «New South Wales» на /en, где в `data-*` лежит русская география).
+	 * Состав карточек при этом совпадает; отсутствующие в DOM отбрасываем на
+	 * случай расхождения сборки.
 	 */
 	const toCard = (item: SearchIndexItem): CardIndexItem | null => {
 		const card = cardById.get(item.id);
@@ -108,26 +117,41 @@ export function createCenterSearch(
 			if (!needle) return cards.map((item) => ({ item, score: 0 }));
 
 			// Точное вхождение бьёт нечёткое: набравшему «Берлин» нужен Берлин,
-			// а не «Берген» с хорошим score.
+			// а не «Берген» с хорошим score. Но «бьёт» — это про порядок, а не
+			// про право вето: один случайный точный хит не должен прятать
+			// хорошие нечёткие совпадения.
 			const exact = (await loadItems())
 				.map(toCard)
 				.filter((card): card is CardIndexItem => Boolean(card))
 				.filter((card) => card.searchText.includes(needle))
-				.map((item) => ({ item, score: 0.01 }));
+				.map((item) => ({ item, score: 0.01 }))
+				.sort((a, b) => a.item.order - b.item.order);
 
-			if (exact.length > 0) return exact.sort((a, b) => a.item.order - b.item.order);
+			// Точных хватает — за нечёткими не идём: это экономит загрузку Fuse
+			// и его индекса ровно в тех запросах, где они ничего не добавят.
+			if (exact.length >= ENOUGH_EXACT) return exact;
+
+			const byCard = new Map<HTMLElement, SearchResult>();
+			for (const result of exact) byCard.set(result.item.element, result);
 
 			const fuse = await loadFuse();
-			const byCard = new Map<HTMLElement, SearchResult>();
+			const fuzzy: SearchResult[] = [];
 
 			for (const found of fuse.search(query)) {
 				const item = toCard(found.item);
-				if (item) byCard.set(item.element, { item, score: found.score ?? 1 });
+				if (!item || byCard.has(item.element)) continue;
+
+				const result = { item, score: found.score ?? 1 };
+				byCard.set(item.element, result);
+				fuzzy.push(result);
 			}
 
-			return [...byCard.values()].sort(
-				(a, b) => a.score - b.score || a.item.order - b.item.order,
-			);
+			fuzzy.sort((a, b) => a.score - b.score || a.item.order - b.item.order);
+
+			// Точные — первыми, нечёткие — хвостом: список дополняется, а не
+			// пересортировывается, когда к одному точному хиту нашлось десять
+			// похожих.
+			return [...exact, ...fuzzy];
 		},
 	};
 }
