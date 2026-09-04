@@ -1,0 +1,92 @@
+---
+import { getLocaleFromUrl, useTranslations } from "@/i18n";
+import { Icon } from "astro-icon/components";
+import InstagramIcon from "../ui/InstagramIcon.astro";
+
+/**
+ * Полоса анонсов над шапкой: четыре соцсети сменяют друг друга по три
+ * секунды. Ссылкой сделан только хэндл — текст вокруг остаётся текстом.
+ * Иконки в фирменных цветах платформ: это единственное место наравне с
+ * кнопкой главной, где цвет берётся не из токенов темы, а у бренда.
+ * Смена — чистый CSS (@keyframes anons-cycle), без JS: все четыре строки
+ * лежат в одной ячейке грида, невидимые сняты через visibility, чтобы не
+ * перехватывать клик. При prefers-reduced-motion остаётся телеграм.
+ */
+const locale = getLocaleFromUrl(Astro.url);
+const t = useTranslations(locale);
+
+const handle = "@the_tatarverse";
+
+const items = [
+	{
+		href: "https://t.me/the_tatarverse",
+		icon: "mdi:telegram",
+		iconColor: "#229ED9",
+		key: "anons.telegram",
+		before: "Подписывайтесь на телеграм",
+		after: "- анонсы приходят туда первыми 🔥",
+	},
+	{
+		href: "https://www.threads.com/@the_tatarverse",
+		icon: "tabler:brand-threads",
+		iconColor: null,
+		key: "anons.threads",
+		before: "Короткие заметки о проекте -",
+		after: "в Threads",
+	},
+	{
+		href: "https://vk.ru/the_tatarverse",
+		icon: "mdi:vk",
+		iconColor: "#0077FF",
+		key: "anons.vk",
+		before: "Мы есть и во ВКонтакте -",
+		after: "заходите в группу",
+	},
+	{
+		href: "https://www.instagram.com/the_tatarverse/",
+		icon: null,
+		iconColor: null,
+		key: "anons.instagram",
+		before: "Фото центров и сторис -",
+		after: "в инстаграме",
+	},
+];
+---
+
+<section
+	class="flex h-12 w-full items-center justify-center bg-accent/10 px-5 text-center"
+	aria-label={t("anons.label", undefined, "Соцсети проекта")}
+>
+	<div class="grid w-full max-w-full grid-cols-1 grid-rows-1 place-items-center">
+		{
+			items.map((item, index) => (
+				<p
+					data-anons-item
+					style={`animation-delay: ${index * 3}s`}
+					class="col-start-1 row-start-1 inline-flex max-w-full items-center justify-center gap-1.5 truncate px-2 text-xs text-muted-foreground opacity-0 animate-anons-cycle sm:text-sm"
+				>
+					<span class="truncate">{t(`${item.key}.before`, undefined, item.before)}</span>
+					<a
+						href={item.href}
+						target="_blank"
+						rel="noopener noreferrer"
+						class="inline-flex shrink-0 items-center gap-1 text-blue-500 underline decoration-dotted underline-offset-4 hover:text-blue-400"
+					>
+						{item.icon ? (
+							<Icon
+								name={item.icon}
+								class={`h-4 w-4 shrink-0${item.iconColor ? "" : " text-foreground"}`}
+								style={item.iconColor ? `color: ${item.iconColor}` : undefined}
+								aria-hidden="true"
+							/>
+						) : (
+							<InstagramIcon class="h-4 w-4 shrink-0" />
+						)}
+						<span>{handle}</span>
+					</a>
+					<span class="truncate">{t(`${item.key}.after`, undefined, item.after)}</span>
+				</p>
+			))
+		}
+	</div>
+</section>

@@ -247,6 +247,16 @@ const dict: Dictionary = {
 	"thanks.person": "Contributor",
 	"thanks.openSocial": "{name} - open social profile",
 
+	"anons.telegram.before": "Follow us on Telegram",
+	"anons.telegram.after": "- announcements land there first 🔥",
+	"anons.threads.before": "Short notes about the project -",
+	"anons.threads.after": "on Threads",
+	"anons.vk.before": "We are on VK too -",
+	"anons.vk.after": "join the group",
+	"anons.instagram.before": "Photos of the centers and stories -",
+	"anons.instagram.after": "on Instagram",
+	"anons.label": "Project social media",
+
 	"nav.nearby": "Near you",
 	"nearby.title": "Centers nearby",
 	"nearby.description":

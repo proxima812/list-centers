@@ -250,6 +250,16 @@ const dict: Dictionary = {
 	"thanks.person": "Участник",
 	"thanks.openSocial": "{name} - открыть социальную сеть",
 
+	"anons.telegram.before": "Подписывайтесь на телеграм",
+	"anons.telegram.after": "- анонсы приходят туда первыми 🔥",
+	"anons.threads.before": "Короткие заметки о проекте -",
+	"anons.threads.after": "в Threads",
+	"anons.vk.before": "Мы есть и во ВКонтакте -",
+	"anons.vk.after": "заходите в группу",
+	"anons.instagram.before": "Фото центров и сторис -",
+	"anons.instagram.after": "в инстаграме",
+	"anons.label": "Соцсети проекта",
+
 	"nav.nearby": "Рядом с тобой",
 	"nearby.title": "Центры рядом",
 	"nearby.description":

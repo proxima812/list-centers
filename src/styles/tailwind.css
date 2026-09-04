@@ -144,6 +144,42 @@
 
   --animate-drawer-in: drawer-in 250ms cubic-bezier(0.32, 0.72, 0, 1);
   --animate-drawer-out: drawer-out 200ms cubic-bezier(0.32, 0.72, 0, 1);
+  --animate-anons-cycle: anons-cycle 12s ease-in-out infinite both;
+
+  /* Лента анонсов в шапке: четыре ссылки в одной ячейке грида, каждая видна
+     3 секунды из 12. Смещение между ними задаётся animation-delay. */
+  @keyframes anons-cycle {
+    0% {
+      opacity: 0;
+      transform: translateY(4px);
+      visibility: hidden;
+    }
+
+    2% {
+      opacity: 1;
+      transform: translateY(0);
+      visibility: visible;
+    }
+
+    23% {
+      opacity: 1;
+      transform: translateY(0);
+      visibility: visible;
+    }
+
+    25% {
+      opacity: 0;
+      transform: translateY(-4px);
+      visibility: hidden;
+    }
+
+    100% {
+      opacity: 0;
+      transform: translateY(4px);
+      visibility: hidden;
+    }
+  }
+
   --animate-fade-in: fade-in 250ms ease-out;
   --animate-fade-out: fade-out 200ms ease-in;
 
@@ -282,6 +318,21 @@
     [data-menu-list],
     [data-menu-backdrop] {
       animation-duration: 1ms !important;
+    }
+
+    /* Карусель анонсов не мигает: остаётся первая ссылка, остальные сняты. */
+    [data-anons-item] {
+      animation: none !important;
+    }
+
+    [data-anons-item]:not(:first-child) {
+      display: none;
+    }
+
+    [data-anons-item]:first-child {
+      opacity: 1;
+      visibility: visible;
+      transform: none;
     }
   }
 

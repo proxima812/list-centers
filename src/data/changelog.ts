@@ -36,6 +36,7 @@ export const changelog: ChangelogEntry[] = [
 				"Между ними появилась кнопка со ссылкой на инстаграм проекта @the_tatarverse с цветным логотипом.",
 				"Обе кнопки рядом с «Каталогом» получили плашку вместо обводки: фон подложки и мягкая тень.",
 				"Вышел пост о VI Всемирных играх кочевников и о том, какие татарские и башкирские центры есть рядом с площадками Игр.",
+				"Над шапкой появилась полоса анонсов: телеграм, Threads, ВКонтакте и инстаграм проекта сменяют друг друга каждые три секунды. Ссылкой сделан только хэндл @the_tatarverse, иконки - в фирменных цветах платформ. При системной настройке «меньше движения» остаётся телеграм.",
 			],
 			en: [
 				"All of Kyrgyzstan was worked through: the \"Tugan Tel\" center now has its Instagram @tatardiaspora.kg - the only live account of a Tatar organization in the country - plus the 2026 Sabantuy and three new sources.",
@@ -46,6 +47,7 @@ export const changelog: ChangelogEntry[] = [
 				"A button linking to the project's Instagram @the_tatarverse, with the full-color logo, was added between them.",
 				"Both buttons next to \"Catalog\" traded their outline for a surface plate with a soft shadow.",
 				"A post went out about the VI World Nomad Games and the Tatar and Bashkir centers near the Games venues.",
+				"A strip of announcements now sits above the header: the project's Telegram, Threads, VK and Instagram take turns every three seconds. Only the @the_tatarverse handle is a link, and the icons carry each platform's own colors. With reduced motion enabled, only Telegram stays.",
 			],
 		},
 	},
