@@ -165,7 +165,7 @@ costs context that the work then does not have:
 
 | Task | Read |
 | --- | --- |
-| Applying the system (a component, spacing, a state, a color from tokens) | `strategy.rules` and `narrative.donts` in `design.json`. The impeccable hook checks the rest after each edit. |
+| Applying the system (a component, spacing, a state, a color from tokens) | `extensions.strategy.rules` and `narrative.donts` in `design.json` (both nested — a top-level `strategy` does not exist). The impeccable hook checks the rest after each edit. |
 | Changing the system (a token, the radius scale, a palette, the type ramp) | `DESIGN.md` in full, then update the sidecar. |
 | Judging whether something is off | Let the hook speak first; open `DESIGN.md` for the section it names. |
 

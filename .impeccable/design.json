@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-08-27T00:00:00.000Z",
+  "generatedAt": "2026-09-04T00:00:00.000Z",
   "title": "Design System: Tatarverse",
   "register": "brand",
   "summary": "Bilingual cultural-center catalog with a controlled homepage brand layer and a quiet neutral catalog layer, themed by a user-chosen accent across light and dark. The shipped default accent is monochrome ink, not a hue.",
@@ -260,7 +260,7 @@
       {
         "name": "no-js-animation-library",
         "value": "required",
-        "purpose": "All motion is CSS in src/styles/tailwind.css or a component <style> block. There is no JS animation library in the project."
+        "purpose": "All motion is CSS in src/styles/tailwind.css or src/styles/components/*.css. There is no JS animation library in the project."
       }
     ],
     "breakpoints": [
