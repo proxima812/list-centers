@@ -9,7 +9,7 @@
  * иначе демо начнёт врать.
  *
  * Контрасты посчитаны по WCAG 2.1 против собственного фона пресета:
- * `background` (#F6F3F9 в светлой, #090211 в тёмной) и `surface`. Варианты
+ * `background` (#F6F3F9 в светлой, #111012 в тёмной) и `surface`. Варианты
  * решены в OKLCH: тон пресета сохранён, светлота подобрана под порог, хрома
  * подрезана до границы sRGB.
  */
@@ -58,21 +58,21 @@ export const NEUTRAL_TOKENS: TokenRow[] = [
 	{
 		"token": "background",
 		"light": "#F6F3F9",
-		"dark": "#090211",
+		"dark": "#111012",
 		"usage": "Плоскость страницы",
 		"derived": false
 	},
 	{
 		"token": "muted",
 		"light": "#E9E5EE",
-		"dark": "#150C1C",
+		"dark": "#181719",
 		"usage": "Утопленная полоса секции",
 		"derived": false
 	},
 	{
 		"token": "surface",
 		"light": "#FBF9FD",
-		"dark": "#201727",
+		"dark": "#222123",
 		"usage": "Карточки, панели, поповеры",
 		"derived": false
 	},
@@ -86,49 +86,49 @@ export const NEUTRAL_TOKENS: TokenRow[] = [
 	{
 		"token": "subtle",
 		"light": "#E1DCE6",
-		"dark": "#2F2936",
+		"dark": "#333234",
 		"usage": "Самая тихая заливка",
 		"derived": false
 	},
 	{
 		"token": "catalog",
 		"light": "#EDEBEF",
-		"dark": "#150C1C",
+		"dark": "#181719",
 		"usage": "Полоса каталога: surface-muted / muted",
 		"derived": true
 	},
 	{
 		"token": "foreground",
 		"light": "#1F1C21",
-		"dark": "#EFECF2",
+		"dark": "#EDEBEF",
 		"usage": "Основные чернила",
 		"derived": false
 	},
 	{
 		"token": "muted-foreground",
 		"light": "#534F56",
-		"dark": "#AAA7AD",
+		"dark": "#A8A7A9",
 		"usage": "Второстепенный текст",
 		"derived": false
 	},
 	{
 		"token": "subtle-foreground",
 		"light": "#646067",
-		"dark": "#959298",
+		"dark": "#939294",
 		"usage": "Самый тусклый текст",
 		"derived": false
 	},
 	{
 		"token": "primary",
 		"light": "#1F1C21",
-		"dark": "#EFECF2",
+		"dark": "#EDEBEF",
 		"usage": "Главные действия",
 		"derived": false
 	},
 	{
 		"token": "primary-foreground",
 		"light": "#FBF9FD",
-		"dark": "#090211",
+		"dark": "#111012",
 		"usage": "Текст на primary",
 		"derived": false
 	},
@@ -149,7 +149,7 @@ export const NEUTRAL_TOKENS: TokenRow[] = [
 	{
 		"token": "ring",
 		"light": "#C4C0C9",
-		"dark": "#4F4A54",
+		"dark": "#545355",
 		"usage": "Кольца и инсеты",
 		"derived": false
 	},
@@ -163,42 +163,42 @@ export const NEUTRAL_TOKENS: TokenRow[] = [
 	{
 		"token": "depth-200",
 		"light": "#C0BBC4",
-		"dark": "#443C4B",
+		"dark": "#3F3E40",
 		"usage": "Ступень глубины",
 		"derived": false
 	},
 	{
 		"token": "depth-300",
 		"light": "#9C97A0",
-		"dark": "#4D4653",
+		"dark": "#494849",
 		"usage": "Ступень глубины",
 		"derived": false
 	},
 	{
 		"token": "depth-400",
 		"light": "#78747C",
-		"dark": "#59535E",
+		"dark": "#555456",
 		"usage": "Ступень глубины",
 		"derived": false
 	},
 	{
 		"token": "depth-500",
 		"light": "#5A565E",
-		"dark": "#7B767F",
+		"dark": "#787779",
 		"usage": "Ступень глубины",
 		"derived": false
 	},
 	{
 		"token": "depth-600",
 		"light": "#454149",
-		"dark": "#A09CA3",
+		"dark": "#9D9C9F",
 		"usage": "Ступень глубины",
 		"derived": false
 	},
 	{
 		"token": "depth-700",
 		"light": "#312E35",
-		"dark": "#C3BFC6",
+		"dark": "#C0BFC2",
 		"usage": "Ступень глубины",
 		"derived": false
 	},
@@ -259,7 +259,7 @@ export const PALETTE_LAB: PaletteLab[] = [
 			},
 			"dark": {
 				"accent": "#FDFBFF",
-				"accentForeground": "#090211",
+				"accentForeground": "#111012",
 				"accentVivid": "#F7F4FA",
 				"accentGlow": "#FAF7FD"
 			}
@@ -292,7 +292,7 @@ export const PALETTE_LAB: PaletteLab[] = [
 				},
 				"dark": {
 					"accent": "#E8E8E8",
-					"accentForeground": "#090211",
+					"accentForeground": "#111012",
 					"accentVivid": "#EFEFEF",
 					"accentGlow": "#F8F8F8",
 					"onBackground": 16.67,
@@ -315,7 +315,7 @@ export const PALETTE_LAB: PaletteLab[] = [
 				},
 				"dark": {
 					"accent": "#FCFCFC",
-					"accentForeground": "#090211",
+					"accentForeground": "#111012",
 					"accentVivid": "#F5F5F5",
 					"accentGlow": "#F8F8F8",
 					"onBackground": 19.9,
@@ -338,7 +338,7 @@ export const PALETTE_LAB: PaletteLab[] = [
 				},
 				"dark": {
 					"accent": "#D1D1D1",
-					"accentForeground": "#090211",
+					"accentForeground": "#111012",
 					"accentVivid": "#D7D7D7",
 					"accentGlow": "#F8F8F8",
 					"onBackground": 13.37,
@@ -361,7 +361,7 @@ export const PALETTE_LAB: PaletteLab[] = [
 				},
 				"dark": {
 					"accent": "#E3E8EE",
-					"accentForeground": "#090211",
+					"accentForeground": "#111012",
 					"accentVivid": "#E9EFF5",
 					"accentGlow": "#F5F9FE",
 					"onBackground": 16.57,
@@ -384,7 +384,7 @@ export const PALETTE_LAB: PaletteLab[] = [
 				},
 				"dark": {
 					"accent": "#BEBEBE",
-					"accentForeground": "#090211",
+					"accentForeground": "#111012",
 					"accentVivid": "#C4C4C4",
 					"accentGlow": "#E5E5E5",
 					"onBackground": 10.99,
@@ -406,7 +406,7 @@ export const PALETTE_LAB: PaletteLab[] = [
 			},
 			"dark": {
 				"accent": "#00BC5D",
-				"accentForeground": "#090211",
+				"accentForeground": "#111012",
 				"accentVivid": "#00C361",
 				"accentGlow": "#6ADF8D"
 			}
@@ -439,7 +439,7 @@ export const PALETTE_LAB: PaletteLab[] = [
 				},
 				"dark": {
 					"accent": "#00BC5D",
-					"accentForeground": "#090211",
+					"accentForeground": "#111012",
 					"accentVivid": "#00C361",
 					"accentGlow": "#6ADF8D",
 					"onBackground": 8.12,
@@ -462,7 +462,7 @@ export const PALETTE_LAB: PaletteLab[] = [
 				},
 				"dark": {
 					"accent": "#00BC5D",
-					"accentForeground": "#090211",
+					"accentForeground": "#111012",
 					"accentVivid": "#00C361",
 					"accentGlow": "#6ADF8D",
 					"onBackground": 8.12,
@@ -485,7 +485,7 @@ export const PALETTE_LAB: PaletteLab[] = [
 				},
 				"dark": {
 					"accent": "#67B37C",
-					"accentForeground": "#090211",
+					"accentForeground": "#111012",
 					"accentVivid": "#6ABA80",
 					"accentGlow": "#97D7A6",
 					"onBackground": 8.09,
@@ -508,7 +508,7 @@ export const PALETTE_LAB: PaletteLab[] = [
 				},
 				"dark": {
 					"accent": "#00B982",
-					"accentForeground": "#090211",
+					"accentForeground": "#111012",
 					"accentVivid": "#00C087",
 					"accentGlow": "#6ADCAB",
 					"onBackground": 8.03,
@@ -531,7 +531,7 @@ export const PALETTE_LAB: PaletteLab[] = [
 				},
 				"dark": {
 					"accent": "#76D691",
-					"accentForeground": "#090211",
+					"accentForeground": "#111012",
 					"accentVivid": "#78DE95",
 					"accentGlow": "#AAFBBE",
 					"onBackground": 11.47,
@@ -553,7 +553,7 @@ export const PALETTE_LAB: PaletteLab[] = [
 			},
 			"dark": {
 				"accent": "#7A9FFF",
-				"accentForeground": "#090211",
+				"accentForeground": "#111012",
 				"accentVivid": "#83A6FF",
 				"accentGlow": "#B2C9FF"
 			}
@@ -586,7 +586,7 @@ export const PALETTE_LAB: PaletteLab[] = [
 				},
 				"dark": {
 					"accent": "#7A9FFF",
-					"accentForeground": "#090211",
+					"accentForeground": "#111012",
 					"accentVivid": "#83A6FF",
 					"accentGlow": "#B2C9FF",
 					"onBackground": 8.0,
@@ -609,7 +609,7 @@ export const PALETTE_LAB: PaletteLab[] = [
 				},
 				"dark": {
 					"accent": "#7A9FFF",
-					"accentForeground": "#090211",
+					"accentForeground": "#111012",
 					"accentVivid": "#83A6FF",
 					"accentGlow": "#B2C9FF",
 					"onBackground": 8.0,
@@ -632,7 +632,7 @@ export const PALETTE_LAB: PaletteLab[] = [
 				},
 				"dark": {
 					"accent": "#8BA2DB",
-					"accentForeground": "#090211",
+					"accentForeground": "#111012",
 					"accentVivid": "#90A8E4",
 					"accentGlow": "#B4C9FB",
 					"onBackground": 8.06,
@@ -655,7 +655,7 @@ export const PALETTE_LAB: PaletteLab[] = [
 				},
 				"dark": {
 					"accent": "#929AFF",
-					"accentForeground": "#090211",
+					"accentForeground": "#111012",
 					"accentVivid": "#99A2FF",
 					"accentGlow": "#BFC7FF",
 					"onBackground": 8.06,
@@ -678,7 +678,7 @@ export const PALETTE_LAB: PaletteLab[] = [
 				},
 				"dark": {
 					"accent": "#A0BCFF",
-					"accentForeground": "#090211",
+					"accentForeground": "#111012",
 					"accentVivid": "#A9C3FF",
 					"accentGlow": "#D9E4FF",
 					"onBackground": 10.82,
@@ -700,7 +700,7 @@ export const PALETTE_LAB: PaletteLab[] = [
 			},
 			"dark": {
 				"accent": "#A97BF4",
-				"accentForeground": "#090211",
+				"accentForeground": "#111012",
 				"accentVivid": "#A474F1",
 				"accentGlow": "#C7A8FA"
 			}
@@ -733,7 +733,7 @@ export const PALETTE_LAB: PaletteLab[] = [
 				},
 				"dark": {
 					"accent": "#B78EFF",
-					"accentForeground": "#090211",
+					"accentForeground": "#111012",
 					"accentVivid": "#BC97FF",
 					"accentGlow": "#D5C2FF",
 					"onBackground": 8.1,
@@ -756,7 +756,7 @@ export const PALETTE_LAB: PaletteLab[] = [
 				},
 				"dark": {
 					"accent": "#B78EFF",
-					"accentForeground": "#090211",
+					"accentForeground": "#111012",
 					"accentVivid": "#BC97FF",
 					"accentGlow": "#D5C2FF",
 					"onBackground": 8.1,
@@ -779,7 +779,7 @@ export const PALETTE_LAB: PaletteLab[] = [
 				},
 				"dark": {
 					"accent": "#B097E0",
-					"accentForeground": "#090211",
+					"accentForeground": "#111012",
 					"accentVivid": "#B79CE9",
 					"accentGlow": "#D4C0FF",
 					"onBackground": 8.12,
@@ -802,7 +802,7 @@ export const PALETTE_LAB: PaletteLab[] = [
 				},
 				"dark": {
 					"accent": "#CD85F9",
-					"accentForeground": "#090211",
+					"accentForeground": "#111012",
 					"accentVivid": "#D38CFF",
 					"accentGlow": "#E5BDFF",
 					"onBackground": 8.09,
@@ -825,7 +825,7 @@ export const PALETTE_LAB: PaletteLab[] = [
 				},
 				"dark": {
 					"accent": "#C8ADFF",
-					"accentForeground": "#090211",
+					"accentForeground": "#111012",
 					"accentVivid": "#CDB6FF",
 					"accentGlow": "#E8DFFF",
 					"onBackground": 10.58,
@@ -847,7 +847,7 @@ export const PALETTE_LAB: PaletteLab[] = [
 			},
 			"dark": {
 				"accent": "#FF7A79",
-				"accentForeground": "#090211",
+				"accentForeground": "#111012",
 				"accentVivid": "#FF8684",
 				"accentGlow": "#FFBBB8"
 			}
@@ -880,7 +880,7 @@ export const PALETTE_LAB: PaletteLab[] = [
 				},
 				"dark": {
 					"accent": "#FF7A79",
-					"accentForeground": "#090211",
+					"accentForeground": "#111012",
 					"accentVivid": "#FF8684",
 					"accentGlow": "#FFBBB8",
 					"onBackground": 8.08,
@@ -903,7 +903,7 @@ export const PALETTE_LAB: PaletteLab[] = [
 				},
 				"dark": {
 					"accent": "#FF7A79",
-					"accentForeground": "#090211",
+					"accentForeground": "#111012",
 					"accentVivid": "#FF8684",
 					"accentGlow": "#FFBBB8",
 					"onBackground": 8.08,
@@ -926,7 +926,7 @@ export const PALETTE_LAB: PaletteLab[] = [
 				},
 				"dark": {
 					"accent": "#DD8E8A",
-					"accentForeground": "#090211",
+					"accentForeground": "#111012",
 					"accentVivid": "#E6938F",
 					"accentGlow": "#FEB8B4",
 					"onBackground": 8.08,
@@ -949,7 +949,7 @@ export const PALETTE_LAB: PaletteLab[] = [
 				},
 				"dark": {
 					"accent": "#FD7D5F",
-					"accentForeground": "#090211",
+					"accentForeground": "#111012",
 					"accentVivid": "#FF876B",
 					"accentGlow": "#FFBBAB",
 					"onBackground": 8.05,
@@ -972,7 +972,7 @@ export const PALETTE_LAB: PaletteLab[] = [
 				},
 				"dark": {
 					"accent": "#FFA09C",
-					"accentForeground": "#090211",
+					"accentForeground": "#111012",
 					"accentVivid": "#FFAAA6",
 					"accentGlow": "#FFDBD8",
 					"onBackground": 10.46,
@@ -994,7 +994,7 @@ export const PALETTE_LAB: PaletteLab[] = [
 			},
 			"dark": {
 				"accent": "#FF74AC",
-				"accentForeground": "#090211",
+				"accentForeground": "#111012",
 				"accentVivid": "#FF81B2",
 				"accentGlow": "#FFBAD1"
 			}
@@ -1027,7 +1027,7 @@ export const PALETTE_LAB: PaletteLab[] = [
 				},
 				"dark": {
 					"accent": "#FF74AC",
-					"accentForeground": "#090211",
+					"accentForeground": "#111012",
 					"accentVivid": "#FF81B2",
 					"accentGlow": "#FFBAD1",
 					"onBackground": 8.12,
@@ -1050,7 +1050,7 @@ export const PALETTE_LAB: PaletteLab[] = [
 				},
 				"dark": {
 					"accent": "#FF74AC",
-					"accentForeground": "#090211",
+					"accentForeground": "#111012",
 					"accentVivid": "#FF81B2",
 					"accentGlow": "#FFBAD1",
 					"onBackground": 8.12,
@@ -1073,7 +1073,7 @@ export const PALETTE_LAB: PaletteLab[] = [
 				},
 				"dark": {
 					"accent": "#DC8AA7",
-					"accentForeground": "#090211",
+					"accentForeground": "#111012",
 					"accentVivid": "#E58EAD",
 					"accentGlow": "#FDB4CD",
 					"onBackground": 8.01,
@@ -1096,7 +1096,7 @@ export const PALETTE_LAB: PaletteLab[] = [
 				},
 				"dark": {
 					"accent": "#FF7693",
-					"accentForeground": "#090211",
+					"accentForeground": "#111012",
 					"accentVivid": "#FF839B",
 					"accentGlow": "#FFBAC4",
 					"onBackground": 8.04,
@@ -1119,7 +1119,7 @@ export const PALETTE_LAB: PaletteLab[] = [
 				},
 				"dark": {
 					"accent": "#FF9ABF",
-					"accentForeground": "#090211",
+					"accentForeground": "#111012",
 					"accentVivid": "#FFA5C5",
 					"accentGlow": "#FFD9E5",
 					"onBackground": 10.33,

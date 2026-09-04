@@ -50,9 +50,9 @@
 
   --color-catalog: var(--color-surface-muted);
 
-  --color-foreground: #1F1C21;
-  --color-surface-foreground: #1F1C21;
-  --color-primary: #1F1C21;
+  --color-foreground: #111012;
+  --color-surface-foreground: #111012;
+  --color-primary: #111012;
   --color-primary-foreground: #FBF9FD;
 
   --color-link: #1F53B8;
@@ -65,11 +65,11 @@
   --color-link-decoration: #447BE4;
 
 
-  --color-accent: #1F1C21;
+  --color-accent: #111012;
   --color-accent-foreground: #FBF9FD;
 
 
-  --color-accent-vivid: #1F1C21;
+  --color-accent-vivid: #111012;
   --color-accent-glow: #9C97A0;
 
 
@@ -240,32 +240,32 @@
   --hero-pulse-max-blur: 5px;
 
 
-  --color-background: #090211;
-  --color-muted: #150C1C;
-  --color-surface: #201727;
-  --color-subtle: #2F2936;
+  --color-background: #111012;
+  --color-muted: #181719;
+  --color-surface: #222123;
+  --color-subtle: #333234;
   --color-catalog: var(--color-muted);
-  --color-ring: #4F4A54;
+  --color-ring: #545355;
 
 
-  --color-foreground: #EFECF2;
-  --color-surface-foreground: #EFECF2;
-  --color-primary: #EFECF2;
-  --color-primary-foreground: #090211;
+  --color-foreground: #EDEBEF;
+  --color-surface-foreground: #EDEBEF;
+  --color-primary: #EDEBEF;
+  --color-primary-foreground: #111012;
 
   --color-link: #9FC1FF;
-  --color-muted-foreground: #AAA7AD;
-  --color-subtle-foreground: #959298;
+  --color-muted-foreground: #A8A7A9;
+  --color-subtle-foreground: #939294;
 
   --color-link-decoration: #6B97E8;
 
 
-  --color-depth-200: #443C4B;
-  --color-depth-300: #4D4653;
-  --color-depth-400: #59535E;
-  --color-depth-500: #7B767F;
-  --color-depth-600: #A09CA3;
-  --color-depth-700: #C3BFC6;
+  --color-depth-200: #3F3E40;
+  --color-depth-300: #494849;
+  --color-depth-400: #555456;
+  --color-depth-500: #787779;
+  --color-depth-600: #9D9C9F;
+  --color-depth-700: #C0BFC2;
 
   --color-destructive: #F18A76;
 
@@ -273,7 +273,7 @@
   --color-favorite: #F87580;
 
   --color-accent: hsl(142 58% 52%);
-  --color-accent-foreground: #090211;
+  --color-accent-foreground: #111012;
   --color-accent-vivid: hsl(142 62% 52%);
   --color-accent-glow: hsl(142 70% 70%);
 

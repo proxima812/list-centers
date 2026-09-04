@@ -253,10 +253,10 @@ so every `bg-surface` panel on the page — `Box`, MDX, project cards — was wh
 | theme | background | muted | surface | surface-muted | subtle |
 | --- | --- | --- | --- | --- | --- |
 | light (all six) | `#F6F3F9` | `#E9E5EE` | `#FBF9FD` | derived | `#E1DCE6` |
-| dark (all six) | `#090211` | `#150C1C` | `#201727` | derived | `#2F2936` |
+| dark (all six) | `#111012` | `#181719` | `#222123` | derived | `#333234` |
 
 **Neither end of the ladder is neutral, and no end is pure.** The paper is `#FBF9FD` and
-the ink is `#090211` — a near-white and a near-black, both carrying the same violet hue
+the ink is `#111012` — a near-white and a near-black. The light ladder carries a violet hue
 (`H 308` in OKLCH). Pure `#FFFFFF` and pure `#000000` are gone from the project entirely:
 white paper glares next to a tinted interface, and a pure-black page kills every shadow
 while making any accent on top of it look detached. Every fill, every line and every depth
@@ -363,7 +363,7 @@ threshold described below.
 
 **The Accent Is A Signal.** The accent belongs to identity moments, focus, and active state only. It should never become a generic decoration.
 
-**Never Hardcode A Color.** Anything written as a literal hex or a Tailwind palette class (`bg-white`, `text-zinc-500`) will not survive a theme switch. `bg-white` and `text-black` are doubly wrong now: those two values do not exist in this project at all — the paper is `#FBF9FD` and the ink is `#090211`. The only exceptions are third-party brand colors — the platform tiles in the homepage link showcase and the social buttons are the sanctioned list, and they are brand marks, not interface color.
+**Never Hardcode A Color.** Anything written as a literal hex or a Tailwind palette class (`bg-white`, `text-zinc-500`) will not survive a theme switch. `bg-white` and `text-black` are doubly wrong now: those two values do not exist in this project at all — the paper is `#FBF9FD` and the ink is `#111012`. The only exceptions are third-party brand colors — the platform tiles in the homepage link showcase and the social buttons are the sanctioned list, and they are brand marks, not interface color.
 
 **No Cultural Color Pastiche.** Do not infer a palette from flags, ethnic motifs, or ornamental references. Cultural meaning comes from the content and source-backed data.
 

@@ -9,7 +9,7 @@
 
 :root.dark[data-accent="violet"] {
   --color-accent: hsl(263 85% 72%);
-  --color-accent-foreground: #090211;
+  --color-accent-foreground: #111012;
   --color-accent-vivid: hsl(263 82% 70%);
   --color-accent-glow: hsl(263 90% 82%);
   --color-mark-tint: hsl(263 88% 80%);

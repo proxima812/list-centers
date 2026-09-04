@@ -4,9 +4,9 @@ const siteLocale = "ru-RU" as const;
 const siteAuthor = "proxima812" as const;
 const siteName = "tatarverse" as const;
 const siteThemeColors = {
-  maskIcon: "#090211",
-  tile: "#090211",
-  theme: "#090211",
+  maskIcon: "#111012",
+  tile: "#111012",
+  theme: "#111012",
   background: "#FBF9FD",
 } as const;
 
