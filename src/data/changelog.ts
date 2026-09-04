@@ -21,6 +21,35 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
 	{
+		date: "2026-09-04",
+		title: {
+			ru: "Кыргызстан целиком, кнопки главной и пост об Играх кочевников",
+			en: "All of Kyrgyzstan, new home buttons and a post about the Nomad Games",
+		},
+		items: {
+			ru: [
+				"Разобран весь Кыргызстан: у центра «Туган тел» появился инстаграм @tatardiaspora.kg - единственный живой аккаунт татарской организации в стране, - а также Сабантуй-2026 и три новых источника.",
+				"Добавлены две башкирские организации из реестра Всемирного курултая башкир: «Курултай башкир» в Бишкеке и «Ак тирма» в Оше. Всего по стране теперь 17 центров.",
+				"У карточки Кара-Балты уточнено название - это башкиро-татарский центр «Идель», - и категория сменилась на татаро-башкирскую. Токмок, Каракол и «Дуслык» получили вторые источники.",
+				"Карточка Tatardiaspora kg честно помечена: это онлайн-аккаунт «Туган тел», а не отдельная организация.",
+				"Кнопки на главной переименованы: «Посмотреть центры» стала «Каталогом», «Центры рядом» - «Рядом с тобой».",
+				"Между ними появилась кнопка со ссылкой на инстаграм проекта @the_tatarverse с цветным логотипом.",
+				"Обе кнопки рядом с «Каталогом» получили плашку вместо обводки: фон подложки и мягкая тень.",
+				"Вышел пост о VI Всемирных играх кочевников и о том, какие татарские и башкирские центры есть рядом с площадками Игр.",
+			],
+			en: [
+				"All of Kyrgyzstan was worked through: the \"Tugan Tel\" center now has its Instagram @tatardiaspora.kg - the only live account of a Tatar organization in the country - plus the 2026 Sabantuy and three new sources.",
+				"Two Bashkir organizations were added from the registry of the World Kurultai of Bashkirs: \"Kurultai of Bashkirs\" in Bishkek and \"Ak Tirma\" in Osh. The country now holds 17 centers.",
+				"The Kara-Balta entry got its proper name - the Bashkir-Tatar center \"Idel\" - and its category changed to Tatar-Bashkir. Tokmok, Karakol and \"Duslyk\" received second sources.",
+				"The Tatardiaspora kg entry now says plainly that it is the online account of \"Tugan Tel\", not a separate organization.",
+				"The home page buttons were renamed: \"View centers\" became \"Catalog\", and \"Centers nearby\" became \"Near you\".",
+				"A button linking to the project's Instagram @the_tatarverse, with the full-color logo, was added between them.",
+				"Both buttons next to \"Catalog\" traded their outline for a surface plate with a soft shadow.",
+				"A post went out about the VI World Nomad Games and the Tatar and Bashkir centers near the Games venues.",
+			],
+		},
+	},
+	{
 		date: "2026-08-28",
 		title: {
 			ru: "Палитры картинками, секции о сохраненных и печати, чистка постов",
