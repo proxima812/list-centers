@@ -54,7 +54,7 @@ const items = [
 ---
 
 <section
-	class="flex h-12 w-full items-center justify-center bg-accent/10 px-5 text-center"
+	class="flex h-12 w-full items-center justify-center bg-accent/5 px-5 text-center"
 	aria-label={t("anons.label", undefined, "Соцсети проекта")}
 >
 	<div class="grid w-full max-w-full grid-cols-1 grid-rows-1 place-items-center">
@@ -70,7 +70,7 @@ const items = [
 						href={item.href}
 						target="_blank"
 						rel="noopener noreferrer"
-						class="inline-flex shrink-0 items-center gap-1 text-blue-500 underline decoration-dotted underline-offset-4 hover:text-blue-400"
+						class="shimmer shimmer-color-blue-600 shimmer-speed-70 shimmer-spread-70 shimmer-repeat-delay-1200 dark:shimmer-color-blue-300 inline-flex shrink-0 items-center gap-1 text-foreground underline decoration-dotted decoration-blue-600/45 underline-offset-4 dark:decoration-blue-300/45"
 					>
 						{item.icon ? (
 							<Icon
