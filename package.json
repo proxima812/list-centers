@@ -25,9 +25,8 @@
 		"astro": "7.2.9",
 		"astro-icon": "^1.1.5",
 		"astro-meta-tags": "^0.3.1",
-		"clsx": "^2.1.1",
+		"cn": "^0.2.5",
 		"fuse.js": "^7.3.0",
-		"tailwind-merge": "^2.6.0",
 		"tailwindcss": "^4.0.9",
 		"tw-shimmer": "^0.4.12"
 	},
