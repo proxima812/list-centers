@@ -3,7 +3,7 @@ import type { Dictionary } from "@/i18n/ui";
 const dict: Dictionary = {
 	"nav.centers": "Centers",
 	"nav.toCenters": "Centers",
-	"nav.viewCenters": "View centers",
+	"nav.viewCenters": "Catalog",
 	"nav.posts": "Posts",
 	"nav.changelog": "Changelog",
 	"changelog.title": "Changelog",
@@ -247,7 +247,7 @@ const dict: Dictionary = {
 	"thanks.person": "Contributor",
 	"thanks.openSocial": "{name} - open social profile",
 
-	"nav.nearby": "Centers nearby",
+	"nav.nearby": "Near you",
 	"nearby.title": "Centers nearby",
 	"nearby.description":
 		"We detect your country from your connection and show TBC center cards from there, with a city filter.",

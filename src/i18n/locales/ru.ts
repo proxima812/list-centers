@@ -3,7 +3,7 @@ import type { Dictionary } from "@/i18n/ui";
 const dict: Dictionary = {
 	"nav.centers": "Список центров",
 	"nav.toCenters": "Центры",
-	"nav.viewCenters": "Посмотреть центры",
+	"nav.viewCenters": "Каталог",
 	"nav.posts": "Посты",
 	"nav.changelog": "Изменения",
 	"changelog.title": "Изменения",
@@ -250,7 +250,7 @@ const dict: Dictionary = {
 	"thanks.person": "Участник",
 	"thanks.openSocial": "{name} - открыть социальную сеть",
 
-	"nav.nearby": "Центры рядом",
+	"nav.nearby": "Рядом с тобой",
 	"nearby.title": "Центры рядом",
 	"nearby.description":
 		"Определяем вашу страну по подключению и показываем карточки центров ТБК оттуда, с фильтром по городам.",

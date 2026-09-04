@@ -2,6 +2,7 @@
 import { links } from "@/data/links";
 import { getCollection } from "astro:content";
 import ButtonLink from "../ui/ButtonLink.astro";
+import InstagramIcon from "../ui/InstagramIcon.astro";
 
 const centersCount = (await getCollection("centers")).length;
 const centersLink = links.find((item) => item.href === "/centers");
@@ -14,6 +15,7 @@ const centersLink = links.find((item) => item.href === "/centers");
 				<ButtonLink
 					{...centersLink}
 					labelKey="nav.viewCenters"
+					label="Каталог"
 					badge={centersCount}
 					variant="gradient"
 					class="md:px-4 md:py-2 md:text-sm text-base"
@@ -21,9 +23,18 @@ const centersLink = links.find((item) => item.href === "/centers");
 			)
 		}
 		<ButtonLink
+			href="https://www.instagram.com/the_tatarverse/"
+			label="@the_tatarverse"
+			target="_blank"
+			variant="outline"
+			class="md:px-4 md:py-2 md:text-sm text-base"
+		>
+			<InstagramIcon slot="icon" class="h-4 w-4 shrink-0" />
+		</ButtonLink>
+		<ButtonLink
 			href="/nearby"
 			labelKey="nav.nearby"
-			label="Центры рядом"
+			label="Рядом с тобой"
 			icon="mdi:map-marker-radius-outline"
 			variant="outline"
 			class="md:px-4 md:py-2 md:text-sm text-base"
