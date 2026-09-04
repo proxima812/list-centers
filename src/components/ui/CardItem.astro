@@ -1,5 +1,6 @@
 ---
 import { cardDataset, cardPart } from "@/lib/site/cardAttributes";
+import { CARD_RESERVE_ATTR } from "@/lib/site/cardTemplate";
 import { normalizeCity, type CenterGeo } from "@/data/geo";
 import { countryFlagsByRu, getCountryLabel } from "@/data/worldCountries";
 import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
@@ -32,6 +33,14 @@ interface Props {
 	 * Иначе пришлось бы держать вторую копию разметки карточки.
 	 */
 	template?: boolean;
+	/**
+	 * Что за кнопка займёт угол карточки: обычная закладка или широкая
+	 * «удалить» на `/saved`. Отсюда ширина отступа, который под неё оставляют.
+	 * Раньше заготовка всегда резервировала место под «удалить», а `/nearby`
+	 * возвращала отступ каталога уже в браузере, правя Tailwind-класс из
+	 * скрипта.
+	 */
+	templateAction?: "bookmark" | "remove";
 }
 
 const {
@@ -47,6 +56,7 @@ const {
 	pubDate,
 	links,
 	template = false,
+	templateAction = "bookmark",
 } = Astro.props as Props;
 const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
@@ -79,6 +89,8 @@ const quickLinkClass =
 const viewButtonClass =
 	"ml-auto inline-flex shrink-0 items-center gap-1 rounded-full corner-squircle bg-surface-muted px-2.5 py-1 text-xs font-medium text-muted-foreground transition-colors duration-300 ease-out group-hover:bg-accent group-hover:text-accent-foreground";
 const quickLinks = links ?? [];
+/** Единственное место, где живёт ширина места под кнопку в углу. */
+const reserveClass = templateAction === "remove" ? "pr-24" : "pr-9";
 
 // Единственное место, где карточка объявляет свой DOM-контракт. Имена
 // атрибутов — в @/lib/site/cardAttributes, там же их читают фильтры и /saved.
@@ -102,6 +114,7 @@ const dataset = cardDataset({
 
 <article
 	{...dataset}
+	{...(template ? { [CARD_RESERVE_ATTR]: reserveClass } : {})}
 	class="group relative flex h-full min-w-0 flex-col gap-3 rounded-catalog corner-squircle bg-surface p-6 text-surface-foreground transition duration-300 ease-out hover:surface-lift has-[[data-card-link]:focus-visible]:outline-2 has-[[data-card-link]:focus-visible]:outline-offset-2 has-[[data-card-link]:focus-visible]:outline-accent"
 >
 	<slot name="action"><SaveCenterButton title={displayTitle} /></slot>
@@ -112,7 +125,7 @@ const dataset = cardDataset({
 				{...cardPart("location", template)}
 				class:list={[
 					"flex min-w-0 flex-wrap items-center gap-1.5 text-xs text-muted-foreground",
-					template ? "pr-24" : "pr-9",
+					reserveClass,
 				]}
 			>
 				{(template || displayLocation?.flag) && (
@@ -144,7 +157,7 @@ const dataset = cardDataset({
 			{...cardPart("heading", template)}
 			class:list={[
 				"min-w-0 wrap-anywhere font-bold leading-snug tracking-tight",
-				!template && !displayLocation && "pr-9",
+				!template && !displayLocation && reserveClass,
 			]}
 		>
 			<a

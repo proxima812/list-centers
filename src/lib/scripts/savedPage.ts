@@ -1,6 +1,7 @@
-import { getCenterMarkHue } from "@/lib/center/centers";
+import { getCountryLabel } from "@/data/worldCountries";
 import { clearSaved, onSavedChange, readSaved, removeSaved } from "@/lib/scripts/savedCenters";
-import { CARD_ATTR, CARD_PART, closestCard, readCard } from "@/lib/site/cardAttributes";
+import { closestCard, readCard } from "@/lib/site/cardAttributes";
+import { fillCard } from "@/lib/site/cardTemplate";
 
 /**
  * Страница `/saved`: рисует карточки из localStorage по заготовке `CardItem`
@@ -16,28 +17,14 @@ export function initSavedPage() {
 
 	if (!grid || !empty || !summary || !template) return;
 
-	const dateFormat = new Intl.DateTimeFormat("ru", { month: "short", year: "numeric" });
+	// Локаль страницы, а не «ru»: на /en/saved по-русски выводились и даты, и
+	// названия стран, хотя в localStorage лежит канон, а не подпись.
+	const locale = document.documentElement.lang === "en" ? "en" : "ru";
 
 	const strings = {
 		count: summary.dataset.count ?? "",
 		confirm: summary.dataset.confirm ?? "",
 		remove: summary.dataset.remove ?? "",
-	};
-
-	/** Пустую часть прячем: иначе остаются висящие разделители и чипы. */
-	const fill = (root: ParentNode, part: keyof typeof CARD_PART, value: string) => {
-		const node = root.querySelector<HTMLElement>(`[${CARD_PART[part]}]`);
-		if (!node) return;
-
-		node.textContent = value;
-		node.hidden = value.length === 0;
-	};
-
-	const formatDate = (value: string) => {
-		if (!value) return "";
-
-		const date = new Date(value);
-		return Number.isNaN(date.getTime()) ? "" : dateFormat.format(date);
 	};
 
 	const render = () => {
@@ -51,19 +38,27 @@ export function initSavedPage() {
 		const fragment = document.createDocumentFragment();
 
 		for (const item of list) {
-			const node = template.content.cloneNode(true) as DocumentFragment;
-			const article = node.querySelector<HTMLElement>(`[${CARD_ATTR.id}]`);
-			const link = node.querySelector<HTMLAnchorElement>(`[${CARD_PART.link}]`);
-			if (!article || !link) continue;
-
-			article.setAttribute(CARD_ATTR.id, item.id);
-
-			node
-				.querySelector<HTMLElement>(`[${CARD_PART.mark}]`)
-				?.style.setProperty("--mark-hue", String(getCenterMarkHue(item.id)));
-
-			link.href = item.href;
-			link.textContent = item.title;
+			const node = fillCard(
+				template,
+				{
+					id: item.id,
+					scope: "",
+					macro: "",
+					okrug: "",
+					country: getCountryLabel(item.country, locale),
+					region: "",
+					city: item.city,
+					type: item.type,
+					category: item.category,
+					title: item.title,
+					summary: item.summary,
+					flag: item.flag,
+					pubDate: item.pubDate,
+					href: item.href,
+				},
+				{ locale, linkHref: item.href },
+			);
+			if (!node) continue;
 
 			const deleteButton = node.querySelector<HTMLElement>("[data-saved-delete]");
 			if (deleteButton) {
@@ -71,25 +66,6 @@ export function initSavedPage() {
 				deleteButton.setAttribute("aria-label", label);
 				deleteButton.setAttribute("title", label);
 			}
-
-			fill(node, "flag", item.flag);
-			fill(node, "city", item.city);
-			fill(node, "country", item.country);
-			fill(node, "summary", item.summary);
-			fill(node, "category", item.category);
-			fill(node, "type", item.type);
-			fill(node, "date", formatDate(item.pubDate));
-
-			const separator = node.querySelector<HTMLElement>(`[${CARD_PART.separator}]`);
-			if (separator) separator.hidden = !(item.city && item.country);
-
-			const hasLocation = Boolean(item.flag || item.city || item.country);
-			const location = node.querySelector<HTMLElement>(`[${CARD_PART.location}]`);
-			if (location) location.hidden = !hasLocation;
-
-			// Без строки расположения заголовок сам обходит кнопку удаления.
-			const heading = node.querySelector<HTMLElement>(`[${CARD_PART.heading}]`);
-			if (heading) heading.classList.toggle("pr-24", !hasLocation);
 
 			fragment.append(node);
 		}

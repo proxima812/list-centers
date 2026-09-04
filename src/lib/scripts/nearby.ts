@@ -1,8 +1,7 @@
 import { matchCity, matchCountry } from "@/data/geo/detect";
 import { countryFlagsByRu, getCountryLabel } from "@/data/worldCountries";
-import { getCenterMarkHue } from "@/lib/center/centers";
 import { syncSavedCenters } from "@/lib/scripts/savedCentersUi";
-import { CARD_ATTR, CARD_PART, cardDataset } from "@/lib/site/cardAttributes";
+import { fillCard } from "@/lib/site/cardTemplate";
 import type { NearbyIndexItem } from "@/lib/types";
 
 const COUNTRY_PARAM = "country";
@@ -51,11 +50,6 @@ export function initNearby() {
 		empty: root.dataset.textEmpty ?? "",
 	};
 
-	const dateFormat = new Intl.DateTimeFormat(document.documentElement.lang || "ru", {
-		month: "short",
-		year: "numeric",
-	});
-
 	let index: NearbyIndexItem[] = [];
 	let country = "";
 	let city = "";
@@ -72,63 +66,31 @@ export function initNearby() {
 	const flagOf = (value: string) =>
 		optionFor(value)?.dataset.flag ?? countryFlagsByRu[value] ?? "";
 
-	/** Пустую часть прячем: иначе остаются висящие разделители и чипы. */
-	const fill = (node: ParentNode, part: keyof typeof CARD_PART, value: string) => {
-		const target = node.querySelector<HTMLElement>(`[${CARD_PART[part]}]`);
-		if (!target) return;
-
-		target.textContent = value;
-		target.hidden = value.length === 0;
-	};
-
-	const formatDate = (value: string) => {
-		if (!value) return "";
-
-		const date = new Date(value);
-		return Number.isNaN(date.getTime()) ? "" : dateFormat.format(date);
-	};
-
 	function renderCards(list: NearbyIndexItem[]) {
 		const fragment = document.createDocumentFragment();
 
 		for (const item of list) {
-			const node = cardTemplate!.content.cloneNode(true) as DocumentFragment;
-			const article = node.querySelector<HTMLElement>(`[${CARD_ATTR.id}]`);
-			const link = node.querySelector<HTMLAnchorElement>(`[${CARD_PART.link}]`);
-			if (!article || !link) continue;
-
-			// Полный набор атрибутов, а не один id: с него читает кнопка
-			// «сохранить», и без него в localStorage уехала бы пустая карточка.
-			const dataset = cardDataset({
-				id: item.id,
-				scope: "",
-				macro: "",
-				okrug: "",
-				country: item.country,
-				region: "",
-				city: item.city,
-				type: item.type,
-				category: item.category,
-				title: item.title,
-				summary: item.summary,
-				flag: item.flag,
-				pubDate: item.pubDate,
-				href: item.href,
-			});
-			for (const [name, value] of Object.entries(dataset)) article.setAttribute(name, value);
-
-			node
-				.querySelector<HTMLElement>(`[${CARD_PART.mark}]`)
-				?.style.setProperty("--mark-hue", String(getCenterMarkHue(item.id)));
-
-			link.href = item.linkHref;
-			link.textContent = item.title;
-
-			// Заготовка держит место под широкую кнопку «удалить» с /saved,
-			// а здесь в углу обычная закладка — возвращаем отступ каталога.
-			node
-				.querySelector<HTMLElement>(`[${CARD_PART.location}]`)
-				?.classList.replace("pr-24", "pr-9");
+			const node = fillCard(
+				cardTemplate!,
+				{
+					id: item.id,
+					scope: "",
+					macro: "",
+					okrug: "",
+					country: item.countryLabel,
+					region: "",
+					city: item.city,
+					type: item.type,
+					category: item.category,
+					title: item.title,
+					summary: item.summary,
+					flag: item.flag,
+					pubDate: item.pubDate,
+					href: item.href,
+				},
+				{ locale, linkHref: item.linkHref },
+			);
+			if (!node) continue;
 
 			const saveButton = node.querySelector<HTMLElement>("[data-save-center]");
 			if (saveButton && item.title) {
@@ -137,17 +99,6 @@ export function initNearby() {
 				saveButton.dataset.labelSave = `${saveButton.dataset.labelSave}: ${item.title}`;
 				saveButton.dataset.labelRemove = `${saveButton.dataset.labelRemove}: ${item.title}`;
 			}
-
-			fill(node, "flag", item.flag);
-			fill(node, "city", item.city);
-			fill(node, "country", item.countryLabel);
-			fill(node, "summary", item.summary);
-			fill(node, "category", item.category);
-			fill(node, "type", item.type);
-			fill(node, "date", formatDate(item.pubDate));
-
-			const separator = node.querySelector<HTMLElement>(`[${CARD_PART.separator}]`);
-			if (separator) separator.hidden = !(item.city && item.countryLabel);
 
 			fragment.append(node);
 		}
