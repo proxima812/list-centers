@@ -75,6 +75,19 @@ Defined in `src/content.config.ts`, all schemas are `.strict()`:
 | `posts` | `src/data/posts` | Editorial notes |
 | `thanks` | `src/data/thanks` | Contributor credits |
 
+**A new center ships in both languages, in the same change.** Adding
+`src/data/centers_formatted/<id>.mdx` without `src/data/centers_i18n/en/<id>.mdx`
+does not leave the English catalog merely untranslated — it leaves the center
+*absent* from it: `localizedCenters("en")` returns the English collection whole,
+so an entry missing there is missing from `/en/centers`, from English search,
+and from `/en` links, which fall back to the Russian page. Write the English
+file before you commit, never as a follow-up.
+
+Conventions for the English file: `type` and `category` stay in Russian
+verbatim — they are enum keys, and translating them fails the build. `title`,
+`summary`, and `location` (`country`, `city`, `region`) are English; a body H1
+repeats the title; URLs, phones, and emails are copied character for character.
+
 Geography is not part of the collection schema: `src/data/geo`
 (`ruRegions`, `macroRegions`, `places`) normalizes `location` at render time
 for facets, search, and cards. There are no coordinates and no `mapUrl` —

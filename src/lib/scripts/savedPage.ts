@@ -21,6 +21,24 @@ export function initSavedPage() {
 	// названия стран, хотя в localStorage лежит канон, а не подпись.
 	const locale = document.documentElement.lang === "en" ? "en" : "ru";
 
+	/**
+	 * Адрес карточки строит браузер: список приезжает из localStorage, где
+	 * лежит канонический путь без локали и без слеша на конце.
+	 *
+	 * Слеш обязателен всегда — без него сайт отвечает редиректом. Префикс
+	 * локали ставится только там, где перевод есть: у непереведённого центра
+	 * английской страницы не существует, и ссылка вела бы в 404. Список
+	 * непереведённых объявляет сборка в `data-untranslated`.
+	 */
+	const untranslated = new Set((grid.dataset.untranslated ?? "").split(" ").filter(Boolean));
+
+	const linkHrefOf = (href: string) => {
+		const path = href.endsWith("/") ? href : `${href}/`;
+		const routeId = path.split("/").filter(Boolean).pop() ?? "";
+
+		return locale === "en" && !untranslated.has(routeId) ? `/en${path}` : path;
+	};
+
 	const strings = {
 		count: summary.dataset.count ?? "",
 		confirm: summary.dataset.confirm ?? "",
@@ -56,7 +74,7 @@ export function initSavedPage() {
 					pubDate: item.pubDate,
 					href: item.href,
 				},
-				{ locale, linkHref: item.href },
+				{ locale, linkHref: linkHrefOf(item.href) },
 			);
 			if (!node) continue;
 

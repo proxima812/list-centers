@@ -2,12 +2,29 @@
 import CardItem from "@/components/ui/CardItem.astro";
 import EmptyState from "@/components/ui/EmptyState.astro";
 import PageHero from "@/components/ui/PageHero.astro";
-import { getLocaleFromUrl, localizePath, useTranslations } from "@/i18n";
+import { defaultLocale, getLocaleFromUrl, hasLocalizedRoute, localizePath, useTranslations } from "@/i18n";
+import { createCenterRouteIdMap } from "@/lib/center/centers";
+import { getCollection } from "astro:content";
 import { Icon } from "astro-icon/components";
 
 const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
 const catalogHref = localizePath(locale, "/centers");
+
+/**
+ * Центры без версии на языке страницы. Список карточек приезжает из
+ * localStorage, поэтому адрес каждой ссылки считает браузер, а знание о
+ * переводах есть только на сборке — вот оно и едет к нему.
+ *
+ * Едет список непереведённых, а не переведённых: их 58 против 366, и он
+ * тает по мере перевода каталога. На русской странице он пуст.
+ */
+const untranslatedCenters =
+	locale === defaultLocale
+		? []
+		: [...createCenterRouteIdMap(await getCollection("centers")).values()].filter(
+				(routeId) => !hasLocalizedRoute(locale, `centers/${routeId}`),
+			);
 ---
 
 <PageHero title={t("saved.title")} intro={t("saved.heroIntro")}>
@@ -45,7 +62,10 @@ const catalogHref = localizePath(locale, "/centers");
 	<p slot="title" class="text-lg font-semibold">{t("saved.empty")}</p>
 </EmptyState>
 
-<section data-saved-grid hidden class="grid min-w-0 grid-cols-1 gap-6 md:grid-cols-2"></section>
+<section
+	data-saved-grid
+	data-untranslated={untranslatedCenters.join(" ")}
+	hidden class="grid min-w-0 grid-cols-1 gap-6 md:grid-cols-2"></section>
 
 <template data-saved-card>
 	<CardItem id="" template templateAction="remove">
