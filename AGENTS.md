@@ -130,7 +130,7 @@ Third-party skills are pinned in `skills-lock.json` — update them with
 
 Project skills are prefixed `tatarverse-`: `astro-content`, `posts`,
 `ui-tailwind`, `brand`, `motion`, `i18n`, `page-weight`, `collab`, `research`.
-Third-party: `impeccable` (design), `full-output-enforcement`, and the
+Third-party: `impeccable` (design) and the
 `mattpocock/skills` engineering set. Visual taste comes from `DESIGN.md` plus
 `impeccable` alone — the competing taste packs were removed, because a second
 opinion on aesthetics only fights the design system.
