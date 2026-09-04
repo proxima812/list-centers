@@ -20,6 +20,8 @@
     "node_modules",
     ".vercel",
     ".netlify",
-    "dist"
+    "dist",
+    ".wrangler",
+    "article-publish"
   ]
 }

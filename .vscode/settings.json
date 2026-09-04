@@ -19,17 +19,38 @@
 	},
 	"files.insertFinalNewline": true,
 	"files.trimTrailingWhitespace": true,
+	"emmet.includeLanguages": {
+		"astro": "html"
+	},
+	"emmet.triggerExpansionOnTab": true,
+	"emmet.showExpandedAbbreviation": "always",
+	"emmet.excludeLanguages": [],
 	"files.watcherExclude": {
 		"**/.git/objects/**": true,
 		"**/.git/subtree-cache/**": true,
 		"**/node_modules/**": true,
 		"**/dist/**": true,
-		"**/.astro/**": true
+		"**/.astro/**": true,
+		"**/.wrangler/**": true,
+		"**/.scratch/**": true
+	},
+	"files.exclude": {
+		"**/.wrangler": true,
+		"**/.astro": true
 	},
 	"search.exclude": {
 		"**/node_modules": true,
 		"**/dist": true,
 		"**/.astro": true,
+		"**/.wrangler": true,
 		"**/bun.lockb": true
-	}
+	},
+	"search.followSymlinks": false,
+	"typescript.tsserver.maxTsServerMemory": 4096,
+	"typescript.tsserver.watchOptions": {
+		"watchFile": "useFsEventsOnParentDirectory",
+		"watchDirectory": "useFsEvents"
+	},
+	"git.autorefresh": false,
+	"editor.largeFileOptimizations": true
 }
