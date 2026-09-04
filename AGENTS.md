@@ -130,9 +130,22 @@ Third-party skills are pinned in `skills-lock.json` — update them with
 
 Project skills are prefixed `tatarverse-`: `astro-content`, `posts`,
 `ui-tailwind`, `brand`, `motion`, `i18n`, `page-weight`, `collab`, `research`.
-Third-party:
-`impeccable`, `design-taste-frontend`, `high-end-visual-design`,
-`redesign-existing-projects`, `full-output-enforcement`.
+Third-party: `impeccable` (design), `full-output-enforcement`, and the
+`mattpocock/skills` engineering set. Visual taste comes from `DESIGN.md` plus
+`impeccable` alone — the competing taste packs were removed, because a second
+opinion on aesthetics only fights the design system.
+
+The engineering flow assumes a test suite this repo does not have, so `/tdd`
+and `/implement` (which drives `/tdd`) do not apply. The flow that does:
+`/grill-with-docs` -> `/to-spec` -> hand edits -> `/code-review`, with
+`/diagnosing-bugs` and `/research` alongside. Restore `/implement` only by
+first adding a test runner.
+
+Handoff between the two agents working here is `tatarverse-collab`;
+`claude-handoff` was removed and generic `/handoff` stays only for handing work
+to another directory or harness. Skills targeting stacks this repo does not run (monorepo tooling,
+husky, test-assertion migrations, course scaffolding) were removed too — an
+uninstalled skill cannot misfire.
 
 What each one is for is not repeated here. Every skill's `description` is
 injected into context anyway, so a second copy in this file only buys drift —
